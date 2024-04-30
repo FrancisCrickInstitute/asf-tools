@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+
+"""
+Main entry point for command line application
+"""
+
+import logging
+
+import rich
+import rich.console
+import rich.logging
+import rich.traceback
+import rich_click as click
+
+import asf_tools
+
+# Set up logging as the root logger
+# Submodules should all traverse back to this
+log = logging.getLogger()
+
+# Set up nicer formatting of click cli help messages
+click.rich_click.MAX_WIDTH = 100
+click.rich_click.USE_RICH_MARKUP = True
+
+# Setup command groups
+# click.rich_click.COMMAND_GROUPS = {
+#     "carmack": [
+#         {
+#             "name": "Commands for users",
+#             "commands": ["extract-cell-barcodes", "fastq-filter"],
+#         }
+#     ]
+# }
+# click.rich_click.OPTION_GROUPS = {
+#     "carmack extract-cell-barcodes": [{"options": ["--chemistry", "--maxdist", "--line_count", "--output_dir", "--prefix"]}],
+#     "carmack fastq-filter": [{"options": ["--output_dir", "--prefix"]}]
+# }
+
+# Set up rich stderr console
+stderr = rich.console.Console(stderr=True)
+stdout = rich.console.Console()
+
+# Set up the rich traceback
+rich.traceback.install(console=stderr, width=200, word_wrap=True, extra_lines=1)
+
+
+def run_asf_tools():
+    """
+    Print programme header and then use to click for the command line interface.
+    """
+
+    # Print header (ANSI Shadow)
+    stderr.print("\n\n", highlight=False)
+    stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
+    stderr.print("[white]░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░░█████╗░███████╗███████╗░░░░████████╗░██████╗░░██████╗░██╗░░░░░███████╗░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░██╔══██╗██╔════╝██╔════╝░░░░╚══██╔══╝██╔═══██╗██╔═══██╗██║░░░░░██╔════╝░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░███████║███████╗█████╗░░░░░░░░░██║░░░██║░░░██║██║░░░██║██║░░░░░███████╗░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░██╔══██║╚════██║██╔══╝░░░░░░░░░██║░░░██║░░░██║██║░░░██║██║░░░░░╚════██║░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░██║░░██║███████║██║░░░░░░░░░░░░██║░░░╚██████╔╝╚██████╔╝███████╗███████║░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░╚═╝░░╚═╝╚══════╝╚═╝░░░░░░░░░░░░╚═╝░░░░╚═════╝░░╚═════╝ ╚══════╝╚══════╝░░░░[white]", highlight=False)
+    stderr.print("[white]░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░[white]", highlight=False)
+    stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
+    stderr.print("\n", highlight=False)
+    stderr.print(f"[grey25]asf-tools - version {asf_tools.__version__}", highlight=False)
+    stderr.print("[grey25]authors: Christopher Cheshire", highlight=False)
+    stderr.print("[grey25][link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
+    stderr.print("\n", highlight=False)
+    stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
+    stderr.print("\n\n", highlight=False)
+
+    # Launch the click cli
+    launch_cli()
+
+
+@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.version_option(asf_tools.__version__)
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="Print verbose output to the console.",
+)
+@click.option("--hide-progress", is_flag=True, default=False, help="Don't show progress bars.")
+@click.option("-l", "--log-file", help="Save a verbose log to a file.", metavar="<filename>")
+@click.pass_context
+def launch_cli(ctx, verbose, hide_progress, log_file):
+    """
+    asf-tools provides a set of helper tools for technicians in the asf as well as providing
+    command line tooling for automation scripts
+    """
+    # Set the base logger to output DEBUG
+    log.setLevel(logging.DEBUG)
+
+    # Set up logs to the console
+    log.addHandler(
+        rich.logging.RichHandler(
+            level=logging.DEBUG if verbose else logging.INFO,
+            console=rich.console.Console(stderr=True),
+            show_time=False,
+            show_path=verbose,  # True if verbose, false otherwise
+            markup=True,
+        )
+    )
+
+    # don't show rich debug logging in verbose mode
+    rich_logger = logging.getLogger("rich")
+    rich_logger.setLevel(logging.INFO)
+
+    # Set up logs to a file if we asked for one
+    if log_file:
+        log_fh = logging.FileHandler(log_file, encoding="utf-8")
+        log_fh.setLevel(logging.DEBUG)
+        log_fh.setFormatter(logging.Formatter("[%(asctime)s] %(name)-20s [%(levelname)-7s]  %(message)s"))
+        log.addHandler(log_fh)
+
+    ctx.obj = {
+        "verbose": verbose,
+        "hide_progress": hide_progress or verbose,  # Always hide progress bar with verbose logging
+    }
+
+
+# Main script is being run - launch the CLI
+if __name__ == "__main__":
+    run_asf_tools()
