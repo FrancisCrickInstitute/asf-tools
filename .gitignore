@@ -115,3 +115,6 @@ ENV/
 pip-wheel-metadata
 .vscode
 .*.sw?
+
+# Data folders
+data
