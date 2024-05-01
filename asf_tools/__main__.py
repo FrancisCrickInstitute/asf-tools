@@ -22,19 +22,21 @@ log = logging.getLogger()
 click.rich_click.MAX_WIDTH = 100
 click.rich_click.USE_RICH_MARKUP = True
 
-# Setup command groups
-# click.rich_click.COMMAND_GROUPS = {
-#     "carmack": [
-#         {
-#             "name": "Commands for users",
-#             "commands": ["extract-cell-barcodes", "fastq-filter"],
-#         }
-#     ]
-# }
-# click.rich_click.OPTION_GROUPS = {
-#     "carmack extract-cell-barcodes": [{"options": ["--chemistry", "--maxdist", "--line_count", "--output_dir", "--prefix"]}],
-#     "carmack fastq-filter": [{"options": ["--output_dir", "--prefix"]}]
-# }
+# Setup command groups
+click.rich_click.COMMAND_GROUPS = {
+    "asf-tools": [
+    ],
+    "asf-tools ont": [
+        {
+            "name": "Manual",
+            "commands": [],
+        },
+        {
+            "name": "Automation",
+            "commands": ["gen-demux-run"],
+        },
+    ]
+}
 
 # Set up rich stderr console
 stderr = rich.console.Console(stderr=True)
@@ -64,14 +66,14 @@ def run_asf_tools():
     stderr.print("\n", highlight=False)
     stderr.print(f"[grey25]Program:  asf-tools", highlight=False)
     stderr.print(f"[grey25]Version:  {asf_tools.__version__}", highlight=False)
-    stderr.print("[grey25]Author:   Chris Cheshire", highlight=False)
+    stderr.print("[grey25]Author:   Chris Cheshire, Areda Elezi", highlight=False)
     stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
     stderr.print("\n", highlight=False)
     stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
     stderr.print("\n\n", highlight=False)
 
     # Launch the click cli
-    launch_cli()
+    asf_tools_cli()
 
 
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -86,7 +88,7 @@ def run_asf_tools():
 @click.option("--hide-progress", is_flag=True, default=False, help="Don't show progress bars.")
 @click.option("-l", "--log-file", help="Save a verbose log to a file.", metavar="<filename>")
 @click.pass_context
-def launch_cli(ctx, verbose, hide_progress, log_file):
+def asf_tools_cli(ctx, verbose, hide_progress, log_file):
     """
     asf-tools provides a set of helper tools for technicians in the asf as well as providing
     command line tooling for automation scripts
@@ -120,6 +122,67 @@ def launch_cli(ctx, verbose, hide_progress, log_file):
         "verbose": verbose,
         "hide_progress": hide_progress or verbose,  # Always hide progress bar with verbose logging
     }
+
+
+# asf-tools ont subcommands
+@asf_tools_cli.group()
+@click.pass_context
+def ont(ctx):
+    """
+    Commands to manage ONT data
+    """
+    # ensure that ctx.obj exists and is a dict (in case `cli()` is called
+    # by means other than the `if` block below)
+    ctx.ensure_object(dict)
+
+
+# asf-tools ont gen-demux-run
+@ont.command("gen-demux-run")
+@click.pass_context
+@click.option(
+    "-s",
+    "--source_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help=r"Source directory to look for runs",
+)
+@click.option(
+    "-t",
+    "--target_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help=r"Target directory to write runs",
+)
+@click.option(
+    "-e",
+    "--execute",
+    is_flag=True,
+    default=False,
+    help="Trigger pipeline run on cluster",
+)
+def ont_gen_demux_run(ctx, source_dir, target_dir, execute):
+    """
+    Create run directory for the ONT demux pipeline
+    """
+    # from nf_core.modules import ModuleInstall
+
+    # try:
+    #     module_install = ModuleInstall(
+    #         dir,
+    #         force,
+    #         prompt,
+    #         sha,
+    #         ctx.obj["modules_repo_url"],
+    #         ctx.obj["modules_repo_branch"],
+    #         ctx.obj["modules_repo_no_pull"],
+    #     )
+    #     exit_status = module_install.install(tool)
+    #     if not exit_status:
+    #         sys.exit(1)
+    # except (UserWarning, LookupError) as e:
+    #     log.error(e)
+    #     sys.exit(1)
+
 
 
 # Main script is being run - launch the CLI
