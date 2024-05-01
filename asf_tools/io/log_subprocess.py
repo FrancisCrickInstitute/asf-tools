@@ -52,7 +52,7 @@ class LogSubprocess:
             kwargs["preexec_fn"] = self.pdeathsig
         return subprocess.call(*args, **kwargs)
 
-    def Popen(self, *args, **kwargs):
+    def popen(self, *args, **kwargs):
         if "preexec_fn" not in kwargs:
             kwargs["preexec_fn"] = self.pdeathsig
         return subprocess.Popen(*args, **kwargs)

@@ -8,6 +8,6 @@ import unittest
 class TestIo(unittest.TestCase):
     """Class for io tests"""
 
-    from .io.utils import (
+    from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_list_directory
     )
