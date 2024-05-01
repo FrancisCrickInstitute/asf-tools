@@ -4,6 +4,7 @@
 Main entry point for command line application
 """
 
+import sys
 import logging
 
 import rich
@@ -165,25 +166,20 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, execute):
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
+    from asf_tools.functions.ont_gen_demux_run import OntGenDemuxRun
 
-    # try:
-    #     module_install = ModuleInstall(
-    #         dir,
-    #         force,
-    #         prompt,
-    #         sha,
-    #         ctx.obj["modules_repo_url"],
-    #         ctx.obj["modules_repo_branch"],
-    #         ctx.obj["modules_repo_no_pull"],
-    #     )
-    #     exit_status = module_install.install(tool)
-    #     if not exit_status:
-    #         sys.exit(1)
-    # except (UserWarning, LookupError) as e:
-    #     log.error(e)
-    #     sys.exit(1)
-
-
+    try:
+        function = OntGenDemuxRun(
+            source_dir,
+            target_dir,
+            execute
+        )
+        exit_status = function.run()
+        if not exit_status:
+            sys.exit(1)
+    except (UserWarning, LookupError) as e:
+        log.error(e)
+        sys.exit(1)
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":
