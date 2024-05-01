@@ -33,7 +33,7 @@ def test_folder_creation(self, tmp_path):
 
 @with_temporary_folder
 def test_sbatch_file(self, tmp_path):
-    """Test correct folder creation"""
+    """Test correct sbatch file creation"""
 
     # Setup
     test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, False)
@@ -52,3 +52,26 @@ def test_sbatch_file(self, tmp_path):
         script_txt = "".join(file.readlines())
 
     self.assertTrue("nextflow run" in script_txt)
+
+
+@with_temporary_folder
+def test_samplesheet_file(self, tmp_path):
+    """Test correct samplesheet creation"""
+
+    # Setup
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, False)
+
+    # Test
+    test.run()
+
+    # Assert
+    samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
+    samplesheet_path_02 = os.path.join(tmp_path, "run02", "samplesheet.csv")
+
+    self.assertTrue(os.path.exists(samplesheet_path_01))
+    self.assertTrue(os.path.exists(samplesheet_path_02))
+
+    with open(samplesheet_path_01, "r", encoding="UTF-8") as file:
+        script_txt = "".join(file.readlines())
+
+    self.assertTrue("unclassified" in script_txt)

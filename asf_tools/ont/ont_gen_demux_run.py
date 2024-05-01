@@ -62,6 +62,12 @@ class OntGenDemuxRun():
         with open(sbatch_script_path, "w", encoding="UTF-8") as file:
             file.write(sbatch_script)
 
+        # Write samplesheet
+        samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
+        with open(samplesheet_path, "w", encoding="UTF-8") as file:
+            file.write("sample_id,group,user,project_id,barcode\n")
+            file.write("sample_01,asf,no.name,DN45678,unclassified\n")
+
     def create_sbatch_text(self) -> str:
         """Creates an sbatch script from a template and returns the text
 
