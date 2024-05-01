@@ -166,7 +166,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, execute):
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.functions.ont_gen_demux_run import OntGenDemuxRun
+    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
 
     try:
         function = OntGenDemuxRun(
