@@ -1,71 +1,50 @@
 """
-Primary CLI Tests
+Tests for ont gen demux run
 """
 
-import tempfile
-import unittest
-from unittest import mock
+import os
 
-from click.testing import CliRunner
+from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
+from ..utils import with_temporary_folder
 
-import asf_tools.__main__
+TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 
 
-class TestCli(unittest.TestCase):
-    """Class for testing the command line interface"""
+@with_temporary_folder
+def test_folder_creation(self, tmp_path):
+    """Test correct folder creation"""
 
-    def setUp(self):
-        self.runner = CliRunner()
-        self.tmp_dir = tempfile.mkdtemp()
+    # Setup
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, False)
 
-    def assemble_params(self, params):
-        """Assemble a dictionary of parameters into a list of arguments for the cli"""
+    # Test
+    test.run()
 
-        arg_list = []
-        for key, value in params.items():
-            if value is not None:
-                arg_list += [f"--{key}", value]
-            else:
-                arg_list += [f"--{key}"]
+    # Assert
+    run_dir_1 = os.path.join(tmp_path, "run01")
+    run_dir_2 = os.path.join(tmp_path, "run02")
+    run_dir_3 = os.path.join(tmp_path, "run03")
 
-        return arg_list
+    self.assertTrue(os.path.exists(run_dir_1))
+    self.assertTrue(os.path.exists(run_dir_2))
+    self.assertFalse(os.path.exists(run_dir_3))
 
-    def invoke_cli(self, cmd):
-        """Invoke the command line interface using a list of parameters"""
 
-        return self.runner.invoke(asf_tools.__main__.asf_tools_cli, cmd)
+@with_temporary_folder
+def test_sbatch_file(self, tmp_path):
+    """Test correct folder creation"""
 
-    def test_cli_command_help(self):
-        """Test the main launch function with --help"""
+    # Setup
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, False)
 
-        result = self.invoke_cli(["--help"])
+    # Test
+    test.run()
 
-        assert result.exit_code == 0
-        assert "Show this message and exit." in result.output
+    # Assert
+    run_dir_1 = os.path.join(tmp_path, "run01")
+    run_dir_2 = os.path.join(tmp_path, "run02")
+    run_dir_3 = os.path.join(tmp_path, "run03")
 
-    def test_cli_command_incorrect(self):
-        """Test the main launch function with an unrecognised subcommand"""
-
-        result = self.invoke_cli(["foo"])
-
-        self.assertTrue(result.exit_code == 2)
-
-    # @mock.patch("carmack.__main__.BarcodeExtractor", autospec=True)
-    # def test_cli_command_extract_cell_barcodes(self, mock_barcode_ext): 
-    #     """Test extract_cell_barcodes"""
-
-    #     # Init
-    #     params = {"chemistry": "hydrop", 
-    #               "max_dist": 2,
-    #               "line_count": 100,
-    #               "output_dir": ".",
-    #               "prefix": ''}
-
-    #     # Test
-    #     cmd = ["extract-cell-barcodes"] + [R1_PATH, R2_PATH, CB_PATH] + self.assemble_params(params)
-    #     result = self.invoke_cli(cmd)
-
-    #     # Assert
-    #     self.assertTrue(result.exit_code == 0)
-    #     mock_barcode_ext.assert_called_once_with(R1_PATH, R2_PATH, CB_PATH, params["chemistry"]) 
-    #     mock_barcode_ext.return_value.extract_cell_barcodes.assert_called_once_with(params["max_dist"], params["line_count"], params["output_dir"], params["prefix"])
+    self.assertTrue(os.path.exists(run_dir_1))
+    self.assertTrue(os.path.exists(run_dir_2))
+    self.assertFalse(os.path.exists(run_dir_3))

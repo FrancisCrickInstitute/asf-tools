@@ -10,7 +10,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def file_md5(fname: str):
+def file_md5(fname: str) -> str:
     """Calculates the md5sum for a file on the disk.
 
     Args:
@@ -26,7 +26,7 @@ def file_md5(fname: str):
     return hash_md5.hexdigest()
 
 
-def validate_file_md5(file_name: str, expected_md5hex: str):
+def validate_file_md5(file_name: str, expected_md5hex: str) -> bool:
     """Validates the md5 checksum of a file on disk.
 
     Args:
@@ -50,7 +50,7 @@ def validate_file_md5(file_name: str, expected_md5hex: str):
     return True
 
 
-def list_directory_names(path):
+def list_directory_names(path: str) -> list:
     """Returns a list of directory names in the given path.
 
     Args:

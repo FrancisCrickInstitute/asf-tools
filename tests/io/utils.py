@@ -15,5 +15,4 @@ def test_list_directory(self):
     dir_list = list_directory_names(path)
 
     # Assert
-    print(dir_list)
     self.assertEqual(len(dir_list), 2)
