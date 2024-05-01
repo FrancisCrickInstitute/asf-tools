@@ -11,6 +11,7 @@ from click.testing import CliRunner
 import asf_tools.__main__
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
+TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
 
 class TestCli(unittest.TestCase):
@@ -59,7 +60,8 @@ class TestCli(unittest.TestCase):
         # Init
         params = {
             "source_dir": TEST_ONT_RUN_SOURCE_PATH,
-            "target_dir": "."
+            "target_dir": ".",
+            "pipeline_dir": TEST_ONT_PIPELINE_PATH
         }
 
         # Test
@@ -68,4 +70,4 @@ class TestCli(unittest.TestCase):
 
         # Assert
         self.assertTrue(result.exit_code == 0)
-        mock.assert_called_once_with(params["source_dir"], params["target_dir"], False)
+        mock.assert_called_once_with(params["source_dir"], params["target_dir"], params["pipeline_dir"], False)

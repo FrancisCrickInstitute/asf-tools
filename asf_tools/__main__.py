@@ -155,13 +155,20 @@ def ont(ctx):
     help=r"Target directory to write runs",
 )
 @click.option(
+    "-p",
+    "--pipeline_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help=r"Pipeline code directory",
+)
+@click.option(
     "-e",
     "--execute",
     is_flag=True,
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, execute):
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):
     """
     Create run directory for the ONT demux pipeline
     """
@@ -172,6 +179,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, execute):
         function = OntGenDemuxRun(
             source_dir,
             target_dir,
+            pipeline_dir,
             execute
         )
         exit_status = function.run()

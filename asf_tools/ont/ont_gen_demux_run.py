@@ -6,8 +6,11 @@ import os
 import logging
 
 from asf_tools.io.utils import list_directory_names
+from asf_tools.nextflow.utils import create_sbatch_header
 
 log = logging.getLogger(__name__)
+
+NANOPORE_DEMUX_PIPELINE_VERSION = "master"
 
 
 class OntGenDemuxRun():
@@ -16,9 +19,10 @@ class OntGenDemuxRun():
     including a run script and default samplesheet
     """
 
-    def __init__(self, source_dir, target_dir, execute) -> None:
+    def __init__(self, source_dir, target_dir, pipeline_dir, execute) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
+        self.pipeline_dir = pipeline_dir
         self.execute = execute
 
     def run(self):
@@ -52,22 +56,31 @@ class OntGenDemuxRun():
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-    def create_sbatch_text(self):
+        # Generate and write sbatch script
+        sbatch_script = self.create_sbatch_text()
+        sbatch_script_path = os.path.join(folder_path, "run_script.sh")
+        with open(sbatch_script_path, "w", encoding="UTF-8") as file:
+            file.write(sbatch_script)
+
+    def create_sbatch_text(self) -> str:
+        """Creates an sbatch script from a template and returns the text
+
+        Returns:
+            str: Script as a string
         """
-        Creates an sbatch script from a template and returns the text
-        """
+
+        # Create sbatch header
+        header_str = create_sbatch_header()
 
         # Create the bash script template with placeholders
-        bash_script = f"""
-        #!/bin/bash
-        # Pipeline script
-        {pipeline_step1}
-        {pipeline_step2}
-        """
+        bash_script = header_str + f"""
+export NXF_HOME=""
+export NXF_WORK=""
+export NXF_SINGULARITY_CACHEDIR=""
 
-
-
-
-## Generate sbatch run file
-## Generate default sample sheet
-## Option to actually submit the sbatch command
+nextflow run {self.pipeline_dir} \\
+  -profile crick \\
+  -r {NANOPORE_DEMUX_PIPELINE_VERSION} \\
+  --samplesheet ./samplesheet.csv
+"""
+        return bash_script
