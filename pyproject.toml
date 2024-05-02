@@ -1,0 +1,18 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=40.6.0", "wheel"]
+
+[tool.pytest.ini_options]
+markers = ["datafiles: load datafiles"]
+testpaths = ["tests"]
+norecursedirs = [
+    ".*",
+    "build",
+    "dist",
+    "*.egg",
+    "data",
+    "__pycache__",
+    ".github",
+    "nf_core",
+    "docs",
+]
