@@ -24,13 +24,13 @@ jobs:
     strategy:
        matrix:
           python-version: ["3.11"]
-          runner: ["ubuntu-latest"]
     outputs:
       python-version: ${{ matrix.python-version }}
       runner: ${{ matrix.runner }}
 
   pytest:
     name: Run Pytest ${{ needs.setup.outputs.python-version }} on ${{ needs.setup.outputs.runner }}
+    runs-on: "ubuntu-latest"
     steps:
-        - name: Check out source code
+      - name: Check out source code
         uses: actions/checkout@v4
