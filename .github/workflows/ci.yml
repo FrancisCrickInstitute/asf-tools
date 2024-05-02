@@ -19,18 +19,12 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-  setup:
+  pytest:
+    name: Run Pytest python - ${{ matrix.PYTHON_VERSION }}
     runs-on: "ubuntu-latest"
     strategy:
-       matrix:
-          python-version: ["3.11"]
-    outputs:
-      python-version: ${{ matrix.python-version }}
-      runner: ${{ matrix.runner }}
-
-  pytest:
-    name: Run Pytest ${{ needs.setup.outputs.python-version }} on ${{ needs.setup.outputs.runner }}
-    runs-on: "ubuntu-latest"
+      matrix:
+        PYTHON_VERSION: ["3.11"]
     steps:
       - name: Check out source code
         uses: actions/checkout@v4
