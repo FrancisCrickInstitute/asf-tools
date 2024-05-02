@@ -1,0 +1,36 @@
+name: CI Testing
+# This workflow is triggered on pushes and PRs to the repository.
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    paths-ignore:
+      # ignore github workflows except for the current one
+      - ".github/**"
+      - "!.github/workflows/pytest.yml"
+  release:
+    types: [published]
+
+# Cancel if a newer run with the same workflow name is queued
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+  setup:
+    runs-on: "ubuntu-latest"
+    strategy:
+       matrix:
+          python-version: ["3.11"]
+          runner: ["ubuntu-latest"]
+    outputs:
+      python-version: ${{ matrix.python-version }}
+      runner: ${{ matrix.runner }}
+
+  pytest:
+    name: Run Pytest ${{ needs.setup.outputs.python-version }} on ${{ needs.setup.outputs.runner }}
+    steps:
+        - name: Check out source code
+        uses: actions/checkout@v4
