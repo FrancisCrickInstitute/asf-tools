@@ -16,4 +16,7 @@ WORKDIR /usr/src/asf_tools
 # Install program
 RUN python -m pip install .
 
+# Set PYTHONPATH to include the source directory
+ENV PYTHONPATH="/usr/src/asf_tools:$PYTHONPATH"
+
 ENTRYPOINT ["/bin/bash"]
