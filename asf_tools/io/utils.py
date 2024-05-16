@@ -61,6 +61,11 @@ def list_directory_names(path: str) -> list:
     directories = []
     for entry in os.listdir(path):
         full_path = os.path.join(path, entry)
-        if os.path.isdir(full_path) or (os.path.islink(full_path) and os.path.isdir(os.readlink(full_path))):
+
+        if os.path.isdir(full_path):
+            directories.append(entry)
+        elif os.path.islink(full_path) and os.path.isdir(os.readlink(full_path)):
+            directories.append(entry)
+        elif os.path.islink(full_path) and (not os.path.isfile(os.readlink(full_path))):  # For mounted file systems in containers
             directories.append(entry)
     return directories
