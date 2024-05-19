@@ -44,6 +44,8 @@ class OntGenDemuxRun():
         for run_name in dir_diff:
             self.process_run(run_name)
 
+        return 0
+
     def process_run(self, run_name):
         """
         Per run processing
@@ -80,6 +82,14 @@ class OntGenDemuxRun():
 
         # Create the bash script template with placeholders
         bash_script = header_str + f"""
+#SBATCH --partition=cpu
+#SBATCH --job-name=asf_nanopore_demux
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=24:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+
 export NXF_HOME=""
 export NXF_WORK=""
 export NXF_SINGULARITY_CACHEDIR=""

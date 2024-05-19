@@ -65,7 +65,7 @@ def run_asf_tools():
     stderr.print("[white]░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░[white]", highlight=False)
     stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
     stderr.print("\n", highlight=False)
-    stderr.print(f"[grey25]Program:  asf-tools", highlight=False)
+    stderr.print("[grey25]Program:  asf-tools", highlight=False)
     stderr.print(f"[grey25]Version:  {asf_tools.__version__}", highlight=False)
     stderr.print("[grey25]Author:   Chris Cheshire, Areda Elezi", highlight=False)
     stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
@@ -74,7 +74,7 @@ def run_asf_tools():
     stderr.print("\n\n", highlight=False)
 
     # Launch the click cli
-    asf_tools_cli()
+    asf_tools_cli()  # pylint: disable=E1120
 
 
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -161,18 +161,30 @@ def ont(ctx):
     help=r"Pipeline code directory",
 )
 @click.option(
+    "-n",
+    "--nextflow_cache",
+    required=True,
+    help=r"Nextflow cache directory",
+)
+@click.option(
+    "-w",
+    "--nextflow_work",
+    required=True,
+    help=r"Nextflow work directory",
+)
+@click.option(
     "-e",
     "--execute",
     is_flag=True,
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):  # pylint: disable=W0613
     """
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
+    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun  # pylint: disable=C0415
 
     try:
         function = OntGenDemuxRun(
