@@ -157,7 +157,6 @@ def ont(ctx):
 @click.option(
     "-p",
     "--pipeline_dir",
-    type=click.Path(exists=True),
     required=True,
     help=r"Pipeline code directory",
 )
@@ -188,6 +187,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):
     except (UserWarning, LookupError) as e:
         log.error(e)
         sys.exit(1)
+
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":
