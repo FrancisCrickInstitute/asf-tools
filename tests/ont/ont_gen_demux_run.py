@@ -57,6 +57,7 @@ def test_sbatch_file(self, tmp_path):
     self.assertTrue('export NXF_HOME=".nextflow"' in script_txt)
     self.assertTrue('export NXF_WORK="work"' in script_txt)
     self.assertTrue('export NXF_SINGULARITY_CACHEDIR="sing"' in script_txt)
+    self.assertTrue(f'--run_dir {os.path.join(TEST_ONT_RUN_SOURCE_PATH, "run01")}' in script_txt)
 
 
 @with_temporary_folder

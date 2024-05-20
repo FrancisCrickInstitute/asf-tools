@@ -62,7 +62,7 @@ class OntGenDemuxRun():
             os.makedirs(folder_path)
 
         # Generate and write sbatch script
-        sbatch_script = self.create_sbatch_text()
+        sbatch_script = self.create_sbatch_text(run_name)
         sbatch_script_path = os.path.join(folder_path, "run_script.sh")
         with open(sbatch_script_path, "w", encoding="UTF-8") as file:
             file.write(sbatch_script)
@@ -73,7 +73,7 @@ class OntGenDemuxRun():
             file.write("sample_id,group,user,project_id,barcode\n")
             file.write("sample_01,asf,no.name,DN45678,unclassified\n")
 
-    def create_sbatch_text(self) -> str:
+    def create_sbatch_text(self, run_name) -> str:
         """Creates an sbatch script from a template and returns the text
 
         Returns:
@@ -100,6 +100,7 @@ export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 nextflow run {self.pipeline_dir} \\
   -profile crick \\
   -r {NANOPORE_DEMUX_PIPELINE_VERSION} \\
-  --samplesheet ./samplesheet.csv
+  --samplesheet ./samplesheet.csv \\
+  --run_dir {os.path.join(self.source_dir, run_name)}
 """
         return bash_script
