@@ -10,7 +10,7 @@ from asf_tools.nextflow.utils import create_sbatch_header
 
 log = logging.getLogger(__name__)
 
-NANOPORE_DEMUX_PIPELINE_VERSION = "master"
+NANOPORE_DEMUX_PIPELINE_VERSION = "main"
 
 
 class OntGenDemuxRun():
