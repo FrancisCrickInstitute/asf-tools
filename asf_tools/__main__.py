@@ -65,7 +65,7 @@ def run_asf_tools():
     stderr.print("[white]░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░[white]", highlight=False)
     stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
     stderr.print("\n", highlight=False)
-    stderr.print(f"[grey25]Program:  asf-tools", highlight=False)
+    stderr.print("[grey25]Program:  asf-tools", highlight=False)
     stderr.print(f"[grey25]Version:  {asf_tools.__version__}", highlight=False)
     stderr.print("[grey25]Author:   Chris Cheshire, Areda Elezi", highlight=False)
     stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
@@ -74,7 +74,7 @@ def run_asf_tools():
     stderr.print("\n\n", highlight=False)
 
     # Launch the click cli
-    asf_tools_cli()
+    asf_tools_cli()  # pylint: disable=E1120
 
 
 @click.group(context_settings=dict(help_option_names=["-h", "--help"]))
@@ -157,9 +157,26 @@ def ont(ctx):
 @click.option(
     "-p",
     "--pipeline_dir",
-    type=click.Path(exists=True),
     required=True,
     help=r"Pipeline code directory",
+)
+@click.option(
+    "-n",
+    "--nextflow_cache",
+    required=True,
+    help=r"Nextflow cache directory",
+)
+@click.option(
+    "-w",
+    "--nextflow_work",
+    required=True,
+    help=r"Nextflow work directory",
+)
+@click.option(
+    "-c",
+    "--container_cache",
+    required=True,
+    help=r"Nextflow singularity cache directory",
 )
 @click.option(
     "-e",
@@ -168,18 +185,21 @@ def ont(ctx):
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, execute):  # pylint: disable=W0613
     """
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
+    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun  # pylint: disable=C0415
 
     try:
         function = OntGenDemuxRun(
             source_dir,
             target_dir,
             pipeline_dir,
+            nextflow_cache,
+            nextflow_work,
+            container_cache,
             execute
         )
         exit_status = function.run()
@@ -188,6 +208,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):
     except (UserWarning, LookupError) as e:
         log.error(e)
         sys.exit(1)
+
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":

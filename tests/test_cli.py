@@ -54,14 +54,17 @@ class TestCli(unittest.TestCase):
         self.assertTrue(result.exit_code == 2)
 
     @mock.patch("asf_tools.ont.ont_gen_demux_run.OntGenDemuxRun", autospec=True)
-    def test_cli_command_ont_gen_demux_run(self, mock): 
+    def test_cli_command_ont_gen_demux_run(self, mock_obj):
         """Test ont gen demux run"""
 
         # Init
         params = {
             "source_dir": TEST_ONT_RUN_SOURCE_PATH,
             "target_dir": ".",
-            "pipeline_dir": TEST_ONT_PIPELINE_PATH
+            "pipeline_dir": TEST_ONT_PIPELINE_PATH,
+            "nextflow_cache": "/.nextflow/",
+            "container_cache": "/sing/",
+            "nextflow_work": "/work/"
         }
 
         # Test
@@ -70,4 +73,10 @@ class TestCli(unittest.TestCase):
 
         # Assert
         self.assertTrue(result.exit_code == 0)
-        mock.assert_called_once_with(params["source_dir"], params["target_dir"], params["pipeline_dir"], False)
+        mock_obj.assert_called_once_with(params["source_dir"],
+                                         params["target_dir"],
+                                         params["pipeline_dir"],
+                                         params["nextflow_cache"],
+                                         params["nextflow_work"],
+                                         params["container_cache"],
+                                         False)
