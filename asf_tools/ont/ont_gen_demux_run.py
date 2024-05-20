@@ -85,11 +85,11 @@ class OntGenDemuxRun():
 
         # Create the bash script template with placeholders
         bash_script = header_str + f"""
-#SBATCH --partition=cpu
+#SBATCH --partition=ncpu
 #SBATCH --job-name=asf_nanopore_demux
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 
