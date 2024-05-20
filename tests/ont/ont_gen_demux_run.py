@@ -16,7 +16,7 @@ def test_folder_creation(self, tmp_path):
     """Test correct folder creation"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, False)
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
 
     # Test
     test.run()
@@ -36,7 +36,7 @@ def test_sbatch_file(self, tmp_path):
     """Test correct sbatch file creation"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, False)
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
 
     # Test
     test.run()
@@ -59,7 +59,7 @@ def test_samplesheet_file(self, tmp_path):
     """Test correct samplesheet creation"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, False)
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
 
     # Test
     test.run()

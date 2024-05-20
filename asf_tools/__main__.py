@@ -167,6 +167,12 @@ def ont(ctx):
     help=r"Nextflow cache directory",
 )
 @click.option(
+    "-c",
+    "--container_cache",
+    required=True,
+    help=r"Nextflow singularity cache directory",
+)
+@click.option(
     "-w",
     "--nextflow_work",
     required=True,
@@ -179,7 +185,7 @@ def ont(ctx):
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):  # pylint: disable=W0613
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, container_cache, nextflow_work, execute):  # pylint: disable=W0613
     """
     Create run directory for the ONT demux pipeline
     """
@@ -191,6 +197,9 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, execute):  # py
             source_dir,
             target_dir,
             pipeline_dir,
+            nextflow_cache,
+            nextflow_work,
+            container_cache,
             execute
         )
         exit_status = function.run()

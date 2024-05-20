@@ -19,10 +19,13 @@ class OntGenDemuxRun():
     including a run script and default samplesheet
     """
 
-    def __init__(self, source_dir, target_dir, pipeline_dir, execute) -> None:
+    def __init__(self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, execute) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.pipeline_dir = pipeline_dir
+        self.nextflow_cache = nextflow_cache
+        self.nextflow_works = nextflow_work
+        self.container_cache = container_cache
         self.execute = execute
 
     def run(self):
