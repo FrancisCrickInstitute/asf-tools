@@ -24,7 +24,7 @@ class OntGenDemuxRun():
         self.target_dir = target_dir
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
-        self.nextflow_works = nextflow_work
+        self.nextflow_work = nextflow_work
         self.container_cache = container_cache
         self.execute = execute
 
@@ -93,9 +93,9 @@ class OntGenDemuxRun():
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 
-export NXF_HOME=""
-export NXF_WORK=""
-export NXF_SINGULARITY_CACHEDIR=""
+export NXF_HOME="{self.nextflow_cache}"
+export NXF_WORK="{self.nextflow_work}"
+export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
   -profile crick \\

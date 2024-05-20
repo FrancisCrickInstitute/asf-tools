@@ -36,7 +36,7 @@ def test_sbatch_file(self, tmp_path):
     """Test correct sbatch file creation"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", False)
 
     # Test
     test.run()
@@ -51,7 +51,12 @@ def test_sbatch_file(self, tmp_path):
     with open(sbatch_path_01, "r", encoding="UTF-8") as file:
         script_txt = "".join(file.readlines())
 
+    print(script_txt)
+
     self.assertTrue("nextflow run" in script_txt)
+    self.assertTrue('export NXF_HOME=".nextflow"' in script_txt)
+    self.assertTrue('export NXF_WORK="work"' in script_txt)
+    self.assertTrue('export NXF_SINGULARITY_CACHEDIR="sing"' in script_txt)
 
 
 @with_temporary_folder
