@@ -4,6 +4,7 @@ Function class for managing CLI operation
 
 import os
 import logging
+import stat
 
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
@@ -11,6 +12,14 @@ from asf_tools.nextflow.utils import create_sbatch_header
 log = logging.getLogger(__name__)
 
 NANOPORE_DEMUX_PIPELINE_VERSION = "main"
+
+PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | \
+    stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP | \
+    stat.S_IROTH | stat.S_IWOTH | stat.S_IXOTH
+
+PERM666 = stat.S_IRUSR | stat.S_IWUSR | \
+    stat.S_IRGRP | stat.S_IWGRP | \
+    stat.S_IROTH | stat.S_IWOTH
 
 
 class OntGenDemuxRun():
@@ -72,6 +81,12 @@ class OntGenDemuxRun():
         with open(samplesheet_path, "w", encoding="UTF-8") as file:
             file.write("sample_id,group,user,project_id,barcode\n")
             file.write("sample_01,asf,no.name,DN45678,unclassified\n")
+
+        # Set 777 for the run script
+        os.chmod(sbatch_script_path, PERM777)
+
+        # Set 666 for the samplesheet
+        os.chmod(samplesheet_path, PERM666)
 
     def create_sbatch_text(self, run_name) -> str:
         """Creates an sbatch script from a template and returns the text

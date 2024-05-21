@@ -3,6 +3,7 @@ Tests for ont gen demux run
 """
 
 import os
+import stat
 
 from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
 from ..utils import with_temporary_folder
@@ -13,7 +14,7 @@ TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
 @with_temporary_folder
 def test_folder_creation(self, tmp_path):
-    """Test correct folder creation"""
+    """ONT Gen demux run tests"""
 
     # Setup
     test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
@@ -33,7 +34,7 @@ def test_folder_creation(self, tmp_path):
 
 @with_temporary_folder
 def test_sbatch_file(self, tmp_path):
-    """Test correct sbatch file creation"""
+    """ONT Gen demux run tests"""
 
     # Setup
     test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", False)
@@ -51,8 +52,6 @@ def test_sbatch_file(self, tmp_path):
     with open(sbatch_path_01, "r", encoding="UTF-8") as file:
         script_txt = "".join(file.readlines())
 
-    print(script_txt)
-
     self.assertTrue("nextflow run" in script_txt)
     self.assertTrue('export NXF_HOME=".nextflow"' in script_txt)
     self.assertTrue('export NXF_WORK="work"' in script_txt)
@@ -62,7 +61,7 @@ def test_sbatch_file(self, tmp_path):
 
 @with_temporary_folder
 def test_samplesheet_file(self, tmp_path):
-    """Test correct samplesheet creation"""
+    """ONT Gen demux run tests"""
 
     # Setup
     test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
@@ -81,3 +80,22 @@ def test_samplesheet_file(self, tmp_path):
         script_txt = "".join(file.readlines())
 
     self.assertTrue("unclassified" in script_txt)
+
+
+@with_temporary_folder
+def test_file_permissions(self, tmp_path):
+    """ONT Gen demux run tests"""
+
+    # Setup
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", False)
+
+    # Test
+    test.run()
+
+    # Assert
+    run_file = os.path.join(tmp_path, "run01", "run_script.sh")
+    file_status = os.stat(run_file)
+    file_permissions = stat.S_IMODE(file_status.st_mode)
+    executable = bool(file_permissions & os.X_OK)
+
+    self.assertTrue(executable)

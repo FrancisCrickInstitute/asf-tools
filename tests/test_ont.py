@@ -11,5 +11,6 @@ class TestOnt(unittest.TestCase):
     from .ont.ont_gen_demux_run import (  # type: ignore[misc]  # pylint: disable=C0415
         test_folder_creation,
         test_sbatch_file,
-        test_samplesheet_file
+        test_samplesheet_file,
+        test_file_permissions
     )
