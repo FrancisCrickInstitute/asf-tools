@@ -116,7 +116,7 @@ export NXF_WORK="{self.nextflow_work}"
 export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
-  -profile crick \\
+  -profile crick,nemo \\
   -r {NANOPORE_DEMUX_PIPELINE_VERSION} \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.source_dir, run_name)}
