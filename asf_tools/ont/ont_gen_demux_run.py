@@ -84,7 +84,8 @@ class OntGenDemuxRun():
         header_str = create_sbatch_header()
 
         # Create the bash script template with placeholders
-        bash_script = header_str + f"""
+        bash_script = f"""#!/bin/sh
+
 #SBATCH --partition=ncpu
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
@@ -92,6 +93,8 @@ class OntGenDemuxRun():
 #SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
+
+{header_str}
 
 export NXF_HOME="{self.nextflow_cache}"
 export NXF_WORK="{self.nextflow_work}"
