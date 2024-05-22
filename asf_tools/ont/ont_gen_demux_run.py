@@ -11,8 +11,6 @@ from asf_tools.nextflow.utils import create_sbatch_header
 
 log = logging.getLogger(__name__)
 
-NANOPORE_DEMUX_PIPELINE_VERSION = "main"
-
 PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | \
     stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP | \
     stat.S_IROTH | stat.S_IWOTH | stat.S_IXOTH
@@ -122,7 +120,6 @@ export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
   -profile crick,nemo \\
-  -r {NANOPORE_DEMUX_PIPELINE_VERSION} \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.source_dir, run_name)}
 """
