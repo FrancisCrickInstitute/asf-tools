@@ -80,7 +80,7 @@ class OntGenDemuxRun():
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
         with open(samplesheet_path, "w", encoding="UTF-8") as file:
             file.write("sample_id,group,user,project_id,barcode\n")
-            file.write("sample_01,asf,no.name,DN45678,unclassified\n")
+            file.write("sample_01,asf,no_name,no_proj,unclassified\n")
 
         # Set 777 for the run script
         os.chmod(sbatch_script_path, PERM777)
