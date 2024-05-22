@@ -98,6 +98,11 @@ class OntGenDemuxRun():
         # Create sbatch header
         header_str = create_sbatch_header()
 
+        # Create NXF_HOME string
+        nxf_home = ""
+        if self.nextflow_cache != "":
+            nxf_home = f'export NXF_HOME="{self.nextflow_cache}"'
+
         # Create the bash script template with placeholders
         bash_script = f"""#!/bin/sh
 
@@ -111,7 +116,7 @@ class OntGenDemuxRun():
 
 {header_str}
 
-export NXF_HOME="{self.nextflow_cache}"
+{nxf_home}
 export NXF_WORK="{self.nextflow_work}"
 export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 

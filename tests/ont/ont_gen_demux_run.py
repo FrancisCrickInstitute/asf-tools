@@ -52,6 +52,7 @@ def test_sbatch_file(self, tmp_path):
     with open(sbatch_path_01, "r", encoding="UTF-8") as file:
         script_txt = "".join(file.readlines())
 
+    print(script_txt)
     self.assertTrue("nextflow run" in script_txt)
     self.assertTrue('export NXF_HOME=".nextflow"' in script_txt)
     self.assertTrue('export NXF_WORK="work"' in script_txt)
@@ -79,6 +80,7 @@ def test_samplesheet_file(self, tmp_path):
     with open(samplesheet_path_01, "r", encoding="UTF-8") as file:
         script_txt = "".join(file.readlines())
 
+    print(script_txt)
     self.assertTrue("unclassified" in script_txt)
 
 
@@ -99,3 +101,27 @@ def test_file_permissions(self, tmp_path):
     executable = bool(file_permissions & os.X_OK)
 
     self.assertTrue(executable)
+
+
+@with_temporary_folder
+def test_sbatch_file_nonfhome(self, tmp_path):
+    """ONT Gen demux run tests"""
+
+    # Setup
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, "", "work", "sing", False)
+
+    # Test
+    test.run()
+
+    # Assert
+    sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
+    sbatch_path_02 = os.path.join(tmp_path, "run02", "run_script.sh")
+
+    self.assertTrue(os.path.exists(sbatch_path_01))
+    self.assertTrue(os.path.exists(sbatch_path_02))
+
+    with open(sbatch_path_01, "r", encoding="UTF-8") as file:
+        script_txt = "".join(file.readlines())
+
+    print(script_txt)
+    self.assertFalse('NXF_HOME' in script_txt)

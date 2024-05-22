@@ -12,5 +12,6 @@ class TestOnt(unittest.TestCase):
         test_folder_creation,
         test_sbatch_file,
         test_samplesheet_file,
-        test_file_permissions
+        test_file_permissions,
+        test_sbatch_file_nonfhome
     )
