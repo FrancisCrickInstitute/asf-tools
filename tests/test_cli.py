@@ -64,7 +64,8 @@ class TestCli(unittest.TestCase):
             "pipeline_dir": TEST_ONT_PIPELINE_PATH,
             "nextflow_cache": "/.nextflow/",
             "container_cache": "/sing/",
-            "nextflow_work": "/work/"
+            "nextflow_work": "/work/",
+            "runs_dir": TEST_ONT_RUN_SOURCE_PATH
         }
 
         # Test
@@ -79,4 +80,5 @@ class TestCli(unittest.TestCase):
                                          params["nextflow_cache"],
                                          params["nextflow_work"],
                                          params["container_cache"],
+                                         params["runs_dir"],
                                          False)

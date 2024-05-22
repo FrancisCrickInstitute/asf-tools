@@ -26,13 +26,14 @@ class OntGenDemuxRun():
     including a run script and default samplesheet
     """
 
-    def __init__(self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, execute) -> None:
+    def __init__(self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
         self.container_cache = container_cache
+        self.runs_dir = runs_dir
         self.execute = execute
 
     def run(self):
@@ -121,6 +122,6 @@ export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 nextflow run {self.pipeline_dir} \\
   -profile crick,nemo \\
   --samplesheet ./samplesheet.csv \\
-  --run_dir {os.path.join(self.source_dir, run_name)}
+  --run_dir {os.path.join(self.runs_dir, run_name)}
 """
         return bash_script
