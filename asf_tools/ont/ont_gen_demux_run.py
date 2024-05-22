@@ -121,6 +121,7 @@ export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
   -profile crick,nemo \\
+  --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)}
 """
