@@ -68,7 +68,7 @@ def run_asf_tools():
     stderr.print("[grey25]Program:  asf-tools", highlight=False)
     stderr.print(f"[grey25]Version:  {asf_tools.__version__}", highlight=False)
     stderr.print("[grey25]Author:   Chris Cheshire, Areda Elezi", highlight=False)
-    stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
+    stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)  # pylint: disable=C0301
     stderr.print("\n", highlight=False)
     stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
     stderr.print("\n\n", highlight=False)
