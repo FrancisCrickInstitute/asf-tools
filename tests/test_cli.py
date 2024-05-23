@@ -65,7 +65,7 @@ class TestCli(unittest.TestCase):
             "nextflow_cache": "/.nextflow/",
             "container_cache": "/sing/",
             "nextflow_work": "/work/",
-            "runs_dir": TEST_ONT_RUN_SOURCE_PATH
+            "runs_dir": TEST_ONT_RUN_SOURCE_PATH,
         }
 
         # Test
@@ -74,11 +74,13 @@ class TestCli(unittest.TestCase):
 
         # Assert
         self.assertTrue(result.exit_code == 0)
-        mock_obj.assert_called_once_with(params["source_dir"],
-                                         params["target_dir"],
-                                         params["pipeline_dir"],
-                                         params["nextflow_cache"],
-                                         params["nextflow_work"],
-                                         params["container_cache"],
-                                         params["runs_dir"],
-                                         False)
+        mock_obj.assert_called_once_with(
+            params["source_dir"],
+            params["target_dir"],
+            params["pipeline_dir"],
+            params["nextflow_cache"],
+            params["nextflow_work"],
+            params["container_cache"],
+            params["runs_dir"],
+            False,
+        )

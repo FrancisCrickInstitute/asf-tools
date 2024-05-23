@@ -40,12 +40,16 @@ def validate_file_md5(file_name: str, expected_md5hex: str) -> bool:
     try:
         int(expected_md5hex, 16)
     except ValueError as ex:
-        raise ValueError(f"The supplied md5 sum must be a hexdigest but it is {expected_md5hex}") from ex
+        raise ValueError(
+            f"The supplied md5 sum must be a hexdigest but it is {expected_md5hex}"
+        ) from ex
 
     file_md5hex = file_md5(file_name)
 
     if file_md5hex.upper() != expected_md5hex.upper():
-        raise IOError(f"{file_name} md5 does not match remote: {expected_md5hex} - {file_md5hex}")
+        raise IOError(
+            f"{file_name} md5 does not match remote: {expected_md5hex} - {file_md5hex}"
+        )
 
     return True
 
@@ -66,6 +70,8 @@ def list_directory_names(path: str) -> list:
             directories.append(entry)
         elif os.path.islink(full_path) and os.path.isdir(os.readlink(full_path)):
             directories.append(entry)
-        elif os.path.islink(full_path) and (not os.path.isfile(os.readlink(full_path))):  # For mounted file systems in containers
+        elif os.path.islink(full_path) and (
+            not os.path.isfile(os.readlink(full_path))
+        ):  # For mounted file systems in containers
             directories.append(entry)
     return directories

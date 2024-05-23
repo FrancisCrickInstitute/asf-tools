@@ -16,3 +16,11 @@ norecursedirs = [
     "nf_core",
     "docs",
 ]
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | asf_tools\__main__.py
+)/
+'''

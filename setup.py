@@ -13,10 +13,10 @@ def get_version(rel_path):
     """Extract version information from source code."""
     with open(rel_path, "r") as file:
         for line in file:
-            if line.startswith('__version__'):
+            if line.startswith("__version__"):
                 # Remove quotation marks
                 delims = "\"'"
-                return line.split('=')[1].strip().strip(delims)
+                return line.split("=")[1].strip().strip(delims)
     return "0.0.0"  # Default if version not found
 
 

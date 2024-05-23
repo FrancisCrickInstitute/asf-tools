@@ -11,22 +11,45 @@ from asf_tools.nextflow.utils import create_sbatch_header
 
 log = logging.getLogger(__name__)
 
-PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | \
-    stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP | \
-    stat.S_IROTH | stat.S_IWOTH | stat.S_IXOTH
+PERM777 = (
+    stat.S_IRUSR
+    | stat.S_IWUSR
+    | stat.S_IXUSR
+    | stat.S_IRGRP
+    | stat.S_IWGRP
+    | stat.S_IXGRP
+    | stat.S_IROTH
+    | stat.S_IWOTH
+    | stat.S_IXOTH
+)
 
-PERM666 = stat.S_IRUSR | stat.S_IWUSR | \
-    stat.S_IRGRP | stat.S_IWGRP | \
-    stat.S_IROTH | stat.S_IWOTH
+PERM666 = (
+    stat.S_IRUSR
+    | stat.S_IWUSR
+    | stat.S_IRGRP
+    | stat.S_IWGRP
+    | stat.S_IROTH
+    | stat.S_IWOTH
+)
 
 
-class OntGenDemuxRun():
+class OntGenDemuxRun:
     """
     Generates a run folder for the deumux pipeline and associated support files
     including a run script and default samplesheet
     """
 
-    def __init__(self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute) -> None:
+    def __init__(
+        self,
+        source_dir,
+        target_dir,
+        pipeline_dir,
+        nextflow_cache,
+        nextflow_work,
+        container_cache,
+        runs_dir,
+        execute,
+    ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.pipeline_dir = pipeline_dir

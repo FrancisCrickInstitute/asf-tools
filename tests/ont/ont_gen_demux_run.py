@@ -17,7 +17,16 @@ def test_folder_creation(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+    test = OntGenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        TEST_ONT_PIPELINE_PATH,
+        ".nextflow",
+        "sing",
+        "work",
+        "runs",
+        False,
+    )
 
     # Test
     test.run()
@@ -37,7 +46,16 @@ def test_sbatch_file(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False)
+    test = OntGenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        TEST_ONT_PIPELINE_PATH,
+        ".nextflow",
+        "work",
+        "sing",
+        "runs",
+        False,
+    )
 
     # Test
     test.run()
@@ -65,7 +83,16 @@ def test_samplesheet_file(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+    test = OntGenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        TEST_ONT_PIPELINE_PATH,
+        ".nextflow",
+        "sing",
+        "work",
+        "runs",
+        False,
+    )
 
     # Test
     test.run()
@@ -89,7 +116,16 @@ def test_file_permissions(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+    test = OntGenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        TEST_ONT_PIPELINE_PATH,
+        ".nextflow",
+        "sing",
+        "work",
+        "runs",
+        False,
+    )
 
     # Test
     test.run()
@@ -108,7 +144,16 @@ def test_sbatch_file_nonfhome(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False)
+    test = OntGenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        TEST_ONT_PIPELINE_PATH,
+        "",
+        "work",
+        "sing",
+        "runs",
+        False,
+    )
 
     # Test
     test.run()
@@ -124,4 +169,4 @@ def test_sbatch_file_nonfhome(self, tmp_path):
         script_txt = "".join(file.readlines())
 
     print(script_txt)
-    self.assertFalse('NXF_HOME' in script_txt)
+    self.assertFalse("NXF_HOME" in script_txt)
