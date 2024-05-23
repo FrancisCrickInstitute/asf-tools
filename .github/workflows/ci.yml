@@ -2,9 +2,6 @@ name: CI Testing
 # This workflow is triggered on pushes and PRs to the repository.
 
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     paths-ignore:
       # ignore github workflows except for the current one
