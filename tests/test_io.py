@@ -1,4 +1,4 @@
-""" 
+"""
 Tests covering the io module
 """
 

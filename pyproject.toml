@@ -20,7 +20,6 @@ norecursedirs = [
 [tool.black]
 exclude = '''
 /(
-    \.git
-  | asf_tools\__main__.py
+    asf_tools/__main__\.py
 )/
 '''
