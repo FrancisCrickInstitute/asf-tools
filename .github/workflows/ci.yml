@@ -68,3 +68,16 @@ jobs:
         with:
           name: coverage_${{ matrix.PYTHON_VERSION }}
           path: coverage.xml
+
+  editorconfig:
+    name: Run editor config
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install -g editorconfig-checker
+
+      - name: Run EditorConfig Checker
+        run: editorconfig-checker .
