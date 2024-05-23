@@ -4,8 +4,8 @@ Common utility functions for file operations.
 
 import hashlib
 import io
-import os
 import logging
+import os
 
 log = logging.getLogger(__name__)
 

@@ -5,6 +5,7 @@ Tests for io util functions
 import os
 
 from asf_tools.io.utils import list_directory_names
+
 from ..utils import with_temporary_folder
 
 

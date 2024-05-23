@@ -2,8 +2,8 @@
 Function class for managing CLI operation
 """
 
-import os
 import logging
+import os
 import stat
 
 from asf_tools.io.utils import list_directory_names

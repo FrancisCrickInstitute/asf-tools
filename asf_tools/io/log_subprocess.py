@@ -1,11 +1,10 @@
 # pylint: disable=missing-module-docstring, missing-function-docstring
 
-import sys
-import logging
-import subprocess
-
 import ctypes
 import ctypes.util
+import logging
+import subprocess
+import sys
 from signal import SIGKILL
 
 log = logging.getLogger(__name__)
