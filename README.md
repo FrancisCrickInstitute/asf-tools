@@ -1,4 +1,4 @@
-# asf_tools
+# asf-tools
 
 ASF Tools command line tool-kit for ASF operations.
 
