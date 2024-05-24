@@ -2,8 +2,11 @@
 Tests for nextflow util functions
 """
 
-from asf_tools.nextflow.utils import (NEXTFLOW_VERSION, SINGULARITY_VERSION,
-                                      create_sbatch_header)
+from asf_tools.nextflow.utils import (
+    NEXTFLOW_VERSION,
+    SINGULARITY_VERSION,
+    create_sbatch_header,
+)
 
 
 def test_create_sbatch_header(self):

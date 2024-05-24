@@ -8,5 +8,6 @@ import unittest
 class TestNextflow(unittest.TestCase):
     """Class for nextflow tests"""
 
-    from .nextflow.util import \
-        test_create_sbatch_header  # type: ignore[misc]  # pylint: disable=C0415
+    from .nextflow.util import (
+        test_create_sbatch_header,
+    )  # type: ignore[misc]  # pylint: disable=C0415
