@@ -77,7 +77,7 @@ def run_asf_tools():
     asf_tools_cli()  # pylint: disable=E1120
 
 
-@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(asf_tools.__version__)
 @click.option(
     "-v",
@@ -191,7 +191,7 @@ def ont(ctx):
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute):  # pylint: disable=W0613
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute):  # pylint: disable=W0613,R0913
     """
     Create run directory for the ONT demux pipeline
     """
