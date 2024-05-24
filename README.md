@@ -34,7 +34,7 @@ asf_tools [OPTIONS] COMMAND [ARGS]...
 
 #### ont
 
-Commands to manage ONT data.
+Commands to manage Nanopore data.
 
 ##### gen-demux-run
 
