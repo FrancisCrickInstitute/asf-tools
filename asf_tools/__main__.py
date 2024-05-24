@@ -4,8 +4,8 @@
 Main entry point for command line application
 """
 
-import sys
 import logging
+import sys
 
 import rich
 import rich.console
@@ -68,7 +68,7 @@ def run_asf_tools():
     stderr.print("[grey25]Program:  asf-tools", highlight=False)
     stderr.print(f"[grey25]Version:  {asf_tools.__version__}", highlight=False)
     stderr.print("[grey25]Author:   Chris Cheshire, Areda Elezi", highlight=False)
-    stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)
+    stderr.print("[grey25]Homepage: [link=https://github.com/FrancisCrickInstitute/asf-tools]https://github.com/FrancisCrickInstitute/asf-tools[/]", highlight=False)  # pylint: disable=C0301
     stderr.print("\n", highlight=False)
     stderr.print("███████████████████████████████████████████████████████████████████████████████", highlight=False)
     stderr.print("\n\n", highlight=False)
@@ -77,7 +77,7 @@ def run_asf_tools():
     asf_tools_cli()  # pylint: disable=E1120
 
 
-@click.group(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(asf_tools.__version__)
 @click.option(
     "-v",
@@ -179,13 +179,19 @@ def ont(ctx):
     help=r"Nextflow singularity cache directory",
 )
 @click.option(
+    "-r",
+    "--runs_dir",
+    required=True,
+    help=r"Host path for runs folder",
+)
+@click.option(
     "-e",
     "--execute",
     is_flag=True,
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, execute):  # pylint: disable=W0613
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute):  # pylint: disable=W0613,R0913
     """
     Create run directory for the ONT demux pipeline
     """
@@ -200,6 +206,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache,
             nextflow_cache,
             nextflow_work,
             container_cache,
+            runs_dir,
             execute
         )
         exit_status = function.run()

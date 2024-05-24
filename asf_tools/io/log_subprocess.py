@@ -1,11 +1,10 @@
 # pylint: disable=missing-module-docstring, missing-function-docstring
 
-import sys
-import logging
-import subprocess
-
 import ctypes
 import ctypes.util
+import logging
+import subprocess
+import sys
 from signal import SIGKILL
 
 log = logging.getLogger(__name__)
@@ -33,7 +32,9 @@ class LogSubprocess:
         """
         if sys.platform.startswith("linux"):
             zero = ctypes.c_ulong(0)
-            return LIBC.prctl(PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero)
+            return LIBC.prctl(
+                PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero
+            )
         else:
             return None
 

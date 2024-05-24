@@ -13,9 +13,7 @@ def create_sbatch_header() -> str:
         str: Structured header string.
     """
 
-    header = f"""#!/bin/sh
-
-ml purge
+    header = f"""ml purge
 ml Nextflow/{NEXTFLOW_VERSION}
 ml Singularity/{SINGULARITY_VERSION}
 """

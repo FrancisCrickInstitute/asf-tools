@@ -16,3 +16,12 @@ norecursedirs = [
     "nf_core",
     "docs",
 ]
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+asf_tools/__main__.py
+'''
+
+[tool.isort]
+profile = "black"

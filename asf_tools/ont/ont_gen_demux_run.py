@@ -2,30 +2,61 @@
 Function class for managing CLI operation
 """
 
-import os
 import logging
+import os
+import stat
 
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
 
 log = logging.getLogger(__name__)
 
-NANOPORE_DEMUX_PIPELINE_VERSION = "main"
+PERM777 = (
+    stat.S_IRUSR
+    | stat.S_IWUSR
+    | stat.S_IXUSR
+    | stat.S_IRGRP
+    | stat.S_IWGRP
+    | stat.S_IXGRP
+    | stat.S_IROTH
+    | stat.S_IWOTH
+    | stat.S_IXOTH
+)
+
+PERM666 = (
+    stat.S_IRUSR
+    | stat.S_IWUSR
+    | stat.S_IRGRP
+    | stat.S_IWGRP
+    | stat.S_IROTH
+    | stat.S_IWOTH
+)
 
 
-class OntGenDemuxRun():
+class OntGenDemuxRun:
     """
     Generates a run folder for the deumux pipeline and associated support files
     including a run script and default samplesheet
     """
 
-    def __init__(self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, execute) -> None:
+    def __init__(
+        self,
+        source_dir,
+        target_dir,
+        pipeline_dir,
+        nextflow_cache,
+        nextflow_work,
+        container_cache,
+        runs_dir,
+        execute,
+    ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
         self.container_cache = container_cache
+        self.runs_dir = runs_dir
         self.execute = execute
 
     def run(self):
@@ -71,7 +102,13 @@ class OntGenDemuxRun():
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
         with open(samplesheet_path, "w", encoding="UTF-8") as file:
             file.write("sample_id,group,user,project_id,barcode\n")
-            file.write("sample_01,asf,no.name,DN45678,unclassified\n")
+            file.write("sample_01,asf,no_name,no_proj,unclassified\n")
+
+        # Set 777 for the run script
+        os.chmod(sbatch_script_path, PERM777)
+
+        # Set 666 for the samplesheet
+        os.chmod(samplesheet_path, PERM666)
 
     def create_sbatch_text(self, run_name) -> str:
         """Creates an sbatch script from a template and returns the text
@@ -83,24 +120,32 @@ class OntGenDemuxRun():
         # Create sbatch header
         header_str = create_sbatch_header()
 
+        # Create NXF_HOME string
+        nxf_home = ""
+        if self.nextflow_cache != "":
+            nxf_home = f'export NXF_HOME="{self.nextflow_cache}"'
+
         # Create the bash script template with placeholders
-        bash_script = header_str + f"""
-#SBATCH --partition=cpu
-#SBATCH --job-name=asf_nanopore_demux
+        bash_script = f"""#!/bin/sh
+
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 
-export NXF_HOME="{self.nextflow_cache}"
+{header_str}
+
+{nxf_home}
 export NXF_WORK="{self.nextflow_work}"
 export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
-  -profile crick \\
-  -r {NANOPORE_DEMUX_PIPELINE_VERSION} \\
+  -profile crick,nemo \\
+  --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
-  --run_dir {os.path.join(self.source_dir, run_name)}
+  --run_dir {os.path.join(self.runs_dir, run_name)}
 """
         return bash_script

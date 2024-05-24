@@ -68,3 +68,109 @@ jobs:
         with:
           name: coverage_${{ matrix.PYTHON_VERSION }}
           path: coverage.xml
+
+  editorconfig:
+    name: Run editor config
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install -g editorconfig-checker
+
+      - name: Run EditorConfig Checker
+        run: editorconfig-checker --exclude '.git/*' .
+
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Prettier
+        run: npm install -g prettier
+
+      - name: Run Prettier
+        run: prettier --check "**/*.py"
+
+  black:
+    name: Black
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip -r requirements-dev.txt
+          pip install -e .
+
+      - name: Run Black
+        run: black --check --diff .
+
+  flake8:
+    name: Flake8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip -r requirements-dev.txt
+          pip install -e .
+
+      - name: Run Flake8
+        run: flake8 .
+
+  isort:
+    name: isort
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip -r requirements-dev.txt
+          pip install -e .
+
+      - name: Run isort
+        run: isort --check-only --diff .
+
+  pylint:
+    name: Pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip -r requirements-dev.txt
+          pip install -e .
+
+      - name: Run Pylint
+        run: pylint **/*.py
