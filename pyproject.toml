@@ -20,9 +20,7 @@ norecursedirs = [
 [tool.black]
 include = '\.pyi?$'
 exclude = '''
-/(
-    asf_tools/__main__\.py$
-)/
+asf_tools/__main__.py
 '''
 
 [tool.isort]
