@@ -1,10 +1,12 @@
-name: Docker push (release)
 # This builds the docker image and pushes it to DockerHub
-# Runs on nf-core repo releases and push event to 'dev' branch (PR merges)
+
+name: Docker push
+
 on:
   push:
     branches:
-      - master
+      - main
+      - dev
 
 # Cancel if a newer run is started
 concurrency:
@@ -13,7 +15,7 @@ concurrency:
 
 jobs:
   push_dockerhub:
-    name: Push new Docker image to Docker Hub (release)
+    name: Push new Docker image to Docker Hub
     runs-on: ubuntu-latest
     # Only run for the main FrancisCrick repo
     if: ${{ github.repository == 'FrancisCrickInstitute/asf-tools' }}
@@ -26,10 +28,19 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Build latest docker image
-        run: docker build --no-cache . -t thecrick/pipetech_asf_tools:latest
+      - name: Set Docker tag
+        id: set-docker-tag
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "::set-output name=tag::latest"
+          elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "::set-output name=tag::dev"
+          fi
+
+      - name: Build Docker image
+        run: docker build --no-cache . -t thecrick/pipetech_asf_tools:${{ steps.set-docker-tag.outputs.tag }}
 
       - name: Push Docker images to DockerHub (release)
         run: |
           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker push thecrick/pipetech_asf_tools:latest
+          docker push thecrick/pipetech_asf_tools:${{ steps.set-docker-tag.outputs.tag }}
