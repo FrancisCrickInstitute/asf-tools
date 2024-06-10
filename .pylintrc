@@ -1,5 +1,0 @@
-[FORMAT]
-max-line-length = 150
-
-[MESSAGES CONTROL]
-disable=E0402,W1203

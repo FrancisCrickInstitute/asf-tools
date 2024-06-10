@@ -11,6 +11,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.c
 
 # Distribution / packaging
 .Python
@@ -51,6 +52,8 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+*.prof
+prof/
 
 # Translations
 *.mo
@@ -116,5 +119,8 @@ pip-wheel-metadata
 .vscode
 .*.sw?
 
-# Data folders
-data
+# Data
+output
+
+# Containers
+.devcontainer/container.env

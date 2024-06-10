@@ -1,27 +1,110 @@
-[build-system]
-build-backend = "setuptools.build_meta"
-requires = ["setuptools>=40.6.0", "wheel"]
+[project]
+name="asf-tools"
+version = "1.0.0"
+requires-python = ">=3.11"
+description = "A set of helper functions for ASF."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+keywords = []
+authors = [
+    { name = "Chris Cheshire", email = "chris.cheshire@crick.ac.uk" }
+]
+urls = { "Homepage" = "https://github.com/FrancisCrickInstitute/asf-tools" }
+dependencies = [
+    "click",
+    "rich-click",
+    "rich",
+]
+scripts = { "asf-tools" = "asf_tools.__main__:run_asf_tools" }
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pylint",
+    "ruff"
+]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = [
+    "docs",
+    "prof",
+    "prototype",
+]
 
 [tool.pytest.ini_options]
-markers = ["datafiles: load datafiles"]
 testpaths = ["tests"]
 norecursedirs = [
     ".*",
+    "*.egg",
+    ".github",
+    "__pycache__",
     "build",
     "dist",
-    "*.egg",
+    "prof",
     "data",
-    "__pycache__",
-    ".github",
-    "nf_core",
     "docs",
 ]
 
 [tool.black]
-include = '\.pyi?$'
+line-length = 150
+target-version = ["py311"]
 exclude = '''
-asf_tools/__main__.py
+  asf_tools/__main__.py
+| .tox
+|  build
+|  prototype
 '''
 
 [tool.isort]
+skip = [
+    "prototype",
+    "build",
+    ".tox"
+]
 profile = "black"
+atomic = true
+indent = 4
+line_length = 150
+lines_after_imports = 2
+include_trailing_comma = true
+
+[tool.pylint.FORMAT]
+max-line-length = 150
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "R0913", # too-many-arguments
+    "R0903", # too-few-public-methods
+    "R0914", # too-many-locals
+    "R0912", # too-many-branches
+    "R0801", # duplicate-code
+    "W1203", # logging-fstring-interpolation
+]
+
+[tool.pylint.MASTER]
+ignore-paths = [
+    "prototype",
+    "build",
+    ".tox"
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 150
+exclude = [
+    "prototype",
+    "build",
+    ".tox"
+]
+
+[tool.cython-lint]
+max-line-length = 150
