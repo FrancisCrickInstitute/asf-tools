@@ -33,9 +33,7 @@ class LogSubprocess:
         """
         if sys.platform.startswith("linux"):
             zero = ctypes.c_ulong(0)
-            return LIBC.prctl(
-                PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero
-            )
+            return LIBC.prctl(PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero)
         else:
             return None
 
