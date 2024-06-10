@@ -9,6 +9,7 @@ from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun
 
 from ..utils import with_temporary_folder
 
+
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 

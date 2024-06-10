@@ -7,6 +7,7 @@ import subprocess
 import sys
 from signal import SIGKILL
 
+
 log = logging.getLogger(__name__)
 
 LIBC = ctypes.CDLL(ctypes.util.find_library("c"))

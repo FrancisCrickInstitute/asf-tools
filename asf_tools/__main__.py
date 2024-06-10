@@ -15,6 +15,7 @@ import rich_click as click
 
 import asf_tools
 
+
 # Set up logging as the root logger
 # Submodules should all traverse back to this
 log = logging.getLogger()

@@ -10,6 +10,7 @@ from click.testing import CliRunner
 
 import asf_tools.__main__
 
+
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
