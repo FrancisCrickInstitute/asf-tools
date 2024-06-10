@@ -43,7 +43,7 @@ jobs:
 
       - name: Run tox env
         run: |
-          tox --exitfirst
+          tox
 
       - name: Check for coverage report
         if: always()
