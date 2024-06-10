@@ -58,10 +58,10 @@ norecursedirs = [
 line-length = 150
 target-version = ["py311"]
 exclude = '''
-  asf_tools/__main__.py
-| .tox
-|  build
-|  prototype
+    asf_tools/__main__.py
+    | .tox
+    |  build
+    |  prototype
 '''
 
 [tool.isort]
