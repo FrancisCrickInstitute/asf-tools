@@ -25,6 +25,7 @@ class TestClarity(unittest.TestCase):
 
         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
+    @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
         lims = ClarityLims()
 
