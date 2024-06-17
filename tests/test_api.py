@@ -39,9 +39,37 @@ class TestClarity(unittest.TestCase):
         print(f"UDF: {run_container.udf}")
         print(f"UDT: {run_container.udt}")
         print(f"State: {run_container.state}")
-
+        
+        
         # projects = lims.get_projects(name="RN24071")
         # print(projects)
+
+
+        # get info required to build the samplesheet
+        run_placement = run_container.placements
+        run_placement = list(run_placement.values())
+        # print(run_placement)
+
+        sample_list = []
+        for value in run_placement:
+            run_samples = value.samples
+            sample_list.extend(run_samples)
+        # print(sample_list)
+
+        sample_info = {}
+        for sample in sample_list:
+            sample_name = sample.name
+            lab = sample.submitter.lab.name
+            user_name = sample.submitter.first_name
+            user_lastname = sample.submitter.last_name
+            user_fullname = (user_name + '.' + user_lastname).lower()
+            project_id = sample.project.name
+            # print(lab)
+            # print(user_fullname)
+            # print(project_id)
+
+            sample_info[sample_name] = [lab, user_fullname, project_id]
+        # print(sample_info)
 
         raise ValueError
 
