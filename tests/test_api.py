@@ -27,6 +27,23 @@ class TestClarity(unittest.TestCase):
 
     @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
+        """
+        Fetches sample information from Clarity for a given run ID and constructs a dictionary
+        with sample names as keys and their respective lab, user, and project ID as values.
+
+        Returns:
+            dict: A dictionary containing sample information with the following structure:
+                {
+                    "sample_name": {
+                        "group": "lab_name",
+                        "user": "user_fullname",
+                        "project_id": "project_id"
+                    },
+                    ...
+                }
+        Raises:
+            ValueError: If no sample information is found.
+        """
         lims = ClarityLims()
 
         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
@@ -72,10 +89,11 @@ class TestClarity(unittest.TestCase):
                 "project_id": project_id
                 }
         # print(sample_info)
+        if not sample_info:
+            raise ValueError("No sample information found")
 
-        # raise ValueError
+        return sample_info
     
-###################################################################
     @pytest.mark.only_run_with_direct_target
     def test_sample_barcode(self):
         # Recursive function that loops through parent_processes
@@ -123,3 +141,10 @@ class TestClarity(unittest.TestCase):
                 parent_process_loop(initial_process)
 
         raise ValueError
+    
+    @pytest.mark.only_run_with_direct_target
+    def test_ONT_samplesheet(self):
+        general_info = test_clarity_api()
+        barcode_info = test_sample_barcode()
+        print(general_info)
+        print(barcode_info)
