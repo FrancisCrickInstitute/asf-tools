@@ -18,11 +18,31 @@ class TestClarity(unittest.TestCase):
         # self.api = MockClarityLims(MOCK_API_DATA_DIR)
         self.api = ClarityLims()
 
-    def test_get_artifacts_from_runid(self):
+    def test_get_artifacts_from_runid_isnone(self):
         # Test and Assert
         with self.assertRaises(ValueError):
             self.api.get_artifacts_from_runid(None)
 
+    def test_get_artifacts_from_runid_isinvalid(self):
+        # Setup
+        runid = 'fake_runid'
+
+        # Test and Assert 
+        with self.assertRaises(KeyError):
+            self.api.get_artifacts_from_runid(runid)
+
+
+    def test_get_samples_from_artifacts(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_samples_from_artifacts(None)
+
+        # Setup
+        # do we want to test for en empty list? (ie. list = [])
+        # Test and Assert
+        # self.api.get_samples_from_artifacts()
+
+    # def test_get_sample_info(self)
 
     @pytest.mark.only_run_with_direct_target
     def test_mock_clarity_generate_data(self):
@@ -77,7 +97,7 @@ class TestClarity(unittest.TestCase):
         for value in run_placement:
             run_samples = value.samples
             sample_list.extend(run_samples)
-        # print(sample_list)
+        print(sample_list)
 
         sample_info = {}
         for sample in sample_list:
@@ -101,20 +121,6 @@ class TestClarity(unittest.TestCase):
             raise ValueError("No sample information found")
 
         return sample_info
-    
-
-
-# 1) given a runid , find artifacts
-# 2)
-
-
-
-
-
-
-
-
-
 
     @pytest.mark.only_run_with_direct_target
     def test_sample_barcode(self):
