@@ -96,55 +96,55 @@ class TestClarity(unittest.TestCase):
     
     @pytest.mark.only_run_with_direct_target
     def test_sample_barcode(self):
-        # Recursive function that loops through parent_processes
-        def parent_process_loop(process, visited_processes=None):
-            if visited_processes is None:
-                visited_processes = set()
-            if process is None:
-                raise ValueError
-            # check if we have already visited this process to prevent infinite loops
-            if process.id in visited_processes:
-                return
-            visited_processes.add(process.id)
-
-            # stop recursion if the process type is "T Custom Indexing" and extract barcode+sample info
-            if process.type.name == "T Custom Indexing":
-                sample_barcode_match = {}
-                for input, output in process.input_output_maps:
-                    if output["output-type"] == "Analyte":
-                        uri = output['uri']
-                        sample_info = uri.samples[0]
-                        sample_name = sample_info.id
-                        reagent_barcode = uri.reagent_labels
-
-                sample_barcode_match[sample_name] = { "barcode": reagent_barcode }
-                print(sample_barcode_match)
-                return sample_barcode_match
-
-            # Recursive case: if not "T Custom Indexing", continue to the parent process
-            for input, output in process.input_output_maps:
-                if output["output-type"] == "Analyte":
-                    parent_process = input['parent-process']
-                    if parent_process:
-                        parent_process_loop(parent_process, visited_processes)
-
         lims = ClarityLims()
 
         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
         run_container = lims.get_containers(name=run_id)[0]
         artifacts = lims.get_artifacts(containername=run_container.name)
-        print(run_container)
-        print(artifacts)
+
         for artifact in artifacts:
             initial_process = artifact.parent_process
-            if initial_process:
-                parent_process_loop(initial_process)
+            sample_barcode_match = {}
 
+            if initial_process is None:
+                raise ValueError("Initial process is None")
+            visited_processes = set()
+            stack = [initial_process]
+            print(stack)
+
+            while stack:
+                process = stack.pop()
+                if process.id in visited_processes:
+                    continue
+
+                visited_processes.add(process.id)
+
+                if process.type.name != "T Custom Indexing":
+                    # print(process.type.name)
+                    # Add parent processes to the stack for further processing
+                    for input, output in process.input_output_maps:
+                        if output["output-type"] == "Analyte":
+                            parent_process = input.get('parent-process')
+                            if parent_process:
+                                stack.append(parent_process)
+                else:
+                    # Extract barcode information and store it in "sample_barcode_match"
+                    for input, output in process.input_output_maps:
+                        if output["output-type"] == "Analyte":
+                            uri = output['uri']
+                            sample_info = uri.samples[0]
+                            sample_name = sample_info.id
+                            reagent_barcode = uri.reagent_labels
+                            sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+                    print(sample_barcode_match)
+                    
+                    # return sample_barcode_match
         raise ValueError
     
-    @pytest.mark.only_run_with_direct_target
-    def test_ONT_samplesheet(self):
-        general_info = test_clarity_api()
-        barcode_info = test_sample_barcode()
-        print(general_info)
-        print(barcode_info)
+    
+    # @pytest.mark.only_run_with_direct_target
+    # def test_ONT_samplesheet(self):
+    #     general_info = test_clarity_api()
+    #     barcode_info = test_sample_barcode()
+    #     print(general_info)
+    #     print(barcode_info)
