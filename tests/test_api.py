@@ -31,19 +31,17 @@ class TestClarity(unittest.TestCase):
 
         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
         run_container = lims.get_containers(name=run_id)[0]
-        print("Container")
-        print(f"Name: {run_container.name}")
-        print(f"Type: {run_container.type}")
-        print(f"Wells: {run_container.occupied_wells}")
-        print(f"Placements: {run_container.placements}")
-        print(f"UDF: {run_container.udf}")
-        print(f"UDT: {run_container.udt}")
-        print(f"State: {run_container.state}")
-        
+        # print("Container")
+        # print(f"Name: {run_container.name}")
+        # print(f"Type: {run_container.type}")
+        # print(f"Wells: {run_container.occupied_wells}")
+        # print(f"Placements: {run_container.placements}")
+        # print(f"UDF: {run_container.udf}")
+        # print(f"UDT: {run_container.udt}")
+        # print(f"State: {run_container.state}")
         
         # projects = lims.get_projects(name="RN24071")
         # print(projects)
-
 
         # get info required to build the samplesheet
         run_placement = run_container.placements
@@ -68,59 +66,60 @@ class TestClarity(unittest.TestCase):
             # print(user_fullname)
             # print(project_id)
 
-            sample_info[sample_name] = [lab, user_fullname, project_id]
+            sample_info[sample_name] = {
+                "group": lab, 
+                "user": user_fullname, 
+                "project_id": project_id
+                }
         # print(sample_info)
 
+        # raise ValueError
+    
+###################################################################
+    @pytest.mark.only_run_with_direct_target
+    def test_sample_barcode(self):
+        # Recursive function that loops through parent_processes
+        def parent_process_loop(process, visited_processes=None):
+            if visited_processes is None:
+                visited_processes = set()
+            if process is None:
+                raise ValueError
+            # check if we have already visited this process to prevent infinite loops
+            if process.id in visited_processes:
+                return
+            visited_processes.add(process.id)
+
+            # stop recursion if the process type is "T Custom Indexing" and extract barcode+sample info
+            if process.type.name == "T Custom Indexing":
+                sample_barcode_match = {}
+                for input, output in process.input_output_maps:
+                    if output["output-type"] == "Analyte":
+                        uri = output['uri']
+                        sample_info = uri.samples[0]
+                        sample_name = sample_info.id
+                        reagent_barcode = uri.reagent_labels
+
+                sample_barcode_match[sample_name] = { "barcode": reagent_barcode }
+                print(sample_barcode_match)
+                return sample_barcode_match
+
+            # Recursive case: if not "T Custom Indexing", continue to the parent process
+            for input, output in process.input_output_maps:
+                if output["output-type"] == "Analyte":
+                    parent_process = input['parent-process']
+                    if parent_process:
+                        parent_process_loop(parent_process, visited_processes)
+
+        lims = ClarityLims()
+
+        run_id = "20240417_1729_1C_PAW45723_05bb74c5"
+        run_container = lims.get_containers(name=run_id)[0]
+        artifacts = lims.get_artifacts(containername=run_container.name)
+        print(run_container)
+        print(artifacts)
+        for artifact in artifacts:
+            initial_process = artifact.parent_process
+            if initial_process:
+                parent_process_loop(initial_process)
+
         raise ValueError
-
-
-# my $placements = {};
-# my $in = uri_to_xml('https://asf-claritylims.thecrick.org/api/v2/containers?name='.$flowcell);
-
-# if ( ref @{$in->{'container'}}[0] ne 'HASH' ) {
-# 	say 'no container';
-# 	exit;
-# };
-
-# my $container_loc = @{$in->{'container'}}[0];
-# my $container = uri_to_xml(@{$container_loc->{'uri'}}[0]);
-# for my $placement_loc (@{$container->{'placement'}}) {  ## take this 0 away else you're only processing one lane
-# 	$placements->{@{$placement_loc->{'value'}}[0]}->{'loaded'} = @{$placement_loc->{'uri'}}[0];
-# };
-# for my $keys (keys %{$placements} ) {
-# 	my $mpx = uri_to_xml($placements->{$keys}->{'loaded'});
-# 	$placements->{$keys}->{'mpx'} = @{$mpx->{'name'}}[0];
-# 	say 'getting mpx placements: '.$keys;
-# 	for my $samples (@{$mpx->{'sample'}}) {
-# 		$placements->{$keys}->{'samples'}->{ @{$samples->{'limsid'}}[0] }->{'uri'} = @{$samples->{'uri'}}[0];
-# 	};
-# 	my $parent_process_loc = @{$mpx->{'parent-process'}}[0];
-# 	$placements->{$keys}->{'parent-process'}->{'limsid'}->{@{$parent_process_loc->{'limsid'}}[0]}->{'uri'} = @{$parent_process_loc->{'uri'}}[0];
-# };
-# # say Dumper $placements;
-# for my $keys (keys %{$placements} ) {
-# 	say 'getting processes: '.$keys;
-# 	for my $limsid (keys %{$placements->{$keys}->{'parent-process'}->{'limsid'} } ) {
-# 		get_inputs($keys,$placements->{$keys}->{'parent-process'}->{'limsid'}->{$limsid}->{'uri'});
-# 	};
-# };
-
-# for my $keys (keys %{$placements} ) {
-# 	for my $samples (keys %{$placements->{$keys}->{'samples'}} ) {
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'reference-genome'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'reference-genome'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'reference-genome'};
-# 		} else {};
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'user'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'user'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'user'};
-# 		} else {};
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'lab'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'lab'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'lab'};
-# 		} else {};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'name'} = 'unknown';
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'name'} =  $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'name'};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'type'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'type'};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'analysis'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'analysis'};	
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'limsid'} =  $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'limsid'};
-
-# 	};
-# };
