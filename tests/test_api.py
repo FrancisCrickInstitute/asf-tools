@@ -15,7 +15,14 @@ class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = MockClarityLims(MOCK_API_DATA_DIR)
+        # self.api = MockClarityLims(MOCK_API_DATA_DIR)
+        self.api = ClarityLims()
+
+    def test_get_artifacts_from_runid(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_artifacts_from_runid(None)
+
 
     @pytest.mark.only_run_with_direct_target
     def test_mock_clarity_generate_data(self):
@@ -24,6 +31,7 @@ class TestClarity(unittest.TestCase):
         """
 
         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
+
 
     @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
@@ -94,6 +102,20 @@ class TestClarity(unittest.TestCase):
 
         return sample_info
     
+
+
+# 1) given a runid , find artifacts
+# 2)
+
+
+
+
+
+
+
+
+
+
     @pytest.mark.only_run_with_direct_target
     def test_sample_barcode(self):
         lims = ClarityLims()

@@ -25,3 +25,9 @@ class ClarityLims(Lims):
             password = PASSWORD
 
         super().__init__(baseuri, username, password)
+
+
+    def get_artifacts_from_runid(self, runid: str) -> list:
+        if runid is None:
+            raise ValueError("Runid is None")
+        
