@@ -32,12 +32,13 @@ class ClarityLims(Lims):
             raise ValueError("Runid is None")
         
         # Check that the run ID exists in clarity
-        run_container = self.get_containers(name=run_id)
-        if len(run_container) == 0:
+        run_containers = self.get_containers(name=run_id)
+        if len(run_containers) == 0:
             raise KeyError("RunID does not exist")
         
-        # run_artifacts = run_container.placements
-        # run_artifacts = list(run_artifacts.values())
+        run_artifacts = run_containers[0].placements
+        run_artifacts = list(run_artifacts.values())
+        return run_artifacts
         
     # def get_samples_from_artifacts(self, artifacts_list: list) -> list:
     #     if artifacts_list is None:

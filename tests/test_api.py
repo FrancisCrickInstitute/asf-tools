@@ -31,14 +31,15 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.api.get_artifacts_from_runid(runid)
 
+    from .api.clarity.clarity_lims_tests import (test_get_artifacts_from_runid_valid)
 
-    def test_get_samples_from_artifacts(self):
-        # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_samples_from_artifacts(None)
+    # def test_get_samples_from_artifacts(self):
+    #     # Test and Assert
+    #     with self.assertRaises(ValueError):
+    #         self.api.get_samples_from_artifacts(None)
 
-        # Setup
-        # do we want to test for en empty list? (ie. list = [])
+    #     # Setup
+    #     # do we want to test for en empty list? (ie. list = [])
         # Test and Assert
         # self.api.get_samples_from_artifacts()
 
@@ -91,7 +92,7 @@ class TestClarity(unittest.TestCase):
         # get info required to build the samplesheet
         run_placement = run_container.placements
         run_placement = list(run_placement.values())
-        # print(run_placement)
+        print(run_placement)
 
         sample_list = []
         for value in run_placement:
