@@ -64,7 +64,7 @@ class OntGenDemuxRun:
 
         return 0
 
-    def process_run(self, run_name):
+    def process_run(self, run_name: str):
         """
         Per run processing
         """
