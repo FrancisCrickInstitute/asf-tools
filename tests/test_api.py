@@ -64,6 +64,34 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.api.get_sample_info(sample)
 
+
+
+
+
+
+class TestClarityWithFixtures:
+    """Class for clarity tests with fixtures"""
+
+    @pytest.fixture(scope="class")
+    def api(self):
+        """Setup API connection"""
+        yield ClarityLims()
+
+    @pytest.mark.parametrize("runid,expected", [
+        ("20240417_1729_1C_PAW45723_05bb74c5", 1)
+    ])
+    def test_get_artifacts_from_runid_valid(self, api, runid, expected):  # pylint: disable=missing-function-docstring
+        # Test
+        artifacts = api.get_artifacts_from_runid(runid)
+
+        # Assert
+        assert len(artifacts) == expected
+
+
+class TestClarityMocks:
+    """
+    Mock generation methods
+    """
     @pytest.mark.only_run_with_direct_target
     def test_mock_clarity_generate_data(self):
         """
@@ -72,6 +100,10 @@ class TestClarity(unittest.TestCase):
 
         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
+class TestClarityPrototype(unittest.TestCase):
+    def setUp(self):
+        # self.api = MockClarityLims(MOCK_API_DATA_DIR)
+        self.api = ClarityLims()
 
     @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
@@ -188,30 +220,3 @@ class TestClarity(unittest.TestCase):
                     
                     # return sample_barcode_match
         raise ValueError
-    
-    
-    # @pytest.mark.only_run_with_direct_target
-    # def test_ONT_samplesheet(self):
-    #     general_info = test_clarity_api()
-    #     barcode_info = test_sample_barcode()
-    #     print(general_info)
-    #     print(barcode_info)
-
-
-class TestClarityWithFixtures:
-    """Class for clarity tests with fixtures"""
-
-    @pytest.fixture(scope="class")
-    def api(self):
-        """Setup API connection"""
-        yield ClarityLims()
-
-    @pytest.mark.parametrize("runid,expected", [
-        ("20240417_1729_1C_PAW45723_05bb74c5", 1)
-    ])
-    def test_get_artifacts_from_runid_valid(self, api, runid, expected):  # pylint: disable=missing-function-docstring
-        # Test
-        artifacts = api.get_artifacts_from_runid(runid)
-
-        # Assert
-        assert len(artifacts) == expected
