@@ -2,23 +2,22 @@
 Clarity API Tests
 """
 
+# pylint: disable=missing-function-docstring
+
 import unittest
 import pytest
-from tests.mocks.mock_clarity_lims import MockClarityLims
-
+# from tests.mocks.mock_clarity_lims import MockClarityLims
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 
-MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
+# MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
 
 
 class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        # self.api = MockClarityLims(MOCK_API_DATA_DIR)
         self.api = ClarityLims()
 
-    # test get_artifacts_from_runid function
     def test_get_artifacts_from_runid_isnone(self):
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -28,11 +27,10 @@ class TestClarity(unittest.TestCase):
         # Setup
         runid = 'fake_runid'
 
-        # Test and Assert 
+        # Test and Assert
         with self.assertRaises(KeyError):
             self.api.get_artifacts_from_runid(runid)
 
-    # test get_samples_from_artifacts function
     def test_get_samples_from_artifacts_isnone(self):
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -65,10 +63,6 @@ class TestClarity(unittest.TestCase):
             self.api.get_sample_info(sample)
 
 
-
-
-
-
 class TestClarityWithFixtures:
     """Class for clarity tests with fixtures"""
 
@@ -88,21 +82,20 @@ class TestClarityWithFixtures:
         assert len(artifacts) == expected
 
 
-class TestClarityMocks:
-    """
-    Mock generation methods
-    """
-    @pytest.mark.only_run_with_direct_target
-    def test_mock_clarity_generate_data(self):
-        """
-        Generates a new test data set from the api
-        """
+# class TestClarityMocks:
+#     """
+#     Mock generation methods
+#     """
+#     @pytest.mark.only_run_with_direct_target
+#     def test_mocking_generate_clarity_data(self):
+#         """
+#         Generates a new test data set from the api
+#         """
 
-        MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
+#         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
 class TestClarityPrototype(unittest.TestCase):
     def setUp(self):
-        # self.api = MockClarityLims(MOCK_API_DATA_DIR)
         self.api = ClarityLims()
 
     @pytest.mark.only_run_with_direct_target
