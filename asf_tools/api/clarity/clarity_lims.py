@@ -40,17 +40,23 @@ class ClarityLims(Lims):
         run_artifacts = list(run_artifacts.values())
         return run_artifacts
         
-    # def get_samples_from_artifacts(self, artifacts_list: list) -> list:
-    #     if artifacts_list is None:
-    #         raise ValueError("The artifacts list is None")
+    # needs changing to artifacts as an individual object, rather than list
+    def get_samples_from_artifacts(self, artifacts_list: list) -> list:
+        if artifacts_list is None:
+            raise ValueError("The artifacts list is None")
         
-    #     sample_list = []
-    #     for value in artifacts_list:
-    #         run_samples = value.samples
-    #         sample_list.extend(run_samples)
-    #     return sample_list
+        sample_list = []
+        for value in artifacts_list:
+            run_samples = value.samples
+            sample_list.extend(run_samples)
+        if len(sample_list) == 0:
+            raise KeyError("No samples were found") # this would only raise an error if no samples were found. it doesn't handle errors from an invalid input correctly
+        return sample_list
     
-    # def get_sample_info(self, sample: str) -> dict:
+    def get_sample_info(self, sample: str) -> dict:
+        if sample is None:
+            raise ValueError("The sample is None")
+
     #     sample_name = sample.name
     #     lab = sample.submitter.lab.name
     #     user_name = sample.submitter.first_name

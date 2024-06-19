@@ -18,6 +18,7 @@ class TestClarity(unittest.TestCase):
         # self.api = MockClarityLims(MOCK_API_DATA_DIR)
         self.api = ClarityLims()
 
+    # test get_artifacts_from_runid function
     def test_get_artifacts_from_runid_isnone(self):
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -33,17 +34,37 @@ class TestClarity(unittest.TestCase):
 
     from .api.clarity.clarity_lims_tests import (test_get_artifacts_from_runid_valid)
 
-    # def test_get_samples_from_artifacts(self):
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         self.api.get_samples_from_artifacts(None)
+    # test get_samples_from_artifacts function
+    def test_get_samples_from_artifacts_isnone(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_samples_from_artifacts(None)
 
-    #     # Setup
-    #     # do we want to test for en empty list? (ie. list = [])
+    def test_get_samples_from_artifacts_isinvalid(self):
+        # Setup
+        artifacts_list = ['fake_list']
+
+        # Test and Assert
+        with self.assertRaises(KeyError):
+            self.api.get_samples_from_artifacts(artifacts_list)
+
+        # Setup
+        # do we want to test for en empty list? (ie. list = [])
         # Test and Assert
         # self.api.get_samples_from_artifacts()
 
-    # def test_get_sample_info(self)
+    # test get_sample_info function
+    def test_get_sample_info_isnone(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_sample_info(None)
+
+    def test_get_sample_info_isinvalid(self):
+        # Setup
+        sample = 'fake_sample'
+        # Test and Assert
+        with self.assertRaises(KeyError):
+            self.api.get_sample_info(sample)
 
     @pytest.mark.only_run_with_direct_target
     def test_mock_clarity_generate_data(self):
