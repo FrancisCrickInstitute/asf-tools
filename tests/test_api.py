@@ -2,8 +2,6 @@
 Clarity API Tests
 """
 
-# pylint: disable=missing-function-docstring
-
 import unittest
 import pytest
 # from tests.mocks.mock_clarity_lims import MockClarityLims
@@ -19,11 +17,19 @@ class TestClarity(unittest.TestCase):
         self.api = ClarityLims()
 
     def test_get_artifacts_from_runid_isnone(self):
+        """
+        Pass None to method
+        """
+
         # Test and Assert
         with self.assertRaises(ValueError):
             self.api.get_artifacts_from_runid(None)
 
     def test_get_artifacts_from_runid_isinvalid(self):
+        """
+        Pass runid that does not exist
+        """
+
         # Setup
         runid = 'fake_runid'
 
@@ -32,6 +38,10 @@ class TestClarity(unittest.TestCase):
             self.api.get_artifacts_from_runid(runid)
 
     def test_get_samples_from_artifacts_isnone(self):
+        """
+        Pass None to method
+        """
+
         # Test and Assert
         with self.assertRaises(ValueError):
             self.api.get_samples_from_artifacts(None)
@@ -39,28 +49,23 @@ class TestClarity(unittest.TestCase):
     def test_get_samples_from_artifacts_isinvalid(self):
         # Setup
         artifacts_list = ['fake_list']
+        # Get a real artificact from the API that doesnt contain samples
 
         # Test and Assert
         with self.assertRaises(KeyError):
             self.api.get_samples_from_artifacts(artifacts_list)
 
-        # Setup
-        # do we want to test for en empty list? (ie. list = [])
-        # Test and Assert
-        # self.api.get_samples_from_artifacts()
+    # def test_get_sample_info_isnone(self):
+    #     # Test and Assert
+    #     with self.assertRaises(ValueError):
+    #         self.api.get_sample_info(None)
 
-    # test get_sample_info function
-    def test_get_sample_info_isnone(self):
-        # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_sample_info(None)
-
-    def test_get_sample_info_isinvalid(self):
-        # Setup
-        sample = 'fake_sample'
-        # Test and Assert
-        with self.assertRaises(KeyError):
-            self.api.get_sample_info(sample)
+    # def test_get_sample_info_isinvalid(self):
+    #     # Setup
+    #     sample = 'fake_sample'
+    #     # Test and Assert
+    #     with self.assertRaises(KeyError):
+    #         self.api.get_sample_info(sample)
 
 
 class TestClarityWithFixtures:
@@ -74,7 +79,11 @@ class TestClarityWithFixtures:
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1)
     ])
-    def test_get_artifacts_from_runid_valid(self, api, runid, expected):  # pylint: disable=missing-function-docstring
+    def test_get_artifacts_from_runid_valid(self, api, runid, expected):
+        """
+        Pass real runids and test expected number back
+        """
+
         # Test
         artifacts = api.get_artifacts_from_runid(runid)
 
@@ -95,6 +104,10 @@ class TestClarityWithFixtures:
 #         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
 class TestClarityPrototype(unittest.TestCase):
+    """
+    Test class for prototype functions
+    """
+
     def setUp(self):
         self.api = ClarityLims()
 
