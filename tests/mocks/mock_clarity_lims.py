@@ -29,7 +29,7 @@ class MockClarityLims(ClarityLims):
 
     def _get_instances(self, klass, add_info=None, params=None):
         return None
-    
+
     def get(self, uri, params=dict()):
         return None
 

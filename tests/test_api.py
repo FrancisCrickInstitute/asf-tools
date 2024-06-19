@@ -55,17 +55,10 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.api.get_samples_from_artifacts(artifacts_list)
 
-    # def test_get_sample_info_isnone(self):
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         self.api.get_sample_info(None)
-
-    # def test_get_sample_info_isinvalid(self):
-    #     # Setup
-    #     sample = 'fake_sample'
-    #     # Test and Assert
-    #     with self.assertRaises(KeyError):
-    #         self.api.get_sample_info(sample)
+    def test_get_sample_info_isnone(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_sample_info(None)
 
 
 class TestClarityWithFixtures:
@@ -113,23 +106,6 @@ class TestClarityPrototype(unittest.TestCase):
 
     @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
-        """
-        Fetches sample information from Clarity for a given run ID and constructs a dictionary
-        with sample names as keys and their respective lab, user, and project ID as values.
-
-        Returns:
-            dict: A dictionary containing sample information with the following structure:
-                {
-                    "sample_name": {
-                        "group": "lab_name",
-                        "user": "user_fullname",
-                        "project_id": "project_id"
-                    },
-                    ...
-                }
-        Raises:
-            ValueError: If no sample information is found.
-        """
         lims = ClarityLims()
 
         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
