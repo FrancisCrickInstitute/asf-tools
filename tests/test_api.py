@@ -32,8 +32,6 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.api.get_artifacts_from_runid(runid)
 
-    from .api.clarity.clarity_lims_tests import (test_get_artifacts_from_runid_valid)
-
     # test get_samples_from_artifacts function
     def test_get_samples_from_artifacts_isnone(self):
         # Test and Assert
@@ -198,3 +196,22 @@ class TestClarity(unittest.TestCase):
     #     barcode_info = test_sample_barcode()
     #     print(general_info)
     #     print(barcode_info)
+
+
+class TestClarityWithFixtures:
+    """Class for clarity tests with fixtures"""
+
+    @pytest.fixture(scope="class")
+    def api(self):
+        """Setup API connection"""
+        yield ClarityLims()
+
+    @pytest.mark.parametrize("runid,expected", [
+        ("20240417_1729_1C_PAW45723_05bb74c5", 1)
+    ])
+    def test_get_artifacts_from_runid_valid(self, api, runid, expected):  # pylint: disable=missing-function-docstring
+        # Test
+        artifacts = api.get_artifacts_from_runid(runid)
+
+        # Assert
+        assert len(artifacts) == expected
