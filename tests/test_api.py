@@ -15,7 +15,35 @@ class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = MockClarityLims(MOCK_API_DATA_DIR)
+        # self.api = MockClarityLims(MOCK_API_DATA_DIR)
+        self.api = ClarityLims()
+
+    def test_get_artifacts_from_runid_isnone(self):
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_artifacts_from_runid(None)
+
+    def test_get_artifacts_from_runid_isinvalid(self):
+        # Setup
+        runid = 'fake_runid'
+
+        # Test and Assert 
+        with self.assertRaises(KeyError):
+            self.api.get_artifacts_from_runid(runid)
+
+    from .api.clarity.clarity_lims_tests import (test_get_artifacts_from_runid_valid)
+
+    # def test_get_samples_from_artifacts(self):
+    #     # Test and Assert
+    #     with self.assertRaises(ValueError):
+    #         self.api.get_samples_from_artifacts(None)
+
+    #     # Setup
+    #     # do we want to test for en empty list? (ie. list = [])
+        # Test and Assert
+        # self.api.get_samples_from_artifacts()
+
+    # def test_get_sample_info(self)
 
     @pytest.mark.only_run_with_direct_target
     def test_mock_clarity_generate_data(self):
@@ -25,36 +53,52 @@ class TestClarity(unittest.TestCase):
 
         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
+
     @pytest.mark.only_run_with_direct_target
     def test_clarity_api(self):
+        """
+        Fetches sample information from Clarity for a given run ID and constructs a dictionary
+        with sample names as keys and their respective lab, user, and project ID as values.
+
+        Returns:
+            dict: A dictionary containing sample information with the following structure:
+                {
+                    "sample_name": {
+                        "group": "lab_name",
+                        "user": "user_fullname",
+                        "project_id": "project_id"
+                    },
+                    ...
+                }
+        Raises:
+            ValueError: If no sample information is found.
+        """
         lims = ClarityLims()
 
         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
         run_container = lims.get_containers(name=run_id)[0]
-        print("Container")
-        print(f"Name: {run_container.name}")
-        print(f"Type: {run_container.type}")
-        print(f"Wells: {run_container.occupied_wells}")
-        print(f"Placements: {run_container.placements}")
-        print(f"UDF: {run_container.udf}")
-        print(f"UDT: {run_container.udt}")
-        print(f"State: {run_container.state}")
-        
+        # print("Container")
+        # print(f"Name: {run_container.name}")
+        # print(f"Type: {run_container.type}")
+        # print(f"Wells: {run_container.occupied_wells}")
+        # print(f"Placements: {run_container.placements}")
+        # print(f"UDF: {run_container.udf}")
+        # print(f"UDT: {run_container.udt}")
+        # print(f"State: {run_container.state}")
         
         # projects = lims.get_projects(name="RN24071")
         # print(projects)
 
-
         # get info required to build the samplesheet
         run_placement = run_container.placements
         run_placement = list(run_placement.values())
-        # print(run_placement)
+        print(run_placement)
 
         sample_list = []
         for value in run_placement:
             run_samples = value.samples
             sample_list.extend(run_samples)
-        # print(sample_list)
+        print(sample_list)
 
         sample_info = {}
         for sample in sample_list:
@@ -68,59 +112,68 @@ class TestClarity(unittest.TestCase):
             # print(user_fullname)
             # print(project_id)
 
-            sample_info[sample_name] = [lab, user_fullname, project_id]
+            sample_info[sample_name] = {
+                "group": lab, 
+                "user": user_fullname, 
+                "project_id": project_id
+                }
         # print(sample_info)
+        if not sample_info:
+            raise ValueError("No sample information found")
 
+        return sample_info
+
+    @pytest.mark.only_run_with_direct_target
+    def test_sample_barcode(self):
+        lims = ClarityLims()
+
+        run_id = "20240417_1729_1C_PAW45723_05bb74c5"
+        run_container = lims.get_containers(name=run_id)[0]
+        artifacts = lims.get_artifacts(containername=run_container.name)
+
+        for artifact in artifacts:
+            initial_process = artifact.parent_process
+            sample_barcode_match = {}
+
+            if initial_process is None:
+                raise ValueError("Initial process is None")
+            visited_processes = set()
+            stack = [initial_process]
+            print(stack)
+
+            while stack:
+                process = stack.pop()
+                if process.id in visited_processes:
+                    continue
+
+                visited_processes.add(process.id)
+
+                if process.type.name != "T Custom Indexing":
+                    # print(process.type.name)
+                    # Add parent processes to the stack for further processing
+                    for input, output in process.input_output_maps:
+                        if output["output-type"] == "Analyte":
+                            parent_process = input.get('parent-process')
+                            if parent_process:
+                                stack.append(parent_process)
+                else:
+                    # Extract barcode information and store it in "sample_barcode_match"
+                    for input, output in process.input_output_maps:
+                        if output["output-type"] == "Analyte":
+                            uri = output['uri']
+                            sample_info = uri.samples[0]
+                            sample_name = sample_info.id
+                            reagent_barcode = uri.reagent_labels
+                            sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+                    print(sample_barcode_match)
+                    
+                    # return sample_barcode_match
         raise ValueError
-
-
-# my $placements = {};
-# my $in = uri_to_xml('https://asf-claritylims.thecrick.org/api/v2/containers?name='.$flowcell);
-
-# if ( ref @{$in->{'container'}}[0] ne 'HASH' ) {
-# 	say 'no container';
-# 	exit;
-# };
-
-# my $container_loc = @{$in->{'container'}}[0];
-# my $container = uri_to_xml(@{$container_loc->{'uri'}}[0]);
-# for my $placement_loc (@{$container->{'placement'}}) {  ## take this 0 away else you're only processing one lane
-# 	$placements->{@{$placement_loc->{'value'}}[0]}->{'loaded'} = @{$placement_loc->{'uri'}}[0];
-# };
-# for my $keys (keys %{$placements} ) {
-# 	my $mpx = uri_to_xml($placements->{$keys}->{'loaded'});
-# 	$placements->{$keys}->{'mpx'} = @{$mpx->{'name'}}[0];
-# 	say 'getting mpx placements: '.$keys;
-# 	for my $samples (@{$mpx->{'sample'}}) {
-# 		$placements->{$keys}->{'samples'}->{ @{$samples->{'limsid'}}[0] }->{'uri'} = @{$samples->{'uri'}}[0];
-# 	};
-# 	my $parent_process_loc = @{$mpx->{'parent-process'}}[0];
-# 	$placements->{$keys}->{'parent-process'}->{'limsid'}->{@{$parent_process_loc->{'limsid'}}[0]}->{'uri'} = @{$parent_process_loc->{'uri'}}[0];
-# };
-# # say Dumper $placements;
-# for my $keys (keys %{$placements} ) {
-# 	say 'getting processes: '.$keys;
-# 	for my $limsid (keys %{$placements->{$keys}->{'parent-process'}->{'limsid'} } ) {
-# 		get_inputs($keys,$placements->{$keys}->{'parent-process'}->{'limsid'}->{$limsid}->{'uri'});
-# 	};
-# };
-
-# for my $keys (keys %{$placements} ) {
-# 	for my $samples (keys %{$placements->{$keys}->{'samples'}} ) {
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'reference-genome'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'reference-genome'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'reference-genome'};
-# 		} else {};
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'user'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'user'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'user'};
-# 		} else {};
-# 		if (not defined $placements->{$keys}->{'samples'}->{$samples}->{'lab'}) {
-# 			$placements->{$keys}->{'samples'}->{$samples}->{'lab'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'lab'};
-# 		} else {};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'name'} = 'unknown';
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'name'} =  $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'name'};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'type'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'type'};
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'analysis'} = $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'analysis'};	
-# 		$placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'limsid'} =  $projects->{ $placements->{$keys}->{'samples'}->{$samples}->{'project'}->{'uri'} }->{'limsid'};
-
-# 	};
-# };
+    
+    
+    # @pytest.mark.only_run_with_direct_target
+    # def test_ONT_samplesheet(self):
+    #     general_info = test_clarity_api()
+    #     barcode_info = test_sample_barcode()
+    #     print(general_info)
+    #     print(barcode_info)
