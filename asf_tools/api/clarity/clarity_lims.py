@@ -18,6 +18,8 @@ class ClarityLims():
     Clarity API Interface
     """
 
+    API_VERSION = "v2"
+
     def __init__(self, credentials_path: Optional[str] = None,
                  baseuri: Optional[str] = None,
                  username: Optional[str] = None,
@@ -45,6 +47,9 @@ class ClarityLims():
         if password is not None:
             self.password = password
 
+        # Set auth
+        self.api_auth = (self.username, self.password)
+
     def load_credentials(self, file_path: str) -> dict:
         """
         TODO
@@ -58,7 +63,7 @@ class ClarityLims():
         TODO
         """
 
-        uri = f"{self.baseuri}/{endpoint}"
+        uri = f"{self.baseuri}/api/{self.API_VERSION}/{endpoint}"
         if params:
             uri += '?' + urlencode(params)
         return uri

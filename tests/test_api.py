@@ -66,7 +66,7 @@ class TestClarity(unittest.TestCase):
         uri = self.api.construct_uri("test")
 
         # Assert
-        self.assertEqual(uri, "https://localhost:8080/test")
+        self.assertEqual(uri, "https://localhost:8080/api/v2/test")
 
     def test_clarity_construct_uri_params(self):
         """
@@ -80,7 +80,7 @@ class TestClarity(unittest.TestCase):
         uri = self.api.construct_uri("users", params)
 
         # Assert
-        self.assertEqual(uri, "https://localhost:8080/users?userid=1234&name=test")
+        self.assertEqual(uri, "https://localhost:8080/api/v2/users?userid=1234&name=test")
 
 
 class TestClarityWithFixtures:
