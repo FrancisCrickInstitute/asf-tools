@@ -149,11 +149,11 @@ class TestClarityWithFixtures:
         assert len(data) == expected_num
 
 
-    @pytest.mark.parametrize("xml_path,outer_key,type_name,replacements", [
-        ("container.xml", "con:container", Container, { "placement": "placements"}),
-        ("lab.xml", "lab:lab", Lab, None)
+    @pytest.mark.parametrize("xml_path,outer_key,type_name,replacements,instance_id", [
+        ("container.xml", "con:container", Container, {"placement": "placements"}, "27-6876"),
+        ("lab.xml", "lab:lab", Lab, None, "602")
     ])
-    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, replacements):
+    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, replacements, instance_id):
         """
         Test instance construction
         """
@@ -165,8 +165,11 @@ class TestClarityWithFixtures:
         # Test
         instance = api.get_single_instance(xml_content, outer_key, type_name, replacements)
 
+        # print(instance)
+        # raise ValueError
+
         # Assert
-        assert instance is not None
+        assert instance.id == instance_id
 
 
 # class TestClarityMocks:

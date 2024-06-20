@@ -188,4 +188,3 @@ class ClarityLims():
         # Create and return model
         instance = model_type(**data_dict)
         return instance
-

@@ -5,22 +5,31 @@ Clarity API Data Models
 # pylint: disable=missing-class-docstring
 
 from typing import List, Optional
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, model_validator
 
 class ClarityBaseMode(BaseModel):
+    id: Optional[str] = None
+
+    @model_validator(mode='before')
+    def extract_id(cls, values):
+        uri = values.get('uri')
+        if uri:
+            values['id'] = uri.split('/')[-1]
+        return values
+
     def __str__(self):
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
 class LabStub(ClarityBaseMode):
-    uri: HttpUrl
+    uri: str
     name: str
 
 class ContainerStub(ClarityBaseMode):
-    uri: HttpUrl
+    uri: str
     limsid: str
     name: str
 
-class Address(BaseModel):
+class Address(ClarityBaseMode):
     street: Optional[str]
     city: Optional[str]
     state: Optional[str]
@@ -29,8 +38,8 @@ class Address(BaseModel):
     institution: Optional[str]
     department: Optional[str]
 
-class Lab(BaseModel):
-    uri: HttpUrl
+class Lab(ClarityBaseMode):
+    uri: str
     name: str
     billing_address: Optional[Address]
     shipping_address: Optional[Address]
@@ -38,16 +47,16 @@ class Lab(BaseModel):
 
 class ContainerType(ClarityBaseMode):
     name: str
-    uri: HttpUrl
+    uri: str
 
 class Placement(ClarityBaseMode):
     limsid: str
-    uri: HttpUrl
+    uri: str
     value: str
 
 class Container(ClarityBaseMode):
     limsid: str
-    uri: HttpUrl
+    uri: str
     name: str
     type: ContainerType
     occupied_wells: int
