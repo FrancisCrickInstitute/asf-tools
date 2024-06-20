@@ -11,7 +11,11 @@ class ClarityBaseMode(BaseModel):
     id: Optional[str] = None
 
     @model_validator(mode='before')
-    def extract_id(cls, values):
+    def extract_id(cls, values):  # pylint: disable=no-self-argument
+        """
+        Set id of the object from the uri
+        """
+
         uri = values.get('uri')
         if uri:
             values['id'] = uri.split('/')[-1]
