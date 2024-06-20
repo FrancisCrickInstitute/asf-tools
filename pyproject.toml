@@ -14,8 +14,7 @@ dependencies = [
     "click",
     "rich-click",
     "rich",
-    "genologics",
-    "six"
+    "toml"
 ]
 scripts = { "asf-tools" = "asf_tools.__main__:run_asf_tools" }
 
