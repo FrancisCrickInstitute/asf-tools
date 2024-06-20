@@ -1,0 +1,22 @@
+<lab:lab xmlns:udf="http://genologics.com/ri/userdefined" xmlns:ri="http://genologics.com/ri" xmlns:lab="http://genologics.com/ri/lab" uri="https://asf-claritylims.thecrick.org/api/v2/labs/602">
+<name>shenoya</name>
+<billing-address>
+<street/>
+<city/>
+<state/>
+<country/>
+<postalCode/>
+<institution>Imperial (Satellite)</institution>
+<department/>
+</billing-address>
+<shipping-address>
+<street/>
+<city/>
+<state/>
+<country/>
+<postalCode/>
+<institution>Imperial (Satellite)</institution>
+<department/>
+</shipping-address>
+<website/>
+</lab:lab>

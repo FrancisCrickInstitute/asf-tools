@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import LabStub, ContainerStub, Container
+from asf_tools.api.clarity.models import LabStub, ContainerStub, Container, Lab
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -150,7 +150,8 @@ class TestClarityWithFixtures:
 
 
     @pytest.mark.parametrize("xml_path,outer_key,type_name,replacements", [
-        ("container.xml", "con:container", Container, { "occupied-wells": "occupied_wells", "placement": "placements"})
+        ("container.xml", "con:container", Container, { "placement": "placements"}),
+        ("lab.xml", "lab:lab", Lab, None)
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, replacements):
         """

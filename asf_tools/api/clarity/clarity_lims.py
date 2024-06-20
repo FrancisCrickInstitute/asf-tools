@@ -177,10 +177,15 @@ class ClarityLims():
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
         data_dict = data_dict[outer_key]
 
+        # Set hyphons to underscores
+        data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
+
         # Set replacements
-        for key, val in replacements.items():
-            data_dict[val] = data_dict[key]
+        if replacements is not None:
+            for key, val in replacements.items():
+                data_dict[val] = data_dict[key]
 
         # Create and return model
         instance = model_type(**data_dict)
         return instance
+
