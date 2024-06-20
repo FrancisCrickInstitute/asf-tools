@@ -15,7 +15,7 @@ class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = ClarityLims()
+        self.api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
     def test_clarity_load_credentials_valid(self):
         """
@@ -30,6 +30,32 @@ class TestClarity(unittest.TestCase):
         self.assertEqual(credentials["clarity"]["baseuri"], "https://localhost:8080")
         self.assertEqual(credentials["clarity"]["username"], "test")
         self.assertEqual(credentials["clarity"]["password"], "password")
+
+    def test_clarity_init_check_loaded_credentials(self):
+        """
+        Test credentials load properly
+        """
+
+        # Test
+        api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+
+        # Assert
+        self.assertEqual(api.baseuri, "https://localhost:8080")
+        self.assertEqual(api.username, "test")
+        self.assertEqual(api.password, "password")
+
+    def test_clarity_init_check_overide_credentials(self):
+        """
+        Test credentials load properly
+        """
+
+        # Test
+        api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"), baseuri="test1", username="test2", password="test3")
+
+        # Assert
+        self.assertEqual(api.baseuri, "test1")
+        self.assertEqual(api.username, "test2")
+        self.assertEqual(api.password, "test3")
 
 
 
