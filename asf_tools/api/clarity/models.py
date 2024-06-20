@@ -8,6 +8,11 @@ from typing import List
 from pydantic import BaseModel, HttpUrl
 
 
-class Lab(BaseModel):
+class LabStub(BaseModel):
     uri: HttpUrl
+    name: str
+
+class ContainerStub(BaseModel):
+    uri: HttpUrl
+    limsid: str
     name: str

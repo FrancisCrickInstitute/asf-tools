@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<con:containers xmlns:con="http://genologics.com/ri/container">
+    <container limsid="27-480" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-480">
+        <name>27-480</name>
+    </container>
+    <container limsid="27-481" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-481">
+        <name>27-481</name>
+    </container>
+    <container limsid="27-482" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-482">
+        <name>27-482</name>
+    </container>
+    <container limsid="27-483" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-483">
+        <name>27-483</name>
+    </container>
+    <container limsid="27-484" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-484">
+        <name>27-484</name>
+    </container>
+    <container limsid="27-485" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-485">
+        <name>27-485</name>
+    </container>
+    <container limsid="27-486" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-486">
+        <name>27-486</name>
+    </container>
+    <container limsid="27-487" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-487">
+        <name>27-487</name>
+    </container>
+    <container limsid="27-488" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-488">
+        <name>27-488</name>
+    </container>
+    <container limsid="27-489" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-489">
+        <name>27-489</name>
+    </container>
+    <container limsid="27-490" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-490">
+        <name>27-490</name>
+    </container>
+    <container limsid="27-491" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-491">
+        <name>27-491</name>
+    </container>
+    <container limsid="27-492" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-492">
+        <name>27-492</name>
+    </container>
+    <container limsid="27-493" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-493">
+        <name>27-493</name>
+    </container>
+    <container limsid="27-494" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-494">
+        <name>27-494</name>
+    </container>
+    <container limsid="27-495" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-495">
+        <name>27-495</name>
+    </container>
+    <container limsid="27-496" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-496">
+        <name>27-496</name>
+    </container>
+    <container limsid="27-497" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-497">
+        <name>27-497</name>
+    </container>
+    <container limsid="27-500" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-500">
+        <name>27-500</name>
+    </container>
+    <container limsid="27-613" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-613">
+        <name>ASF_A00009</name>
+    </container>
+    <container limsid="27-614" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-614">
+        <name>ASF_A00008</name>
+    </container>
+    <container limsid="27-615" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-615">
+        <name>ASF_A00007</name>
+    </container>
+    <container limsid="27-616" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-616">
+        <name>ASF_A00001</name>
+    </container>
+    <container limsid="27-617" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-617">
+        <name>ASF_A00011</name>
+    </container>
+    <container limsid="27-618" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-618">
+        <name>ASF_A00013</name>
+    </container>
+    <container limsid="27-619" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-619">
+        <name>ASF_A00002</name>
+    </container>
+    <container limsid="27-620" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-620">
+        <name>ASF_A00010</name>
+    </container>
+    <container limsid="27-621" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-621">
+        <name>ASF_A00003</name>
+    </container>
+    <container limsid="27-622" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-622">
+        <name>ASF_A00018</name>
+    </container>
+    <container limsid="27-623" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-623">
+        <name>ASF_A00004</name>
+    </container>
+    <container limsid="27-624" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-624">
+        <name>ASF_A00014</name>
+    </container>
+    <container limsid="27-625" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-625">
+        <name>ASF_A00017</name>
+    </container>
+    <container limsid="27-626" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-626">
+        <name>ASF_A00005</name>
+    </container>
+    <container limsid="27-627" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-627">
+        <name>ASF_A00012</name>
+    </container>
+    <container limsid="27-628" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-628">
+        <name>ASF_A00016</name>
+    </container>
+    <container limsid="27-629" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-629">
+        <name>ASF_A00015</name>
+    </container>
+    <container limsid="27-630" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-630">
+        <name>ASF_A00006</name>
+    </container>
+    <container limsid="27-631" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-631">
+        <name>ASF_A00034</name>
+    </container>
+    <container limsid="27-632" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-632">
+        <name>ASF_A00021</name>
+    </container>
+    <container limsid="27-633" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-633">
+        <name>ASF_A00031</name>
+    </container>
+    <container limsid="27-634" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-634">
+        <name>ASF_A00030</name>
+    </container>
+    <container limsid="27-635" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-635">
+        <name>ASF_A00027</name>
+    </container>
+    <container limsid="27-636" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-636">
+        <name>ASF_A00023</name>
+    </container>
+    <container limsid="27-637" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-637">
+        <name>ASF_A00029</name>
+    </container>
+    <container limsid="27-638" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-638">
+        <name>ASF_A00033</name>
+    </container>
+    <container limsid="27-639" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-639">
+        <name>ASF_A00020</name>
+    </container>
+    <container limsid="27-640" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-640">
+        <name>ASF_A00028</name>
+    </container>
+    <container limsid="27-641" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-641">
+        <name>ASF_A00022</name>
+    </container>
+    <container limsid="27-642" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-642">
+        <name>ASF_A00025</name>
+    </container>
+    <container limsid="27-643" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-643">
+        <name>ASF_A00032</name>
+    </container>
+    <container limsid="27-644" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-644">
+        <name>ASF_A00024</name>
+    </container>
+    <container limsid="27-645" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-645">
+        <name>ASF_A00026</name>
+    </container>
+    <container limsid="27-646" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-646">
+        <name>ASF_A00035</name>
+    </container>
+    <container limsid="27-647" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-647">
+        <name>ASF_A00019-P1</name>
+    </container>
+    <container limsid="27-648" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-648">
+        <name>ASF_A00019-P2</name>
+    </container>
+    <container limsid="27-649" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-649">
+        <name>ASF_A00019-P3</name>
+    </container>
+    <container limsid="27-650" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-650">
+        <name>ASF_A00019-P4</name>
+    </container>
+    <container limsid="27-651" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-651">
+        <name>ASF_A00019-P5</name>
+    </container>
+    <container limsid="27-652" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-652">
+        <name>ASF_A00019-P6</name>
+    </container>
+    <container limsid="27-653" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-653">
+        <name>ASF_A00019-P7</name>
+    </container>
+    <container limsid="27-654" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-654">
+        <name>ASF_A00019-P8</name>
+    </container>
+    <container limsid="27-655" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-655">
+        <name>ASF_A00019-P9</name>
+    </container>
+    <container limsid="27-656" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-656">
+        <name>ASF_A00019-P10</name>
+    </container>
+    <container limsid="27-657" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-657">
+        <name>ASF_A00019-P11</name>
+    </container>
+    <container limsid="27-658" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-658">
+        <name>ASF_A00019-P12</name>
+    </container>
+    <container limsid="27-659" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-659">
+        <name>ASF_A00019-P13</name>
+    </container>
+    <container limsid="27-660" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-660">
+        <name>ASF_A00019-P14</name>
+    </container>
+    <container limsid="27-661" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-661">
+        <name>ASF_A00019-P15</name>
+    </container>
+    <container limsid="27-662" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-662">
+        <name>ASF_A00019-P16</name>
+    </container>
+    <container limsid="27-663" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-663">
+        <name>ASF_A00019-P17</name>
+    </container>
+    <container limsid="27-664" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-664">
+        <name>ASF_A00019-P18</name>
+    </container>
+    <container limsid="27-665" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-665">
+        <name>ASF_A00019-P19</name>
+    </container>
+    <container limsid="27-666" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-666">
+        <name>ASF_A00019-P20</name>
+    </container>
+    <container limsid="27-667" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-667">
+        <name>ASF_A00019-P21</name>
+    </container>
+    <container limsid="27-668" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-668">
+        <name>ASF_A00019-P22</name>
+    </container>
+    <container limsid="27-669" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-669">
+        <name>ASF_A00019-P23</name>
+    </container>
+    <container limsid="27-670" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-670">
+        <name>ASF_A00019-P24</name>
+    </container>
+    <container limsid="27-671" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-671">
+        <name>ASF_A00019-P25</name>
+    </container>
+    <container limsid="27-672" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-672">
+        <name>ASF_A00019-P26</name>
+    </container>
+    <container limsid="27-673" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-673">
+        <name>ASF_A00019-P27</name>
+    </container>
+    <container limsid="27-674" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-674">
+        <name>ASF_A00019-P28</name>
+    </container>
+    <container limsid="27-675" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-675">
+        <name>ASF_A00019-P29</name>
+    </container>
+    <container limsid="27-676" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-676">
+        <name>ASF_A00019-P30</name>
+    </container>
+    <container limsid="27-677" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-677">
+        <name>ASF_A00019-P31</name>
+    </container>
+    <container limsid="27-678" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-678">
+        <name>ASF_A00019-P32</name>
+    </container>
+    <container limsid="27-679" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-679">
+        <name>ASF_A00019-P33</name>
+    </container>
+    <container limsid="27-680" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-680">
+        <name>ASF_A00019-P34</name>
+    </container>
+    <container limsid="27-681" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-681">
+        <name>ASF_A00019-P35</name>
+    </container>
+    <container limsid="27-682" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-682">
+        <name>ASF_A00019-P36</name>
+    </container>
+    <container limsid="27-683" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-683">
+        <name>ASF_A00019-P37</name>
+    </container>
+    <container limsid="27-684" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-684">
+        <name>ASF_A00019-P38</name>
+    </container>
+    <container limsid="27-685" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-685">
+        <name>ASF_A00019-P39</name>
+    </container>
+    <container limsid="27-686" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-686">
+        <name>ASF_A00019-P40</name>
+    </container>
+    <container limsid="27-687" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-687">
+        <name>ASF_A00019-P41</name>
+    </container>
+    <container limsid="27-688" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-688">
+        <name>ASF_A00019-P42</name>
+    </container>
+    <container limsid="27-689" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-689">
+        <name>ASF_A00019-P43</name>
+    </container>
+    <container limsid="27-690" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-690">
+        <name>ASF_A00019-P44</name>
+    </container>
+    <container limsid="27-691" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-691">
+        <name>ASF_A00019-P45</name>
+    </container>
+    <container limsid="27-692" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-692">
+        <name>ASF_A00019-P46</name>
+    </container>
+    <container limsid="27-693" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-693">
+        <name>ASF_A00019-P47</name>
+    </container>
+    <container limsid="27-694" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-694">
+        <name>ASF_A00019-P48</name>
+    </container>
+    <container limsid="27-695" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-695">
+        <name>ASF_A00019-P49</name>
+    </container>
+    <container limsid="27-696" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-696">
+        <name>ASF_A00019-P50</name>
+    </container>
+    <container limsid="27-697" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-697">
+        <name>ASF_A00019-P51</name>
+    </container>
+    <container limsid="27-698" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-698">
+        <name>ASF_A00019-P52</name>
+    </container>
+    <container limsid="27-699" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-699">
+        <name>ASF_A00019-P53</name>
+    </container>
+    <container limsid="27-700" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-700">
+        <name>ASF_A00019-P54</name>
+    </container>
+    <container limsid="27-701" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-701">
+        <name>ASF_A00019-P55</name>
+    </container>
+    <container limsid="27-702" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-702">
+        <name>ASF_A00019-P56</name>
+    </container>
+    <container limsid="27-703" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-703">
+        <name>ASF_A00019-P57</name>
+    </container>
+    <container limsid="27-704" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-704">
+        <name>ASF_A00019-P58</name>
+    </container>
+    <container limsid="27-705" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-705">
+        <name>ASF_A00019-P59</name>
+    </container>
+    <container limsid="27-706" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-706">
+        <name>ASF_A00019-P60</name>
+    </container>
+    <container limsid="27-707" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-707">
+        <name>ASF_A00019-P61</name>
+    </container>
+    <container limsid="27-708" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-708">
+        <name>ASF_A00019-P62</name>
+    </container>
+    <container limsid="27-709" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-709">
+        <name>ASF_A00019-P63</name>
+    </container>
+    <container limsid="27-710" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-710">
+        <name>ASF_A00019-P64</name>
+    </container>
+    <container limsid="27-711" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-711">
+        <name>ASF_A00019-P65</name>
+    </container>
+    <container limsid="27-712" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-712">
+        <name>ASF_A00019-P66</name>
+    </container>
+    <container limsid="27-713" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-713">
+        <name>ASF_A00019-P67</name>
+    </container>
+    <container limsid="27-714" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-714">
+        <name>ASF_A00019-P68</name>
+    </container>
+    <container limsid="27-715" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-715">
+        <name>ASF_A00019-P69</name>
+    </container>
+    <container limsid="27-716" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-716">
+        <name>ASF_A00019-P70</name>
+    </container>
+    <container limsid="27-717" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-717">
+        <name>ASF_A00019-P71</name>
+    </container>
+    <container limsid="27-718" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-718">
+        <name>ASF_A00019-P72</name>
+    </container>
+    <container limsid="27-719" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-719">
+        <name>ASF_A00019-P73</name>
+    </container>
+    <container limsid="27-720" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-720">
+        <name>ASF_A00019-P74</name>
+    </container>
+    <container limsid="27-721" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-721">
+        <name>ASF_A00019-P75</name>
+    </container>
+    <container limsid="27-722" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-722">
+        <name>ASF_A00019-P76</name>
+    </container>
+    <container limsid="27-723" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-723">
+        <name>ASF_A00019-P77</name>
+    </container>
+    <container limsid="27-724" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-724">
+        <name>ASF_A00019-P78</name>
+    </container>
+    <container limsid="27-725" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-725">
+        <name>ASF_A00019-P79</name>
+    </container>
+    <container limsid="27-726" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-726">
+        <name>ASF_A00019-P80</name>
+    </container>
+    <container limsid="27-727" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-727">
+        <name>ASF_A00019-P81</name>
+    </container>
+    <container limsid="27-728" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-728">
+        <name>ASF_A00019-P82</name>
+    </container>
+    <container limsid="27-729" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-729">
+        <name>ASF_A00019-P83</name>
+    </container>
+    <container limsid="27-730" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-730">
+        <name>ASF_A00019-P84</name>
+    </container>
+    <container limsid="27-731" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-731">
+        <name>ASF_A00019-P85</name>
+    </container>
+    <container limsid="27-732" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-732">
+        <name>ASF_A00019-P86</name>
+    </container>
+    <container limsid="27-733" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-733">
+        <name>ASF_A00019-P87</name>
+    </container>
+    <container limsid="27-734" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-734">
+        <name>ASF_A00019-P88</name>
+    </container>
+    <container limsid="27-735" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-735">
+        <name>ASF_A00019-P89</name>
+    </container>
+    <container limsid="27-736" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-736">
+        <name>ASF_A00019-P90</name>
+    </container>
+    <container limsid="27-737" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-737">
+        <name>ASF_A00019-P91</name>
+    </container>
+    <container limsid="27-738" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-738">
+        <name>ASF_A00019-P92</name>
+    </container>
+    <container limsid="27-739" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-739">
+        <name>ASF_A00019-P93</name>
+    </container>
+    <container limsid="27-740" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-740">
+        <name>ASF_A00019-P94</name>
+    </container>
+    <container limsid="27-741" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-741">
+        <name>ASF_A00019-P95</name>
+    </container>
+    <container limsid="27-742" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-742">
+        <name>ASF_A00019-P96</name>
+    </container>
+    <container limsid="27-868" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-868">
+        <name>27-868</name>
+    </container>
+    <container limsid="27-870" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-870">
+        <name>27-870</name>
+    </container>
+    <container limsid="27-871" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-871">
+        <name>27-871</name>
+    </container>
+    <container limsid="27-872" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-872">
+        <name>27-872</name>
+    </container>
+    <container limsid="27-873" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-873">
+        <name>27-873</name>
+    </container>
+    <container limsid="27-874" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-874">
+        <name>27-874</name>
+    </container>
+    <container limsid="27-875" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-875">
+        <name>27-875</name>
+    </container>
+    <container limsid="27-876" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-876">
+        <name>27-876</name>
+    </container>
+    <container limsid="27-877" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-877">
+        <name>27-877</name>
+    </container>
+    <container limsid="27-878" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-878">
+        <name>27-878</name>
+    </container>
+    <container limsid="27-879" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-879">
+        <name>27-879</name>
+    </container>
+    <container limsid="27-880" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-880">
+        <name>27-880</name>
+    </container>
+    <container limsid="27-881" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-881">
+        <name>27-881</name>
+    </container>
+    <container limsid="27-882" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-882">
+        <name>27-882</name>
+    </container>
+    <container limsid="27-883" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-883">
+        <name>27-883</name>
+    </container>
+    <container limsid="27-884" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-884">
+        <name>27-884</name>
+    </container>
+    <container limsid="27-885" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-885">
+        <name>27-885</name>
+    </container>
+    <container limsid="27-886" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-886">
+        <name>27-886</name>
+    </container>
+    <container limsid="27-887" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-887">
+        <name>27-887</name>
+    </container>
+    <container limsid="27-892" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-892">
+        <name>27-892</name>
+    </container>
+    <container limsid="27-896" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-896">
+        <name>BJGVD</name>
+    </container>
+    <container limsid="27-899" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-899">
+        <name>180903_JT</name>
+    </container>
+    <container limsid="27-929" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-929">
+        <name>ASF_A00036</name>
+    </container>
+    <container limsid="27-930" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-930">
+        <name>27-930</name>
+    </container>
+    <container limsid="27-931" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-931">
+        <name>27-931</name>
+    </container>
+    <container limsid="27-932" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-932">
+        <name>27-932</name>
+    </container>
+    <container limsid="27-933" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-933">
+        <name>27-933</name>
+    </container>
+    <container limsid="27-934" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-934">
+        <name>27-934</name>
+    </container>
+    <container limsid="27-935" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-935">
+        <name>27-935</name>
+    </container>
+    <container limsid="27-936" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-936">
+        <name>27-936</name>
+    </container>
+    <container limsid="27-937" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-937">
+        <name>27-937</name>
+    </container>
+    <container limsid="27-938" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-938">
+        <name>27-938</name>
+    </container>
+    <container limsid="27-939" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-939">
+        <name>27-939</name>
+    </container>
+    <container limsid="27-940" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-940">
+        <name>27-940</name>
+    </container>
+    <container limsid="27-941" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-941">
+        <name>27-941</name>
+    </container>
+    <container limsid="27-942" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-942">
+        <name>27-942</name>
+    </container>
+    <container limsid="27-943" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-943">
+        <name>27-943</name>
+    </container>
+    <container limsid="27-944" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-944">
+        <name>27-944</name>
+    </container>
+    <container limsid="27-945" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-945">
+        <name>27-945</name>
+    </container>
+    <container limsid="27-946" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-946">
+        <name>27-946</name>
+    </container>
+    <container limsid="27-947" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-947">
+        <name>27-947</name>
+    </container>
+    <container limsid="27-948" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-948">
+        <name>27-948</name>
+    </container>
+    <container limsid="27-949" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-949">
+        <name>27-949</name>
+    </container>
+    <container limsid="27-950" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-950">
+        <name>27-950</name>
+    </container>
+    <container limsid="27-951" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-951">
+        <name>27-951</name>
+    </container>
+    <container limsid="27-953" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-953">
+        <name>27-953</name>
+    </container>
+    <container limsid="27-1001" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1001">
+        <name>27-1001</name>
+    </container>
+    <container limsid="27-1002" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1002">
+        <name>27-1002</name>
+    </container>
+    <container limsid="27-1003" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1003">
+        <name>27-1003</name>
+    </container>
+    <container limsid="27-1004" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1004">
+        <name>27-1004</name>
+    </container>
+    <container limsid="27-1005" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1005">
+        <name>27-1005</name>
+    </container>
+    <container limsid="27-1006" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1006">
+        <name>27-1006</name>
+    </container>
+    <container limsid="27-1007" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1007">
+        <name>27-1007</name>
+    </container>
+    <container limsid="27-1008" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1008">
+        <name>27-1008</name>
+    </container>
+    <container limsid="27-1009" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1009">
+        <name>27-1009</name>
+    </container>
+    <container limsid="27-1010" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1010">
+        <name>27-1010</name>
+    </container>
+    <container limsid="27-1011" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1011">
+        <name>27-1011</name>
+    </container>
+    <container limsid="27-1012" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1012">
+        <name>27-1012</name>
+    </container>
+    <container limsid="27-1013" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1013">
+        <name>27-1013</name>
+    </container>
+    <container limsid="27-1014" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1014">
+        <name>27-1014</name>
+    </container>
+    <container limsid="27-1015" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1015">
+        <name>27-1015</name>
+    </container>
+    <container limsid="27-1016" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1016">
+        <name>27-1016</name>
+    </container>
+    <container limsid="27-1017" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1017">
+        <name>27-1017</name>
+    </container>
+    <container limsid="27-1018" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1018">
+        <name>27-1018</name>
+    </container>
+    <container limsid="27-1019" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1019">
+        <name>27-1019</name>
+    </container>
+    <container limsid="27-1020" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1020">
+        <name>27-1020</name>
+    </container>
+    <container limsid="27-1021" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1021">
+        <name>27-1021</name>
+    </container>
+    <container limsid="27-1022" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1022">
+        <name>27-1022</name>
+    </container>
+    <container limsid="27-1023" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1023">
+        <name>27-1023</name>
+    </container>
+    <container limsid="27-1024" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1024">
+        <name>27-1024</name>
+    </container>
+    <container limsid="27-1025" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1025">
+        <name>27-1025</name>
+    </container>
+    <container limsid="27-1026" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1026">
+        <name>27-1026</name>
+    </container>
+    <container limsid="27-1027" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1027">
+        <name>27-1027</name>
+    </container>
+    <container limsid="27-1028" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1028">
+        <name>27-1028</name>
+    </container>
+    <container limsid="27-1029" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1029">
+        <name>27-1029</name>
+    </container>
+    <container limsid="27-1030" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1030">
+        <name>27-1030</name>
+    </container>
+    <container limsid="27-1031" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1031">
+        <name>27-1031</name>
+    </container>
+    <container limsid="27-1032" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1032">
+        <name>27-1032</name>
+    </container>
+    <container limsid="27-1033" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1033">
+        <name>27-1033</name>
+    </container>
+    <container limsid="27-1034" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1034">
+        <name>27-1034</name>
+    </container>
+    <container limsid="27-1035" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1035">
+        <name>27-1035</name>
+    </container>
+    <container limsid="27-1036" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1036">
+        <name>27-1036</name>
+    </container>
+    <container limsid="27-1037" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1037">
+        <name>27-1037</name>
+    </container>
+    <container limsid="27-1038" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1038">
+        <name>27-1038</name>
+    </container>
+    <container limsid="27-1039" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1039">
+        <name>27-1039</name>
+    </container>
+    <container limsid="27-1040" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1040">
+        <name>27-1040</name>
+    </container>
+    <container limsid="27-1041" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1041">
+        <name>27-1041</name>
+    </container>
+    <container limsid="27-1042" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1042">
+        <name>27-1042</name>
+    </container>
+    <container limsid="27-1043" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1043">
+        <name>27-1043</name>
+    </container>
+    <container limsid="27-1044" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1044">
+        <name>27-1044</name>
+    </container>
+    <container limsid="27-1045" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1045">
+        <name>27-1045</name>
+    </container>
+    <container limsid="27-1046" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1046">
+        <name>27-1046</name>
+    </container>
+    <container limsid="27-1047" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1047">
+        <name>27-1047</name>
+    </container>
+    <container limsid="27-1048" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1048">
+        <name>27-1048</name>
+    </container>
+    <container limsid="27-1049" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1049">
+        <name>27-1049</name>
+    </container>
+    <container limsid="27-1050" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1050">
+        <name>27-1050</name>
+    </container>
+    <container limsid="27-1051" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1051">
+        <name>27-1051</name>
+    </container>
+    <container limsid="27-1052" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1052">
+        <name>27-1052</name>
+    </container>
+    <container limsid="27-1053" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1053">
+        <name>27-1053</name>
+    </container>
+    <container limsid="27-1054" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-1054">
+        <name>27-1054</name>
+    </container>
+    <next-page uri="https://asf-claritylims.thecrick.org/api/v2/containers?start-index=5000"/>
+</con:containers>

@@ -117,9 +117,9 @@ class ClarityLims():
         # Validate the response
         self.validate_response(response, accept_status_codes)
 
-        return response
+        return response.content
 
-    def get_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type):
+    def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type):
         """
         TODO
         """
@@ -139,6 +139,9 @@ class ClarityLims():
 
         # Look for next page
         next_page = data_dict[outer_key].get('next-page')
+        if next_page is not None:
+            next_page = next_page["@uri"]
 
         # Return data and next page hook
         return instances, next_page
+

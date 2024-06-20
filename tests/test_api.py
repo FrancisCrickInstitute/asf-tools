@@ -10,6 +10,7 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
+from asf_tools.api.clarity.models import LabStub, ContainerStub
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -116,6 +117,9 @@ class TestClarity(unittest.TestCase):
         self.assertTrue(result)
 
 
+
+
+
 class TestClarityWithFixtures:
     """Class for clarity tests with fixtures"""
 
@@ -124,19 +128,25 @@ class TestClarityWithFixtures:
         """Setup API connection"""
         yield ClarityLims()
 
-    # @pytest.mark.parametrize("runid,expected", [
-    #     ("20240417_1729_1C_PAW45723_05bb74c5", 1)
-    # ])
-    # def test_get_artifacts_from_runid_valid(self, api, runid, expected):
-    #     """
-    #     Pass real runids and test expected number back
-    #     """
 
-    #     # Test
-    #     artifacts = api.get_artifacts_from_runid(runid)
+    @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
+        ("labs.xml", "lab:labs", "lab", LabStub, 141),
+        ("containers.xml", "con:containers", "container", ContainerStub, 249)
+    ])
+    def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
+        """
+        Test instance construction
+        """
 
-    #     # Assert
-    #     assert len(artifacts) == expected
+        # Setup
+        with open(os.path.join(API_TEST_DATA, "mock_data", xml_path), 'r', encoding='utf-8') as file:
+            xml_content = file.read()
+
+        # Test
+        data, next_page = api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)
+
+        # Assert
+        assert len(data) == expected_num
 
 
 # class TestClarityMocks:
@@ -162,13 +172,13 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_api(self):
 
-        with open(os.path.join(API_TEST_DATA, "mock_data", "labs.xml"), 'r', encoding='utf-8') as file:
-            xml_content = file.read()
+        # with open(os.path.join(API_TEST_DATA, "mock_data", "labs.xml"), 'r', encoding='utf-8') as file:
+        #     xml_content = file.read()
 
-        from asf_tools.api.clarity.models import Lab
+        xml_data = self.api.get("containers")
 
-        data, next_page = self.api.get_instances(xml_content, "lab:labs", "lab", Lab)
+        data, next_page = self.api.get_single_page_instances(xml_data, "con:containers", "container", ContainerStub)
         print(next_page)
-        print(data)
+        # print(data)
 
         raise ValueError
