@@ -175,10 +175,8 @@ class TestClarityPrototype(unittest.TestCase):
         # with open(os.path.join(API_TEST_DATA, "mock_data", "labs.xml"), 'r', encoding='utf-8') as file:
         #     xml_content = file.read()
 
-        xml_data = self.api.get("containers")
-
-        data, next_page = self.api.get_single_page_instances(xml_data, "con:containers", "container", ContainerStub)
-        print(next_page)
+        data = self.api.get_instances("con:containers", "container", ContainerStub, "containers")
         # print(data)
+        print(len(data))
 
         raise ValueError

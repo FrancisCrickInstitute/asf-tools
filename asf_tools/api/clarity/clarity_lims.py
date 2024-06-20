@@ -96,14 +96,10 @@ class ClarityLims():
             raise requests.exceptions.HTTPError(message, response=response)
         return True
 
-
-    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get_with_uri(self, uri: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
         """
         TODO
         """
-
-        # Construct uri
-        uri = self.construct_uri(endpoint, params)
 
         # Try to call api
         try:
@@ -118,6 +114,17 @@ class ClarityLims():
         self.validate_response(response, accept_status_codes)
 
         return response.content
+
+    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+        """
+        TODO
+        """
+
+        # Construct uri
+        uri = self.construct_uri(endpoint, params)
+
+        # Call main get
+        return self.get_with_uri(uri, params, accept_status_codes)
 
     def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type):
         """
@@ -145,3 +152,20 @@ class ClarityLims():
         # Return data and next page hook
         return instances, next_page
 
+    def get_instances(self, outer_key: str, inner_key: str, model_type, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+        """
+        TODO
+        """
+
+        # Get first page
+        xml_data = self.get(endpoint, params, accept_status_codes)
+        instances, next_page = self.get_single_page_instances(xml_data, outer_key, inner_key, model_type)
+
+        # Cycle through pages
+        while next_page is not None:
+            xml_data = self.get_with_uri(next_page, params, accept_status_codes)
+            new_instances, next_page = self.get_single_page_instances(xml_data, outer_key, inner_key, model_type)
+            instances.extend(new_instances)
+            break
+
+        return instances
