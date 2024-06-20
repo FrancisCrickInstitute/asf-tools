@@ -133,12 +133,17 @@ class ClarityLims():
 
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
+        inner_dict = data_dict[outer_key][inner_key]
 
         # Create instances
         instances = []
-        for item in data_dict[outer_key][inner_key]:
-            # Create type
-            data_item = model_type(**item)
+        if isinstance(inner_dict, list):
+            for item in inner_dict:
+                # Create type
+                data_item = model_type(**item)
+                instances.append(data_item)
+        if isinstance(inner_dict, dict):
+            data_item = model_type(**inner_dict)
             instances.append(data_item)
 
         # Look for next page

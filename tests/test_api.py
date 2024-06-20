@@ -195,12 +195,11 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_api(self):
 
-        with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
-            xml_content = file.read()
+        # with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
+        #     xml_content = file.read()
+        # rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
 
-        rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
-
-        data = self.api.get_single_instance(xml_content, "con:container", Container, rep)
+        data = self.api.get_instances("con:containers", "container", ContainerStub, "containers", {"name": "20240417_1729_1C_PAW45723_05bb74c5"})
         # print(data)
         print(data)
 
