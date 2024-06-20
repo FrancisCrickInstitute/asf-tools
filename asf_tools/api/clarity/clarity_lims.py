@@ -4,10 +4,10 @@ Clarity Lims API Class
 
 import os
 import logging
-import requests
 from typing import Optional, Dict
 from urllib.parse import urlencode
 from xml.etree import ElementTree
+import requests
 
 import toml
 

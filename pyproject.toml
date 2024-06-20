@@ -89,6 +89,7 @@ disable = [
     "R0912", # too-many-branches
     "R0801", # duplicate-code
     "W1203", # logging-fstring-interpolation
+    "W0102", # dangerous-default-value
 ]
 
 [tool.pylint.MASTER]
