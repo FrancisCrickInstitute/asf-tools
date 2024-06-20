@@ -162,8 +162,13 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_api(self):
 
-        data = self.api.get("labsss")
-        print(data.status_code)
-        print(data.content)
+        with open(os.path.join(API_TEST_DATA, "mock_data", "labs.xml"), 'r', encoding='utf-8') as file:
+            xml_content = file.read()
+
+        from asf_tools.api.clarity.models import Lab
+
+        data, next_page = self.api.get_instances(xml_content, "lab:labs", "lab", Lab)
+        print(next_page)
+        print(data)
 
         raise ValueError

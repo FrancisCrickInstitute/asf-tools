@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 import requests
 
 import toml
+import xmltodict
 
 
 log = logging.getLogger(__name__)
@@ -96,7 +97,7 @@ class ClarityLims():
         return True
 
 
-    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None):
+    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
         """
         TODO
         """
@@ -113,4 +114,31 @@ class ClarityLims():
         except requests.exceptions.Timeout as e:
             raise type(e)(f"{str(e)}, Error trying to reach {uri}")
 
+        # Validate the response
+        self.validate_response(response, accept_status_codes)
+
         return response
+
+    def get_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type):
+        """
+        TODO
+        """
+
+        # Parse data
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False)
+
+        # Create instances
+        instances = []
+        for item in data_dict[outer_key][inner_key]:
+            # Clean @ symbols from dict keys
+            cleaned_item = {key.replace('@', ''): value for key, value in item.items()}
+
+            # Create type
+            data_item = model_type(**cleaned_item)
+            instances.append(data_item)
+
+        # Look for next page
+        next_page = data_dict[outer_key].get('next-page')
+
+        # Return data and next page hook
+        return instances, next_page

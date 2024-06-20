@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lab:labs xmlns:lab="http://genologics.com/ri/lab">
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1">
+        <name>Administrative Lab</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/2">
+        <name>babs</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/3">
+        <name>sequencing</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/52">
+        <name>swantonc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/53">
+        <name>Information Technology and Services</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/54">
+        <name>caladod</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/55">
+        <name>wic</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/56">
+        <name>santoss</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/57">
+        <name>behrensa</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/58">
+        <name>sahaie</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/59">
+        <name>turnerj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/60">
+        <name>svejstrupj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/61">
+        <name>reddya</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/62">
+        <name>stockingerg</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/63">
+        <name>genman</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/64">
+        <name>smithj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/65">
+        <name>guillemotf</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/66">
+        <name>niakank</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/67">
+        <name>gutierrezm</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/69">
+        <name>wilkinsonr</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/70">
+        <name>prieto-godinoll</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/71">
+        <name>scaffidip</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/73">
+        <name>ulej</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/74">
+        <name>bonnetd</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/75">
+        <name>lovell-badger</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/76">
+        <name>haydaya</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/77">
+        <name>leys</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/78">
+        <name>vanwervenf</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/79">
+        <name>liv</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/80">
+        <name>downwardj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/81">
+        <name>uhlmannf</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/82">
+        <name>ratcliffep</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/83">
+        <name>wests</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/85">
+        <name>ciccarellif</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/86">
+        <name>wacka</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/87">
+        <name>boultons</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/88">
+        <name>goulda</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/89">
+        <name>reisesousac</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/90">
+        <name>tybulewiczv</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/91">
+        <name>malanchii</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/92">
+        <name>briscoej</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/93">
+        <name>yunevam</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/94">
+        <name>pachnisv</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/95">
+        <name>walportl</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/96">
+        <name>barralp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/97">
+        <name>vanloop</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/98">
+        <name>ultanirs</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/99">
+        <name>tolarp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/101">
+        <name>ogarraa</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/102">
+        <name>treismanr</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/103">
+        <name>parkerp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/104">
+        <name>luscomben</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/105">
+        <name>skoglundp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/106">
+        <name>thompsonb</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/107">
+        <name>treeckm</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/108">
+        <name>papayannopoulosv</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/109">
+        <name>frickele</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/110">
+        <name>anastasioud</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/111">
+        <name>vincentj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/112">
+        <name>oliferenkos</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/113">
+        <name>hillc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/114">
+        <name>gandhis</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/115">
+        <name>kassiotisg</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/116">
+        <name>houartc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/117">
+        <name>langhornej</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/152">
+        <name>schaefera</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/154">
+        <name>vousdenk</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/155">
+        <name>bonfantip</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/156">
+        <name>fermentation</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/157">
+        <name>equippark</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/158">
+        <name>wilkinsond</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/159">
+        <name>lloydc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/160">
+        <name>carvalhol</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/161">
+        <name>turajlics</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/162">
+        <name>kinslerv</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/163">
+        <name>taponn</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/164">
+        <name>schumannb</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/165">
+        <name>richesr</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/202">
+        <name>saterialea</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/252">
+        <name>bauerd</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/302">
+        <name>fishp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/352">
+        <name>rodriquess</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/402">
+        <name>findlayg</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/452">
+        <name>znamenskiyp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/502">
+        <name>bishopk</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/552">
+        <name>cardoso-moreiam</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/602">
+        <name>shenoya</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/652">
+        <name>peptidechem</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/653">
+        <name>diffleyj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/702">
+        <name>johnsone</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/752">
+        <name>patanir</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/753">
+        <name>cherepanovp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/754">
+        <name>leej</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/802">
+        <name>kohlj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/803">
+        <name>msd</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/804">
+        <name>destrooperb</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/852">
+        <name>morisn</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/853">
+        <name>bealer</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/854">
+        <name>tatee</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/855">
+        <name>berningerb</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/856">
+        <name>diantoniom</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/857">
+        <name>locelsoc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/858">
+        <name>waym</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/859">
+        <name>lil</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/902">
+        <name>vinuesac</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/952">
+        <name>niakan</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1002">
+        <name>csu</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1003">
+        <name>fuggerk</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1052">
+        <name>hescu</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1102">
+        <name>carltonj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1152">
+        <name>gems</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1202">
+        <name>serioa</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1252">
+        <name>proj-c19-legacy</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1302">
+        <name>stevensm</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1303">
+        <name>tedescof</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1304">
+        <name>frattap</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1352">
+        <name>moosajeem</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1453">
+        <name>tedescos</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1503">
+        <name>Schmackk</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1553">
+        <name>priyar</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1603">
+        <name>lifearc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1604">
+        <name>walle</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1605">
+        <name>nursep</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1653">
+        <name>evang</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1654">
+        <name>celiza</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1703">
+        <name>windingm</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1704">
+        <name>morrealef</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1753">
+        <name>mcdonaldn</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1754">
+        <name>garcia-manyess</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1755">
+        <name>mishtom</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1756">
+        <name>swant</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1803">
+        <name>loclesoc</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1804">
+        <name>gamblins</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1853">
+        <name>pfeizer</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1855">
+        <name>pfizer</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1903">
+        <name>deepmind</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1904">
+        <name>miguel-aliagai</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1905">
+        <name>matthewsp</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1953">
+        <name>devinem</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1954">
+        <name>rosenblattj</name>
+    </lab>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/1956">
+        <name>garcia.manyess</name>
+    </lab>
+</lab:labs>
