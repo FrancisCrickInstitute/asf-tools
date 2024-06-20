@@ -3,8 +3,11 @@ Clarity API Tests
 """
 
 import os
+import requests
+
 import unittest
 import pytest
+from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 
@@ -73,7 +76,7 @@ class TestClarity(unittest.TestCase):
         Test construct URI endpoint
         """
 
-        # Params
+        # Setup
         params = { "userid" : "1234", "name" : "test" }
 
         # Test
@@ -81,6 +84,36 @@ class TestClarity(unittest.TestCase):
 
         # Assert
         self.assertEqual(uri, "https://localhost:8080/api/v2/users?userid=1234&name=test")
+
+    def test_clarity_validate_response_error(self):
+        """
+        Test validate response with fake data
+        """
+
+        # Setup
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 404
+        mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<exc:exception xmlns:exc="http://genologics.com/ri/exception">\n    <message>Not found</message>\n</exc:exception>\n'
+
+        # Test and Assert
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.api.validate_response(mock_response)
+
+    def test_clarity_validate_response_ok(self):
+        """
+        Test validate response with fake data
+        """
+
+        # Setup
+        mock_response = Mock(spec=requests.Response)
+        mock_response.status_code = 200
+        mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+
+        # Test
+        result = self.api.validate_response(mock_response)
+
+        # Assert
+        self.assertTrue(result)
 
 
 class TestClarityWithFixtures:
@@ -128,5 +161,9 @@ class TestClarityPrototype(unittest.TestCase):
 
     @pytest.mark.only_run_with_direct_target
     def test_api(self):
+
+        data = self.api.get("labsss")
+        print(data.status_code)
+        print(data.content)
 
         raise ValueError
