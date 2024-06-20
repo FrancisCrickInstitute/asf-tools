@@ -132,22 +132,19 @@ class ClarityLims():
         """
 
         # Parse data
-        data_dict = xmltodict.parse(xml_data, process_namespaces=False)
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
 
         # Create instances
         instances = []
         for item in data_dict[outer_key][inner_key]:
-            # Clean @ symbols from dict keys
-            cleaned_item = {key.replace('@', ''): value for key, value in item.items()}
-
             # Create type
-            data_item = model_type(**cleaned_item)
+            data_item = model_type(**item)
             instances.append(data_item)
 
         # Look for next page
         next_page = data_dict[outer_key].get('next-page')
         if next_page is not None:
-            next_page = next_page["@uri"]
+            next_page = next_page["uri"]
 
         # Return data and next page hook
         return instances, next_page
@@ -169,3 +166,21 @@ class ClarityLims():
             break
 
         return instances
+
+
+    def get_single_instance(self, xml_data: str, outer_key: str, model_type, replacements: Optional[Dict[str, str]] = None):
+        """
+        TODO
+        """
+
+        # Parse data
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
+        data_dict = data_dict[outer_key]
+
+        # Set replacements
+        for key, val in replacements.items():
+            data_dict[val] = data_dict[key]
+
+        # Create and return model
+        instance = model_type(**data_dict)
+        return instance

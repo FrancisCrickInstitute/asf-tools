@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import LabStub, ContainerStub
+from asf_tools.api.clarity.models import LabStub, ContainerStub, Container
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -149,6 +149,25 @@ class TestClarityWithFixtures:
         assert len(data) == expected_num
 
 
+    @pytest.mark.parametrize("xml_path,outer_key,type_name,replacements", [
+        ("container.xml", "con:container", Container, { "occupied-wells": "occupied_wells", "placement": "placements"})
+    ])
+    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, replacements):
+        """
+        Test instance construction
+        """
+
+        # Setup
+        with open(os.path.join(API_TEST_DATA, "mock_data", xml_path), 'r', encoding='utf-8') as file:
+            xml_content = file.read()
+
+        # Test
+        instance = api.get_single_instance(xml_content, outer_key, type_name, replacements)
+
+        # Assert
+        assert instance is not None
+
+
 # class TestClarityMocks:
 #     """
 #     Mock generation methods
@@ -172,11 +191,13 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_api(self):
 
-        # with open(os.path.join(API_TEST_DATA, "mock_data", "labs.xml"), 'r', encoding='utf-8') as file:
-        #     xml_content = file.read()
+        with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
+            xml_content = file.read()
 
-        data = self.api.get_instances("con:containers", "container", ContainerStub, "containers")
+        rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
+
+        data = self.api.get_single_instance(xml_content, "con:container", Container, rep)
         # print(data)
-        print(len(data))
+        print(data)
 
         raise ValueError
