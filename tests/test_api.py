@@ -19,7 +19,7 @@ class TestClarity(unittest.TestCase):
 
     def test_clarity_load_credentials_valid(self):
         """
-        Test credentials load properly
+        Test credentials load properly from toml
         """
 
         # Test
@@ -33,7 +33,7 @@ class TestClarity(unittest.TestCase):
 
     def test_clarity_init_check_loaded_credentials(self):
         """
-        Test credentials load properly
+        Test credentials load properly in init from file
         """
 
         # Test
@@ -46,7 +46,7 @@ class TestClarity(unittest.TestCase):
 
     def test_clarity_init_check_overide_credentials(self):
         """
-        Test credentials load properly
+        Test credentials load properly in init with overides
         """
 
         # Test
@@ -57,6 +57,30 @@ class TestClarity(unittest.TestCase):
         self.assertEqual(api.username, "test2")
         self.assertEqual(api.password, "test3")
 
+    def test_clarity_construct_uri_endpoint(self):
+        """
+        Test construct URI endpoint
+        """
+
+        # Test
+        uri = self.api.construct_uri("test")
+
+        # Assert
+        self.assertEqual(uri, "https://localhost:8080/test")
+
+    def test_clarity_construct_uri_params(self):
+        """
+        Test construct URI endpoint
+        """
+
+        # Params
+        params = { "userid" : "1234", "name" : "test" }
+
+        # Test
+        uri = self.api.construct_uri("users", params)
+
+        # Assert
+        self.assertEqual(uri, "https://localhost:8080/users?userid=1234&name=test")
 
 
 class TestClarityWithFixtures:

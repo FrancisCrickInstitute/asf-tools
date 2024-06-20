@@ -4,7 +4,11 @@ Clarity Lims API Class
 
 import os
 import logging
+from typing import Optional, Dict
+from urllib.parse import urlencode
+
 import toml
+
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +18,11 @@ class ClarityLims():
     Clarity API Interface
     """
 
-    def __init__(self, credentials_path = None, baseuri = None, username = None, password = None):
+    def __init__(self, credentials_path: Optional[str] = None,
+                 baseuri: Optional[str] = None,
+                 username: Optional[str] = None,
+                 password: Optional[str] = None):
+
         # Resolve credentials path
         resolved_cred_path = credentials_path
         if credentials_path is None:
@@ -44,3 +52,13 @@ class ClarityLims():
 
         with open(file_path, "r", encoding="UTF-8") as file:
             return toml.load(file)
+
+    def construct_uri(self, endpoint: str, params: Optional[Dict[str, str]] = None) -> str:
+        """
+        TODO
+        """
+
+        uri = f"{self.baseuri}/{endpoint}"
+        if params:
+            uri += '?' + urlencode(params)
+        return uri
