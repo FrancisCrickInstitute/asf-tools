@@ -25,16 +25,15 @@ class ClarityBaseModel(BaseModel):
     def __str__(self):
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
-
-class LabStub(ClarityBaseModel):
+class Stub(ClarityBaseModel):
     uri: str
     name: str
 
+class LabStub(Stub):
+    pass
 
-class ContainerStub(ClarityBaseModel):
-    uri: str
+class ContainerStub(Stub):
     limsid: str
-    name: str
 
 
 class Address(ClarityBaseModel):
