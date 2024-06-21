@@ -16,11 +16,12 @@ from asf_tools.api.clarity.models import (
     ClarityBaseModel,
     Stub,
     StubWithId,
+    StubIdOnly,
     Lab,
     Project,
-    Container
+    Container,
+    Artifact
 )
-
 
 log = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class ClarityLims():
 
         result = {}
         for key, value in kwargs.items():
-            if value is None: 
+            if value is None:
                 continue
             result[key.replace('_', '-')] = value
         return result
@@ -192,6 +193,17 @@ class ClarityLims():
 
         # Call main get
         return self.get_with_uri(uri, params, accept_status_codes)
+
+    def get_with_id(self, endpoint: str, item_id: str) -> bytes:
+        """
+        TODO
+        """
+
+        # Construct uri
+        uri = self.construct_uri(f"{endpoint}/{item_id}")
+
+        # Call main get
+        return self.get_with_uri(uri)
 
     def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel) -> list[ClarityBaseModel]:
         """
@@ -367,4 +379,28 @@ class ClarityLims():
         # Expand if only one result is returned
         if len(instances) == 1:
             return self.expand_stub(instances[0], "con:container", Container)
+        return instances
+
+    def get_artifacts(self, id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
+                      qc_flag=None, sample_name=None, samplelimsid=None, artifactgroup=None, containername=None,
+                      containerlimsid=None, reagent_label=None):
+        """
+        TODO
+        """
+
+        # Check if we have used an id
+        if id is not None:
+            xml_data = self.get_with_id("artifacts", id)
+            return self.get_single_instance(xml_data, "art:artifact", Artifact)
+
+        # Contruct params and get an instance
+        params = self.get_params_from_args(name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
+                                           working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
+                                           artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
+                                           reagent_label=reagent_label)
+        instances = self.get_instances("art:artifacts", "artifact", StubIdOnly, "artifacts", params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "art:artifact", Container)
         return instances

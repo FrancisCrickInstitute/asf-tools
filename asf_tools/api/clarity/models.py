@@ -31,6 +31,10 @@ class Stub(ClarityBaseModel):
 class StubWithId(Stub):
     limsid: str
 
+class StubIdOnly(ClarityBaseModel):
+    uri: str
+    limsid: str
+
 class UdfField(BaseModel):
     name: str
     type: str
@@ -106,3 +110,27 @@ class Project(ClarityBaseModel):
         if isinstance(values, dict) and 'uri' in values:
             return values['uri']
         return values
+
+
+class Location(ClarityBaseModel):
+    container: StubIdOnly
+    value: str
+
+class Artifact(ClarityBaseModel):
+    limsid: str
+    uri: str
+    name: str
+    type: str
+    output_type: str
+    parent_process: Optional[StubIdOnly]
+    qc_flag: Optional[str]
+    location: Optional[Location]
+    working_flag: Optional[bool]
+    samples: List[StubIdOnly] = Field(alias="sample", default_factory=list)
+    # reagent_labels: List[ReagentLabel] = Field(alias="reagent-label", default_factory=list)
+    # control_type: Optional[UriNameModel] = Field(alias="control-type")
+    # udf_fields: List[UdfField] = Field(alias="udf:field", default_factory=list)
+    # file: Optional[FileField] = Field(alias="file:file")
+    # artifact_group: List[UriNameModel] = Field(alias="artifact-group", default_factory=list)
+    # workflow_stages: List[WorkflowStage] = Field(alias="workflow-stage", default_factory=list)
+    # demux: Optional[UriNameModel]

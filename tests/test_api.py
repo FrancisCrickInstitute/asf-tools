@@ -242,7 +242,7 @@ class TestClarityPrototype(unittest.TestCase):
         #     xml_content = file.read()
 
         # Test
-        data = self.api.get_projects(name="DN18265")
+        data = self.api.get_artifacts(id="2-8332743")
         print("-------")
         print(data)
 
