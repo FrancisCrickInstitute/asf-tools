@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import LabStub, ContainerStub, Container, Lab
+from asf_tools.api.clarity.models import Stub, StubWithId, Container, Lab
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -149,8 +149,8 @@ class TestClarityWithFixtures:
         yield ClarityLims()
 
     @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
-        ("labs.xml", "lab:labs", "lab", LabStub, 141),
-        ("containers.xml", "con:containers", "container", ContainerStub, 249)
+        ("labs.xml", "lab:labs", "lab", Stub, 141),
+        ("containers.xml", "con:containers", "container", StubWithId, 249)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -230,11 +230,11 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_prototype(self):
 
-        with open(os.path.join(API_TEST_DATA, "mock_xml", "labs.xml"), 'r', encoding='utf-8') as file:
-            xml_content = file.read()
+        # with open(os.path.join(API_TEST_DATA, "mock_xml", "labs.xml"), 'r', encoding='utf-8') as file:
+        #     xml_content = file.read()
 
         # Test
-        data = self.api.get_labs(name="pfeizer")
+        data = self.api.get_containers(name="20240417_1729_1C_PAW45723_05bb74c5")
         print(data)
 
 

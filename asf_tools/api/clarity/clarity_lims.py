@@ -279,12 +279,6 @@ class ClarityLims():
         # Set hyphons to underscores
         data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
 
-        # Set replacements
-        replacements = model_type.replacements
-        if replacements is not None:
-            for key, val in replacements.items():
-                data_dict[val] = data_dict[key]
-
         # Create and return model
         instance = model_type(**data_dict)
         return instance

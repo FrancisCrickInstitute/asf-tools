@@ -4,12 +4,11 @@ Clarity API Data Models
 
 # pylint: disable=missing-class-docstring
 
-from typing import Optional, List, Dict, ClassVar, Union
-from pydantic import BaseModel, model_validator
+from typing import Optional, List
+from pydantic import BaseModel, model_validator, Field
 
 class ClarityBaseModel(BaseModel):
     id: Optional[str] = None
-    replacements: ClassVar[Dict] = {}
 
     @model_validator(mode='before')
     def extract_id(cls, values):  # pylint: disable=no-self-argument
@@ -30,9 +29,7 @@ class Stub(ClarityBaseModel):
     name: str
 
 class StubWithId(Stub):
-    uri: str
     limsid: str
-    name: str
 
 class Address(ClarityBaseModel):
     street: Optional[str] = None
@@ -64,13 +61,12 @@ class Placement(ClarityBaseModel):
 
 
 class Container(ClarityBaseModel):
-    replacements: ClassVar[Dict] = {"placement": "placements"}
     limsid: str
     uri: str
     name: str
     type: ContainerType
     occupied_wells: int
-    placements: List[Placement]
+    placements: List[Placement] = Field(alias="placement")
     state: str
 
     @model_validator(mode='before')
@@ -78,7 +74,7 @@ class Container(ClarityBaseModel):
         """
         Make sure if one item is passed for placements that we make it a list of one
         """
-        placements = values.get('placements')
+        placements = values.get('placement')
         if isinstance(placements, dict):
-            values['placements'] = [placements]
+            values['placement'] = [placements]
         return values
