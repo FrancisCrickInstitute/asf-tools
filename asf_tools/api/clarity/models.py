@@ -4,11 +4,12 @@ Clarity API Data Models
 
 # pylint: disable=missing-class-docstring
 
-from typing import List, Optional
+from typing import Optional, List, Dict, ClassVar
 from pydantic import BaseModel, model_validator
 
-class ClarityBaseMode(BaseModel):
+class ClarityBaseModel(BaseModel):
     id: Optional[str] = None
+    replacements: ClassVar[Dict] = {}
 
     @model_validator(mode='before')
     def extract_id(cls, values):  # pylint: disable=no-self-argument
@@ -24,41 +25,42 @@ class ClarityBaseMode(BaseModel):
     def __str__(self):
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
-class LabStub(ClarityBaseMode):
+class LabStub(ClarityBaseModel):
     uri: str
     name: str
 
-class ContainerStub(ClarityBaseMode):
+class ContainerStub(ClarityBaseModel):
     uri: str
     limsid: str
     name: str
 
-class Address(ClarityBaseMode):
-    street: Optional[str]
-    city: Optional[str]
-    state: Optional[str]
-    country: Optional[str]
-    postalCode: Optional[str]
-    institution: Optional[str]
-    department: Optional[str]
+class Address(ClarityBaseModel):
+    street: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    postalCode: Optional[str] = None
+    institution: Optional[str] = None
+    department: Optional[str] = None
 
-class Lab(ClarityBaseMode):
+class Lab(ClarityBaseModel):
     uri: str
     name: str
-    billing_address: Optional[Address]
-    shipping_address: Optional[Address]
-    website: Optional[str]
+    billing_address: Optional[Address] = None
+    shipping_address: Optional[Address] = None
+    website: Optional[str] = None
 
-class ContainerType(ClarityBaseMode):
+class ContainerType(ClarityBaseModel):
     name: str
     uri: str
 
-class Placement(ClarityBaseMode):
+class Placement(ClarityBaseModel):
     limsid: str
     uri: str
     value: str
 
-class Container(ClarityBaseMode):
+class Container(ClarityBaseModel):
+    replacements: ClassVar[Dict] = {"placement": "placements"}
     limsid: str
     uri: str
     name: str

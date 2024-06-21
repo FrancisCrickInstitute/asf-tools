@@ -117,9 +117,6 @@ class TestClarity(unittest.TestCase):
         self.assertTrue(result)
 
 
-
-
-
 class TestClarityWithFixtures:
     """Class for clarity tests with fixtures"""
 
@@ -139,37 +136,96 @@ class TestClarityWithFixtures:
         """
 
         # Setup
-        with open(os.path.join(API_TEST_DATA, "mock_data", xml_path), 'r', encoding='utf-8') as file:
+        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), 'r', encoding='utf-8') as file:
             xml_content = file.read()
 
         # Test
-        data, next_page = api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)
+        data, next_page = api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)  # pylint: disable=unused-variable
 
         # Assert
         assert len(data) == expected_num
 
 
-    @pytest.mark.parametrize("xml_path,outer_key,type_name,replacements,instance_id", [
-        ("container.xml", "con:container", Container, {"placement": "placements"}, "27-6876"),
-        ("lab.xml", "lab:lab", Lab, None, "602")
+    @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
+        ("container.xml", "con:container", Container, "27-6876"),
+        ("lab.xml", "lab:lab", Lab, "602")
     ])
-    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, replacements, instance_id):
+    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
         Test instance construction
         """
 
         # Setup
-        with open(os.path.join(API_TEST_DATA, "mock_data", xml_path), 'r', encoding='utf-8') as file:
+        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), 'r', encoding='utf-8') as file:
             xml_content = file.read()
 
         # Test
-        instance = api.get_single_instance(xml_content, outer_key, type_name, replacements)
+        instance = api.get_single_instance(xml_content, outer_key, type_name)
 
         # print(instance)
         # raise ValueError
 
         # Assert
         assert instance.id == instance_id
+
+
+class TestClarityLive():
+    """
+    Test class for live api tests
+    """
+
+    @pytest.fixture(scope="class")
+    def api(self):
+        """Setup API connection"""
+        yield ClarityLims()
+
+    @pytest.mark.only_run_with_direct_target
+    @pytest.mark.parametrize("endpoint,params,status_codes", [
+        ("labs", None, [200])
+    ])
+    def test_api_clarity_get(self, api, endpoint, params, status_codes):
+        """
+        Test Get against some endpoints
+        """
+
+        # Test
+        data = api.get(endpoint, params, status_codes)
+
+        # Assert
+        assert data is not None
+
+
+
+class TestClarityPrototype(unittest.TestCase):
+    """
+    Test class for prototype functions
+    """
+
+    def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
+        self.api = ClarityLims()
+
+    @pytest.mark.only_run_with_direct_target
+    def test_prototype(self):
+
+        with open(os.path.join(API_TEST_DATA, "mock_xml", "labs.xml"), 'r', encoding='utf-8') as file:
+            xml_content = file.read()
+
+        # Test
+        data, next_page = self.api.get_single_page_instances(xml_content, "lab:labs", "lab", LabStub)
+
+        expanded = self.api.expand_stub(data[100], "lab:lab", Lab)
+
+        print(expanded)
+
+        # with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
+        #     xml_content = file.read()
+        # rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
+
+        # data = self.api.get_instances("con:containers", "container", ContainerStub, "containers", {"name": "20240417_1729_1C_PAW45723_05bb74c5"})
+        # # print(data)
+        # print(data)
+
+        raise ValueError
 
 
 # class TestClarityMocks:
@@ -183,24 +239,3 @@ class TestClarityWithFixtures:
 #         """
 
 #         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
-
-class TestClarityPrototype(unittest.TestCase):
-    """
-    Test class for prototype functions
-    """
-
-    def setUp(self):
-        self.api = ClarityLims()
-
-    @pytest.mark.only_run_with_direct_target
-    def test_api(self):
-
-        # with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
-        #     xml_content = file.read()
-        # rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
-
-        data = self.api.get_instances("con:containers", "container", ContainerStub, "containers", {"name": "20240417_1729_1C_PAW45723_05bb74c5"})
-        # print(data)
-        print(data)
-
-        raise ValueError

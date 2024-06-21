@@ -12,6 +12,8 @@ import requests
 import toml
 import xmltodict
 
+from asf_tools.api.clarity.models import ClarityBaseModel
+
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +98,7 @@ class ClarityLims():
             raise requests.exceptions.HTTPError(message, response=response)
         return True
 
-    def get_with_uri(self, uri: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get_with_uri(self, uri: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]) -> bytes:
         """
         TODO
         """
@@ -115,7 +117,7 @@ class ClarityLims():
 
         return response.content
 
-    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]) -> bytes:
         """
         TODO
         """
@@ -126,7 +128,7 @@ class ClarityLims():
         # Call main get
         return self.get_with_uri(uri, params, accept_status_codes)
 
-    def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type):
+    def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel):
         """
         TODO
         """
@@ -154,7 +156,7 @@ class ClarityLims():
         # Return data and next page hook
         return instances, next_page
 
-    def get_instances(self, outer_key: str, inner_key: str, model_type, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get_instances(self, outer_key: str, inner_key: str, model_type: ClarityBaseModel, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
         """
         TODO
         """
@@ -173,7 +175,7 @@ class ClarityLims():
         return instances
 
 
-    def get_single_instance(self, xml_data: str, outer_key: str, model_type, replacements: Optional[Dict[str, str]] = None):
+    def get_single_instance(self, xml_data: str, outer_key: str, model_type: ClarityBaseModel):
         """
         TODO
         """
@@ -186,6 +188,7 @@ class ClarityLims():
         data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
 
         # Set replacements
+        replacements = model_type.replacements
         if replacements is not None:
             for key, val in replacements.items():
                 data_dict[val] = data_dict[key]
@@ -193,3 +196,13 @@ class ClarityLims():
         # Create and return model
         instance = model_type(**data_dict)
         return instance
+
+    def expand_stub(self, stub: ClarityBaseModel, outer_key: str, expansion_type: ClarityBaseModel):
+        """
+        TODO
+        """
+
+        # Expand stub
+        xml_data = self.get_with_uri(stub.uri)
+        return self.get_single_instance(xml_data, outer_key, expansion_type)
+
