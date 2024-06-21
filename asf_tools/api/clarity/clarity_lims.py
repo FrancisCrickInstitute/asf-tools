@@ -17,6 +17,7 @@ from asf_tools.api.clarity.models import (
     Stub,
     StubWithId,
     Lab,
+    Project,
     Container
 )
 
@@ -208,7 +209,10 @@ class ClarityLims():
 
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
-        inner_dict = data_dict[outer_key][inner_key]
+        inner_dict = data_dict[outer_key]
+        if inner_key not in inner_dict:
+            return [], None
+        inner_dict = inner_dict[inner_key]
 
         # Create instances
         instances = []
@@ -280,6 +284,7 @@ class ClarityLims():
         data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
 
         # Create and return model
+        print(data_dict)
         instance = model_type(**data_dict)
         return instance
 
@@ -321,6 +326,28 @@ class ClarityLims():
             return self.expand_stub(instances[0], "lab:lab", Lab)
         return instances
 
+    def get_projects(self, name=None, open_date=None, last_modified=None):
+        """
+        Retrieve container instances from the API with optional filtering by name or last modified date.
+
+        Args:
+            name (Optional[str]): Filter by container name.
+            open_date (Optional[str]): Opened since the open_date.
+            last_modified (Optional[str]): Filter by last modified date.
+
+        Returns:
+            list[StubWithId] or Project: A list of project stubs or a single expanded project instance if only one result is found.
+        """
+
+        # Contruct params and get an instance
+        params = self.get_params_from_args(name=name, open_date=open_date, last_modified=last_modified)
+        instances = self.get_instances("prj:projects", "project", StubWithId, "projects", params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "prj:project", Project)
+        return instances
+
     def get_containers(self, name=None, last_modified=None):
         """
         Retrieve container instances from the API with optional filtering by name or last modified date.
@@ -341,4 +368,3 @@ class ClarityLims():
         if len(instances) == 1:
             return self.expand_stub(instances[0], "con:container", Container)
         return instances
-

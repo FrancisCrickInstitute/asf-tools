@@ -10,7 +10,13 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Stub, StubWithId, Container, Lab
+from asf_tools.api.clarity.models import (
+    Stub,
+    StubWithId,
+    Container,
+    Lab,
+    Project
+)
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -150,7 +156,8 @@ class TestClarityWithFixtures:
 
     @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
         ("labs.xml", "lab:labs", "lab", Stub, 141),
-        ("containers.xml", "con:containers", "container", StubWithId, 249)
+        ("containers.xml", "con:containers", "container", StubWithId, 249),
+        ("projects.xml", "prj:projects", "project", StubWithId, 219)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -169,7 +176,8 @@ class TestClarityWithFixtures:
 
     @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
         ("container.xml", "con:container", Container, "27-6876"),
-        ("lab.xml", "lab:lab", Lab, "602")
+        ("lab.xml", "lab:lab", Lab, "602"),
+        ("project.xml", "prj:project", Project, "GOL2")
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -234,7 +242,8 @@ class TestClarityPrototype(unittest.TestCase):
         #     xml_content = file.read()
 
         # Test
-        data = self.api.get_containers(name="20240417_1729_1C_PAW45723_05bb74c5")
+        data = self.api.get_projects(name="DN18265")
+        print("-------")
         print(data)
 
 

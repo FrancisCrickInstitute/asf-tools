@@ -4,8 +4,8 @@ Clarity API Data Models
 
 # pylint: disable=missing-class-docstring
 
-from typing import Optional, List
-from pydantic import BaseModel, model_validator, Field
+from typing import Optional, List, Union
+from pydantic import BaseModel, Field, model_validator, field_validator
 
 class ClarityBaseModel(BaseModel):
     id: Optional[str] = None
@@ -29,6 +29,15 @@ class Stub(ClarityBaseModel):
     name: str
 
 class StubWithId(Stub):
+    limsid: str
+
+class UdfField(BaseModel):
+    name: str
+    type: str
+    value: Union[str, int, bool] = Field(alias="#text")
+
+class FileField(BaseModel):
+    uri: str
     limsid: str
 
 class Address(ClarityBaseModel):
@@ -77,4 +86,23 @@ class Container(ClarityBaseModel):
         placements = values.get('placement')
         if isinstance(placements, dict):
             values['placement'] = [placements]
+        return values
+
+
+class Project(ClarityBaseModel):
+    uri: str
+    limsid: str
+    name: str
+    open_date: str
+    researcher_uri: str = Field(alias='researcher')
+    udf_fields: List[UdfField] = Field(default_factory=list, alias='udf:field')
+    file_fields: List[FileField] = Field(default_factory=list, alias='file:file')
+
+    @field_validator("researcher_uri", mode="before")
+    def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
+        """
+        Researcher is nested uri
+        """
+        if isinstance(values, dict) and 'uri' in values:
+            return values['uri']
         return values
