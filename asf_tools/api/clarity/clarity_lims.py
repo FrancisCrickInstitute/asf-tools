@@ -12,7 +12,7 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import ClarityBaseModel, LabStub, Lab
+from asf_tools.api.clarity.models import ClarityBaseModel, LabStub, Lab, ContainerStub, Container
 
 
 log = logging.getLogger(__name__)
@@ -60,7 +60,13 @@ class ClarityLims():
 
     def load_credentials(self, file_path: str) -> dict:
         """
-        TODO
+        Load credentials from a TOML file.
+
+        Args:
+            file_path (str): Path to the TOML file containing credentials.
+
+        Returns:
+            dict: Dictionary containing the credentials.
         """
 
         with open(file_path, "r", encoding="UTF-8") as file:
@@ -68,7 +74,14 @@ class ClarityLims():
 
     def construct_uri(self, endpoint: str, params: Optional[Dict[str, str]] = None) -> str:
         """
-        TODO
+        Construct the full URI for an API endpoint with optional query parameters.
+
+        Args:
+            endpoint (str): The API endpoint.
+            params (Optional[Dict[str, str]]): Optional dictionary of query parameters.
+
+        Returns:
+            str: The constructed URI.
         """
 
         uri = f"{self.baseuri}/api/{self.API_VERSION}/{endpoint}"
@@ -78,7 +91,17 @@ class ClarityLims():
 
     def get_params_from_args(self, **kwargs) -> dict:
         """
-        Convert keyword arguments to a kwargs dictionary.
+        Convert keyword arguments to a dictionary suitable for API query parameters.
+
+        This method converts keyword arguments to a dictionary, replacing underscores
+        in the argument names with hyphens to match the expected format for API query
+        parameters. Arguments with a value of None are excluded from the resulting dictionary.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments representing query parameters.
+
+        Returns:
+            dict: A dictionary of query parameters with hyphens replacing underscores in the keys.
         """
 
         result = {}
@@ -90,7 +113,14 @@ class ClarityLims():
 
     def validate_response(self, response, accept_status_codes=[200]) -> bool:
         """
-        TODO
+        Validate the HTTP response from the API.
+
+        Args:
+            response: The HTTP response object.
+            accept_status_codes (list): List of acceptable status codes.
+
+        Returns:
+            bool: True if the response is valid, raises an HTTPError otherwise.
         """
 
         if response.status_code not in accept_status_codes:
@@ -112,7 +142,15 @@ class ClarityLims():
 
     def get_with_uri(self, uri: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]) -> bytes:
         """
-        TODO
+        Perform a GET request to a specified URI with optional query parameters.
+
+        Args:
+            uri (str): The URI to send the GET request to.
+            params (Optional[Dict[str, str]]): Optional dictionary of query parameters.
+            accept_status_codes (list): List of acceptable status codes.
+
+        Returns:
+            bytes: The content of the response.
         """
 
         # Try to call api
@@ -131,7 +169,15 @@ class ClarityLims():
 
     def get(self, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]) -> bytes:
         """
-        TODO
+        Perform a GET request to a specified API endpoint with optional query parameters.
+
+        Args:
+            endpoint (str): The API endpoint.
+            params (Optional[Dict[str, str]]): Optional dictionary of query parameters.
+            accept_status_codes (list): List of acceptable status codes.
+
+        Returns:
+            bytes: The content of the response.
         """
 
         # Construct uri
@@ -142,7 +188,16 @@ class ClarityLims():
 
     def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel) -> list[ClarityBaseModel]:
         """
-        TODO
+        Parse XML data to get instances of a specified model from a single page.
+
+        Args:
+            xml_data (str): The XML data as a string.
+            outer_key (str): The outer key in the XML structure.
+            inner_key (str): The inner key in the XML structure.
+            model_type (ClarityBaseModel): The model type to instantiate.
+
+        Returns:
+            list[ClarityBaseModel]: A list of instances of the model type.
         """
 
         # Parse data
@@ -171,7 +226,18 @@ class ClarityLims():
     def get_instances(self, outer_key: str, inner_key: str, model_type: ClarityBaseModel, endpoint: str,
                       params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
         """
-        TODO
+        Get instances of a specified model from an API endpoint, handling pagination.
+
+        Args:
+            outer_key (str): The outer key in the XML structure.
+            inner_key (str): The inner key in the XML structure.
+            model_type (ClarityBaseModel): The model type to instantiate.
+            endpoint (str): The API endpoint.
+            params (Optional[Dict[str, str]]): Optional dictionary of query parameters.
+            accept_status_codes (list): List of acceptable status codes.
+
+        Returns:
+            list[ClarityBaseModel]: A list of instances of the model type.
         """
 
         # Get first page
@@ -189,7 +255,15 @@ class ClarityLims():
 
     def get_single_instance(self, xml_data: str, outer_key: str, model_type: ClarityBaseModel) -> ClarityBaseModel:
         """
-        TODO
+        Parse XML data to get a single instance of a specified model.
+
+        Args:
+            xml_data (str): The XML data as a string.
+            outer_key (str): The outer key in the XML structure.
+            model_type (ClarityBaseModel): The model type to instantiate.
+
+        Returns:
+            ClarityBaseModel: An instance of the model type.
         """
 
         # Parse data
@@ -211,7 +285,15 @@ class ClarityLims():
 
     def expand_stub(self, stub: ClarityBaseModel, outer_key: str, expansion_type: ClarityBaseModel) -> ClarityBaseModel:
         """
-        TODO
+        Expand a stub instance to a full instance by retrieving additional data from the API.
+
+        Args:
+            stub (ClarityBaseModel): The stub instance to expand.
+            outer_key (str): The outer key in the XML structure.
+            expansion_type (ClarityBaseModel): The model type to instantiate for the expanded data.
+
+        Returns:
+            ClarityBaseModel: An instance of the model type.
         """
 
         # Expand stub
@@ -220,12 +302,40 @@ class ClarityLims():
 
     def get_labs(self, name=None, last_modified=None):
         """
-        Get list of labs
+        Retrieve lab instances from the API with optional filtering by name or last modified date.
+
+        Args:
+            name (Optional[str]): Filter by lab name.
+            last_modified (Optional[str]): Filter by last modified date.
+
+        Returns:
+            list[LabStub] or Lab: A list of lab stubs or a single expanded lab instance if only one result is found.
         """
 
         # Contruct params and get an instance
         params = self.get_params_from_args(name=name, last_modified=last_modified)
         instances = self.get_instances("lab:labs", "lab", LabStub, "labs", params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "lab:lab", Lab)
+        return instances
+
+    def get_containers(self, name=None, last_modified=None):
+        """
+        Retrieve container instances from the API with optional filtering by name or last modified date.
+
+        Args:
+            name (Optional[str]): Filter by container name.
+            last_modified (Optional[str]): Filter by last modified date.
+
+        Returns:
+            list[LabStub] or Lab: A list of container stubs or a single expanded container instance if only one result is found.
+        """
+
+        # Contruct params and get an instance
+        params = self.get_params_from_args(name=name, last_modified=last_modified)
+        instances = self.get_instances("con:containers", "container", LabStub, "containers", params)
 
         # Expand if only one result is returned
         if len(instances) == 1:
