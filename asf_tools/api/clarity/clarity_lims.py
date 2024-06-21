@@ -12,7 +12,13 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import ClarityBaseModel, LabStub, Lab, ContainerStub, Container
+from asf_tools.api.clarity.models import (
+    ClarityBaseModel,
+    LabStub,
+    Lab,
+    ContainerStub,
+    Container
+)
 
 
 log = logging.getLogger(__name__)
@@ -330,14 +336,14 @@ class ClarityLims():
             last_modified (Optional[str]): Filter by last modified date.
 
         Returns:
-            list[LabStub] or Lab: A list of container stubs or a single expanded container instance if only one result is found.
+            list[ContainerStub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
 
         # Contruct params and get an instance
         params = self.get_params_from_args(name=name, last_modified=last_modified)
-        instances = self.get_instances("con:containers", "container", LabStub, "containers", params)
+        instances = self.get_instances("con:containers", "container", ContainerStub, "containers", params)
 
         # Expand if only one result is returned
         if len(instances) == 1:
-            return self.expand_stub(instances[0], "lab:lab", Lab)
+            return self.expand_stub(instances[0], "con:container", Container)
         return instances

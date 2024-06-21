@@ -4,7 +4,7 @@ Clarity API Data Models
 
 # pylint: disable=missing-class-docstring
 
-from typing import Optional, List, Dict, ClassVar
+from typing import Optional, List, Dict, ClassVar, Union
 from pydantic import BaseModel, model_validator
 
 class ClarityBaseModel(BaseModel):
@@ -66,5 +66,5 @@ class Container(ClarityBaseModel):
     name: str
     type: ContainerType
     occupied_wells: int
-    placements: List[Placement]
+    placements: Union[List[Placement], Placement]
     state: str
