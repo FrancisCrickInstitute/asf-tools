@@ -156,7 +156,8 @@ class ClarityLims():
         # Return data and next page hook
         return instances, next_page
 
-    def get_instances(self, outer_key: str, inner_key: str, model_type: ClarityBaseModel, endpoint: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get_instances(self, outer_key: str, inner_key: str, model_type: ClarityBaseModel, endpoint: str,
+                      params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
         """
         TODO
         """
@@ -173,7 +174,6 @@ class ClarityLims():
             break
 
         return instances
-
 
     def get_single_instance(self, xml_data: str, outer_key: str, model_type: ClarityBaseModel):
         """
@@ -205,4 +205,16 @@ class ClarityLims():
         # Expand stub
         xml_data = self.get_with_uri(stub.uri)
         return self.get_single_instance(xml_data, outer_key, expansion_type)
+
+    def get_params_from_args(self, **kwargs):
+        """
+        Convert keyword arguments to a kwargs dictionary.
+        """
+
+        result = {}
+        for key, value in kwargs.items():
+            if value is None: 
+                continue
+            result[key.replace('_', '-')] = value
+        return result
 

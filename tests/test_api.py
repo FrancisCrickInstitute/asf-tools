@@ -117,6 +117,29 @@ class TestClarity(unittest.TestCase):
         self.assertTrue(result)
 
 
+    def test_clarity_get_params_from_args_with_none(self):
+        """
+        Get get args with none params
+        """
+
+        # Test
+        params = self.api.get_params_from_args(name="test", param1=None, param2=None)
+
+        # Assert
+        self.assertDictEqual({"name": "test"}, params)
+
+    def test_clarity_get_params_from_args_with_underscore(self):
+        """
+        Get get args with none params
+        """
+
+        # Test
+        params = self.api.get_params_from_args(name="test", param1=None, param2=None, last_modified="test2")
+
+        # Assert
+        self.assertDictEqual({"name": "test", "last-modified": "test2"}, params)
+
+
 class TestClarityWithFixtures:
     """Class for clarity tests with fixtures"""
 
@@ -124,7 +147,6 @@ class TestClarityWithFixtures:
     def api(self):
         """Setup API connection"""
         yield ClarityLims()
-
 
     @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
         ("labs.xml", "lab:labs", "lab", LabStub, 141),
@@ -144,7 +166,6 @@ class TestClarityWithFixtures:
 
         # Assert
         assert len(data) == expected_num
-
 
     @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
         ("container.xml", "con:container", Container, "27-6876"),
@@ -167,6 +188,8 @@ class TestClarityWithFixtures:
 
         # Assert
         assert instance.id == instance_id
+
+
 
 
 class TestClarityLive():
