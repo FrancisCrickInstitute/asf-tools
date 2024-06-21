@@ -25,14 +25,17 @@ class ClarityBaseModel(BaseModel):
     def __str__(self):
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
+
 class LabStub(ClarityBaseModel):
     uri: str
     name: str
+
 
 class ContainerStub(ClarityBaseModel):
     uri: str
     limsid: str
     name: str
+
 
 class Address(ClarityBaseModel):
     street: Optional[str] = None
@@ -43,6 +46,7 @@ class Address(ClarityBaseModel):
     institution: Optional[str] = None
     department: Optional[str] = None
 
+
 class Lab(ClarityBaseModel):
     uri: str
     name: str
@@ -50,14 +54,17 @@ class Lab(ClarityBaseModel):
     shipping_address: Optional[Address] = None
     website: Optional[str] = None
 
+
 class ContainerType(ClarityBaseModel):
     name: str
     uri: str
+
 
 class Placement(ClarityBaseModel):
     limsid: str
     uri: str
     value: str
+
 
 class Container(ClarityBaseModel):
     replacements: ClassVar[Dict] = {"placement": "placements"}
@@ -66,5 +73,15 @@ class Container(ClarityBaseModel):
     name: str
     type: ContainerType
     occupied_wells: int
-    placements: Union[List[Placement], Placement]
+    placements: List[Placement]
     state: str
+
+    @model_validator(mode='before')
+    def ensure_list(cls, values):  # pylint: disable=no-self-argument
+        """
+        Make sure if one item is passed for placements that we make it a list of one
+        """
+        placements = values.get('placements')
+        if isinstance(placements, dict):
+            values['placements'] = [placements]
+        return values
