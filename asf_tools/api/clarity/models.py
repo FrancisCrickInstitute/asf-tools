@@ -34,13 +34,6 @@ class StubWithId(Stub):
     limsid: str
     name: str
 
-class LabStub(Stub):
-    pass
-
-class ContainerStub(StubWithId):
-    pass
-
-
 class Address(ClarityBaseModel):
     street: Optional[str] = None
     city: Optional[str] = None
