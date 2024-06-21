@@ -234,19 +234,9 @@ class TestClarityPrototype(unittest.TestCase):
             xml_content = file.read()
 
         # Test
-        data, next_page = self.api.get_single_page_instances(xml_content, "lab:labs", "lab", LabStub)
+        data = self.api.get_labs(name="pfeizer")
+        print(data)
 
-        expanded = self.api.expand_stub(data[100], "lab:lab", Lab)
-
-        print(expanded)
-
-        # with open(os.path.join(API_TEST_DATA, "mock_data", "container.xml"), 'r', encoding='utf-8') as file:
-        #     xml_content = file.read()
-        # rep = { "occupied-wells": "occupied_wells", "placement": "placements"}
-
-        # data = self.api.get_instances("con:containers", "container", ContainerStub, "containers", {"name": "20240417_1729_1C_PAW45723_05bb74c5"})
-        # # print(data)
-        # print(data)
 
         raise ValueError
 

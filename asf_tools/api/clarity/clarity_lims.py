@@ -12,7 +12,7 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import ClarityBaseModel
+from asf_tools.api.clarity.models import ClarityBaseModel, LabStub, Lab
 
 
 log = logging.getLogger(__name__)
@@ -76,7 +76,19 @@ class ClarityLims():
             uri += '?' + urlencode(params)
         return uri
 
-    def validate_response(self, response, accept_status_codes=[200]):
+    def get_params_from_args(self, **kwargs) -> dict:
+        """
+        Convert keyword arguments to a kwargs dictionary.
+        """
+
+        result = {}
+        for key, value in kwargs.items():
+            if value is None: 
+                continue
+            result[key.replace('_', '-')] = value
+        return result
+
+    def validate_response(self, response, accept_status_codes=[200]) -> bool:
         """
         TODO
         """
@@ -128,7 +140,7 @@ class ClarityLims():
         # Call main get
         return self.get_with_uri(uri, params, accept_status_codes)
 
-    def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel):
+    def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel) -> list[ClarityBaseModel]:
         """
         TODO
         """
@@ -175,7 +187,7 @@ class ClarityLims():
 
         return instances
 
-    def get_single_instance(self, xml_data: str, outer_key: str, model_type: ClarityBaseModel):
+    def get_single_instance(self, xml_data: str, outer_key: str, model_type: ClarityBaseModel) -> ClarityBaseModel:
         """
         TODO
         """
@@ -197,7 +209,7 @@ class ClarityLims():
         instance = model_type(**data_dict)
         return instance
 
-    def expand_stub(self, stub: ClarityBaseModel, outer_key: str, expansion_type: ClarityBaseModel):
+    def expand_stub(self, stub: ClarityBaseModel, outer_key: str, expansion_type: ClarityBaseModel) -> ClarityBaseModel:
         """
         TODO
         """
@@ -206,15 +218,16 @@ class ClarityLims():
         xml_data = self.get_with_uri(stub.uri)
         return self.get_single_instance(xml_data, outer_key, expansion_type)
 
-    def get_params_from_args(self, **kwargs):
+    def get_labs(self, name=None, last_modified=None):
         """
-        Convert keyword arguments to a kwargs dictionary.
+        Get list of labs
         """
 
-        result = {}
-        for key, value in kwargs.items():
-            if value is None: 
-                continue
-            result[key.replace('_', '-')] = value
-        return result
+        # Contruct params and get an instance
+        params = self.get_params_from_args(name=name, last_modified=last_modified)
+        instances = self.get_instances("lab:labs", "lab", LabStub, "labs", params)
 
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "lab:lab", Lab)
+        return instances
