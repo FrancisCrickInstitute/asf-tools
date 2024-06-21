@@ -29,11 +29,16 @@ class Stub(ClarityBaseModel):
     uri: str
     name: str
 
+class StubWithId(Stub):
+    uri: str
+    limsid: str
+    name: str
+
 class LabStub(Stub):
     pass
 
-class ContainerStub(Stub):
-    limsid: str
+class ContainerStub(StubWithId):
+    pass
 
 
 class Address(ClarityBaseModel):
