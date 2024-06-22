@@ -35,6 +35,12 @@ class StubIdOnly(ClarityBaseModel):
     uri: str
     limsid: str
 
+class StubUriOnly(BaseModel):
+    uri: str
+
+# class StubNameOnly(ClarityBaseModel):
+#     name: str
+
 class UdfField(BaseModel):
     name: str
     type: str
@@ -99,8 +105,8 @@ class Project(ClarityBaseModel):
     name: str
     open_date: str
     researcher_uri: str = Field(alias='researcher')
-    udf_fields: List[UdfField] = Field(default_factory=list, alias='udf:field')
-    file_fields: List[FileField] = Field(default_factory=list, alias='file:file')
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
 
     @field_validator("researcher_uri", mode="before")
     def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
@@ -116,21 +122,46 @@ class Location(ClarityBaseModel):
     container: StubIdOnly
     value: str
 
+
+class WorkflowStage(ClarityBaseModel):
+    uri: str
+    name: str
+    status: str
+
+
 class Artifact(ClarityBaseModel):
     limsid: str
     uri: str
     name: str
     type: str
     output_type: str
-    parent_process: Optional[StubIdOnly]
-    qc_flag: Optional[str]
-    location: Optional[Location]
-    working_flag: Optional[bool]
-    samples: List[StubIdOnly] = Field(alias="sample", default_factory=list)
-    # reagent_labels: List[ReagentLabel] = Field(alias="reagent-label", default_factory=list)
-    # control_type: Optional[UriNameModel] = Field(alias="control-type")
-    # udf_fields: List[UdfField] = Field(alias="udf:field", default_factory=list)
-    # file: Optional[FileField] = Field(alias="file:file")
-    # artifact_group: List[UriNameModel] = Field(alias="artifact-group", default_factory=list)
-    # workflow_stages: List[WorkflowStage] = Field(alias="workflow-stage", default_factory=list)
-    # demux: Optional[UriNameModel]
+    parent_process: Optional[StubIdOnly] = None
+    qc_flag: Optional[str] = None
+    location: Optional[Location] = None
+    working_flag: Optional[bool] = None
+    samples: Optional[List[StubIdOnly]] = Field(alias="sample", default_factory=list)
+    reagent_labels: Optional[List[str]] = Field(alias="reagent_label", default_factory=list)
+    control_type: Optional[Stub] = None
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
+    artifact_group: Optional[List[Stub]] = Field(default_factory=list)
+    workflow_stages: Optional[List[WorkflowStage]] = Field(default_factory=list)
+    demux: Optional[StubUriOnly] = None
+
+    @field_validator("reagent_labels", mode="before")
+    def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
+        """
+        Reagent label is nested name
+        """
+        if isinstance(values, dict) and 'name' in values:
+            return values['name']
+        if isinstance(values, list):
+            return [d["name"] for d in values]
+
+    @field_validator("workflow_stages", mode="before")
+    def extract_workflow_stages(cls, values):  # pylint: disable=no-self-argument
+        """
+        Workflow stages is nested
+        """
+        values = values["workflow-stage"]
+        return [WorkflowStage(**item) for item in values]

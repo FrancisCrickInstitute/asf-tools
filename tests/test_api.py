@@ -13,9 +13,11 @@ from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import (
     Stub,
     StubWithId,
+    StubIdOnly,
     Container,
     Lab,
-    Project
+    Project,
+    Artifact
 )
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -157,7 +159,8 @@ class TestClarityWithFixtures:
     @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
         ("labs.xml", "lab:labs", "lab", Stub, 141),
         ("containers.xml", "con:containers", "container", StubWithId, 249),
-        ("projects.xml", "prj:projects", "project", StubWithId, 219)
+        ("projects.xml", "prj:projects", "project", StubWithId, 219),
+        ("artifacts.xml", "art:artifacts", "artifact", StubIdOnly, 828)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -177,7 +180,8 @@ class TestClarityWithFixtures:
     @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
         ("container.xml", "con:container", Container, "27-6876"),
         ("lab.xml", "lab:lab", Lab, "602"),
-        ("project.xml", "prj:project", Project, "GOL2")
+        ("project.xml", "prj:project", Project, "GOL2"),
+        ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893")
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
