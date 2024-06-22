@@ -20,7 +20,8 @@ from asf_tools.api.clarity.models import (
     Lab,
     Project,
     Container,
-    Artifact
+    Artifact,
+    Sample
 )
 
 log = logging.getLogger(__name__)
@@ -403,4 +404,23 @@ class ClarityLims():
         # Expand if only one result is returned
         if len(instances) == 1:
             return self.expand_stub(instances[0], "art:artifact", Container)
+        return instances
+
+    def get_samples(self, id=None, name=None, project_name=None, projectlimsid=None):
+        """
+        TODO
+        """
+
+        # Check if we have used an id
+        if id is not None:
+            xml_data = self.get_with_id("samples", id)
+            return self.get_single_instance(xml_data, "smp:sample", Sample)
+
+        # Contruct params and get an instance
+        params = self.get_params_from_args(name=name, project_name=project_name, projectlimsid=projectlimsid)
+        instances = self.get_instances("smp:samples", "sample", StubIdOnly, "samples", params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "smp:sample", Sample)
         return instances

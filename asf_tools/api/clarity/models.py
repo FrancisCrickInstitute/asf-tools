@@ -165,3 +165,14 @@ class Artifact(ClarityBaseModel):
         """
         values = values["workflow-stage"]
         return [WorkflowStage(**item) for item in values]
+
+
+class Sample(ClarityBaseModel):
+    limsid: str
+    uri: str
+    name: str
+    date_received: str
+    project: StubIdOnly
+    submitter: StubUriOnly
+    artifact: Optional[StubIdOnly] = None
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
