@@ -9,7 +9,7 @@ from asf_tools.api.clarity.clarity_lims import ClarityLims
 
 log = logging.getLogger(__name__)
 
-class HelperLims(ClarityLims):
+# class HelperLims(ClarityLims):
 
 
     # def get_artifacts_from_runid(self, run_id: str) -> list:
