@@ -21,7 +21,8 @@ from asf_tools.api.clarity.models import (
     Project,
     Container,
     Artifact,
-    Sample
+    Sample,
+    Process
 )
 
 log = logging.getLogger(__name__)
@@ -382,7 +383,7 @@ class ClarityLims():
             return self.expand_stub(instances[0], "con:container", Container)
         return instances
 
-    def get_artifacts(self, id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
+    def get_artifacts(self, artifact_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
                       qc_flag=None, sample_name=None, samplelimsid=None, artifactgroup=None, containername=None,
                       containerlimsid=None, reagent_label=None):
         """
@@ -390,8 +391,8 @@ class ClarityLims():
         """
 
         # Check if we have used an id
-        if id is not None:
-            xml_data = self.get_with_id("artifacts", id)
+        if artifact_id is not None:
+            xml_data = self.get_with_id("artifacts", artifact_id)
             return self.get_single_instance(xml_data, "art:artifact", Artifact)
 
         # Contruct params and get an instance
@@ -406,14 +407,14 @@ class ClarityLims():
             return self.expand_stub(instances[0], "art:artifact", Container)
         return instances
 
-    def get_samples(self, id=None, name=None, project_name=None, projectlimsid=None):
+    def get_samples(self, sample_id=None, name=None, project_name=None, projectlimsid=None):
         """
         TODO
         """
 
         # Check if we have used an id
-        if id is not None:
-            xml_data = self.get_with_id("samples", id)
+        if sample_id is not None:
+            xml_data = self.get_with_id("samples", sample_id)
             return self.get_single_instance(xml_data, "smp:sample", Sample)
 
         # Contruct params and get an instance
@@ -423,4 +424,25 @@ class ClarityLims():
         # Expand if only one result is returned
         if len(instances) == 1:
             return self.expand_stub(instances[0], "smp:sample", Sample)
+        return instances
+
+    def get_processes(self, process_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
+                      techfirstname=None, techlastname=None, projectname=None):
+        """
+        TODO
+        """
+
+        # Check if we have used an id
+        if process_id is not None:
+            xml_data = self.get_with_id("processes", process_id)
+            return self.get_single_instance(xml_data, "prc:process", Process)
+
+        # Contruct params and get an instance
+        params = self.get_params_from_args(last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid, 
+                                           techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
+        instances = self.get_instances("prc:processes", "process", StubIdOnly, "processes", params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], "prc:process", Process)
         return instances

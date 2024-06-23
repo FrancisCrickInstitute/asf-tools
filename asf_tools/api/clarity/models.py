@@ -129,6 +129,12 @@ class WorkflowStage(ClarityBaseModel):
     status: str
 
 
+class ResearcherStub(ClarityBaseModel):
+    uri: str
+    first_name: str = Field(alias="first-name")
+    last_name: str = Field(alias="last-name")
+
+
 class Artifact(ClarityBaseModel):
     limsid: str
     uri: str
@@ -176,3 +182,49 @@ class Sample(ClarityBaseModel):
     submitter: StubUriOnly
     artifact: Optional[StubIdOnly] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
+
+
+class Input(ClarityBaseModel):
+    limsid: str
+    uri: str
+    post_process_uri: str = Field(alias="post-process-uri")
+    parent_process: StubIdOnly = Field(alias="parent-process")
+
+class Output(ClarityBaseModel):
+    limsid: str
+    uri: str
+    output_type: str = Field(alias="output-type")
+    output_generation: Optional[str] = Field(alias="output-generation", default=None)
+
+
+class InputOutputMap(ClarityBaseModel):
+    input: Input
+    output: Optional[Output] = None
+
+
+class Process(ClarityBaseModel):
+    limsid: str
+    uri: str
+    process_type: Stub = Field(alias="type")
+    date_run: str
+    technician: ResearcherStub
+    input_output_map: List[InputOutputMap] = Field(default_factory=list)
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
+
+    @field_validator("process_type", mode="before")
+    def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
+        """
+        Process type has #text
+        """
+        values["name"] = values["#text"]
+        return values
+
+    @field_validator("input_output_map", mode="before")
+    def ensure_list(cls, values):  # pylint: disable=no-self-argument
+        """
+        Make sure if one item is passed for input_output_map that we make it a list of one
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values

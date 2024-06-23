@@ -18,7 +18,8 @@ from asf_tools.api.clarity.models import (
     Lab,
     Project,
     Artifact,
-    Sample
+    Sample,
+    Process
 )
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -162,7 +163,8 @@ class TestClarityWithFixtures:
         ("containers.xml", "con:containers", "container", StubWithId, 249),
         ("projects.xml", "prj:projects", "project", StubWithId, 219),
         ("artifacts.xml", "art:artifacts", "artifact", StubIdOnly, 828),
-        ("samples.xml", "smp:samples", "sample", StubIdOnly, 333)
+        ("samples.xml", "smp:samples", "sample", StubIdOnly, 333),
+        ("processes.xml", "prc:processes", "process", StubIdOnly, 453)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -184,7 +186,8 @@ class TestClarityWithFixtures:
         ("lab.xml", "lab:lab", Lab, "602"),
         ("project.xml", "prj:project", Project, "GOL2"),
         ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
-        ("sample.xml", "smp:sample", Sample, "VIV6902A1")
+        ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
+        ("process.xml", "prc:process", Process, "24-39409")
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -249,7 +252,7 @@ class TestClarityPrototype(unittest.TestCase):
         #     xml_content = file.read()
 
         # Test
-        data = self.api.get_samples(id="VIV6902A1")
+        data = self.api.get_processes(process_id="24-54327")
         print("-------")
         print(data)
 
