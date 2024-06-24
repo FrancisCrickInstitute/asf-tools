@@ -14,9 +14,6 @@ import xmltodict
 from asf_tools.api.clarity.models import (
     ClarityBaseModel,
     Stub,
-    StubWithId,
-    StubIdOnly,
-    StubWithStatus,
     Lab,
     Project,
     Container,
@@ -351,7 +348,7 @@ class ClarityLims():
         Returns:
             list[Stub] or Project: A list of project stubs or a single expanded project instance if only one result is found.
         """
-        return self.get_stub_list(Project, StubWithId, "projects", "prj:project", "prj:projects", "project", search_id=search_id,
+        return self.get_stub_list(Project, Stub, "projects", "prj:project", "prj:projects", "project", search_id=search_id,
                             name=name, open_date=open_date, last_modified=last_modified)
 
     def get_containers(self, search_id=None, name=None, last_modified=None):
@@ -366,7 +363,7 @@ class ClarityLims():
         Returns:
             list[Stub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
-        return self.get_stub_list(Container, StubWithId, "containers", "con:container", "con:containers", "container", search_id=search_id,
+        return self.get_stub_list(Container, Stub, "containers", "con:container", "con:containers", "container", search_id=search_id,
                     name=name, last_modified=last_modified)
 
     def get_artifacts(self, search_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
@@ -375,7 +372,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Artifact, StubIdOnly, "artifacts", "art:artifact", "art:artifacts", "artifact", search_id=search_id, 
+        return self.get_stub_list(Artifact, Stub, "artifacts", "art:artifact", "art:artifacts", "artifact", search_id=search_id, 
                                   name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
                                   working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
                                   artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
@@ -385,7 +382,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Sample, StubIdOnly, "samples", "smp:sample", "smp:samples", "sample", search_id=search_id,
+        return self.get_stub_list(Sample, Stub, "samples", "smp:sample", "smp:samples", "sample", search_id=search_id,
                     name=name, project_name=project_name, projectlimsid=projectlimsid)
 
     def get_processes(self, search_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
@@ -393,7 +390,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Process, StubIdOnly, "processes", "prc:process", "prc:processes", "process", search_id=search_id,
+        return self.get_stub_list(Process, Stub, "processes", "prc:process", "prc:processes", "process", search_id=search_id,
                                   last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
                                   techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
 
@@ -401,7 +398,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Workflow, StubWithStatus, "configuration/workflows", "wkfcnf:workflow", "wkfcnf:workflows", "workflow",
+        return self.get_stub_list(Workflow, Stub, "configuration/workflows", "wkfcnf:workflow", "wkfcnf:workflows", "workflow",
                                   search_id=search_id, name=name)
 
     def get_protocols(self, search_id=None, name=None):

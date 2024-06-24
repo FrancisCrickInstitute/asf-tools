@@ -7,6 +7,7 @@ Clarity API Data Models
 from typing import Optional, List, Union
 from pydantic import BaseModel, Field, model_validator, field_validator
 
+
 class ClarityBaseModel(BaseModel):
     id: Optional[str] = None
 
@@ -27,29 +28,10 @@ class ClarityBaseModel(BaseModel):
 
 class Stub(ClarityBaseModel):
     uri: str
-    name: str
+    name: Optional[str] = None
+    limsid: Optional[str] = None
+    status: Optional[str] = None
 
-
-class StubWithId(Stub):
-    limsid: str
-
-
-class StubIdOnly(ClarityBaseModel):
-    uri: str
-    limsid: str
-
-
-class StubUriOnly(BaseModel):
-    uri: str
-
-
-class StubWithStatus(ClarityBaseModel):
-    uri: str
-    name: str
-    status: str
-
-# class StubNameOnly(ClarityBaseModel):
-#     name: str
 
 class UdfField(BaseModel):
     name: str
@@ -129,7 +111,7 @@ class Project(ClarityBaseModel):
 
 
 class Location(ClarityBaseModel):
-    container: StubIdOnly
+    container: Stub
     value: str
 
 
@@ -145,18 +127,18 @@ class Artifact(ClarityBaseModel):
     name: str
     type: str
     output_type: str
-    parent_process: Optional[StubIdOnly] = None
+    parent_process: Optional[Stub] = None
     qc_flag: Optional[str] = None
     location: Optional[Location] = None
     working_flag: Optional[bool] = None
-    samples: Optional[List[StubIdOnly]] = Field(alias="sample", default_factory=list)
+    samples: Optional[List[Stub]] = Field(alias="sample", default_factory=list)
     reagent_labels: Optional[List[str]] = Field(alias="reagent_label", default_factory=list)
     control_type: Optional[Stub] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
     file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
     artifact_group: Optional[List[Stub]] = Field(default_factory=list)
-    workflow_stages: Optional[List[StubWithStatus]] = Field(default_factory=list)
-    demux: Optional[StubUriOnly] = None
+    workflow_stages: Optional[List[Stub]] = Field(default_factory=list)
+    demux: Optional[Stub] = None
 
     @field_validator("reagent_labels", mode="before")
     def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
@@ -174,7 +156,7 @@ class Artifact(ClarityBaseModel):
         Workflow stages is nested
         """
         values = values["workflow-stage"]
-        return [StubWithStatus(**item) for item in values]
+        return [Stub(**item) for item in values]
 
 
 class Sample(ClarityBaseModel):
@@ -182,9 +164,9 @@ class Sample(ClarityBaseModel):
     uri: str
     name: str
     date_received: str
-    project: StubIdOnly
-    submitter: StubUriOnly
-    artifact: Optional[StubIdOnly] = None
+    project: Stub
+    submitter: Stub
+    artifact: Optional[Stub] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
 
 
@@ -192,7 +174,7 @@ class Input(ClarityBaseModel):
     limsid: str
     uri: str
     post_process_uri: str = Field(alias="post-process-uri")
-    parent_process: StubIdOnly = Field(alias="parent-process")
+    parent_process: Stub = Field(alias="parent-process")
 
 class Output(ClarityBaseModel):
     limsid: str
