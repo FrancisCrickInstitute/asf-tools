@@ -5,7 +5,6 @@ Clarity Lims API Class
 import os
 import logging
 from typing import Optional, Dict
-from urllib.parse import urlencode
 from xml.etree import ElementTree
 import requests
 
@@ -118,7 +117,7 @@ class ClarityLims():
             result[key.replace('_', '-')] = value
         return result
 
-    def validate_response(self, uri, response, accept_status_codes=[200]) -> bool:
+    def validate_response(self, uri, response, accept_status_codes = [200]) -> bool:
         """
         Validate the HTTP response from the API.
 
@@ -287,7 +286,6 @@ class ClarityLims():
         data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
 
         # Create and return model
-        log.debug(data_dict)
         instance = model_type(**data_dict)
         return instance
 

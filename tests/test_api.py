@@ -24,6 +24,7 @@ from asf_tools.api.clarity.models import (
     Workflow,
     Protocol
 )
+from .mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -32,7 +33,7 @@ class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+        self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
     def test_clarity_load_credentials_valid(self):
         """
@@ -200,33 +201,51 @@ class TestClarityWithFixtures:
         assert instance.id == instance_id
 
 
-
-
-class TestClarityLive():
+class TestClarityEndpoints():
     """
-    Test class for live api tests
+    Test class for pulling data from API endpoints
     """
 
     @pytest.fixture(scope="class")
-    def api(self):
+    def api(self, request):
         """Setup API connection"""
-        yield ClarityLims()
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "data.pkl")
+        lims = ClarityLimsMock()
+        lims.load_tracked_requests(data_file_path)
+        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+        yield lims
 
-    @pytest.mark.only_run_with_direct_target
-    @pytest.mark.parametrize("endpoint,params,status_codes", [
-        ("labs", None, [200])
+    @pytest.mark.parametrize("func_name,search_id", [
+        ("get_labs", None),
+        ("get_labs", "2"),
+        ("get_projects", "GOL2"),
+        ("get_containers", "27-6876"),
+        ("get_artifacts", "2-8332743?state=5959893"),
+        ("get_samples", "VIV6902A1"),
+        ("get_processes", "24-39409"),
+        ("get_workflows", None),
+        ("get_protocols", None),
+        ("get_workflows", "56"),
+        ("get_protocols", "1")
     ])
-    def test_api_clarity_get(self, api, endpoint, params, status_codes):
+    def test_clarity_get_endpoints(self, api, func_name, search_id):
         """
-        Test Get against some endpoints
+        Test Get against endpoints
         """
+
+        # Setup
+        api_func = getattr(api, func_name)
 
         # Test
-        data = api.get(endpoint, params, status_codes)
+        data = api_func(search_id=search_id)
+        print(data)
 
         # Assert
+        if isinstance(data, list):
+            assert len(data) > 0
         assert data is not None
-
+        if search_id is not None:
+            assert data.id == search_id
 
 
 class TestClarityPrototype(unittest.TestCase):
@@ -246,17 +265,3 @@ class TestClarityPrototype(unittest.TestCase):
         print(data)
 
         raise ValueError
-
-
-# class TestClarityMocks:
-#     """
-#     Mock generation methods
-#     """
-#     @pytest.mark.only_run_with_direct_target
-#     def test_mocking_generate_clarity_data(self):
-#         """
-#         Generates a new test data set from the api
-#         """
-
-#         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
-
