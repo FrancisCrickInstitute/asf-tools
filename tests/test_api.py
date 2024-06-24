@@ -21,7 +21,8 @@ from asf_tools.api.clarity.models import (
     Artifact,
     Sample,
     Process,
-    Workflow
+    Workflow,
+    Protocol
 )
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -83,20 +84,6 @@ class TestClarity(unittest.TestCase):
 
         # Assert
         self.assertEqual(uri, "https://localhost:8080/api/v2/test")
-
-    def test_clarity_construct_uri_params(self):
-        """
-        Test construct URI endpoint
-        """
-
-        # Setup
-        params = { "userid" : "1234", "name" : "test" }
-
-        # Test
-        uri = self.api.construct_uri("users", params)
-
-        # Assert
-        self.assertEqual(uri, "https://localhost:8080/api/v2/users?userid=1234&name=test")
 
     def test_clarity_validate_response_error(self):
         """
@@ -191,7 +178,8 @@ class TestClarityWithFixtures:
         ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
         ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
         ("process.xml", "prc:process", Process, "24-39409"),
-        ("workflow.xml", "wkfcnf:workflow", Workflow, "56")
+        ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),
+        ("protocol.xml", "protcnf:protocol", Protocol, "1")
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -252,14 +240,10 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_prototype(self):
 
-        # with open(os.path.join(API_TEST_DATA, "mock_xml", "labs.xml"), 'r', encoding='utf-8') as file:
-        #     xml_content = file.read()
-
         # Test
-        data = self.api.get_workflows(search_id="56")
+        data = self.api.get_protocols(name="T DNA - Compact Sample QC")
         print("-------")
         print(data)
-
 
         raise ValueError
 

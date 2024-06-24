@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<protcnf:protocols xmlns:protcnf="http://genologics.com/ri/protocolconfiguration">
+    <protocol name="T DNA - Compact Sample QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/1"/>
+    <protocol name="T RNA - Compact Sample QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/54"/>
+    <protocol name="T Pools Submission" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/59"/>
+    <protocol name="T Premades Submission" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/58"/>
+    <protocol name="T Single Cell Submission" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/63"/>
+    <protocol name="DNA Initial QC 5.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/251"/>
+    <protocol name="T Samples Drop-Off" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/64"/>
+    <protocol name="T Custom Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/55"/>
+    <protocol name="T CRISPR Screening (MiSeq)" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/65"/>
+    <protocol name="T Custom RNA Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/62"/>
+    <protocol name="T Capture Library prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/61"/>
+    <protocol name="T Libraries Pooling" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/56"/>
+    <protocol name="T Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/57"/>
+    <protocol name="Test Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/53"/>
+    <protocol name="Test Libraries Pooling" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/52"/>
+    <protocol name="Test Custom Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/51"/>
+    <protocol name="RNA - Compact Sample QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/2"/>
+    <protocol name="Custom Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/14"/>
+    <protocol name="QC and Pooling" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/4"/>
+    <protocol name="Indexing and Pooling" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/15"/>
+    <protocol name="Real-Time qPCR" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/6"/>
+    <protocol name="Flowcell Design" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/7"/>
+    <protocol name="Flowcell QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/9"/>
+    <protocol name="Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/8"/>
+    <protocol name="Validation QC Protocol" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/16"/>
+    <protocol name="Validation Reagents Protocol" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/17"/>
+    <protocol name="Illumina SBS (NextSeq) 1.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/252"/>
+    <protocol name="test protocol 1" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/101"/>
+    <protocol name="COVID-19 REJECTED SAMPLES" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/102"/>
+    <protocol name="Nextera DNA Library Prep 5.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/253"/>
+    <protocol name="COVID-19 RNA EXTRACTION" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/103"/>
+    <protocol name="T RNA Extraction" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/151"/>
+    <protocol name="T ONT Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/201"/>
+    <protocol name="Library Validation QC 5.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/254"/>
+    <protocol name="T NanoString Sample Reception" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/301"/>
+    <protocol name="T NanoString Run" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/302"/>
+</protcnf:protocols>

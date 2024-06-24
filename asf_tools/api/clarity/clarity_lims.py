@@ -215,7 +215,6 @@ class ClarityLims():
         """
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
-        print(data_dict)
         inner_dict = data_dict[outer_key]
         if inner_key not in inner_dict:
             return [], None

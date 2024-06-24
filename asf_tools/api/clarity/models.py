@@ -256,3 +256,44 @@ class Workflow(ClarityBaseModel):
         """
         values = values["stage"]
         return [Stub(**item) for item in values]
+
+
+class Transition(ClarityBaseModel):
+    name: str
+    sequence: str
+    next_step_uri: str = Field(alias="next-step-uri")
+
+
+class ProtocolStep(ClarityBaseModel):
+    name: str
+    uri: str
+    protocol_uri: str = Field(alias="protocol-uri")
+    protocol_step_index: int = Field(alias="protocol-step-index")
+    transitions:  List[Transition] = Field(default_factory=list)
+
+    @field_validator("transitions", mode="before")
+    def extract_stages(cls, values):  # pylint: disable=no-self-argument
+        """
+        Transitions is nested
+        """
+        if values is None:
+            return []
+        values = values["transition"]
+        if isinstance(values, dict):
+            values = [values]
+        return [Transition(**item) for item in values]
+
+
+class Protocol(ClarityBaseModel):
+    uri: str
+    name: str
+    index: str
+    steps: List[ProtocolStep] = Field(default_factory=list)
+
+    @field_validator("steps", mode="before")
+    def extract_stages(cls, values):  # pylint: disable=no-self-argument
+        """
+        Steps is nested
+        """
+        values = values["step"]
+        return [ProtocolStep(**item) for item in values]
