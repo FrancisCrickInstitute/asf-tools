@@ -14,15 +14,17 @@ class ClarityBaseModel(BaseModel):
     @model_validator(mode='before')
     def extract_id(cls, values):  # pylint: disable=no-self-argument
         """
-        Set id of the object from the uri
+        Set id of the object from the uri.
         """
-
         uri = values.get('uri')
         if uri:
             values['id'] = uri.split('/')[-1]
         return values
 
     def __str__(self):
+        """
+        Return a string representation of the model.
+        """
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
 
@@ -83,7 +85,7 @@ class Container(ClarityBaseModel):
     @model_validator(mode='before')
     def ensure_list(cls, values):  # pylint: disable=no-self-argument
         """
-        Make sure if one item is passed for placements that we make it a list of one
+        Ensure placements is a list.
         """
         placements = values.get('placement')
         if isinstance(placements, dict):
@@ -103,7 +105,7 @@ class Project(ClarityBaseModel):
     @field_validator("researcher_uri", mode="before")
     def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
         """
-        Researcher is nested uri
+        Extract researcher URI.
         """
         if isinstance(values, dict) and 'uri' in values:
             return values['uri']
