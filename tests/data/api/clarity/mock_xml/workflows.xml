@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wkfcnf:workflows xmlns:wkfcnf="http://genologics.com/ri/workflowconfiguration">
+    <workflow name="COVID-19 REJECTED SAMPLES" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/102" status="ARCHIVED"/>
+    <workflow name="Covid-19 RNA Extraction" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/103" status="ACTIVE"/>
+    <workflow name="Custom DNA Workflow v5" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/3" status="PENDING"/>
+    <workflow name="Custom RNA Workflow v4" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/4" status="ARCHIVED"/>
+    <workflow name="Nextera DNA for NextSeq 1.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/251" status="PENDING"/>
+    <workflow name="NextSeq Validation 1.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/252" status="PENDING"/>
+    <workflow name="PreMade Libs v4" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/5" status="ARCHIVED"/>
+    <workflow name="T1 Capture DNA Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/57" status="ACTIVE"/>
+    <workflow name="T1 Custom DNA" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/55" status="ACTIVE"/>
+    <workflow name="T1 Custom RNA" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/52" status="ARCHIVED"/>
+    <workflow name="T1 DNA Sample QC Only" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/1" status="ACTIVE"/>
+    <workflow name="T1 Drop-Off Service" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/62" status="ACTIVE"/>
+    <workflow name="T1 Premade Libraries" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/58" status="ACTIVE"/>
+    <workflow name="T1 Premade Pools" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/59" status="ACTIVE"/>
+    <workflow name="T1 RNA Sample QC Only" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/2" status="ACTIVE"/>
+    <workflow name="T1 Single Cell" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/61" status="ACTIVE"/>
+    <workflow name="T2 Custom RNA" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56" status="ACTIVE"/>
+    <workflow name="Test_J1 Generic RNA" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/51" status="ARCHIVED"/>
+    <workflow name="Test Premade libraries" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/53" status="ARCHIVED"/>
+    <workflow name="Test Premade Pools" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/54" status="ARCHIVED"/>
+    <workflow name="test wf 1" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/101" status="ACTIVE"/>
+    <workflow name="T NanoString nCounter Experiment" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/351" status="ACTIVE"/>
+    <workflow name="T ONT Custom DNA Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/301" status="ACTIVE"/>
+    <workflow name="T ONT Custom RNA Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/201" status="ACTIVE"/>
+    <workflow name="T RNA Extraction" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/151" status="ACTIVE"/>
+    <workflow name="Validation IQ" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/6" status="ARCHIVED"/>
+    <workflow name="Validation Reagent Workflow" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/7" status="PENDING"/>
+</wkfcnf:workflows>

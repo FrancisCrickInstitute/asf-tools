@@ -23,7 +23,8 @@ from asf_tools.api.clarity.models import (
     Container,
     Artifact,
     Sample,
-    Process
+    Process,
+    Workflow
 )
 
 log = logging.getLogger(__name__)
@@ -119,7 +120,7 @@ class ClarityLims():
             result[key.replace('_', '-')] = value
         return result
 
-    def validate_response(self, response, accept_status_codes=[200]) -> bool:
+    def validate_response(self, uri, response, accept_status_codes=[200]) -> bool:
         """
         Validate the HTTP response from the API.
 
@@ -144,7 +145,7 @@ class ClarityLims():
                     message += ' ' + node.text
             except ElementTree.ParseError:  # some error messages might not follow the xml standard
                 message = response.content
-            raise requests.exceptions.HTTPError(message, response=response)
+            raise requests.exceptions.HTTPError(uri + " - " + message, response=response)
         return True
 
     def get_with_uri(self, uri: str, params: Optional[Dict[str, str]] = None, accept_status_codes=[200]) -> bytes:
@@ -169,7 +170,7 @@ class ClarityLims():
             raise type(e)(f"{str(e)}, Error trying to reach {uri}")
 
         # Validate the response
-        self.validate_response(response, accept_status_codes)
+        self.validate_response(uri, response, accept_status_codes)
 
         return response.content
 
@@ -401,3 +402,9 @@ class ClarityLims():
                                   last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
                                   techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
 
+    def get_workflows(self, search_id=None, name=None):
+        """
+        TODO
+        """
+        return self.get_stub_list(Workflow, StubWithStatus, "configuration/workflows", "wkfcnf:workflow", "wkfcnf:workflows", "workflow",
+                                  search_id=search_id, name=name)

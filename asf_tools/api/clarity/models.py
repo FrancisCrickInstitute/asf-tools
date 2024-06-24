@@ -24,19 +24,29 @@ class ClarityBaseModel(BaseModel):
     def __str__(self):
         return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
+
 class Stub(ClarityBaseModel):
     uri: str
     name: str
 
+
 class StubWithId(Stub):
     limsid: str
+
 
 class StubIdOnly(ClarityBaseModel):
     uri: str
     limsid: str
 
+
 class StubUriOnly(BaseModel):
     uri: str
+
+
+class StubWithStatus(ClarityBaseModel):
+    uri: str
+    name: str
+    status: str
 
 # class StubNameOnly(ClarityBaseModel):
 #     name: str
@@ -123,12 +133,6 @@ class Location(ClarityBaseModel):
     value: str
 
 
-class WorkflowStage(ClarityBaseModel):
-    uri: str
-    name: str
-    status: str
-
-
 class ResearcherStub(ClarityBaseModel):
     uri: str
     first_name: str = Field(alias="first-name")
@@ -151,7 +155,7 @@ class Artifact(ClarityBaseModel):
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
     file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
     artifact_group: Optional[List[Stub]] = Field(default_factory=list)
-    workflow_stages: Optional[List[WorkflowStage]] = Field(default_factory=list)
+    workflow_stages: Optional[List[StubWithStatus]] = Field(default_factory=list)
     demux: Optional[StubUriOnly] = None
 
     @field_validator("reagent_labels", mode="before")
@@ -170,7 +174,7 @@ class Artifact(ClarityBaseModel):
         Workflow stages is nested
         """
         values = values["workflow-stage"]
-        return [WorkflowStage(**item) for item in values]
+        return [StubWithStatus(**item) for item in values]
 
 
 class Sample(ClarityBaseModel):
@@ -228,3 +232,27 @@ class Process(ClarityBaseModel):
         if isinstance(values, dict):
             return [values]
         return values
+
+
+class Workflow(ClarityBaseModel):
+    name: str
+    uri: str
+    status: str
+    protocols: List[Stub]
+    stages: List[Stub]
+
+    @field_validator("protocols", mode="before")
+    def extract_protocol(cls, values):  # pylint: disable=no-self-argument
+        """
+        Protocols is nested
+        """
+        values = values["protocol"]
+        return [Stub(**item) for item in values]
+
+    @field_validator("stages", mode="before")
+    def extract_stages(cls, values):  # pylint: disable=no-self-argument
+        """
+        Stages is nested
+        """
+        values = values["stage"]
+        return [Stub(**item) for item in values]

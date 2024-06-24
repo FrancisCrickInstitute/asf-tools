@@ -14,12 +14,14 @@ from asf_tools.api.clarity.models import (
     Stub,
     StubWithId,
     StubIdOnly,
+    StubWithStatus,
     Container,
     Lab,
     Project,
     Artifact,
     Sample,
-    Process
+    Process,
+    Workflow
 )
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -108,7 +110,7 @@ class TestClarity(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(requests.exceptions.HTTPError):
-            self.api.validate_response(mock_response)
+            self.api.validate_response("https://localhost:8080/api", mock_response)
 
     def test_clarity_validate_response_ok(self):
         """
@@ -121,7 +123,7 @@ class TestClarity(unittest.TestCase):
         mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
 
         # Test
-        result = self.api.validate_response(mock_response)
+        result = self.api.validate_response("https://localhost:8080/api", mock_response)
 
         # Assert
         self.assertTrue(result)
@@ -164,7 +166,8 @@ class TestClarityWithFixtures:
         ("projects.xml", "prj:projects", "project", StubWithId, 219),
         ("artifacts.xml", "art:artifacts", "artifact", StubIdOnly, 828),
         ("samples.xml", "smp:samples", "sample", StubIdOnly, 333),
-        ("processes.xml", "prc:processes", "process", StubIdOnly, 453)
+        ("processes.xml", "prc:processes", "process", StubIdOnly, 453),
+        ("workflows.xml", "wkfcnf:workflows", "workflow", StubWithStatus, 27)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -187,7 +190,8 @@ class TestClarityWithFixtures:
         ("project.xml", "prj:project", Project, "GOL2"),
         ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
         ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
-        ("process.xml", "prc:process", Process, "24-39409")
+        ("process.xml", "prc:process", Process, "24-39409"),
+        ("workflow.xml", "wkfcnf:workflow", Workflow, "56")
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -252,7 +256,7 @@ class TestClarityPrototype(unittest.TestCase):
         #     xml_content = file.read()
 
         # Test
-        data = self.api.get_processes(process_id="24-54327")
+        data = self.api.get_workflows(search_id="56")
         print("-------")
         print(data)
 
