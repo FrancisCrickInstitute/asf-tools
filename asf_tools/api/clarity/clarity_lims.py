@@ -21,7 +21,8 @@ from asf_tools.api.clarity.models import (
     Sample,
     Process,
     Workflow,
-    Protocol
+    Protocol,
+    QueueStep
 )
 
 log = logging.getLogger(__name__)
@@ -186,7 +187,7 @@ class ClarityLims():
         # Call main get
         return self.get_with_uri(uri, params, accept_status_codes)
 
-    def get_with_id(self, endpoint: str, item_id: str) -> bytes:
+    def get_with_id(self, endpoint: str, item_id: str, params: Optional[Dict[str, str]] = None) -> bytes:
         """
         TODO
         """
@@ -194,7 +195,7 @@ class ClarityLims():
         uri = self.construct_uri(f"{endpoint}/{item_id}")
 
         # Call main get
-        return self.get_with_uri(uri)
+        return self.get_with_uri(uri, params)
 
     def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel) -> list[ClarityBaseModel]:
         """
@@ -407,3 +408,14 @@ class ClarityLims():
         """
         return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocol", "protcnf:protocols", "protocol",
                                   search_id=search_id, name=name)
+
+
+    def get_queues(self, search_id=None, workflowname=None, workflowid=None, projectname=None, projectlimsid=None,
+                   containername=None, containerlimsid=None, previousstepid=None):
+        """
+        TODO
+        """
+        params = self.get_params_from_args(workflowname=workflowname, workflowid=workflowid, projectname=projectname, projectlimsid=projectlimsid,
+                                           containername=containername, containerlimsid=containerlimsid, previousstepid=previousstepid)
+        xml_data = self.get_with_id("queues", search_id, params)
+        return self.get_single_instance(xml_data, "que:queue", QueueStep)

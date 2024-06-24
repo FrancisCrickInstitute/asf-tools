@@ -219,8 +219,8 @@ class Process(ClarityBaseModel):
 
 
 class Workflow(ClarityBaseModel):
-    name: str
     uri: str
+    name: str
     status: str
     protocols: List[Stub]
     stages: List[Stub]
@@ -249,8 +249,8 @@ class Transition(ClarityBaseModel):
 
 
 class ProtocolStep(ClarityBaseModel):
-    name: str
     uri: str
+    name: str
     protocol_uri: str = Field(alias="protocol-uri")
     protocol_step_index: int = Field(alias="protocol-step-index")
     transitions:  List[Transition] = Field(default_factory=list)
@@ -281,3 +281,27 @@ class Protocol(ClarityBaseModel):
         """
         values = values["step"]
         return [ProtocolStep(**item) for item in values]
+
+
+class QueueArtifact(ClarityBaseModel):
+    limsid: str
+    uri: str
+    queue_time: str = Field(alias="queue-time")
+    location: Location
+
+
+class QueueStep(ClarityBaseModel):
+    uri: str
+    protocol_step_uri: str
+    name: str
+    artifacts: List[QueueArtifact] = Field(default_factory=list)
+
+    @field_validator("artifacts", mode="before")
+    def extract_stages(cls, values):  # pylint: disable=no-self-argument
+        """
+        Artifact is nested
+        """
+        if values is None:
+            return []
+        values = values["artifact"]
+        return [QueueArtifact(**item) for item in values]

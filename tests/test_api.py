@@ -19,7 +19,8 @@ from asf_tools.api.clarity.models import (
     Sample,
     Process,
     Workflow,
-    Protocol
+    Protocol,
+    QueueStep
 )
 from .mocks.clarity_lims_mock import ClarityLimsMock
 
@@ -177,7 +178,8 @@ class TestClarityWithFixtures:
         ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
         ("process.xml", "prc:process", Process, "24-39409"),
         ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),
-        ("protocol.xml", "protcnf:protocol", Protocol, "1")
+        ("protocol.xml", "protcnf:protocol", Protocol, "1"),
+        ("queue_step.xml", "que:queue", QueueStep, "60"),
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -223,7 +225,8 @@ class TestClarityEndpoints():
         ("get_workflows", None),
         ("get_protocols", None),
         ("get_workflows", "56"),
-        ("get_protocols", "1")
+        ("get_protocols", "1"),
+        ("get_queues", "60")
     ])
     def test_clarity_get_endpoints(self, api, func_name, search_id):
         """
@@ -257,7 +260,7 @@ class TestClarityPrototype(unittest.TestCase):
     def test_prototype(self):
 
         # Test
-        data = self.api.get_protocols(name="T DNA - Compact Sample QC")
+        data = self.api.get_queues("60")
         print("-------")
         print(data)
 
