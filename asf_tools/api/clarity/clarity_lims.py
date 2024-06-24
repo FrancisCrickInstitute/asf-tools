@@ -17,6 +17,7 @@ from asf_tools.api.clarity.models import (
     Stub,
     StubWithId,
     StubIdOnly,
+    StubWithStatus,
     Lab,
     Project,
     Container,
@@ -78,7 +79,6 @@ class ClarityLims():
         Returns:
             dict: Dictionary containing the credentials.
         """
-
         with open(file_path, "r", encoding="UTF-8") as file:
             return toml.load(file)
 
@@ -93,7 +93,6 @@ class ClarityLims():
         Returns:
             str: The constructed URI.
         """
-
         uri = f"{self.baseuri}/api/{self.API_VERSION}/{endpoint}"
         if params:
             uri += '?' + urlencode(params)
@@ -113,7 +112,6 @@ class ClarityLims():
         Returns:
             dict: A dictionary of query parameters with hyphens replacing underscores in the keys.
         """
-
         result = {}
         for key, value in kwargs.items():
             if value is None:
@@ -132,7 +130,6 @@ class ClarityLims():
         Returns:
             bool: True if the response is valid, raises an HTTPError otherwise.
         """
-
         if response.status_code not in accept_status_codes:
             try:
                 root = ElementTree.fromstring(response.content)
@@ -162,7 +159,6 @@ class ClarityLims():
         Returns:
             bytes: The content of the response.
         """
-
         # Try to call api
         try:
             response = self.request_session.get(uri, params=params,
@@ -189,7 +185,6 @@ class ClarityLims():
         Returns:
             bytes: The content of the response.
         """
-
         # Construct uri
         uri = self.construct_uri(endpoint, params)
 
@@ -200,7 +195,6 @@ class ClarityLims():
         """
         TODO
         """
-
         # Construct uri
         uri = self.construct_uri(f"{endpoint}/{item_id}")
 
@@ -220,7 +214,6 @@ class ClarityLims():
         Returns:
             list[ClarityBaseModel]: A list of instances of the model type.
         """
-
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
         inner_dict = data_dict[outer_key]
@@ -263,7 +256,6 @@ class ClarityLims():
         Returns:
             list[ClarityBaseModel]: A list of instances of the model type.
         """
-
         # Get first page
         xml_data = self.get(endpoint, params, accept_status_codes)
         instances, next_page = self.get_single_page_instances(xml_data, outer_key, inner_key, model_type)
@@ -289,7 +281,6 @@ class ClarityLims():
         Returns:
             ClarityBaseModel: An instance of the model type.
         """
-
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
         data_dict = data_dict[outer_key]
@@ -314,135 +305,99 @@ class ClarityLims():
         Returns:
             ClarityBaseModel: An instance of the model type.
         """
-
         # Expand stub
         xml_data = self.get_with_uri(stub.uri)
         return self.get_single_instance(xml_data, outer_key, expansion_type)
 
-    def get_labs(self, name=None, last_modified=None):
+    def get_stub_list(self, model_type, stub_type, endpoint, single_key, outer_key, inner_key, search_id=None, **kwargs):
+        """
+        TODO
+        """
+        # Check if we have used an id
+        if search_id is not None:
+            xml_data = self.get_with_id(endpoint, search_id)
+            return self.get_single_instance(xml_data, single_key, model_type)
+
+        # Contruct params and get instances
+        params = self.get_params_from_args(**kwargs)
+        instances = self.get_instances(outer_key, inner_key, stub_type, endpoint, params)
+
+        # Expand if only one result is returned
+        if len(instances) == 1:
+            return self.expand_stub(instances[0], single_key, model_type)
+        return instances
+
+    def get_labs(self, search_id=None, name=None, last_modified=None):
         """
         Retrieve lab instances from the API with optional filtering by name or last modified date.
 
         Args:
+            search_id (Optional[str]): Search by id.
             name (Optional[str]): Filter by lab name.
             last_modified (Optional[str]): Filter by last modified date.
 
         Returns:
             list[Stub] or Lab: A list of lab stubs or a single expanded lab instance if only one result is found.
         """
+        return self.get_stub_list(Lab, Stub, "labs", "lab:lab", "lab:labs", "lab", search_id=search_id,
+                                  name=name, last_modifie=last_modified)
 
-        # Contruct params and get an instance
-        params = self.get_params_from_args(name=name, last_modified=last_modified)
-        instances = self.get_instances("lab:labs", "lab", Stub, "labs", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "lab:lab", Lab)
-        return instances
-
-    def get_projects(self, name=None, open_date=None, last_modified=None):
+    def get_projects(self, search_id=None, name=None, open_date=None, last_modified=None):
         """
         Retrieve container instances from the API with optional filtering by name or last modified date.
 
         Args:
+            search_id (Optional[str]): Search by id.
             name (Optional[str]): Filter by container name.
             open_date (Optional[str]): Opened since the open_date.
             last_modified (Optional[str]): Filter by last modified date.
 
         Returns:
-            list[StubWithId] or Project: A list of project stubs or a single expanded project instance if only one result is found.
+            list[Stub] or Project: A list of project stubs or a single expanded project instance if only one result is found.
         """
+        return self.get_stub_list(Project, StubWithId, "projects", "prj:project", "prj:projects", "project", search_id=search_id,
+                            name=name, open_date=open_date, last_modified=last_modified)
 
-        # Contruct params and get an instance
-        params = self.get_params_from_args(name=name, open_date=open_date, last_modified=last_modified)
-        instances = self.get_instances("prj:projects", "project", StubWithId, "projects", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "prj:project", Project)
-        return instances
-
-    def get_containers(self, name=None, last_modified=None):
+    def get_containers(self, search_id=None, name=None, last_modified=None):
         """
         Retrieve container instances from the API with optional filtering by name or last modified date.
 
         Args:
+            search_id (Optional[str]): Search by id.
             name (Optional[str]): Filter by container name.
             last_modified (Optional[str]): Filter by last modified date.
 
         Returns:
-            list[StubWithId] or Container: A list of container stubs or a single expanded container instance if only one result is found.
+            list[Stub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
+        return self.get_stub_list(Container, StubWithId, "containers", "con:container", "con:containers", "container", search_id=search_id,
+                    name=name, last_modified=last_modified)
 
-        # Contruct params and get an instance
-        params = self.get_params_from_args(name=name, last_modified=last_modified)
-        instances = self.get_instances("con:containers", "container", StubWithId, "containers", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "con:container", Container)
-        return instances
-
-    def get_artifacts(self, artifact_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
+    def get_artifacts(self, search_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
                       qc_flag=None, sample_name=None, samplelimsid=None, artifactgroup=None, containername=None,
                       containerlimsid=None, reagent_label=None):
         """
         TODO
         """
+        return self.get_stub_list(Artifact, StubIdOnly, "artifacts", "art:artifact", "art:artifacts", "artifact", search_id=search_id, 
+                                  name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
+                                  working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
+                                  artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
+                                  reagent_label=reagent_label)
 
-        # Check if we have used an id
-        if artifact_id is not None:
-            xml_data = self.get_with_id("artifacts", artifact_id)
-            return self.get_single_instance(xml_data, "art:artifact", Artifact)
-
-        # Contruct params and get an instance
-        params = self.get_params_from_args(name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
-                                           working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
-                                           artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
-                                           reagent_label=reagent_label)
-        instances = self.get_instances("art:artifacts", "artifact", StubIdOnly, "artifacts", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "art:artifact", Container)
-        return instances
-
-    def get_samples(self, sample_id=None, name=None, project_name=None, projectlimsid=None):
+    def get_samples(self, search_id=None, name=None, project_name=None, projectlimsid=None):
         """
         TODO
         """
+        return self.get_stub_list(Sample, StubIdOnly, "samples", "smp:sample", "smp:samples", "sample", search_id=search_id,
+                    name=name, project_name=project_name, projectlimsid=projectlimsid)
 
-        # Check if we have used an id
-        if sample_id is not None:
-            xml_data = self.get_with_id("samples", sample_id)
-            return self.get_single_instance(xml_data, "smp:sample", Sample)
-
-        # Contruct params and get an instance
-        params = self.get_params_from_args(name=name, project_name=project_name, projectlimsid=projectlimsid)
-        instances = self.get_instances("smp:samples", "sample", StubIdOnly, "samples", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "smp:sample", Sample)
-        return instances
-
-    def get_processes(self, process_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
+    def get_processes(self, search_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
                       techfirstname=None, techlastname=None, projectname=None):
         """
         TODO
         """
+        return self.get_stub_list(Process, StubIdOnly, "processes", "prc:process", "prc:processes", "process", search_id=search_id,
+                                  last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
+                                  techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
 
-        # Check if we have used an id
-        if process_id is not None:
-            xml_data = self.get_with_id("processes", process_id)
-            return self.get_single_instance(xml_data, "prc:process", Process)
-
-        # Contruct params and get an instance
-        params = self.get_params_from_args(last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid, 
-                                           techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
-        instances = self.get_instances("prc:processes", "process", StubIdOnly, "processes", params)
-
-        # Expand if only one result is returned
-        if len(instances) == 1:
-            return self.expand_stub(instances[0], "prc:process", Process)
-        return instances
