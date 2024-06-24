@@ -24,7 +24,8 @@ from asf_tools.api.clarity.models import (
     Artifact,
     Sample,
     Process,
-    Workflow
+    Workflow,
+    Protocol
 )
 
 log = logging.getLogger(__name__)
@@ -83,20 +84,17 @@ class ClarityLims():
         with open(file_path, "r", encoding="UTF-8") as file:
             return toml.load(file)
 
-    def construct_uri(self, endpoint: str, params: Optional[Dict[str, str]] = None) -> str:
+    def construct_uri(self, endpoint: str) -> str:
         """
-        Construct the full URI for an API endpoint with optional query parameters.
+        Construct the full URI for an API endpoint
 
         Args:
             endpoint (str): The API endpoint.
-            params (Optional[Dict[str, str]]): Optional dictionary of query parameters.
 
         Returns:
             str: The constructed URI.
         """
         uri = f"{self.baseuri}/api/{self.API_VERSION}/{endpoint}"
-        if params:
-            uri += '?' + urlencode(params)
         return uri
 
     def get_params_from_args(self, **kwargs) -> dict:
@@ -187,7 +185,7 @@ class ClarityLims():
             bytes: The content of the response.
         """
         # Construct uri
-        uri = self.construct_uri(endpoint, params)
+        uri = self.construct_uri(endpoint)
 
         # Call main get
         return self.get_with_uri(uri, params, accept_status_codes)
@@ -217,6 +215,7 @@ class ClarityLims():
         """
         # Parse data
         data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
+        print(data_dict)
         inner_dict = data_dict[outer_key]
         if inner_key not in inner_dict:
             return [], None
@@ -266,7 +265,6 @@ class ClarityLims():
             xml_data = self.get_with_uri(next_page, params, accept_status_codes)
             new_instances, next_page = self.get_single_page_instances(xml_data, outer_key, inner_key, model_type)
             instances.extend(new_instances)
-            break
 
         return instances
 
@@ -290,7 +288,7 @@ class ClarityLims():
         data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
 
         # Create and return model
-        print(data_dict)
+        log.debug(data_dict)
         instance = model_type(**data_dict)
         return instance
 
@@ -407,4 +405,11 @@ class ClarityLims():
         TODO
         """
         return self.get_stub_list(Workflow, StubWithStatus, "configuration/workflows", "wkfcnf:workflow", "wkfcnf:workflows", "workflow",
+                                  search_id=search_id, name=name)
+
+    def get_protocols(self, search_id=None, name=None):
+        """
+        TODO
+        """
+        return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocol", "protcnf:protocols", "protocol",
                                   search_id=search_id, name=name)
