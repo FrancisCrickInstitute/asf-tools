@@ -175,6 +175,7 @@ class TestClarityWithFixtures:
         ("lab.xml", "lab:lab", Lab, "602"),
         ("project.xml", "prj:project", Project, "GOL2"),
         ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
+        ("artifact_2.xml", "art:artifact", Artifact, "STR6918A110PA1?state=5982061"),
         ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
         ("process.xml", "prc:process", Process, "24-39409"),
         ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),

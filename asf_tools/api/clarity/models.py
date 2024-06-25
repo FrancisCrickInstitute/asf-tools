@@ -25,7 +25,7 @@ class ClarityBaseModel(BaseModel):
         """
         Return a string representation of the model.
         """
-        return "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
+        return "\n" + "\n".join(f"{key}: {value}" for key, value in self.model_dump().items())
 
 
 class Stub(ClarityBaseModel):
@@ -158,8 +158,27 @@ class Artifact(ClarityBaseModel):
         Workflow stages is nested
         """
         values = values["workflow-stage"]
+        if isinstance(values, dict):
+            values = [values]
         return [Stub(**item) for item in values]
 
+    @field_validator("samples", mode="before")
+    def extract_samples(cls, values):  # pylint: disable=no-self-argument
+        """
+        Sample is one item sometimes
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
+
+    @field_validator("artifact_group", mode="before")
+    def extract_group(cls, values):  # pylint: disable=no-self-argument
+        """
+        artifact_group is one item sometimes
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
 
 class Sample(ClarityBaseModel):
     limsid: str
@@ -253,10 +272,11 @@ class ProtocolStep(ClarityBaseModel):
     name: str
     protocol_uri: str = Field(alias="protocol-uri")
     protocol_step_index: int = Field(alias="protocol-step-index")
+    process_type: Stub = Field(alias="process-type")
     transitions:  List[Transition] = Field(default_factory=list)
 
     @field_validator("transitions", mode="before")
-    def extract_stages(cls, values):  # pylint: disable=no-self-argument
+    def extract_transitions(cls, values):  # pylint: disable=no-self-argument
         """
         Transitions is nested
         """
@@ -266,6 +286,14 @@ class ProtocolStep(ClarityBaseModel):
         if isinstance(values, dict):
             values = [values]
         return [Transition(**item) for item in values]
+
+    @field_validator("process_type", mode="before")
+    def extract_process_type(cls, values):  # pylint: disable=no-self-argument
+        """
+        Extract process_type
+        """
+        values["name"] = values["#text"]
+        return values
 
 
 class Protocol(ClarityBaseModel):
