@@ -134,7 +134,7 @@ class Artifact(ClarityBaseModel):
     location: Optional[Location] = None
     working_flag: Optional[bool] = None
     samples: Optional[List[Stub]] = Field(alias="sample", default_factory=list)
-    reagent_labels: Optional[List[str]] = Field(alias="reagent_label", default_factory=list)
+    # reagent_labels: Optional[List[str]] = Field(alias="reagent_label", default_factory=list)
     control_type: Optional[Stub] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
     file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
@@ -142,15 +142,15 @@ class Artifact(ClarityBaseModel):
     workflow_stages: Optional[List[Stub]] = Field(default_factory=list)
     demux: Optional[Stub] = None
 
-    @field_validator("reagent_labels", mode="before")
-    def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
-        """
-        Reagent label is nested name
-        """
-        if isinstance(values, dict) and 'name' in values:
-            return values['name']
-        if isinstance(values, list):
-            return [d["name"] for d in values]
+    # @field_validator("reagent_labels", mode="before")
+    # def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
+    #     """
+    #     Reagent label is nested name
+    #     """
+    #     if isinstance(values, dict) and 'name' in values:
+    #         return values['name']
+    #     if isinstance(values, list):
+    #         return [d["name"] for d in values]
 
     @field_validator("workflow_stages", mode="before")
     def extract_workflow_stages(cls, values):  # pylint: disable=no-self-argument
@@ -175,6 +175,15 @@ class Artifact(ClarityBaseModel):
     def extract_group(cls, values):  # pylint: disable=no-self-argument
         """
         artifact_group is one item sometimes
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
+
+    @field_validator("udf_fields", mode="before")
+    def udf_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        udf_fields is one item sometimes
         """
         if isinstance(values, dict):
             return [values]
@@ -332,4 +341,6 @@ class QueueStep(ClarityBaseModel):
         if values is None:
             return []
         values = values["artifact"]
+        if isinstance(values, dict):
+            values = [values]
         return [QueueArtifact(**item) for item in values]
