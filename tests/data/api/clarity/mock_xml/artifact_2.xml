@@ -1,0 +1,16 @@
+<art:artifact xmlns:udf="http://genologics.com/ri/userdefined" xmlns:file="http://genologics.com/ri/file" xmlns:art="http://genologics.com/ri/artifact" limsid="STR6918A110PA1" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A110PA1?state=5982061">
+<name>HD4_Monocytes</name>
+<type>Analyte</type>
+<output-type>Analyte</output-type>
+<qc-flag>UNKNOWN</qc-flag>
+<location>
+<container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+<value>A:1</value>
+</location>
+<working-flag>true</working-flag>
+<sample limsid="STR6918A110" uri="https://asf-claritylims.thecrick.org/api/v2/samples/STR6918A110"/>
+<artifact-group uri="https://asf-claritylims.thecrick.org/api/v2/artifactgroups/58" name="T2 Custom RNA"/>
+<workflow-stages>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/349" name="T Samples Pending" status="QUEUED"/>
+</workflow-stages>
+</art:artifact>

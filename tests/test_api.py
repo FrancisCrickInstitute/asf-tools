@@ -12,11 +12,17 @@ from unittest.mock import Mock
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import (
     Stub,
-    StubWithId,
     Container,
     Lab,
-    Project
+    Project,
+    Artifact,
+    Sample,
+    Process,
+    Workflow,
+    Protocol,
+    QueueStep
 )
+from .mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
@@ -25,7 +31,7 @@ class TestClarity(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+        self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
     def test_clarity_load_credentials_valid(self):
         """
@@ -78,20 +84,6 @@ class TestClarity(unittest.TestCase):
         # Assert
         self.assertEqual(uri, "https://localhost:8080/api/v2/test")
 
-    def test_clarity_construct_uri_params(self):
-        """
-        Test construct URI endpoint
-        """
-
-        # Setup
-        params = { "userid" : "1234", "name" : "test" }
-
-        # Test
-        uri = self.api.construct_uri("users", params)
-
-        # Assert
-        self.assertEqual(uri, "https://localhost:8080/api/v2/users?userid=1234&name=test")
-
     def test_clarity_validate_response_error(self):
         """
         Test validate response with fake data
@@ -104,7 +96,7 @@ class TestClarity(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(requests.exceptions.HTTPError):
-            self.api.validate_response(mock_response)
+            self.api.validate_response("https://localhost:8080/api", mock_response)
 
     def test_clarity_validate_response_ok(self):
         """
@@ -117,7 +109,7 @@ class TestClarity(unittest.TestCase):
         mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
 
         # Test
-        result = self.api.validate_response(mock_response)
+        result = self.api.validate_response("https://localhost:8080/api", mock_response)
 
         # Assert
         self.assertTrue(result)
@@ -156,8 +148,12 @@ class TestClarityWithFixtures:
 
     @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
         ("labs.xml", "lab:labs", "lab", Stub, 141),
-        ("containers.xml", "con:containers", "container", StubWithId, 249),
-        ("projects.xml", "prj:projects", "project", StubWithId, 219)
+        ("containers.xml", "con:containers", "container", Stub, 249),
+        ("projects.xml", "prj:projects", "project", Stub, 219),
+        ("artifacts.xml", "art:artifacts", "artifact", Stub, 828),
+        ("samples.xml", "smp:samples", "sample", Stub, 333),
+        ("processes.xml", "prc:processes", "process", Stub, 453),
+        ("workflows.xml", "wkfcnf:workflows", "workflow", Stub, 27)
     ])
     def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
@@ -177,7 +173,14 @@ class TestClarityWithFixtures:
     @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
         ("container.xml", "con:container", Container, "27-6876"),
         ("lab.xml", "lab:lab", Lab, "602"),
-        ("project.xml", "prj:project", Project, "GOL2")
+        ("project.xml", "prj:project", Project, "GOL2"),
+        ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
+        ("artifact_2.xml", "art:artifact", Artifact, "STR6918A110PA1?state=5982061"),
+        ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
+        ("process.xml", "prc:process", Process, "24-39409"),
+        ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),
+        ("protocol.xml", "protcnf:protocol", Protocol, "1"),
+        ("queue_step.xml", "que:queue", QueueStep, "60"),
     ])
     def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
@@ -198,33 +201,52 @@ class TestClarityWithFixtures:
         assert instance.id == instance_id
 
 
-
-
-class TestClarityLive():
+class TestClarityEndpoints():
     """
-    Test class for live api tests
+    Test class for pulling data from API endpoints
     """
 
     @pytest.fixture(scope="class")
-    def api(self):
+    def api(self, request):
         """Setup API connection"""
-        yield ClarityLims()
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "data.pkl")
+        lims = ClarityLimsMock()
+        lims.load_tracked_requests(data_file_path)
+        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+        yield lims
 
-    @pytest.mark.only_run_with_direct_target
-    @pytest.mark.parametrize("endpoint,params,status_codes", [
-        ("labs", None, [200])
+    @pytest.mark.parametrize("func_name,search_id", [
+        ("get_labs", None),
+        ("get_labs", "2"),
+        ("get_projects", "GOL2"),
+        ("get_containers", "27-6876"),
+        ("get_artifacts", "2-8332743?state=5959893"),
+        ("get_samples", "VIV6902A1"),
+        ("get_processes", "24-39409"),
+        ("get_workflows", None),
+        ("get_protocols", None),
+        ("get_workflows", "56"),
+        ("get_protocols", "1"),
+        ("get_queues", "60")
     ])
-    def test_api_clarity_get(self, api, endpoint, params, status_codes):
+    def test_clarity_get_endpoints(self, api, func_name, search_id):
         """
-        Test Get against some endpoints
+        Test Get against endpoints
         """
+
+        # Setup
+        api_func = getattr(api, func_name)
 
         # Test
-        data = api.get(endpoint, params, status_codes)
+        data = api_func(search_id=search_id)
+        print(data)
 
         # Assert
+        if isinstance(data, list):
+            assert len(data) > 0
         assert data is not None
-
+        if search_id is not None:
+            assert data.id == search_id
 
 
 class TestClarityPrototype(unittest.TestCase):
@@ -238,27 +260,9 @@ class TestClarityPrototype(unittest.TestCase):
     @pytest.mark.only_run_with_direct_target
     def test_prototype(self):
 
-        # with open(os.path.join(API_TEST_DATA, "mock_xml", "labs.xml"), 'r', encoding='utf-8') as file:
-        #     xml_content = file.read()
-
         # Test
-        data = self.api.get_artifacts(id="2-8332743")
+        data = self.api.get_queues("60")
         print("-------")
         print(data)
 
-
         raise ValueError
-
-
-# class TestClarityMocks:
-#     """
-#     Mock generation methods
-#     """
-#     @pytest.mark.only_run_with_direct_target
-#     def test_mocking_generate_clarity_data(self):
-#         """
-#         Generates a new test data set from the api
-#         """
-
-#         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
-

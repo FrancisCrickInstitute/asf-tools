@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<que:queue xmlns:que="http://genologics.com/ri/queue" uri="https://asf-claritylims.thecrick.org/api/v2/queues/60" protocol-step-uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/54/steps/60" name="T Samples Pending">
+    <artifacts>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A110PA1" limsid="STR6918A110PA1">
+            <queue-time>2024-06-24T15:31:14.280+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>A:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A111PA1" limsid="STR6918A111PA1">
+            <queue-time>2024-06-24T15:31:14.281+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>B:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A112PA1" limsid="STR6918A112PA1">
+            <queue-time>2024-06-24T15:31:14.280+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>C:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A113PA1" limsid="STR6918A113PA1">
+            <queue-time>2024-06-24T15:31:14.278+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>D:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A114PA1" limsid="STR6918A114PA1">
+            <queue-time>2024-06-24T15:31:14.282+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>E:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A115PA1" limsid="STR6918A115PA1">
+            <queue-time>2024-06-24T15:31:14.282+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>F:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A116PA1" limsid="STR6918A116PA1">
+            <queue-time>2024-06-24T15:31:14.282+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>G:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A117PA1" limsid="STR6918A117PA1">
+            <queue-time>2024-06-24T15:31:14.281+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>H:1</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A118PA1" limsid="STR6918A118PA1">
+            <queue-time>2024-06-24T15:31:14.283+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>A:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A119PA1" limsid="STR6918A119PA1">
+            <queue-time>2024-06-24T15:31:14.284+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>B:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A120PA1" limsid="STR6918A120PA1">
+            <queue-time>2024-06-24T15:31:14.283+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>C:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A121PA1" limsid="STR6918A121PA1">
+            <queue-time>2024-06-24T15:31:14.283+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>D:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A122PA1" limsid="STR6918A122PA1">
+            <queue-time>2024-06-24T15:31:14.285+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>E:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A123PA1" limsid="STR6918A123PA1">
+            <queue-time>2024-06-24T15:31:14.285+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>F:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A124PA1" limsid="STR6918A124PA1">
+            <queue-time>2024-06-24T15:31:14.284+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>G:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A125PA1" limsid="STR6918A125PA1">
+            <queue-time>2024-06-24T15:31:14.284+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>H:2</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A126PA1" limsid="STR6918A126PA1">
+            <queue-time>2024-06-24T15:31:14.286+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>A:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A127PA1" limsid="STR6918A127PA1">
+            <queue-time>2024-06-24T15:31:14.286+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>B:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A128PA1" limsid="STR6918A128PA1">
+            <queue-time>2024-06-24T15:31:14.286+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>C:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A129PA1" limsid="STR6918A129PA1">
+            <queue-time>2024-06-24T15:31:14.285+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>D:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A130PA1" limsid="STR6918A130PA1">
+            <queue-time>2024-06-24T15:31:14.287+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>E:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A131PA1" limsid="STR6918A131PA1">
+            <queue-time>2024-06-24T15:31:14.288+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>F:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A132PA1" limsid="STR6918A132PA1">
+            <queue-time>2024-06-24T15:31:14.287+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>G:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A133PA1" limsid="STR6918A133PA1">
+            <queue-time>2024-06-24T15:31:14.287+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>H:3</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A134PA1" limsid="STR6918A134PA1">
+            <queue-time>2024-06-24T15:31:14.289+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>A:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A135PA1" limsid="STR6918A135PA1">
+            <queue-time>2024-06-24T15:31:14.289+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>B:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A136PA1" limsid="STR6918A136PA1">
+            <queue-time>2024-06-24T15:31:14.289+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>C:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A137PA1" limsid="STR6918A137PA1">
+            <queue-time>2024-06-24T15:31:14.288+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>D:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A138PA1" limsid="STR6918A138PA1">
+            <queue-time>2024-06-24T15:31:14.290+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>E:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A139PA1" limsid="STR6918A139PA1">
+            <queue-time>2024-06-24T15:31:14.290+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>F:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A140PA1" limsid="STR6918A140PA1">
+            <queue-time>2024-06-24T15:31:14.290+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>G:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A141PA1" limsid="STR6918A141PA1">
+            <queue-time>2024-06-24T15:31:14.289+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>H:4</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A142PA1" limsid="STR6918A142PA1">
+            <queue-time>2024-06-24T15:31:14.291+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>A:5</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A143PA1" limsid="STR6918A143PA1">
+            <queue-time>2024-06-24T15:31:14.291+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>B:5</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A144PA1" limsid="STR6918A144PA1">
+            <queue-time>2024-06-24T15:31:14.291+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>C:5</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A145PA1" limsid="STR6918A145PA1">
+            <queue-time>2024-06-24T15:31:14.290+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>D:5</value>
+            </location>
+        </artifact>
+        <artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/STR6918A146PA1" limsid="STR6918A146PA1">
+            <queue-time>2024-06-24T15:31:14.288+01:00</queue-time>
+            <location>
+                <container limsid="27-921145" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-921145"/>
+                <value>E:5</value>
+            </location>
+        </artifact>
+    </artifacts>
+</que:queue>

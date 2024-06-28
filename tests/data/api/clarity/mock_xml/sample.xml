@@ -1,0 +1,28 @@
+<smp:sample xmlns:udf="http://genologics.com/ri/userdefined" xmlns:ri="http://genologics.com/ri" xmlns:file="http://genologics.com/ri/file" xmlns:smp="http://genologics.com/ri/sample" limsid="VIV6902A1" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A1">
+<name>BR1_D0</name>
+<date-received>2024-03-20</date-received>
+<project uri="https://asf-claritylims.thecrick.org/api/v2/projects/VIV6902" limsid="VIV6902"/>
+<submitter uri="https://asf-claritylims.thecrick.org/api/v2/researchers/4954">
+<first-name>API</first-name>
+<last-name>Tempest</last-name>
+</submitter>
+<artifact uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/VIV6902A1PA1?state=5951734" limsid="VIV6902A1PA1"/>
+<udf:field name="Submitted Sample Volume (ul)" type="Numeric">25</udf:field>
+<udf:field name="Submitted Sample Conc. (ng/ul)" type="Numeric">202.6464</udf:field>
+<udf:field name="Submitted Sample Mass (ng)" type="Numeric">5066.16</udf:field>
+<udf:field name="Additional Comments" type="String">text</udf:field>
+<udf:field name="Due Date." type="String">09-05-2024</udf:field>
+<udf:field name="Library Type" type="String">Oxford Nanopore</udf:field>
+<udf:field name="Requested Read Length" type="Numeric">-1</udf:field>
+<udf:field name="Requested Number of Reads per Sample" type="Numeric">-1</udf:field>
+<udf:field name="Reference Genome" type="String">Mus musculus</udf:field>
+<udf:field name="Submission Type" type="String">DNA</udf:field>
+<udf:field name="Requested Sequencing Platform" type="String">ONT PromethION</udf:field>
+<udf:field name="Requested Run Type" type="String">Long Read</udf:field>
+<udf:field name="Lab Notes" type="String">Will submit either polyA selected RNA or cDNA for sequencing as cDNA. Labstep STUDY24045-ONT-cDNA-TSS_seq.</udf:field>
+<udf:field name="Sequencing Notes" type="String">ONT PromethION - 4 samples on one flow cell</udf:field>
+<udf:field name="Sample Treatment" type="String">D0</udf:field>
+<udf:field name="Sample Genotype" type="String">HM1 (129/ola mouse)</udf:field>
+<udf:field name="Sample Replicate Group" type="String">1</udf:field>
+<udf:field name="Submitted Sample Conc. Method" type="String">Qubit</udf:field>
+</smp:sample>
