@@ -319,6 +319,9 @@ class ClarityLims():
         # Expand if only one result is returned
         if len(instances) == 1:
             return self.expand_stub(instances[0], single_key, model_type)
+        # Return none if no results
+        if len(instances) == 0:
+            return None
         return instances
 
     def get_labs(self, search_id=None, name=None, last_modified=None):

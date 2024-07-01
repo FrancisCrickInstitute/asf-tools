@@ -248,6 +248,17 @@ class TestClarityEndpoints():
         if search_id is not None:
             assert data.id == search_id
 
+    def test_get_stub_list_returns_none_invalid(self, api):
+        """
+        Test 
+        """
+
+        # Test
+        data = api.get_stub_list(Lab, Stub, "labs", "lab:lab", "lab:labs", "lab", name="TEST")
+
+        # Assert
+        assert data is None
+
 
 class TestClarityPrototype(unittest.TestCase):
     """
