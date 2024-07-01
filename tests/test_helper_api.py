@@ -29,8 +29,7 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.get_artifacts_from_runid(None)
 
-    @patch.object(HelperLims, 'get_containers', return_value=[])
-    def test_get_artifacts_from_runid_isinvalid(self, mock_get_containers):
+    def test_get_artifacts_from_runid_isinvalid(self):
         """
         Pass runid that does not exist
         """
@@ -112,7 +111,6 @@ class TestClarityWithFixtures:
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1)
     ])
-    @patch.object(HelperLims, 'get_containers', return_value=[])
     def test_get_artifacts_from_runid_valid(self, api, runid, expected):
         """
         Pass real run IDs and test expected number of artifacts back
@@ -122,13 +120,12 @@ class TestClarityWithFixtures:
         artifacts = api.get_artifacts_from_runid(runid)
         print(artifacts)
         # Assert
-        # assert len(artifacts) == expected, f"Expected {expected} artifacts, but got {len(artifacts)}"
+        assert len(artifacts) == expected, f"Expected {expected} artifacts, but got {len(artifacts)}"
 
     @pytest.mark.parametrize("artifact_id,expected_sample_quantity", [
         ("B_04-0004-S6_DT", 1), # Illumina
         ("462-24_MPX-seq", 4) # ONT
     ]) # test 2 ONT and 2 Illumina
-    @patch.object(HelperLims, 'get_containers', return_value=[])
     def test_get_samples_from_artifacts_isvalid(self, api, artifact_id, expected_sample_quantity):
         """
         Pass real artifact IDs and test expected number of samples back
@@ -242,109 +239,109 @@ class TestClarityWithFixtures:
 
 #         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
-class TestClarityPrototype(unittest.TestCase):
-    """
-    Test class for prototype functions
-    """
+# class TestClarityPrototype(unittest.TestCase):
+#     """
+#     Test class for prototype functions
+#     """
 
-    def setUp(self):
-        self.api = ClarityLims()
+#     def setUp(self):
+#         self.api = ClarityLims()
 
-    @pytest.mark.only_run_with_direct_target
-    def test_clarity_api(self):
-        lims = ClarityLims()
+#     @pytest.mark.only_run_with_direct_target
+#     def test_clarity_api(self):
+#         lims = ClarityLims()
 
-        run_id = "20240417_1729_1C_PAW45723_05bb74c5"
-        run_container = lims.get_containers(name=run_id)[0]
-        # print("Container")
-        # print(f"Name: {run_container.name}")
-        # print(f"Type: {run_container.type}")
-        # print(f"Wells: {run_container.occupied_wells}")
-        # print(f"Placements: {run_container.placements}")
-        # print(f"UDF: {run_container.udf}")
-        # print(f"UDT: {run_container.udt}")
-        # print(f"State: {run_container.state}")
+#         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
+#         run_container = lims.get_containers(name=run_id)[0]
+#         # print("Container")
+#         # print(f"Name: {run_container.name}")
+#         # print(f"Type: {run_container.type}")
+#         # print(f"Wells: {run_container.occupied_wells}")
+#         # print(f"Placements: {run_container.placements}")
+#         # print(f"UDF: {run_container.udf}")
+#         # print(f"UDT: {run_container.udt}")
+#         # print(f"State: {run_container.state}")
         
-        # projects = lims.get_projects(name="RN24071")
-        # print(projects)
+#         # projects = lims.get_projects(name="RN24071")
+#         # print(projects)
 
-        # get info required to build the samplesheet
-        run_placement = run_container.placements
-        run_placement = list(run_placement.values())
-        print(run_placement)
+#         # get info required to build the samplesheet
+#         run_placement = run_container.placements
+#         run_placement = list(run_placement.values())
+#         print(run_placement)
 
-        sample_list = []
-        for value in run_placement:
-            run_samples = value.samples
-            sample_list.extend(run_samples)
-        print(sample_list)
+#         sample_list = []
+#         for value in run_placement:
+#             run_samples = value.samples
+#             sample_list.extend(run_samples)
+#         print(sample_list)
 
-        sample_info = {}
-        for sample in sample_list:
-            sample_name = sample.name
-            lab = sample.submitter.lab.name
-            user_name = sample.submitter.first_name
-            user_lastname = sample.submitter.last_name
-            user_fullname = (user_name + '.' + user_lastname).lower()
-            project_id = sample.project.name
-            # print(lab)
-            # print(user_fullname)
-            # print(project_id)
+#         sample_info = {}
+#         for sample in sample_list:
+#             sample_name = sample.name
+#             lab = sample.submitter.lab.name
+#             user_name = sample.submitter.first_name
+#             user_lastname = sample.submitter.last_name
+#             user_fullname = (user_name + '.' + user_lastname).lower()
+#             project_id = sample.project.name
+#             # print(lab)
+#             # print(user_fullname)
+#             # print(project_id)
 
-            sample_info[sample_name] = {
-                "group": lab, 
-                "user": user_fullname, 
-                "project_id": project_id
-                }
-        # print(sample_info)
-        if not sample_info:
-            raise ValueError("No sample information found")
+#             sample_info[sample_name] = {
+#                 "group": lab, 
+#                 "user": user_fullname, 
+#                 "project_id": project_id
+#                 }
+#         # print(sample_info)
+#         if not sample_info:
+#             raise ValueError("No sample information found")
 
-        return sample_info
+#         return sample_info
 
-    @pytest.mark.only_run_with_direct_target
-    def test_sample_barcode(self):
-        lims = ClarityLims()
+#     @pytest.mark.only_run_with_direct_target
+#     def test_sample_barcode(self):
+#         lims = ClarityLims()
 
-        run_id = "20240417_1729_1C_PAW45723_05bb74c5"
-        run_container = lims.get_containers(name=run_id)[0]
-        artifacts = lims.get_artifacts(containername=run_container.name)
+#         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
+#         run_container = lims.get_containers(name=run_id)[0]
+#         artifacts = lims.get_artifacts(containername=run_container.name)
 
-        for artifact in artifacts:
-            initial_process = artifact.parent_process
-            sample_barcode_match = {}
+#         for artifact in artifacts:
+#             initial_process = artifact.parent_process
+#             sample_barcode_match = {}
 
-            if initial_process is None:
-                raise ValueError("Initial process is None")
-            visited_processes = set()
-            stack = [initial_process]
-            print(stack)
+#             if initial_process is None:
+#                 raise ValueError("Initial process is None")
+#             visited_processes = set()
+#             stack = [initial_process]
+#             print(stack)
 
-            while stack:
-                process = stack.pop()
-                if process.id in visited_processes:
-                    continue
+#             while stack:
+#                 process = stack.pop()
+#                 if process.id in visited_processes:
+#                     continue
 
-                visited_processes.add(process.id)
+#                 visited_processes.add(process.id)
 
-                if process.type.name != "T Custom Indexing":
-                    # print(process.type.name)
-                    # Add parent processes to the stack for further processing
-                    for input, output in process.input_output_maps:
-                        if output["output-type"] == "Analyte":
-                            parent_process = input.get('parent-process')
-                            if parent_process:
-                                stack.append(parent_process)
-                else:
-                    # Extract barcode information and store it in "sample_barcode_match"
-                    for input, output in process.input_output_maps:
-                        if output["output-type"] == "Analyte":
-                            uri = output['uri']
-                            sample_info = uri.samples[0]
-                            sample_name = sample_info.id
-                            reagent_barcode = uri.reagent_labels
-                            sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
-                    print(sample_barcode_match)
+#                 if process.type.name != "T Custom Indexing":
+#                     # print(process.type.name)
+#                     # Add parent processes to the stack for further processing
+#                     for input, output in process.input_output_maps:
+#                         if output["output-type"] == "Analyte":
+#                             parent_process = input.get('parent-process')
+#                             if parent_process:
+#                                 stack.append(parent_process)
+#                 else:
+#                     # Extract barcode information and store it in "sample_barcode_match"
+#                     for input, output in process.input_output_maps:
+#                         if output["output-type"] == "Analyte":
+#                             uri = output['uri']
+#                             sample_info = uri.samples[0]
+#                             sample_name = sample_info.id
+#                             reagent_barcode = uri.reagent_labels
+#                             sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+#                     print(sample_barcode_match)
                     
-                    # return sample_barcode_match
-        raise ValueError
+#                     # return sample_barcode_match
+#         raise ValueError

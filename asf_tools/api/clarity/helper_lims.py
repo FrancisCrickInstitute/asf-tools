@@ -17,19 +17,17 @@ class HelperLims(ClarityLims):
         
         # Check that the run ID exists in clarity
         run_containers = self.get_containers(name=run_id)
-        print(run_containers)
-        if len(run_containers) == 0:
+        if run_containers is None:
             raise KeyError("RunID does not exist")
         
-        run_artifacts = run_containers[0].placements
-        run_artifacts = list(run_artifacts.values())
-        print(type(run_artifacts[0]))
-        # return run_artifacts
+        # Get a list of artifacts stubs
+        run_artifacts = run_containers.placements
+        return run_artifacts
     
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
         if artifacts_list is None:
             raise ValueError("The artifacts list is None")
-        
+        print(artifacts_list)
         sample_list = []
         for value in artifacts_list:
             run_samples = value.samples
