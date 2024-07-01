@@ -254,7 +254,7 @@ class TestClarityEndpoints():
         """
 
         # Test
-        data = api.get_stub_list(Lab, Stub, "labs", "lab:lab", "lab:labs", "lab", name="TEST")
+        data = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="TEST")
 
         # Assert
         assert data is None
