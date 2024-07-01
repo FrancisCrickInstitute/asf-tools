@@ -35,6 +35,17 @@ class ClarityLims():
 
     API_VERSION = "v2"
     API_TIMEOUT = 16
+    STUB_EXP_KEY = {
+        "Lab" : "lab:lab",
+        "Project" : "prj:project",
+        "Container": "con:container",
+        "Artifact": "art:artifact",
+        "Sample": "smp:sample",
+        "Process": "prc:process",
+        "Workflow": "wkfcnf:workflow",
+        "Protocol": "protcnf:protocol",
+        "QueueStep": "que:queue"
+    }
 
     def __init__(self, credentials_path: Optional[str] = None,
                  baseuri: Optional[str] = None,
@@ -287,30 +298,47 @@ class ClarityLims():
         instance = model_type(**data_dict)
         return instance
 
-    def expand_stub(self, stub: ClarityBaseModel, outer_key: str, expansion_type: ClarityBaseModel) -> ClarityBaseModel:
+    def expand_stub(self, stub: ClarityBaseModel, expansion_type: ClarityBaseModel = ClarityBaseModel) -> ClarityBaseModel:
         """
         Expand a stub instance to a full instance by retrieving additional data from the API.
 
         Args:
             stub (ClarityBaseModel): The stub instance to expand.
-            outer_key (str): The outer key in the XML structure.
             expansion_type (ClarityBaseModel): The model type to instantiate for the expanded data.
 
         Returns:
             ClarityBaseModel: An instance of the model type.
         """
-        # Expand stub
+        # Get expanded stub
         xml_data = self.get_with_uri(stub.uri)
-        return self.get_single_instance(xml_data, outer_key, expansion_type)
+        return self.get_single_instance(xml_data, self.STUB_EXP_KEY[expansion_type.__name__], expansion_type)
 
-    def get_stub_list(self, model_type, stub_type, endpoint, single_key, outer_key, inner_key, search_id=None, **kwargs):
+    def expand_stubs(self, stubs: list[ClarityBaseModel], expansion_type: ClarityBaseModel = ClarityBaseModel) -> ClarityBaseModel:
+        """
+        Expand a list of stub instances to a full instance by retrieving additional data from the API.
+
+        Args:
+            stub (ClarityBaseModel): The stub instance to expand.
+            expansion_type (ClarityBaseModel): The model type to instantiate for the expanded data.
+
+        Returns:
+            ClarityBaseModels: A list of instances of the model type.
+        """
+        # Get expanded stub
+        expansions = []
+        for stub in stubs:
+            xml_data = self.get_with_uri(stub.uri)
+            expansions.append(self.get_single_instance(xml_data, self.STUB_EXP_KEY[expansion_type.__name__], expansion_type))
+        return expansions
+
+    def get_stub_list(self, model_type, stub_type, endpoint, outer_key, inner_key, search_id=None, **kwargs):
         """
         TODO
         """
         # Check if we have used an id
         if search_id is not None:
             xml_data = self.get_with_id(endpoint, search_id)
-            return self.get_single_instance(xml_data, single_key, model_type)
+            return self.get_single_instance(xml_data, self.STUB_EXP_KEY[model_type.__name__], model_type)
 
         # Contruct params and get instances
         params = self.get_params_from_args(**kwargs)
@@ -318,7 +346,7 @@ class ClarityLims():
 
         # Expand if only one result is returned
         if len(instances) == 1:
-            return self.expand_stub(instances[0], single_key, model_type)
+            return self.expand_stub(instances[0], model_type)
         # Return none if no results
         if len(instances) == 0:
             return None
@@ -336,7 +364,7 @@ class ClarityLims():
         Returns:
             list[Stub] or Lab: A list of lab stubs or a single expanded lab instance if only one result is found.
         """
-        return self.get_stub_list(Lab, Stub, "labs", "lab:lab", "lab:labs", "lab", search_id=search_id,
+        return self.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", search_id=search_id,
                                   name=name, last_modifie=last_modified)
 
     def get_projects(self, search_id=None, name=None, open_date=None, last_modified=None):
@@ -352,7 +380,7 @@ class ClarityLims():
         Returns:
             list[Stub] or Project: A list of project stubs or a single expanded project instance if only one result is found.
         """
-        return self.get_stub_list(Project, Stub, "projects", "prj:project", "prj:projects", "project", search_id=search_id,
+        return self.get_stub_list(Project, Stub, "projects", "prj:projects", "project", search_id=search_id,
                             name=name, open_date=open_date, last_modified=last_modified)
 
     def get_containers(self, search_id=None, name=None, last_modified=None):
@@ -367,7 +395,7 @@ class ClarityLims():
         Returns:
             list[Stub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
-        return self.get_stub_list(Container, Stub, "containers", "con:container", "con:containers", "container", search_id=search_id,
+        return self.get_stub_list(Container, Stub, "containers", "con:containers", "container", search_id=search_id,
                     name=name, last_modified=last_modified)
 
     def get_artifacts(self, search_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
@@ -376,7 +404,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Artifact, Stub, "artifacts", "art:artifact", "art:artifacts", "artifact", search_id=search_id, 
+        return self.get_stub_list(Artifact, Stub, "artifacts", "art:artifacts", "artifact", search_id=search_id, 
                                   name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
                                   working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
                                   artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
@@ -386,7 +414,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Sample, Stub, "samples", "smp:sample", "smp:samples", "sample", search_id=search_id,
+        return self.get_stub_list(Sample, Stub, "samples", "smp:samples", "sample", search_id=search_id,
                     name=name, project_name=project_name, projectlimsid=projectlimsid)
 
     def get_processes(self, search_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
@@ -394,7 +422,7 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Process, Stub, "processes", "prc:process", "prc:processes", "process", search_id=search_id,
+        return self.get_stub_list(Process, Stub, "processes", "prc:processes", "process", search_id=search_id,
                                   last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
                                   techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
 
@@ -402,14 +430,14 @@ class ClarityLims():
         """
         TODO
         """
-        return self.get_stub_list(Workflow, Stub, "configuration/workflows", "wkfcnf:workflow", "wkfcnf:workflows", "workflow",
+        return self.get_stub_list(Workflow, Stub, "configuration/workflows", "wkfcnf:workflows", "workflow",
                                   search_id=search_id, name=name)
 
     def get_protocols(self, search_id=None, name=None):
         """
         TODO
         """
-        return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocol", "protcnf:protocols", "protocol",
+        return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocols", "protocol",
                                   search_id=search_id, name=name)
 
 
