@@ -137,10 +137,10 @@ class TestClarityWithFixtures:
 
         # Test 
         get_samples = api.get_samples_from_artifacts(artifact)
-        print(get_samples)
+        # print(get_samples)
 
         # Assert
-        # assert len(get_samples) == expected_sample_quantity
+        assert len(get_samples) == expected_sample_quantity
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
         ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),

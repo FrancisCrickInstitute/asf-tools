@@ -30,15 +30,16 @@ class HelperLims(ClarityLims):
             raise ValueError("The artifacts list is None")
         # print(artifacts_list)
         sample_list = []
-        value = self.expand_stubs(artifacts_list, expansion_type = Artifact)
-        print(value)
-        # run_samples = value.samples
-        # sample_list.extend(run_samples)
+        values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
+        # print(value)
+        for value_item in values:
+            run_samples = value_item.samples
+            sample_list.extend(run_samples)
         # Make the entries in sample_list unique
-        # unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
+        unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
         # if len(unique_sample_list) == 0:
             # raise KeyError("No samples were found") # this would only raise an error if no samples were found. it doesn't handle errors from an invalid input correctly
-        # return unique_sample_list
+        return unique_sample_list
     
     def get_sample_info(self, sample: str) -> dict:
         if sample is None:
