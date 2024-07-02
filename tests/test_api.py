@@ -248,9 +248,9 @@ class TestClarityEndpoints():
         if search_id is not None:
             assert data.id == search_id
 
-    def test_get_stub_list_returns_none_invalid(self, api):
+    def test_clarity_get_stub_list_returns_none_invalid(self, api):
         """
-        Test 
+        Test returns none when no results exist
         """
 
         # Test
@@ -258,6 +258,20 @@ class TestClarityEndpoints():
 
         # Assert
         assert data is None
+
+    def test_clarity_expand_stubs(self, api):
+        """
+        Test expand stubs works
+        """
+
+        # Setup
+        labs = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab")
+
+        # Test
+        expanded = api.expand_stubs(labs, Lab)
+
+        # Assert
+        assert len(labs) == len(expanded)
 
 
 class TestClarityPrototype(unittest.TestCase):
