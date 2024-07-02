@@ -40,7 +40,7 @@ class HelperLims(ClarityLims):
     def get_sample_info(self, sample: str) -> dict:
         if sample is None:
             raise ValueError("The sample is None")
-        sample_stub = self.get_samples(name = sample)
+        sample_stub = self.get_samples(search_id = sample)
         # print(sample_stub)
         sample_name = sample_stub.name
         project_id = self.get_projects(search_id = sample_stub.project.id)
@@ -61,20 +61,22 @@ class HelperLims(ClarityLims):
             "user": user_fullname, 
             "project_id": project_id
             }
-        print(sample_info)
+        # print(sample_info)
         
         return sample_info
     
-    # def collect_sample_info_from_runid(self, run_id: str) -> dict:
+    def collect_sample_info_from_runid(self, run_id: str) -> dict:
 
-    #     artifacts_list = self.get_artifacts_from_runid(run_id)
-    #     sample_list = self.get_samples_from_artifacts(artifacts_list)
+        artifacts_list = self.get_artifacts_from_runid(run_id)
+        sample_list = self.get_samples_from_artifacts(artifacts_list)
+        # print(sample_list)
 
-    #     sample_info = {}
-    #     for sample_id in sample_list:
-    #         info = self.get_sample_info(sample_id)
-    #         sample_info.update(info)
-    #     return sample_info
+        sample_info = {}
+        for sample_id in sample_list:
+            # print(sample_id.id)
+            info = self.get_sample_info(sample_id.id)
+            sample_info.update(info)
+        return sample_info
     
     def get_tcustomindexing_false(self, process: str) -> list:
         if process is None:

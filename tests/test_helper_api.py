@@ -147,8 +147,8 @@ class TestClarityWithFixtures:
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
         # ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
-        # ("MAM040P_5", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
-        ("MAM040P_5", {"MAM040P_5": {"group": "placeholder_lab", "user": "placeholder.name", "project_id": "RN20066"}})
+        # ("ALV729A45", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
+        ("ALV729A45", {"MAM040P_5": {"group": "placeholder_lab", "user": "placeholder.name", "project_id": "RN20066"}})
     ])
     def test_get_sample_info_isvalid(self, api, sample_id, expected_dict):
         """
@@ -156,12 +156,12 @@ class TestClarityWithFixtures:
         """
         
         # Set up
-        sample = api.get_samples(name=sample_id)
+        sample = api.get_samples(search_id=sample_id)
         # print(sample)
         
         # Test 
-        get_info = api.get_sample_info(sample)
-        # print(get_info)
+        get_info = api.get_sample_info(sample.id)
+        print(get_info)
 
         # Assert
         assert get_info == expected_dict
