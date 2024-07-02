@@ -260,6 +260,18 @@ class TestClarityEndpoints():
         # Assert
         assert data is None
 
+    def test_clarity_get_stub_list_noexpand(self, api):
+        """
+        Test returns single stub no expansion
+        """
+
+        # Test
+        data = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="babs", expand_stubs=False)
+        print(data)
+
+        # Assert
+        assert isinstance(data, Stub)
+
     def test_clarity_expand_stubs(self, api):
         """
         Test expand stubs works

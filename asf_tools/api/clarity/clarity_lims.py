@@ -331,7 +331,7 @@ class ClarityLims():
             expansions.append(self.get_single_instance(xml_data, self.STUB_EXP_KEY[expansion_type.__name__], expansion_type))
         return expansions
 
-    def get_stub_list(self, model_type, stub_type, endpoint, outer_key, inner_key, search_id=None, **kwargs):
+    def get_stub_list(self, model_type, stub_type, endpoint, outer_key, inner_key, search_id=None, expand_stubs=True, **kwargs):
         """
         TODO
         """
@@ -345,14 +345,17 @@ class ClarityLims():
         instances = self.get_instances(outer_key, inner_key, stub_type, endpoint, params)
 
         # Expand if only one result is returned
-        if len(instances) == 1:
+        if len(instances) == 1 and expand_stubs is True:
             return self.expand_stub(instances[0], model_type)
+        # Just return stub
+        if len(instances) == 1 and expand_stubs is False:
+            return instances[0]
         # Return none if no results
         if len(instances) == 0:
             return None
         return instances
 
-    def get_labs(self, search_id=None, name=None, last_modified=None):
+    def get_labs(self, search_id=None, expand_stubs=True, name=None, last_modified=None):
         """
         Retrieve lab instances from the API with optional filtering by name or last modified date.
 
@@ -365,9 +368,9 @@ class ClarityLims():
             list[Stub] or Lab: A list of lab stubs or a single expanded lab instance if only one result is found.
         """
         return self.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", search_id=search_id,
-                                  name=name, last_modifie=last_modified)
+                                  name=name, last_modifie=last_modified, expand_stubs=expand_stubs)
 
-    def get_projects(self, search_id=None, name=None, open_date=None, last_modified=None):
+    def get_projects(self, search_id=None, expand_stubs=True, name=None, open_date=None, last_modified=None):
         """
         Retrieve container instances from the API with optional filtering by name or last modified date.
 
@@ -381,9 +384,9 @@ class ClarityLims():
             list[Stub] or Project: A list of project stubs or a single expanded project instance if only one result is found.
         """
         return self.get_stub_list(Project, Stub, "projects", "prj:projects", "project", search_id=search_id,
-                            name=name, open_date=open_date, last_modified=last_modified)
+                            name=name, open_date=open_date, last_modified=last_modified, expand_stubs=expand_stubs)
 
-    def get_containers(self, search_id=None, name=None, last_modified=None):
+    def get_containers(self, search_id=None, expand_stubs=True, name=None, last_modified=None):
         """
         Retrieve container instances from the API with optional filtering by name or last modified date.
 
@@ -396,9 +399,9 @@ class ClarityLims():
             list[Stub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
         return self.get_stub_list(Container, Stub, "containers", "con:containers", "container", search_id=search_id,
-                    name=name, last_modified=last_modified)
+                    name=name, last_modified=last_modified, expand_stubs=expand_stubs)
 
-    def get_artifacts(self, search_id=None, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
+    def get_artifacts(self, search_id=None, expand_stubs=True, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
                       qc_flag=None, sample_name=None, samplelimsid=None, artifactgroup=None, containername=None,
                       containerlimsid=None, reagent_label=None):
         """
@@ -408,23 +411,23 @@ class ClarityLims():
                                   name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
                                   working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
                                   artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
-                                  reagent_label=reagent_label)
+                                  reagent_label=reagent_label, expand_stubs=expand_stubs)
 
-    def get_samples(self, search_id=None, name=None, project_name=None, projectlimsid=None):
+    def get_samples(self, search_id=None, expand_stubs=True, name=None, project_name=None, projectlimsid=None):
         """
         TODO
         """
         return self.get_stub_list(Sample, Stub, "samples", "smp:samples", "sample", search_id=search_id,
-                    name=name, project_name=project_name, projectlimsid=projectlimsid)
+                    name=name, project_name=project_name, projectlimsid=projectlimsid, expand_stubs=expand_stubs)
 
-    def get_processes(self, search_id=None, last_modified=None, process_type=None, inputartifactlimsid=None, 
+    def get_processes(self, search_id=None, expand_stubs=True, last_modified=None, process_type=None, inputartifactlimsid=None, 
                       techfirstname=None, techlastname=None, projectname=None):
         """
         TODO
         """
         return self.get_stub_list(Process, Stub, "processes", "prc:processes", "process", search_id=search_id,
                                   last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
-                                  techfirstname=techfirstname, techlastname=techlastname, projectname=projectname)
+                                  techfirstname=techfirstname, techlastname=techlastname, projectname=projectname, expand_stubs=expand_stubs)
 
     def get_workflows(self, search_id=None, name=None):
         """
