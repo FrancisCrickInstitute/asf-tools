@@ -6,7 +6,7 @@ import logging
 from typing import Optional
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact
+from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab
 
 log = logging.getLogger(__name__)
 
@@ -28,29 +28,28 @@ class HelperLims(ClarityLims):
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
         if artifacts_list is None:
             raise ValueError("The artifacts list is None")
-        # print(artifacts_list)
         sample_list = []
         values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
-        print(values)
         for value_item in values:
             run_samples = value_item.samples
             sample_list.extend(run_samples)
         # Make the entries in sample_list unique
         unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
-        # if len(unique_sample_list) == 0:
-            # raise KeyError("No samples were found") # this would only raise an error if no samples were found. it doesn't handle errors from an invalid input correctly
         return unique_sample_list
     
     def get_sample_info(self, sample: str) -> dict:
         if sample is None:
             raise ValueError("The sample is None")
+        values = self.expand_stub(sample, expansion_type = Artifact)
+        sample_name = values.name
+        project_id = values.project.limsid
 
-        sample_name = sample.name
-        lab = sample.submitter.lab.name #shouldn't work
-        user_name = sample.submitter.first_name #first name and last name might be merged
-        user_lastname = sample.submitter.last_name
+        user = self.expand_stub(sample, expansion_type = ResearcherStub)
+        user_name = values.submitter.first_name #first name and last name might be merged
+        user_lastname = values.submitter.last_name
         user_fullname = (user_name + '.' + user_lastname).lower()
-        project_id = sample.project.name
+
+        lab = values.submitter.lab.name #shouldn't work
         
         sample_info = {}
         sample_info[sample_name] = {

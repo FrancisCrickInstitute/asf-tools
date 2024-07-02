@@ -5,9 +5,11 @@ Clarity helper API Tests
 import unittest
 from unittest.mock import patch, MagicMock
 import pytest
+from requests.exceptions import HTTPError
 # from tests.mocks.mock_clarity_lims import MockClarityLims
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.helper_lims import HelperLims
+from asf_tools.api.clarity.models import Stub
 
 
 # MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
@@ -56,11 +58,12 @@ class TestClarity(unittest.TestCase):
         """
 
         # Setup
-        artifacts_list = ['fake_list']
+        artifacts_list = [Stub(id='TestID', uri='https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST', name=None, limsid='TestID')]
+
         # Get a real artificact from the API that doesnt contain samples
 
         # Test and Assert
-        with self.assertRaises(KeyError):
+        with self.assertRaises(HTTPError):
             self.api.get_samples_from_artifacts(artifacts_list)
 
     def test_get_sample_info_isnone(self):
@@ -137,7 +140,7 @@ class TestClarityWithFixtures:
 
         # Test 
         get_samples = api.get_samples_from_artifacts(artifact)
-        print(get_samples)
+        # print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
@@ -160,7 +163,7 @@ class TestClarityWithFixtures:
         print(get_info)
 
         # Assert
-        # assert get_info == expected_dict
+        assert get_info == expected_dict
 
     @pytest.mark.parametrize("runid,expected_sample_quantity", [
             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
