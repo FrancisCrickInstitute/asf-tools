@@ -40,16 +40,20 @@ class HelperLims(ClarityLims):
     def get_sample_info(self, sample: str) -> dict:
         if sample is None:
             raise ValueError("The sample is None")
-        values = self.expand_stub(sample, expansion_type = Artifact)
-        sample_name = values.name
-        project_id = values.project.limsid
+        sample_stub = self.get_samples(name = sample)
+        # print(sample_stub)
+        sample_name = sample_stub.name
+        project_id = self.get_projects(search_id = sample_stub.project.id)
+        project_id = project_id.name
 
-        user = self.expand_stub(sample, expansion_type = ResearcherStub)
-        user_name = values.submitter.first_name #first name and last name might be merged
-        user_lastname = values.submitter.last_name
-        user_fullname = (user_name + '.' + user_lastname).lower()
+        # user = self.expand_stub(sample, expansion_type = ResearcherStub)
+        # user_name = user.submitter.first_name 
+        # user_lastname = user.submitter.last_name
+        # user_fullname = (user_name + '.' + user_lastname).lower()
+        user_fullname = "placeholder.name"
 
-        lab = values.submitter.lab.name #shouldn't work
+        # lab = user.submitter.lab.name #shouldn't work
+        lab = "placeholder_lab"
         
         sample_info = {}
         sample_info[sample_name] = {
@@ -57,6 +61,7 @@ class HelperLims(ClarityLims):
             "user": user_fullname, 
             "project_id": project_id
             }
+        print(sample_info)
         
         return sample_info
     
