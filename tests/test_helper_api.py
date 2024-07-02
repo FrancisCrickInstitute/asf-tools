@@ -3,237 +3,243 @@ Clarity helper API Tests
 """
 
 import unittest
+from unittest.mock import patch, MagicMock
 import pytest
 # from tests.mocks.mock_clarity_lims import MockClarityLims
 from asf_tools.api.clarity.clarity_lims import ClarityLims
+from asf_tools.api.clarity.helper_lims import HelperLims
+
 
 # MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
 
 
-# class TestClarity(unittest.TestCase):
-#     """Class for testing the clarity api wrapper"""
+class TestClarity(unittest.TestCase):
+    """Class for testing the clarity api wrapper"""
 
-#     def setUp(self):
-#         self.api = ClarityLims()
+    def setUp(self):
+        # self.api = ClarityLims()
+        self.api = HelperLims()
 
-#     def test_get_artifacts_from_runid_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_artifacts_from_runid_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_artifacts_from_runid(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_artifacts_from_runid(None)
 
-#     def test_get_artifacts_from_runid_isinvalid(self):
-#         """
-#         Pass runid that does not exist
-#         """
+    def test_get_artifacts_from_runid_isinvalid(self):
+        """
+        Pass runid that does not exist
+        """
 
-#         # Setup
-#         runid = 'fake_runid'
+        # Setup
+        runid = 'fake_runid'
 
-#         # Test and Assert
-#         with self.assertRaises(KeyError):
-#             self.api.get_artifacts_from_runid(runid)
+        # Test and Assert
+        with self.assertRaises(KeyError):
+            self.api.get_artifacts_from_runid(runid)
 
-#     def test_get_samples_from_artifacts_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_samples_from_artifacts_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_samples_from_artifacts(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_samples_from_artifacts(None)
 
-#     def test_get_samples_from_artifacts_isinvalid(self):
-#         """
-#         Pass an artifact that does not exist
-#         """
+    def test_get_samples_from_artifacts_isinvalid(self):
+        """
+        Pass an artifact that does not exist
+        """
 
-#         # Setup
-#         artifacts_list = ['fake_list']
-#         # Get a real artificact from the API that doesnt contain samples
+        # Setup
+        artifacts_list = ['fake_list']
+        # Get a real artificact from the API that doesnt contain samples
 
-#         # Test and Assert
-#         with self.assertRaises(KeyError):
-#             self.api.get_samples_from_artifacts(artifacts_list)
+        # Test and Assert
+        with self.assertRaises(KeyError):
+            self.api.get_samples_from_artifacts(artifacts_list)
 
-#     def test_get_sample_info_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_sample_info_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_sample_info(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_sample_info(None)
 
-#     def test_get_sample_barcode_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_sample_barcode_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_sample_barcode(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_sample_barcode(None)
 
-#     def test_get_tcustomindexing_false_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_tcustomindexing_false_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_tcustomindexing_false(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_tcustomindexing_false(None)
 
-#     def test_get_tcustomindexing_true_isnone(self):
-#         """
-#         Pass None to method
-#         """
+    def test_get_tcustomindexing_true_isnone(self):
+        """
+        Pass None to method
+        """
 
-#         # Test and Assert
-#         with self.assertRaises(ValueError):
-#             self.api.get_tcustomindexing_true(None)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_tcustomindexing_true(None)
 
 
-# class TestClarityWithFixtures:
-#     """Class for clarity tests with fixtures"""
+class TestClarityWithFixtures:
+    """Class for clarity tests with fixtures"""
 
-#     @pytest.fixture(scope="class")
-#     def api(self):
-#         """Setup API connection"""
-#         yield ClarityLims()
+    @pytest.fixture(scope="class")
+    def api(self):
+        """Setup API connection"""
+        yield HelperLims()
 
-#     @pytest.mark.parametrize("runid,expected", [
-#         ("20240417_1729_1C_PAW45723_05bb74c5", 1)
-#     ])
-#     def test_get_artifacts_from_runid_valid(self, api, runid, expected):
-#         """
-#         Pass real run IDs and test expected number of artifacts back
-#         """
+    @pytest.mark.parametrize("runid,expected", [
+        ("20240417_1729_1C_PAW45723_05bb74c5", 1)
+    ])
+    def test_get_artifacts_from_runid_valid(self, api, runid, expected):
+        """
+        Pass real run IDs and test expected number of artifacts back
+        """
 
-#         # Test
-#         artifacts = api.get_artifacts_from_runid(runid)
+        # Test
+        artifacts = api.get_artifacts_from_runid(runid)
+        print(artifacts)
+        # Assert
+        assert len(artifacts) == expected, f"Expected {expected} artifacts, but got {len(artifacts)}"
 
-#         # Assert
-#         assert len(artifacts) == expected
+    @pytest.mark.parametrize("run_id,expected_sample_quantity", [
+        ("B_04-0004-S6_DT", 1), # Illumina
+        ("462-24_MPX-seq", 4) # ONT
+    ]) # test 2 ONT and 2 Illumina
+    def test_get_samples_from_artifacts_isvalid(self, api, run_id, expected_sample_quantity):
+        """
+        Pass real artifact IDs and test expected number of samples back
+        """
 
-#     @pytest.mark.parametrize("artifact_id,expected_sample_quantity", [
-#         ("B_04-0004-S6_DT", 1), # Illumina
-#         ("462-24_MPX-seq", 4) # ONT
-#     ]) # test 2 ONT and 2 Illumina
-#     def test_get_samples_from_artifacts_isvalid(self, api, artifact_id, expected_sample_quantity):
-#         """
-#         Pass real artifact IDs and test expected number of samples back
-#         """
+        # Set up
+        artifact = api.get_artifacts(name=run_id)
+        # print(artifact)
 
-#         # Set up
-#         artifact = api.get_artifacts(name=artifact_id)[-1]
-#         artifacts = [artifact]
+        # Test 
+        get_samples = api.get_samples_from_artifacts(artifact)
+        # print(get_samples)
 
-#         # Test 
-#         get_samples = api.get_samples_from_artifacts(artifacts)
+        # Assert
+        assert len(get_samples) == expected_sample_quantity
 
-#         # Assert
-#         assert len(get_samples) == expected_sample_quantity
-
-#     @pytest.mark.parametrize("sample_id,expected_dict", [
-#         ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
-#         ("MAM040P_5", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
-#     ])
-#     def test_get_sample_info_isvalid(self, api, sample_id, expected_dict):
-#         """
-#         Pass real sample IDs and test expected values in the dictionary output
-#         """
+    @pytest.mark.parametrize("sample_id,expected_dict", [
+        ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
+        ("MAM040P_5", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
+    ])
+    def test_get_sample_info_isvalid(self, api, sample_id, expected_dict):
+        """
+        Pass real sample IDs and test expected values in the dictionary output
+        """
         
-#         # Set up
-#         sample = api.get_samples(name=sample_id)[-1]
+        # Set up
+        sample = api.get_samples(name=sample_id)
+        print(sample)
         
-#         # Test 
-#         get_info = api.get_sample_info(sample)
-#         print(get_info)
+        # Test 
+        get_info = api.get_sample_info(item for item in sample)
+        print(get_info)
 
-#         # Assert
-#         assert get_info == expected_dict
+        # Assert
+        # assert get_info == expected_dict
 
-#     @pytest.mark.parametrize("runid,expected_sample_quantity", [
-#             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
-#             ('HWNT7BBXY',9)
-#     ])
-#     def test_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
+    @pytest.mark.parametrize("runid,expected_sample_quantity", [
+            ("20240417_1729_1C_PAW45723_05bb74c5", 4),
+            ('HWNT7BBXY',9)
+    ])
+    def test_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
+        """
+        Pass real run IDs and test expected number of samples stored in the dictionary output
+        """
+
+        # Test
+        sample_dict = api.collect_sample_info_from_runid(runid)
+
+        # Assert
+        assert len(sample_dict) == expected_sample_quantity
+
+    @pytest.mark.parametrize("process,expected_list", [
+        ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", False),
+        ("https://asf-claritylims.thecrick.org/api/v2/processes/24-12760", 3)
+    ])
+    def test_get_tcustomindexing_false_isvalid(self, api, process, expected_list):
+        """
+        Pass real run IDs and test expected number of artifacts back
+        """
+
+        # Set up
+
+        # Test
+        artifacts = api.get_tcustomindexing_false(process)
+
+        # Assert
+        assert len(artifacts) == expected_list
+
+    @pytest.mark.parametrize("process,expected_dict_len", [
+        ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", 16)
+        # ("24-2060556", 16)
+    ])
+    def test_get_tcustomindexing_true_isvalid(self, api, process, expected_dict_len):
+        """
+        Pass real run IDs and test expected number of artifacts back
+        """
+
+        # Set up
+        artifact = api.get_artifacts(name=process)
+        # artifact = api.get_processes(processlimsid=process)
+        print(artifact)
+
+        # Test
+        artifacts = api.get_tcustomindexing_true(artifact)
+
+        # Assert
+        assert len(artifacts) == expected_dict_len
+
+    @pytest.mark.parametrize("runid,expected_dict_len", [
+        ("20240417_1729_1C_PAW45723_05bb74c5", 16)
+        # ("24-2060556", 16)
+    ])
+    def test_get_sample_barcode_isvalid(self, api, runid, expected_dict_len):
+        """
+        Pass real run IDs and test expected number of artifacts back
+        """
+
+        # Test
+        barcode_info = api.get_sample_barcode(runid)
+
+        # Assert
+        assert len(barcode_info) == expected_dict_len
+
+# class TestClarityMocks:
+#     """
+#     Mock generation methods
+#     """
+#     @pytest.mark.only_run_with_direct_target
+#     def test_mocking_generate_clarity_data(self):
 #         """
-#         Pass real run IDs and test expected number of samples stored in the dictionary output
+#         Generates a new test data set from the api
 #         """
 
-#         # Test
-#         sample_dict = api.collect_sample_info_from_runid(runid)
-
-#         # Assert
-#         assert len(sample_dict) == expected_sample_quantity
-
-#     @pytest.mark.parametrize("process,expected_list", [
-#         ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", False),
-#         ("https://asf-claritylims.thecrick.org/api/v2/processes/24-12760", 3)
-#     ])
-#     def test_get_tcustomindexing_false_isvalid(self, api, process, expected_list):
-#         """
-#         Pass real run IDs and test expected number of artifacts back
-#         """
-
-#         # Set up
-
-#         # Test
-#         artifacts = api.get_tcustomindexing_false(process)
-
-#         # Assert
-#         assert len(artifacts) == expected_list
-
-#     @pytest.mark.parametrize("process,expected_dict_len", [
-#         ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", 16)
-#         # ("24-2060556", 16)
-#     ])
-#     def test_get_tcustomindexing_true_isvalid(self, api, process, expected_dict_len):
-#         """
-#         Pass real run IDs and test expected number of artifacts back
-#         """
-
-#         # Set up
-#         artifact = api.get_artifacts(name=process)
-#         # artifact = api.get_processes(processlimsid=process)
-#         print(artifact)
-
-#         # Test
-#         artifacts = api.get_tcustomindexing_true(artifact)
-
-#         # Assert
-#         assert len(artifacts) == expected_dict_len
-
-#     @pytest.mark.parametrize("runid,expected_dict_len", [
-#         ("20240417_1729_1C_PAW45723_05bb74c5", 16)
-#         # ("24-2060556", 16)
-#     ])
-#     def test_get_sample_barcode_isvalid(self, api, runid, expected_dict_len):
-#         """
-#         Pass real run IDs and test expected number of artifacts back
-#         """
-
-#         # Test
-#         barcode_info = api.get_sample_barcode(runid)
-
-#         # Assert
-#         assert len(barcode_info) == expected_dict_len
-
-# # class TestClarityMocks:
-# #     """
-# #     Mock generation methods
-# #     """
-# #     @pytest.mark.only_run_with_direct_target
-# #     def test_mocking_generate_clarity_data(self):
-# #         """
-# #         Generates a new test data set from the api
-# #         """
-
-# #         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
+#         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
 
 # class TestClarityPrototype(unittest.TestCase):
 #     """
