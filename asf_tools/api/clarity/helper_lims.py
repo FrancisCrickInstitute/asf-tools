@@ -31,7 +31,7 @@ class HelperLims(ClarityLims):
         # print(artifacts_list)
         sample_list = []
         values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
-        # print(value)
+        print(values)
         for value_item in values:
             run_samples = value_item.samples
             sample_list.extend(run_samples)

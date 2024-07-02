@@ -137,7 +137,7 @@ class TestClarityWithFixtures:
 
         # Test 
         get_samples = api.get_samples_from_artifacts(artifact)
-        # print(get_samples)
+        print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
