@@ -157,7 +157,9 @@ class Artifact(ClarityBaseModel):
         """
         Workflow stages is nested
         """
-        values = values["workflow-stage"]
+        if values is None:
+            return values
+        values = values["workflow-stage"]        
         if isinstance(values, dict):
             values = [values]
         return [Stub(**item) for item in values]

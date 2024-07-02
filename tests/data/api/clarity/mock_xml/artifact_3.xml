@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<art:artifact xmlns:udf="http://genologics.com/ri/userdefined" xmlns:file="http://genologics.com/ri/file" xmlns:art="http://genologics.com/ri/artifact" limsid="92-8332746" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/92-8332746?state=5959896">
+    <name>462-24_MPX-seq</name>
+    <type>ResultFile</type>
+    <output-type>ResultFile</output-type>
+    <parent-process limsid="24-2045053" uri="https://asf-claritylims.thecrick.org/api/v2/processes/24-2045053"/>
+    <qc-flag>UNKNOWN</qc-flag>
+    <sample limsid="VIV6902A1" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A1"/>
+    <sample limsid="VIV6902A2" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A2"/>
+    <sample limsid="VIV6902A3" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A3"/>
+    <sample limsid="VIV6902A4" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A4"/>
+    <reagent-label name="BC04 (TTCGGATTCTATCGTGTTTCCCTA)"/>
+    <reagent-label name="BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"/>
+    <reagent-label name="BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"/>
+    <reagent-label name="BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"/>
+    <workflow-stages/>
+</art:artifact>
