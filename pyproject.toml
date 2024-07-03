@@ -14,6 +14,7 @@ dependencies = [
     "click",
     "rich-click",
     "rich",
+    "requests",
     "toml",
     "xmltodict",
     "pydantic"
