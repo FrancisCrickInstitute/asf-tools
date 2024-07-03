@@ -11,10 +11,6 @@ from requests.exceptions import HTTPError
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.api.clarity.models import Stub
 
-
-# MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
-
-
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
@@ -227,15 +223,3 @@ class TestClarityHelperLimsyWithFixtures:
 
     #     # Assert
     #     assert len(barcode_info) == expected_dict_len
-
-# class TestClarityMocks:
-#     """
-#     Mock generation methods
-#     """
-#     @pytest.mark.only_run_with_direct_target
-#     def test_mocking_generate_clarity_data(self):
-#         """
-#         Generates a new test data set from the api
-#         """
-
-#         MockClarityLims.generate_test_data(MOCK_API_DATA_DIR)
