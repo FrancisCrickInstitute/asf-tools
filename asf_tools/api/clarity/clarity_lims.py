@@ -11,24 +11,12 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import (
-    ClarityBaseModel,
-    Stub,
-    Lab,
-    Project,
-    Container,
-    Artifact,
-    Sample,
-    Process,
-    Workflow,
-    Protocol,
-    QueueStep
-)
+from asf_tools.api.clarity.models import ClarityBaseModel, Stub, Lab, Project, Container, Artifact, Sample, Process, Workflow, Protocol, QueueStep
 
 log = logging.getLogger(__name__)
 
 
-class ClarityLims():
+class ClarityLims:
     """
     Clarity API Interface
     """
@@ -36,21 +24,20 @@ class ClarityLims():
     API_VERSION = "v2"
     API_TIMEOUT = 16
     STUB_EXP_KEY = {
-        "Lab" : "lab:lab",
-        "Project" : "prj:project",
+        "Lab": "lab:lab",
+        "Project": "prj:project",
         "Container": "con:container",
         "Artifact": "art:artifact",
         "Sample": "smp:sample",
         "Process": "prc:process",
         "Workflow": "wkfcnf:workflow",
         "Protocol": "protcnf:protocol",
-        "QueueStep": "que:queue"
+        "QueueStep": "que:queue",
     }
 
-    def __init__(self, credentials_path: Optional[str] = None,
-                 baseuri: Optional[str] = None,
-                 username: Optional[str] = None,
-                 password: Optional[str] = None):
+    def __init__(
+        self, credentials_path: Optional[str] = None, baseuri: Optional[str] = None, username: Optional[str] = None, password: Optional[str] = None
+    ):
 
         # Resolve credentials path
         resolved_cred_path = credentials_path
@@ -77,7 +64,7 @@ class ClarityLims():
         # Setup API Connection
         self.request_session = requests.Session()
         self.adapter = requests.adapters.HTTPAdapter(pool_connections=100, pool_maxsize=100)
-        self.request_session.mount('http://', self.adapter)
+        self.request_session.mount("http://", self.adapter)
 
     def load_credentials(self, file_path: str) -> dict:
         """
@@ -123,10 +110,10 @@ class ClarityLims():
         for key, value in kwargs.items():
             if value is None:
                 continue
-            result[key.replace('_', '-')] = value
+            result[key.replace("_", "-")] = value
         return result
 
-    def validate_response(self, uri, response, accept_status_codes = [200]) -> bool:
+    def validate_response(self, uri, response, accept_status_codes=[200]) -> bool:
         """
         Validate the HTTP response from the API.
 
@@ -140,15 +127,15 @@ class ClarityLims():
         if response.status_code not in accept_status_codes:
             try:
                 root = ElementTree.fromstring(response.content)
-                node = root.find('message')
+                node = root.find("message")
                 if node is None:
                     response.raise_for_status()
                     message = f"{response.status_code}"
                 else:
                     message = f"{response.status_code}: {node.text}"
-                node = root.find('suggested-actions')
+                node = root.find("suggested-actions")
                 if node is not None:
-                    message += ' ' + node.text
+                    message += " " + node.text
             except ElementTree.ParseError:  # some error messages might not follow the xml standard
                 message = response.content
             raise requests.exceptions.HTTPError(uri + " - " + message, response=response)
@@ -168,10 +155,9 @@ class ClarityLims():
         """
         # Try to call api
         try:
-            response = self.request_session.get(uri, params=params,
-                                         auth=(self.username, self.password),
-                                         headers={"accept": "application/xml"},
-                                         timeout=self.API_TIMEOUT)
+            response = self.request_session.get(
+                uri, params=params, auth=(self.username, self.password), headers={"accept": "application/xml"}, timeout=self.API_TIMEOUT
+            )
         except requests.exceptions.Timeout as e:
             raise type(e)(f"{str(e)}, Error trying to reach {uri}")
 
@@ -222,7 +208,7 @@ class ClarityLims():
             list[ClarityBaseModel]: A list of instances of the model type.
         """
         # Parse data
-        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
         inner_dict = data_dict[outer_key]
         if inner_key not in inner_dict:
             return [], None
@@ -240,15 +226,22 @@ class ClarityLims():
             instances.append(data_item)
 
         # Look for next page
-        next_page = data_dict[outer_key].get('next-page')
+        next_page = data_dict[outer_key].get("next-page")
         if next_page is not None:
             next_page = next_page["uri"]
 
         # Return data and next page hook
         return instances, next_page
 
-    def get_instances(self, outer_key: str, inner_key: str, model_type: ClarityBaseModel, endpoint: str,
-                      params: Optional[Dict[str, str]] = None, accept_status_codes=[200]):
+    def get_instances(
+        self,
+        outer_key: str,
+        inner_key: str,
+        model_type: ClarityBaseModel,
+        endpoint: str,
+        params: Optional[Dict[str, str]] = None,
+        accept_status_codes=[200],
+    ):
         """
         Get instances of a specified model from an API endpoint, handling pagination.
 
@@ -288,11 +281,11 @@ class ClarityLims():
             ClarityBaseModel: An instance of the model type.
         """
         # Parse data
-        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix='')
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
         data_dict = data_dict[outer_key]
 
         # Set hyphons to underscores
-        data_dict = {key.replace('-', '_'): value for key, value in data_dict.items()}
+        data_dict = {key.replace("-", "_"): value for key, value in data_dict.items()}
 
         # Create and return model
         instance = model_type(**data_dict)
@@ -367,8 +360,9 @@ class ClarityLims():
         Returns:
             list[Stub] or Lab: A list of lab stubs or a single expanded lab instance if only one result is found.
         """
-        return self.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", search_id=search_id,
-                                  name=name, last_modifie=last_modified, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Lab, Stub, "labs", "lab:labs", "lab", search_id=search_id, name=name, last_modifie=last_modified, expand_stubs=expand_stubs
+        )
 
     def get_projects(self, search_id=None, expand_stubs=True, name=None, open_date=None, last_modified=None):
         """
@@ -383,8 +377,18 @@ class ClarityLims():
         Returns:
             list[Stub] or Project: A list of project stubs or a single expanded project instance if only one result is found.
         """
-        return self.get_stub_list(Project, Stub, "projects", "prj:projects", "project", search_id=search_id,
-                            name=name, open_date=open_date, last_modified=last_modified, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Project,
+            Stub,
+            "projects",
+            "prj:projects",
+            "project",
+            search_id=search_id,
+            name=name,
+            open_date=open_date,
+            last_modified=last_modified,
+            expand_stubs=expand_stubs,
+        )
 
     def get_containers(self, search_id=None, expand_stubs=True, name=None, last_modified=None):
         """
@@ -398,58 +402,141 @@ class ClarityLims():
         Returns:
             list[Stub] or Container: A list of container stubs or a single expanded container instance if only one result is found.
         """
-        return self.get_stub_list(Container, Stub, "containers", "con:containers", "container", search_id=search_id,
-                    name=name, last_modified=last_modified, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Container,
+            Stub,
+            "containers",
+            "con:containers",
+            "container",
+            search_id=search_id,
+            name=name,
+            last_modified=last_modified,
+            expand_stubs=expand_stubs,
+        )
 
-    def get_artifacts(self, search_id=None, expand_stubs=True, name=None, art_type=None, process_type=None, artifact_flag_name=None, working_flag=None, 
-                      qc_flag=None, sample_name=None, samplelimsid=None, artifactgroup=None, containername=None,
-                      containerlimsid=None, reagent_label=None):
+    def get_artifacts(
+        self,
+        search_id=None,
+        expand_stubs=True,
+        name=None,
+        art_type=None,
+        process_type=None,
+        artifact_flag_name=None,
+        working_flag=None,
+        qc_flag=None,
+        sample_name=None,
+        samplelimsid=None,
+        artifactgroup=None,
+        containername=None,
+        containerlimsid=None,
+        reagent_label=None,
+    ):
         """
         TODO
         """
-        return self.get_stub_list(Artifact, Stub, "artifacts", "art:artifacts", "artifact", search_id=search_id, 
-                                  name=name, type=art_type, process_type=process_type, artifact_flag_name=artifact_flag_name,
-                                  working_flag=working_flag, qc_flag=qc_flag, sample_name=sample_name, samplelimsid=samplelimsid,
-                                  artifactgroup=artifactgroup, containername=containername, containerlimsid=containerlimsid, 
-                                  reagent_label=reagent_label, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Artifact,
+            Stub,
+            "artifacts",
+            "art:artifacts",
+            "artifact",
+            search_id=search_id,
+            name=name,
+            type=art_type,
+            process_type=process_type,
+            artifact_flag_name=artifact_flag_name,
+            working_flag=working_flag,
+            qc_flag=qc_flag,
+            sample_name=sample_name,
+            samplelimsid=samplelimsid,
+            artifactgroup=artifactgroup,
+            containername=containername,
+            containerlimsid=containerlimsid,
+            reagent_label=reagent_label,
+            expand_stubs=expand_stubs,
+        )
 
     def get_samples(self, search_id=None, expand_stubs=True, name=None, project_name=None, projectlimsid=None):
         """
         TODO
         """
-        return self.get_stub_list(Sample, Stub, "samples", "smp:samples", "sample", search_id=search_id,
-                    name=name, project_name=project_name, projectlimsid=projectlimsid, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Sample,
+            Stub,
+            "samples",
+            "smp:samples",
+            "sample",
+            search_id=search_id,
+            name=name,
+            project_name=project_name,
+            projectlimsid=projectlimsid,
+            expand_stubs=expand_stubs,
+        )
 
-    def get_processes(self, search_id=None, expand_stubs=True, last_modified=None, process_type=None, inputartifactlimsid=None, 
-                      techfirstname=None, techlastname=None, projectname=None):
+    def get_processes(
+        self,
+        search_id=None,
+        expand_stubs=True,
+        last_modified=None,
+        process_type=None,
+        inputartifactlimsid=None,
+        techfirstname=None,
+        techlastname=None,
+        projectname=None,
+    ):
         """
         TODO
         """
-        return self.get_stub_list(Process, Stub, "processes", "prc:processes", "process", search_id=search_id,
-                                  last_modified=last_modified, type=process_type, inputartifactlimsid=inputartifactlimsid,
-                                  techfirstname=techfirstname, techlastname=techlastname, projectname=projectname, expand_stubs=expand_stubs)
+        return self.get_stub_list(
+            Process,
+            Stub,
+            "processes",
+            "prc:processes",
+            "process",
+            search_id=search_id,
+            last_modified=last_modified,
+            type=process_type,
+            inputartifactlimsid=inputartifactlimsid,
+            techfirstname=techfirstname,
+            techlastname=techlastname,
+            projectname=projectname,
+            expand_stubs=expand_stubs,
+        )
 
     def get_workflows(self, search_id=None, name=None):
         """
         TODO
         """
-        return self.get_stub_list(Workflow, Stub, "configuration/workflows", "wkfcnf:workflows", "workflow",
-                                  search_id=search_id, name=name)
+        return self.get_stub_list(Workflow, Stub, "configuration/workflows", "wkfcnf:workflows", "workflow", search_id=search_id, name=name)
 
     def get_protocols(self, search_id=None, name=None):
         """
         TODO
         """
-        return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocols", "protocol",
-                                  search_id=search_id, name=name)
+        return self.get_stub_list(Protocol, Stub, "configuration/protocols", "protcnf:protocols", "protocol", search_id=search_id, name=name)
 
-
-    def get_queues(self, search_id=None, workflowname=None, workflowid=None, projectname=None, projectlimsid=None,
-                   containername=None, containerlimsid=None, previousstepid=None):
+    def get_queues(
+        self,
+        search_id=None,
+        workflowname=None,
+        workflowid=None,
+        projectname=None,
+        projectlimsid=None,
+        containername=None,
+        containerlimsid=None,
+        previousstepid=None,
+    ):
         """
         TODO
         """
-        params = self.get_params_from_args(workflowname=workflowname, workflowid=workflowid, projectname=projectname, projectlimsid=projectlimsid,
-                                           containername=containername, containerlimsid=containerlimsid, previousstepid=previousstepid)
+        params = self.get_params_from_args(
+            workflowname=workflowname,
+            workflowid=workflowid,
+            projectname=projectname,
+            projectlimsid=projectlimsid,
+            containername=containername,
+            containerlimsid=containerlimsid,
+            previousstepid=previousstepid,
+        )
         xml_data = self.get_with_id("queues", search_id, params)
         return self.get_single_instance(xml_data, "que:queue", QueueStep)

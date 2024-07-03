@@ -10,18 +10,7 @@ import pytest
 from unittest.mock import Mock
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import (
-    Stub,
-    Container,
-    Lab,
-    Project,
-    Artifact,
-    Sample,
-    Process,
-    Workflow,
-    Protocol,
-    QueueStep
-)
+from asf_tools.api.clarity.models import Stub, Container, Lab, Project, Artifact, Sample, Process, Workflow, Protocol, QueueStep
 from .mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -114,7 +103,6 @@ class TestClarity(unittest.TestCase):
         # Assert
         self.assertTrue(result)
 
-
     def test_clarity_api_get_params_from_args_with_none(self):
         """
         Get get args with none params
@@ -146,22 +134,25 @@ class TestClarityWithFixtures:
         """Setup API connection"""
         yield ClarityLims()
 
-    @pytest.mark.parametrize("xml_path,outer_key,inner_key,type_name,expected_num", [
-        ("labs.xml", "lab:labs", "lab", Stub, 141),
-        ("containers.xml", "con:containers", "container", Stub, 249),
-        ("projects.xml", "prj:projects", "project", Stub, 219),
-        ("artifacts.xml", "art:artifacts", "artifact", Stub, 828),
-        ("samples.xml", "smp:samples", "sample", Stub, 333),
-        ("processes.xml", "prc:processes", "process", Stub, 453),
-        ("workflows.xml", "wkfcnf:workflows", "workflow", Stub, 27)
-    ])
+    @pytest.mark.parametrize(
+        "xml_path,outer_key,inner_key,type_name,expected_num",
+        [
+            ("labs.xml", "lab:labs", "lab", Stub, 141),
+            ("containers.xml", "con:containers", "container", Stub, 249),
+            ("projects.xml", "prj:projects", "project", Stub, 219),
+            ("artifacts.xml", "art:artifacts", "artifact", Stub, 828),
+            ("samples.xml", "smp:samples", "sample", Stub, 333),
+            ("processes.xml", "prc:processes", "process", Stub, 453),
+            ("workflows.xml", "wkfcnf:workflows", "workflow", Stub, 27),
+        ],
+    )
     def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
         Test instance construction
         """
 
         # Setup
-        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), 'r', encoding='utf-8') as file:
+        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), "r", encoding="utf-8") as file:
             xml_content = file.read()
 
         # Test
@@ -170,26 +161,29 @@ class TestClarityWithFixtures:
         # Assert
         assert len(data) == expected_num
 
-    @pytest.mark.parametrize("xml_path,outer_key,type_name,instance_id", [
-        ("container.xml", "con:container", Container, "27-6876"),
-        ("lab.xml", "lab:lab", Lab, "602"),
-        ("project.xml", "prj:project", Project, "GOL2"),
-        ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
-        ("artifact_2.xml", "art:artifact", Artifact, "STR6918A110PA1?state=5982061"),
-        ("artifact_3.xml", "art:artifact", Artifact, "92-8332746?state=5959896"),
-        ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
-        ("process.xml", "prc:process", Process, "24-39409"),
-        ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),
-        ("protocol.xml", "protcnf:protocol", Protocol, "1"),
-        ("queue_step.xml", "que:queue", QueueStep, "60"),
-    ])
+    @pytest.mark.parametrize(
+        "xml_path,outer_key,type_name,instance_id",
+        [
+            ("container.xml", "con:container", Container, "27-6876"),
+            ("lab.xml", "lab:lab", Lab, "602"),
+            ("project.xml", "prj:project", Project, "GOL2"),
+            ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
+            ("artifact_2.xml", "art:artifact", Artifact, "STR6918A110PA1?state=5982061"),
+            ("artifact_3.xml", "art:artifact", Artifact, "92-8332746?state=5959896"),
+            ("sample.xml", "smp:sample", Sample, "VIV6902A1"),
+            ("process.xml", "prc:process", Process, "24-39409"),
+            ("workflow.xml", "wkfcnf:workflow", Workflow, "56"),
+            ("protocol.xml", "protcnf:protocol", Protocol, "1"),
+            ("queue_step.xml", "que:queue", QueueStep, "60"),
+        ],
+    )
     def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
         Test instance construction
         """
 
         # Setup
-        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), 'r', encoding='utf-8') as file:
+        with open(os.path.join(API_TEST_DATA, "mock_xml", xml_path), "r", encoding="utf-8") as file:
             xml_content = file.read()
 
         # Test
@@ -202,7 +196,7 @@ class TestClarityWithFixtures:
         assert instance.id == instance_id
 
 
-class TestClarityEndpoints():
+class TestClarityEndpoints:
     """
     Test class for pulling data from API endpoints
     """
@@ -216,20 +210,23 @@ class TestClarityEndpoints():
         request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
         yield lims
 
-    @pytest.mark.parametrize("func_name,search_id", [
-        ("get_labs", None),
-        ("get_labs", "2"),
-        ("get_projects", "GOL2"),
-        ("get_containers", "27-6876"),
-        ("get_artifacts", "2-8332743?state=5959893"),
-        ("get_samples", "VIV6902A1"),
-        ("get_processes", "24-39409"),
-        ("get_workflows", None),
-        ("get_protocols", None),
-        ("get_workflows", "56"),
-        ("get_protocols", "1"),
-        ("get_queues", "60")
-    ])
+    @pytest.mark.parametrize(
+        "func_name,search_id",
+        [
+            ("get_labs", None),
+            ("get_labs", "2"),
+            ("get_projects", "GOL2"),
+            ("get_containers", "27-6876"),
+            ("get_artifacts", "2-8332743?state=5959893"),
+            ("get_samples", "VIV6902A1"),
+            ("get_processes", "24-39409"),
+            ("get_workflows", None),
+            ("get_protocols", None),
+            ("get_workflows", "56"),
+            ("get_protocols", "1"),
+            ("get_queues", "60"),
+        ],
+    )
     def test_clarity_api_get_endpoints(self, api, func_name, search_id):
         """
         Test Get against endpoints

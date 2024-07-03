@@ -11,14 +11,14 @@ from pydantic import BaseModel, Field, model_validator, field_validator
 class ClarityBaseModel(BaseModel):
     id: Optional[str] = None
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     def extract_id(cls, values):  # pylint: disable=no-self-argument
         """
         Set id of the object from the uri.
         """
-        uri = values.get('uri')
+        uri = values.get("uri")
         if uri:
-            values['id'] = uri.split('/')[-1]
+            values["id"] = uri.split("/")[-1]
         return values
 
     def __str__(self):
@@ -40,9 +40,11 @@ class UdfField(BaseModel):
     type: str
     value: Union[str, int, bool] = Field(alias="#text")
 
+
 class FileField(BaseModel):
     uri: str
     limsid: str
+
 
 class Address(ClarityBaseModel):
     street: Optional[str] = None
@@ -82,14 +84,14 @@ class Container(ClarityBaseModel):
     placements: List[Placement] = Field(alias="placement")
     state: str
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     def ensure_list(cls, values):  # pylint: disable=no-self-argument
         """
         Ensure placements is a list.
         """
-        placements = values.get('placement')
+        placements = values.get("placement")
         if isinstance(placements, dict):
-            values['placement'] = [placements]
+            values["placement"] = [placements]
         return values
 
 
@@ -98,17 +100,17 @@ class Project(ClarityBaseModel):
     limsid: str
     name: str
     open_date: str
-    researcher_uri: str = Field(alias='researcher')
-    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
-    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
+    researcher_uri: str = Field(alias="researcher")
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias="file:file")
 
     @field_validator("researcher_uri", mode="before")
     def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
         """
         Extract researcher URI.
         """
-        if isinstance(values, dict) and 'uri' in values:
-            return values['uri']
+        if isinstance(values, dict) and "uri" in values:
+            return values["uri"]
         return values
 
 
@@ -136,8 +138,8 @@ class Artifact(ClarityBaseModel):
     samples: Optional[List[Stub]] = Field(alias="sample", default_factory=list)
     # reagent_labels: Optional[List[str]] = Field(alias="reagent_label", default_factory=list)
     control_type: Optional[Stub] = None
-    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
-    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias="file:file")
     artifact_group: Optional[List[Stub]] = Field(default_factory=list)
     workflow_stages: Optional[List[Stub]] = Field(default_factory=list)
     demux: Optional[Stub] = None
@@ -159,7 +161,7 @@ class Artifact(ClarityBaseModel):
         """
         if values is None:
             return values
-        values = values["workflow-stage"]        
+        values = values["workflow-stage"]
         if isinstance(values, dict):
             values = [values]
         return [Stub(**item) for item in values]
@@ -191,6 +193,7 @@ class Artifact(ClarityBaseModel):
             return [values]
         return values
 
+
 class Sample(ClarityBaseModel):
     limsid: str
     uri: str
@@ -199,7 +202,7 @@ class Sample(ClarityBaseModel):
     project: Stub
     submitter: Stub
     artifact: Optional[Stub] = None
-    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
 
 
 class Input(ClarityBaseModel):
@@ -207,6 +210,7 @@ class Input(ClarityBaseModel):
     uri: str
     post_process_uri: str = Field(alias="post-process-uri")
     parent_process: Stub = Field(alias="parent-process")
+
 
 class Output(ClarityBaseModel):
     limsid: str
@@ -227,8 +231,8 @@ class Process(ClarityBaseModel):
     date_run: str
     technician: ResearcherStub
     input_output_map: List[InputOutputMap] = Field(default_factory=list)
-    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias='udf:field')
-    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias='file:file')
+    udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
+    file_fields: Optional[List[FileField]] = Field(default_factory=list, alias="file:file")
 
     @field_validator("process_type", mode="before")
     def extract_reagent_labels(cls, values):  # pylint: disable=no-self-argument
@@ -284,7 +288,7 @@ class ProtocolStep(ClarityBaseModel):
     protocol_uri: str = Field(alias="protocol-uri")
     protocol_step_index: int = Field(alias="protocol-step-index")
     process_type: Stub = Field(alias="process-type")
-    transitions:  List[Transition] = Field(default_factory=list)
+    transitions: List[Transition] = Field(default_factory=list)
 
     @field_validator("transitions", mode="before")
     def extract_transitions(cls, values):  # pylint: disable=no-self-argument
