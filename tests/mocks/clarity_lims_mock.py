@@ -2,14 +2,16 @@
 Child class of Clarity Lims that scrapes data from the LIMS for mocking
 """
 
-import os
 import logging
+import os
 import pickle
 from urllib.parse import urlencode
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 
+
 log = logging.getLogger(__name__)
+
 
 class ClarityLimsMock(ClarityLims):
     """
@@ -21,23 +23,19 @@ class ClarityLimsMock(ClarityLims):
 
         self.tracked_requests = {}
 
-    def get_with_uri(self, uri, params = None, accept_status_codes = [200]):
+    def get_with_uri(self, uri, params=None, accept_status_codes=[200]):
         """
         Tracks the uri, params and response data or loads from store
         """
 
         full_uri = uri
         if params:
-            full_uri += '?' + urlencode(params)
+            full_uri += "?" + urlencode(params)
 
         if full_uri not in self.tracked_requests:
             data = super().get_with_uri(uri, params, accept_status_codes)
             log.debug(f"Logging data for {full_uri}")
-            self.tracked_requests[full_uri] = {
-                "uri": uri,
-                "params": params,
-                "data": data
-            }
+            self.tracked_requests[full_uri] = {"uri": uri, "params": params, "data": data}
         else:
             data = self.tracked_requests[full_uri]["data"]
 
@@ -48,7 +46,7 @@ class ClarityLimsMock(ClarityLims):
         Load tracked requests from file
         """
         if os.path.exists(filepath):
-            with open(filepath, 'rb') as file:
+            with open(filepath, "rb") as file:
                 self.tracked_requests = pickle.load(file)
                 log.debug(f"Loaded {len(self.tracked_requests)} requests")
 
@@ -56,6 +54,6 @@ class ClarityLimsMock(ClarityLims):
         """
         Dump tracked requests to file
         """
-        with open(filepath, 'wb') as file:
+        with open(filepath, "wb") as file:
             pickle.dump(self.tracked_requests, file)
             log.debug(f"Saved {len(self.tracked_requests)} requests")

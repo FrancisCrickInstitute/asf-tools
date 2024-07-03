@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<res:researchers xmlns:res="http://genologics.com/ri/researcher">
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/1">
+        <first-name>System</first-name>
+        <last-name>Administrator</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/2">
+        <first-name>Facility</first-name>
+        <last-name>Administrator</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/3">
+        <first-name>API</first-name>
+        <last-name>Access</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/4">
+        <first-name>Mickael</first-name>
+        <last-name>Escudero</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/5">
+        <first-name>Robert</first-name>
+        <last-name>Goldstone</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/6">
+        <first-name>Jerome</first-name>
+        <last-name>Nicod</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/7">
+        <first-name>Amelia</first-name>
+        <last-name>Edwards</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/54">
+        <first-name>Deb</first-name>
+        <last-name>Jackson</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/55">
+        <first-name>Tasneem</first-name>
+        <last-name>Karwa</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/56">
+        <first-name>Sophie</first-name>
+        <last-name>Ward</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/57">
+        <first-name>Sophie</first-name>
+        <last-name>Ward</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/58">
+        <first-name>PEACE</first-name>
+        <last-name>Plg</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/59">
+        <first-name>TRACERx API</first-name>
+        <last-name>Submit</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/60">
+        <first-name>Jacki</first-name>
+        <last-name>Goldman</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/61">
+        <first-name>Gareth</first-name>
+        <last-name>Wilson</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/62">
+        <first-name>Mary</first-name>
+        <last-name>Adedoye</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/63">
+        <first-name>Marg</first-name>
+        <last-name>Crawford</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/64">
+        <first-name>Makis</first-name>
+        <last-name>Fidanis</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/65">
+        <first-name>Laura</first-name>
+        <last-name>Cubitt</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/66">
+        <first-name>Richard</first-name>
+        <last-name>Mitter</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/67">
+        <first-name>Fiona</first-name>
+        <last-name>Byrne</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/68">
+        <first-name>Lorena</first-name>
+        <last-name>Benedetti</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/69">
+        <first-name>Maise</first-name>
+        <last-name>Al Bakir</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/70">
+        <first-name>Christopher</first-name>
+        <last-name>Barrington</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/71">
+        <first-name>Stephanie</first-name>
+        <last-name>Strohbuecker</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/73">
+        <first-name>Harshil</first-name>
+        <last-name>Patel</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/74">
+        <first-name>Jorge</first-name>
+        <last-name>Almagro</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/75">
+        <first-name>Probir</first-name>
+        <last-name>Chakravarty</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/76">
+        <first-name>Miriam</first-name>
+        <last-name>Llorian Sopena</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/77">
+        <first-name>Phil</first-name>
+        <last-name>East</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/78">
+        <first-name>Stuart</first-name>
+        <last-name>Horswell</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/79">
+        <first-name>Chelsea</first-name>
+        <last-name>Sawyer</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/80">
+        <first-name>Jimena</first-name>
+        <last-name>Perez-Lloret</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/81">
+        <first-name>Daniel</first-name>
+        <last-name>Cook</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/82">
+        <first-name>Annelien</first-name>
+        <last-name>Verfaillie</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/83">
+        <first-name>Stefan</first-name>
+        <last-name>Boeing</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/84">
+        <first-name>Desiree</first-name>
+        <last-name>Schnidrig</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/85">
+        <first-name>Aengus</first-name>
+        <last-name>Stewart</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/104">
+        <first-name>Magdalena</first-name>
+        <last-name>Gabrysiak</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/105">
+        <first-name>Rod</first-name>
+        <last-name>Daniels</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/106">
+        <first-name>Adrienne</first-name>
+        <last-name>Sullivan</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/107">
+        <first-name>Linxiang</first-name>
+        <last-name>Lan</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/108">
+        <first-name>Karin</first-name>
+        <last-name>Schlegelmilch</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/109">
+        <first-name>Jasmin</first-name>
+        <last-name>Zohren</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/110">
+        <first-name>Bryony</first-name>
+        <last-name>Leeke</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/111">
+        <first-name>TRACERx</first-name>
+        <last-name>Tlg</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/112">
+        <first-name>Ana</first-name>
+        <last-name>Tufegdzic Vidakovic</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/113">
+        <first-name>Utham</first-name>
+        <last-name>Valekunja</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/114">
+        <first-name>Muralidhara</first-name>
+        <last-name>Maradana</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/115">
+        <first-name>Matthew</first-name>
+        <last-name>Winder</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/116">
+        <first-name>Andreia</first-name>
+        <last-name>Bernardo</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/117">
+        <first-name>Lachlan</first-name>
+        <last-name>Harris</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/118">
+        <first-name>Rebecca</first-name>
+        <last-name>Lea</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/119">
+        <first-name>Tony</first-name>
+        <last-name>Fearns</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/121">
+        <first-name>Rachel</first-name>
+        <last-name>Lai</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/122">
+        <first-name>Lucia</first-name>
+        <last-name>Prieto-Godino</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/123">
+        <first-name>Raffaella</first-name>
+        <last-name>Tulino</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/124">
+        <first-name>Ben</first-name>
+        <last-name>Powell</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/125">
+        <first-name>Josep</first-name>
+        <last-name>Monserrat-Sanchez</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/126">
+        <first-name>Jernej</first-name>
+        <last-name>Ule</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/127">
+        <first-name>Semiramis</first-name>
+        <last-name>Popova</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/128">
+        <first-name>Silvana</first-name>
+        <last-name>Guioli</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/129">
+        <first-name>Duncan</first-name>
+        <last-name>McKenzie</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/130">
+        <first-name>Joan</first-name>
+        <last-name>Manils</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/131">
+        <first-name>Dora</first-name>
+        <last-name>Sideri</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/132">
+        <first-name>Rebecca</first-name>
+        <last-name>Jones</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/133">
+        <first-name>Talia</first-name>
+        <last-name>Gileadi</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/134">
+        <first-name>Nikolaos</first-name>
+        <last-name>Angelis</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/135">
+        <first-name>Febe</first-name>
+        <last-name>van Maldegem</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/136">
+        <first-name>Yasu</first-name>
+        <last-name>Kakui</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/137">
+        <first-name>Alexander</first-name>
+        <last-name>Waclawiczek</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/138">
+        <first-name>Gunes</first-name>
+        <last-name>Taylor</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/139">
+        <first-name>Yoichiro</first-name>
+        <last-name>Sugimoto</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/140">
+        <first-name>Romain</first-name>
+        <last-name>Baer</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/141">
+        <first-name>Alessia</first-name>
+        <last-name>Caramello</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/142">
+        <first-name>Kasper</first-name>
+        <last-name>Fugger</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/144">
+        <first-name>Victoria</first-name>
+        <last-name>Wang</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/145">
+        <first-name>Stefania</first-name>
+        <last-name>Crotta</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/146">
+        <first-name>Nicola</first-name>
+        <last-name>Diny</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/147">
+        <first-name>Panagiotis</first-name>
+        <last-name>Kotsantis</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/148">
+        <first-name>PEACE</first-name>
+        <last-name>AAC</last-name>
+    </researcher>
+    <researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/149">
+        <first-name>Andrew</first-name>
+        <last-name>Wu</last-name>
+    </researcher>
+</res:researchers>
