@@ -1,0 +1,41 @@
+<prj:project xmlns:udf="http://genologics.com/ri/userdefined" xmlns:ri="http://genologics.com/ri" xmlns:file="http://genologics.com/ri/file" xmlns:prj="http://genologics.com/ri/project" limsid="GOL2" uri="https://asf-claritylims.thecrick.org/api/v2/projects/GOL2">
+<name>TEST18001</name>
+<open-date>2018-05-14</open-date>
+<researcher uri="https://asf-claritylims.thecrick.org/api/v2/researchers/5"/>
+<udf:field name="Samples Quota" type="Numeric">20</udf:field>
+<udf:field name="Development Project" type="Boolean">false</udf:field>
+<udf:field name="Requested Number of Reads per Sample" type="Numeric">25</udf:field>
+<udf:field name="Requested Read Length" type="Numeric">100</udf:field>
+<udf:field name="Turnaround time (days)" type="Numeric">21</udf:field>
+<udf:field name="Project Manager" type="String">Robert Goldstone</udf:field>
+<udf:field name="Project Alias" type="String">Test Project</udf:field>
+<udf:field name="Submission Type" type="String">RNA</udf:field>
+<udf:field name="Reference Genome" type="String">Homo sapiens</udf:field>
+<udf:field name="Library Type" type="String">polyA_KAPA_mRNA_Hyper_Prep</udf:field>
+<udf:field name="Requested Sequencing Platform" type="String">HiSeq4000</udf:field>
+<udf:field name="Sequencing Notes" type="Text">some notes</udf:field>
+<udf:field name="Data Analysis Notes" type="Text">Some Analysis Notes</udf:field>
+<udf:field name="Workflow" type="String">T1 Custom DNA</udf:field>
+<udf:field name="Budget Code" type="String">Budget 00001</udf:field>
+<udf:field name="Bioinformatician" type="String">Not BABS</udf:field>
+<udf:field name="Requested Run Type" type="String">Paired End</udf:field>
+<udf:field name="Project Type" type="String">mRNA-Seq from RNA</udf:field>
+<udf:field name="Lab Notes" type="String">Some Lab notes</udf:field>
+<udf:field name="Additional Contact" type="String">me</udf:field>
+<udf:field name="Data Analysis Pipeline" type="String">RNA-Seq</udf:field>
+<udf:field name="Sequencing Read Configuration" type="String">101-08-08-101</udf:field>
+<udf:field name="Specific Kit Configuration" type="String">Standard</udf:field>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-1" limsid="40-1"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-2" limsid="40-2"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-67" limsid="40-67"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-68" limsid="40-68"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-78" limsid="40-78"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-219" limsid="40-219"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-278" limsid="40-278"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-279" limsid="40-279"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-280" limsid="40-280"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-285" limsid="40-285"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-1781" limsid="40-1781"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-1840" limsid="40-1840"/>
+<file:file uri="https://asf-claritylims.thecrick.org/api/v2/files/40-2581" limsid="40-2581"/>
+</prj:project>

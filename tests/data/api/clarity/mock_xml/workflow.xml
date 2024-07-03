@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wkfcnf:workflow xmlns:wkfcnf="http://genologics.com/ri/workflowconfiguration" name="T2 Custom RNA" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56" status="ACTIVE">
+    <protocols>
+        <protocol name="T RNA - Compact Sample QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/54"/>
+        <protocol name="T Custom RNA Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/62"/>
+        <protocol name="T Libraries Pooling" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/56"/>
+        <protocol name="T Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/protocols/57"/>
+    </protocols>
+    <stages>
+        <stage name="T Samples Pending" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/349"/>
+        <stage name="T Aggregate QC 4.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/351"/>
+        <stage name="T DNAse Treatment" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/586"/>
+        <stage name="T Aggregate QC 4.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/587"/>
+        <stage name="T Pass QC Confirmation" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/590"/>
+        <stage name="T Normalise Samples" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/352"/>
+        <stage name="T cDNA Synthesis" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/353"/>
+        <stage name="T Aggregate QC 4.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/354"/>
+        <stage name="T Normalise Samples" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/355"/>
+        <stage name="T Custom Indexing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/357"/>
+        <stage name="T Custom Library Prep" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/356"/>
+        <stage name="T LibraryQC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/358"/>
+        <stage name="T Normalise Libraries" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/359"/>
+        <stage name="T Library Pooling (Illumina SBS) 4.0" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/360"/>
+        <stage name="T Pool Library QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/361"/>
+        <stage name="T MPX-seq Dilution" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/535"/>
+        <stage name="T Sequencing Queue" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/527"/>
+        <stage name="T Record Pool Details for Pool of Pools" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/860"/>
+        <stage name="T Pool of Pools" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/528"/>
+        <stage name="T Choose Flowcell" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/362"/>
+        <stage name="T HiSeq Clustering" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/363"/>
+        <stage name="T Illumina High Output Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/364"/>
+        <stage name="T MiSeq Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/365"/>
+        <stage name="T NextSeq Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/546"/>
+        <stage name="T ONT Sequencing" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/619"/>
+        <stage name="T Flowcell QC (Nanopore)" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/620"/>
+        <stage name="T Flowcell QC (Illumina)" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/366"/>
+        <stage name="T Data QC" uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/643"/>
+    </stages>
+</wkfcnf:workflow>

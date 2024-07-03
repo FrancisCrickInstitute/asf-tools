@@ -1,0 +1,32 @@
+
+<art:artifact xmlns:udf="http://genologics.com/ri/userdefined" xmlns:file="http://genologics.com/ri/file" xmlns:art="http://genologics.com/ri/artifact" limsid="2-8332743" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8332743?state=5959893">
+<name>462-24_MPX-seq</name>
+<type>Analyte</type>
+<output-type>Analyte</output-type>
+<parent-process limsid="24-2044750" uri="https://asf-claritylims.thecrick.org/api/v2/processes/24-2044750"/>
+<qc-flag>UNKNOWN</qc-flag>
+<location>
+<container limsid="27-915439" uri="https://asf-claritylims.thecrick.org/api/v2/containers/27-915439"/>
+<value>1:1</value>
+</location>
+<working-flag>true</working-flag>
+<sample limsid="VIV6902A1" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A1"/>
+<sample limsid="VIV6902A2" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A2"/>
+<sample limsid="VIV6902A3" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A3"/>
+<sample limsid="VIV6902A4" uri="https://asf-claritylims.thecrick.org/api/v2/samples/VIV6902A4"/>
+<reagent-label name="BC04 (TTCGGATTCTATCGTGTTTCCCTA)"/>
+<reagent-label name="BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"/>
+<reagent-label name="BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"/>
+<reagent-label name="BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"/>
+<udf:field name="Yield (P/F)" type="String">Pass</udf:field>
+<udf:field name="Nb of pores (P/F)" type="String">Pass</udf:field>
+<udf:field name="Data QC (P/F)" type="String">Pass</udf:field>
+<workflow-stages>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/619" name="T ONT Sequencing" status="COMPLETE"/>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/619" name="T ONT Sequencing" status="COMPLETE"/>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/620" name="T Flowcell QC (Nanopore)" status="REMOVED"/>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/620" name="T Flowcell QC (Nanopore)" status="COMPLETE"/>
+<workflow-stage uri="https://asf-claritylims.thecrick.org/api/v2/configuration/workflows/56/stages/643" name="T Data QC" status="COMPLETE"/>
+</workflow-stages>
+<demux uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8332743/demux"/>
+</art:artifact>
