@@ -231,6 +231,10 @@ class ClarityHelperLims(ClarityLims):
         return sample_barcode_match
     
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+        if run_id is None:
+            raise ValueError("run_id is None")
+        
+        # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
 
