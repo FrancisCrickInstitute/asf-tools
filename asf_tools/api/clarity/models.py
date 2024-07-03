@@ -261,6 +261,23 @@ class Process(ClarityBaseModel):
             return [values]
         return values
 
+    @field_validator("udf_fields", mode="before")
+    def ensure_list_udf_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        Make sure if one item is passed for input_output_map that we make it a list of one
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
+
+    @field_validator("file_fields", mode="before")
+    def ensure_list_file_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        Make sure if one item is passed for input_output_map that we make it a list of one
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
 
 class Workflow(ClarityBaseModel):
     uri: str
