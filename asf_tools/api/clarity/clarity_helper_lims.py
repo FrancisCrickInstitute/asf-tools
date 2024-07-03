@@ -183,6 +183,30 @@ class ClarityHelperLims(ClarityLims):
         return sample_info
 
     def get_sample_barcode_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
+
+        This method retrieves all artifacts associated with the specified run ID, traverses 
+        the parent processes to find the "T Custom Indexing" process, and collects barcode 
+        information for each sample. The collected information is returned as a dictionary.
+
+        Args:
+            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+
+        Returns:
+            dict: A dictionary containing the mapping of sample names to their barcodes.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None.
+            ValueError: If the initial process is None.
+        """
         if run_id is None:
             raise ValueError("run_id is None")
 
@@ -231,6 +255,31 @@ class ClarityHelperLims(ClarityLims):
         return sample_barcode_match
     
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+        """
+        Collect and merge detailed information for samples associated with a given run ID for ONT samplesheet.
+
+        This method retrieves sample metadata and barcode information for all samples associated 
+        with the specified run ID, and merges this information into a single dictionary.
+
+        Args:
+            run_id (str): The unique identifier for the run whose samplesheet information is to be collected.
+
+        Returns:
+            dict: A dictionary containing merged information for all samples associated with the run ID.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "group": lab (str),
+                        "user": user_fullname (str),
+                        "project_id": project_id (str),
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None.
+        """
         if run_id is None:
             raise ValueError("run_id is None")
         

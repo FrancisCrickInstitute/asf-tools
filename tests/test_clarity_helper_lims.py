@@ -204,43 +204,6 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert get_info == expected_dict
 
-    # @pytest.mark.parametrize("process,expected_list", [
-    #     ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", False),
-    #     ("https://asf-claritylims.thecrick.org/api/v2/processes/24-12760", 3)
-    # ])
-    # def test_clarity_helper_get_tcustomindexing_false_isvalid(self, api, process, expected_list):
-    #     """
-    #     Pass real run IDs and test expected number of artifacts back
-    #     """
-
-    #     # Set up
-
-    #     # Test
-    #     artifacts = api.get_tcustomindexing_false(process)
-
-    #     # Assert
-    #     assert len(artifacts) == expected_list
-
-    # @pytest.mark.parametrize("process,expected_dict_len", [
-    #     ("https://asf-claritylims.thecrick.org/api/v2/processes/24-2060556", 16)
-    #     # ("24-2060556", 16)
-    # ])
-    # def test_clarity_helper_get_tcustomindexing_true_isvalid(self, api, process, expected_dict_len):
-    #     """
-    #     Pass real run IDs and test expected number of artifacts back
-    #     """
-
-    #     # Set up
-    #     artifact = api.get_artifacts(name=process)
-    #     # artifact = api.get_processes(processlimsid=process)
-    #     print(artifact)
-
-    #     # Test
-    #     artifacts = api.get_tcustomindexing_true(artifact)
-
-    #     # Assert
-    #     assert len(artifacts) == expected_dict_len
-
     # @pytest.mark.parametrize("runid,expected_dict_len", [
     #     ("20240417_1729_1C_PAW45723_05bb74c5", 16)
     #     # ("24-2060556", 16)
