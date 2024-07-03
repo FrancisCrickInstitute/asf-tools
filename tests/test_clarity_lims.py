@@ -83,7 +83,7 @@ class TestClarity(unittest.TestCase):
         # Setup
         mock_response = Mock(spec=requests.Response)
         mock_response.status_code = 404
-        mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<exc:exception xmlns:exc="http://genologics.com/ri/exception">\n    <message>Not found</message>\n</exc:exception>\n'
+        mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<exc:exception xmlns:exc="http://genologics.com/ri/exception">\n    <message>Not found</message>\n</exc:exception>\n'  # pylint: disable=line-too-long
 
         # Test and Assert
         with self.assertRaises(requests.exceptions.HTTPError):
