@@ -192,11 +192,17 @@ def ont(ctx):
     help="Trigger pipeline run on cluster",
 )
 @click.option(
+    "--use_api",
+    is_flag=True,
+    default=False,
+    help="Use the Clarity API to generate the samplesheet",
+)
+@click.option(
     "--contains",
     default=None,
     help="Search for run folders containing this string",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, contains):  # pylint: disable=W0613,R0913
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains):  # pylint: disable=W0613,R0913
     """
     Create run directory for the ONT demux pipeline
     """
@@ -213,6 +219,7 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache,
             container_cache,
             runs_dir,
             execute,
+            use_api,
             contains
         )
         exit_status = function.run()

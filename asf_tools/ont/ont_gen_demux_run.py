@@ -8,6 +8,7 @@ import stat
 
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 
 
 log = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class OntGenDemuxRun:
         container_cache,
         runs_dir,
         execute,
+        use_api,
         contains = None
     ) -> None:
         self.source_dir = source_dir
@@ -43,6 +45,7 @@ class OntGenDemuxRun:
         self.container_cache = container_cache
         self.runs_dir = runs_dir
         self.execute = execute
+        self.use_api = use_api
         self.contains = contains
 
     def run(self):
