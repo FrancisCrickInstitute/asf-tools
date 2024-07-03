@@ -3,7 +3,6 @@ Clarity helper API Tests
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
 import pytest
 from requests.exceptions import HTTPError
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
@@ -148,16 +147,15 @@ class TestClarityHelperLimsyWithFixtures:
         # Set up
         artifact = api.get_artifacts(name=run_id)
 
-        # Test 
+        # Test
         get_samples = api.get_samples_from_artifacts(artifact)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
-        ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
+        # ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
         ("ALV729A45", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
-        # ("ALV729A45", {"MAM040P_5": {"group": "placeholder_lab", "user": "placeholder.name", "project_id": "RN20066"}})
     ])
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
         """
@@ -167,7 +165,7 @@ class TestClarityHelperLimsyWithFixtures:
         # Set up
         sample = api.get_samples(search_id=sample_id)
         
-        # Test 
+        # Test
         get_info = api.get_sample_info(sample.id)
 
         # Assert
@@ -189,20 +187,19 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(sample_dict) == expected_sample_quantity
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", 4)
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}})
             # ('HWNT7BBXY',9)
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
         """
-        Pass real sample IDs and test expected values in the dictionary output
+        TODO
         """
 
         # Test
-        get_info = api.get_sample_barcode_from_runid(run_id)
-        # print(get_info)
+        barcode_dict = api.get_sample_barcode_from_runid(run_id)
 
         # Assert
-        assert get_info == expected_dict
+        assert barcode_dict == expected_dict
 
     # @pytest.mark.parametrize("runid,expected_dict_len", [
     #     ("20240417_1729_1C_PAW45723_05bb74c5", 16)

@@ -116,31 +116,31 @@ class ClarityHelperLims(ClarityLims):
         if sample is None:
             raise ValueError("sample is None")
 
-        # Retrieve the expanded sample stub and extract name, project ID, lab and researcher name
-        sample_stub = self.get_samples(search_id = sample)
-        print(sample_stub.submitter)
-        sample_name = sample_stub.name
-        project_id = self.get_projects(search_id = sample_stub.project.id)
-        project_id = project_id.name
+        # Expand sample stub and get name which is the ASF sample id
+        sample = self.get_samples(search_id=sample)
+        sample_name = sample.name
 
-        user = self.expand_stub(sample_stub.submitter, expansion_type = Researcher)
-        print(user)
-        # user_name = user.first_name 
-        # user_lastname = user.last_name
-        # user_fullname = (user_name + '.' + user_lastname).lower()
-        user_fullname = "placeholder.name"
+        # Search for the project and get the name which is the ASF project id
+        project = self.get_projects(search_id=sample.project.id)
+        project_name = project.name
 
-        # lab = self.expand_stub(user.lab, expansion_type = Lab)
-        lab = "placeholder_lab"
+        # Get the submitter details
+        user = self.expand_stub(sample.submitter, expansion_type=Researcher)
+        user_firstname = user.first_name
+        user_lastname = user.last_name
+        user_fullname = (user_firstname + '.' + user_lastname).lower()
+
+        # Get the lab details
+        lab = self.expand_stub(user.lab, expansion_type=Lab)
+        lab_name = lab.name
 
         # Store obtained information in a dictionary
         sample_info = {}
         sample_info[sample_name] = {
-            "group": lab.name, 
-            "user": user_fullname, 
-            "project_id": project_id
+            "group": lab_name,
+            "user": user_fullname,
+            "project_id": project_name
             }
-        # print(sample_info)
 
         return sample_info
 
@@ -253,7 +253,7 @@ class ClarityHelperLims(ClarityLims):
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
         return sample_barcode_match
-    
+
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
         """
         Collect and merge detailed information for samples associated with a given run ID for ONT samplesheet.
@@ -282,7 +282,7 @@ class ClarityHelperLims(ClarityLims):
         """
         if run_id is None:
             raise ValueError("run_id is None")
-        
+
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
@@ -291,4 +291,5 @@ class ClarityHelperLims(ClarityLims):
         merged_info = {}
         for key in set(sample_metadata.keys()).union(barcode_info.keys()):
             merged_info[key] = sample_metadata.get(key, 0) + barcode_info.get(key, 0)
+
         return merged_info
