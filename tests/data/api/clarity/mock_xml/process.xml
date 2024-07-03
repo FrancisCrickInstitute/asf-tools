@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<prc:process xmlns:udf="http://genologics.com/ri/userdefined" xmlns:file="http://genologics.com/ri/file" xmlns:prc="http://genologics.com/ri/process" limsid="24-39409" uri="https://asf-claritylims.thecrick.org/api/v2/processes/24-39409">
+    <type uri="https://asf-claritylims.thecrick.org/api/v2/processtypes/55">T Normalise Libraries</type>
+    <date-run>2019-04-30</date-run>
+    <technician uri="https://asf-claritylims.thecrick.org/api/v2/researchers/64">
+        <first-name>Makis</first-name>
+        <last-name>Fidanis</last-name>
+    </technician>
+    <input-output-map>
+        <input limsid="2-141129" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141129?state=70631" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141129?state=70631">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142224" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142224?state=71176"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141130" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141130?state=70632" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141130?state=70632">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142225" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142225?state=71177"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141131" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141131?state=70633" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141131?state=70633">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142226" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142226?state=71178"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141132" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141132?state=70634" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141132?state=70634">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142227" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142227?state=71179"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141133" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141133?state=70635" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141133?state=70635">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142228" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142228?state=71180"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141134" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141134?state=70636" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141134?state=70636">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142229" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142229?state=71181"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141135" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141135?state=70637" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141135?state=70637">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142230" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142230?state=71182"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141136" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141136?state=70638" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141136?state=70638">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142231" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142231?state=71183"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141137" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141137?state=70639" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141137?state=70639">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142232" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142232?state=71184"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141138" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141138?state=70640" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141138?state=70640">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142233" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142233?state=71185"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141139" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141139?state=70641" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141139?state=70641">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142234" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142234?state=71186"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141140" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141140?state=70642" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141140?state=70642">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142235" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142235?state=71187"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141141" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141141?state=70643" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141141?state=70643">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142236" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142236?state=71188"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141142" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141142?state=70644" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141142?state=70644">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142237" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142237?state=71189"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141143" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141143?state=70645" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141143?state=70645">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142238" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142238?state=71190"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141144" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141144?state=70646" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141144?state=70646">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142239" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142239?state=71191"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141145" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141145?state=70647" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141145?state=70647">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142240" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142240?state=71192"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141146" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141146?state=70648" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141146?state=70648">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142241" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142241?state=71193"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141147" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141147?state=70649" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141147?state=70649">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142242" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142242?state=71194"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141148" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141148?state=70650" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141148?state=70650">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142243" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142243?state=71195"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141149" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141149?state=70651" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141149?state=70651">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142244" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142244?state=71196"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141150" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141150?state=70652" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141150?state=70652">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142245" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142245?state=71197"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141201" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141201?state=70653" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141201?state=70653">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142246" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142246?state=71198"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141202" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141202?state=70654" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141202?state=70654">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142247" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142247?state=71199"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141203" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141203?state=70655" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141203?state=70655">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142248" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142248?state=71200"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141204" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141204?state=70656" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141204?state=70656">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142249" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142249?state=71201"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141205" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141205?state=70657" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141205?state=70657">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142250" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142250?state=71202"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141206" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141206?state=70658" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141206?state=70658">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142301" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142301?state=71203"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141207" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141207?state=70659" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141207?state=70659">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142302" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142302?state=71204"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141208" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141208?state=70660" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141208?state=70660">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142303" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142303?state=71205"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141209" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141209?state=70661" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141209?state=70661">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142304" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142304?state=71206"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141210" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141210?state=70662" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141210?state=70662">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142305" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142305?state=71207"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141211" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141211?state=70663" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141211?state=70663">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142306" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142306?state=71208"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141212" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141212?state=70664" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141212?state=70664">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142307" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142307?state=71209"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141213" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141213?state=70665" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141213?state=70665">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142308" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142308?state=71210"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141214" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141214?state=70666" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141214?state=70666">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142309" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142309?state=71211"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141215" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141215?state=70667" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141215?state=70667">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142310" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142310?state=71212"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141216" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141216?state=70668" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141216?state=70668">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142311" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142311?state=71213"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141217" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141217?state=70669" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141217?state=70669">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142312" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142312?state=71214"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141218" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141218?state=70670" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141218?state=70670">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142313" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142313?state=71215"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141219" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141219?state=70671" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141219?state=70671">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142314" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142314?state=71216"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141220" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141220?state=70672" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141220?state=70672">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142315" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142315?state=71217"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141221" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141221?state=70673" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141221?state=70673">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142316" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142316?state=71218"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141222" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141222?state=70674" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141222?state=70674">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142317" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142317?state=71219"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141223" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141223?state=70675" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141223?state=70675">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142318" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142318?state=71220"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141224" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141224?state=70676" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141224?state=70676">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142319" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142319?state=71221"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141225" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141225?state=70677" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141225?state=70677">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142320" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142320?state=71222"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141226" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141226?state=70678" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141226?state=70678">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142321" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142321?state=71223"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141227" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141227?state=70679" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141227?state=70679">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142322" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142322?state=71224"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141228" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141228?state=70680" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141228?state=70680">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142323" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142323?state=71225"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141229" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141229?state=70681" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141229?state=70681">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142324" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142324?state=71226"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141230" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141230?state=70682" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141230?state=70682">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142325" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142325?state=71227"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141231" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141231?state=70683" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141231?state=70683">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142326" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142326?state=71228"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141232" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141232?state=70684" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141232?state=70684">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142327" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142327?state=71229"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141233" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141233?state=70685" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141233?state=70685">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142328" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142328?state=71230"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141234" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141234?state=70686" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141234?state=70686">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142329" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142329?state=71231"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141235" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141235?state=70687" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141235?state=70687">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142330" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142330?state=71232"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141236" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141236?state=70688" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141236?state=70688">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142331" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142331?state=71233"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141237" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141237?state=70689" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141237?state=70689">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142332" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142332?state=71234"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141238" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141238?state=70690" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141238?state=70690">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142333" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142333?state=71235"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141239" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141239?state=70691" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141239?state=70691">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142334" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142334?state=71236"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141240" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141240?state=70692" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141240?state=70692">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142335" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142335?state=71237"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141241" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141241?state=70693" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141241?state=70693">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142336" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142336?state=71238"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141242" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141242?state=70694" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141242?state=70694">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142337" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142337?state=71239"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141243" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141243?state=70695" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141243?state=70695">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142338" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142338?state=71240"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141244" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141244?state=70696" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141244?state=70696">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142339" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142339?state=71241"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141245" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141245?state=70697" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141245?state=70697">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142340" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142340?state=71242"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141246" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141246?state=70698" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141246?state=70698">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142341" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142341?state=71243"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141247" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141247?state=70699" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141247?state=70699">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142342" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142342?state=71244"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141248" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141248?state=70700" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141248?state=70700">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142343" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142343?state=71245"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141249" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141249?state=70701" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141249?state=70701">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142344" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142344?state=71246"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141250" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141250?state=70702" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141250?state=70702">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142345" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142345?state=71247"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141301" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141301?state=70703" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141301?state=70703">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142346" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142346?state=71248"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141302" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141302?state=70704" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141302?state=70704">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142347" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142347?state=71249"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141303" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141303?state=70705" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141303?state=70705">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142348" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142348?state=71250"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141304" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141304?state=70706" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141304?state=70706">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142349" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142349?state=71251"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141305" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141305?state=70707" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141305?state=70707">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142350" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142350?state=71252"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141306" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141306?state=70708" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141306?state=70708">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142401" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142401?state=71253"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141307" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141307?state=70709" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141307?state=70709">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142402" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142402?state=71254"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141308" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141308?state=70710" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141308?state=70710">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142403" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142403?state=71255"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141309" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141309?state=70711" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141309?state=70711">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142404" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142404?state=71256"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141310" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141310?state=70712" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141310?state=70712">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142405" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142405?state=71257"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141311" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141311?state=70713" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141311?state=70713">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142406" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142406?state=71258"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141312" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141312?state=70714" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141312?state=70714">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142407" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142407?state=71259"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141313" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141313?state=70715" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141313?state=70715">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142408" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142408?state=71260"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141314" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141314?state=70716" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141314?state=70716">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142409" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142409?state=71261"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141315" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141315?state=70717" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141315?state=70717">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142410" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142410?state=71262"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141316" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141316?state=70718" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141316?state=70718">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142411" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142411?state=71263"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141317" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141317?state=70719" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141317?state=70719">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142412" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142412?state=71264"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141318" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141318?state=70720" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141318?state=70720">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142413" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142413?state=71265"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141319" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141319?state=70721" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141319?state=70721">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142414" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142414?state=71266"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141320" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141320?state=70722" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141320?state=70722">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142415" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142415?state=71267"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141321" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141321?state=70723" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141321?state=70723">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142416" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142416?state=71268"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141322" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141322?state=70724" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141322?state=70724">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142417" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142417?state=71269"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141323" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141323?state=70725" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141323?state=70725">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142418" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142418?state=71270"/>
+    </input-output-map>
+    <input-output-map>
+        <input limsid="2-141324" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141324?state=70726" post-process-uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-141324?state=70726">
+            <parent-process limsid="151-39254" uri="https://asf-claritylims.thecrick.org/api/v2/processes/151-39254"/>
+        </input>
+        <output limsid="2-142419" output-type="Analyte" output-generation-type="PerInput" uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/2-142419?state=71271"/>
+    </input-output-map>
+    <udf:field name="Normalisation Method" type="String">No normalisation</udf:field>
+    <udf:field name="Diluent Used" type="String">None</udf:field>
+</prc:process>

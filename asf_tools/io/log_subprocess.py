@@ -7,6 +7,7 @@ import subprocess
 import sys
 from signal import SIGKILL
 
+
 log = logging.getLogger(__name__)
 
 LIBC = ctypes.CDLL(ctypes.util.find_library("c"))
@@ -32,11 +33,8 @@ class LogSubprocess:
         """
         if sys.platform.startswith("linux"):
             zero = ctypes.c_ulong(0)
-            return LIBC.prctl(
-                PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero
-            )
-        else:
-            return None
+            return LIBC.prctl(PR_SET_PDEATHSIG, ctypes.c_ulong(SIGKILL), zero, zero, zero)
+        return None
 
     def check_call(self, *args, **kwargs):
         if "preexec_fn" not in kwargs:

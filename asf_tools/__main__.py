@@ -15,6 +15,7 @@ import rich_click as click
 
 import asf_tools
 
+
 # Set up logging as the root logger
 # Submodules should all traverse back to this
 log = logging.getLogger()
@@ -185,13 +186,23 @@ def ont(ctx):
     help=r"Host path for runs folder",
 )
 @click.option(
-    "-e",
     "--execute",
     is_flag=True,
     default=False,
     help="Trigger pipeline run on cluster",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute):  # pylint: disable=W0613,R0913
+@click.option(
+    "--use_api",
+    is_flag=True,
+    default=False,
+    help="Use the Clarity API to generate the samplesheet",
+)
+@click.option(
+    "--contains",
+    default=None,
+    help="Search for run folders containing this string",
+)
+def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains):  # pylint: disable=W0613,R0913
     """
     Create run directory for the ONT demux pipeline
     """
@@ -207,7 +218,9 @@ def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache,
             nextflow_work,
             container_cache,
             runs_dir,
-            execute
+            execute,
+            use_api,
+            contains
         )
         exit_status = function.run()
         if not exit_status:
