@@ -3,15 +3,17 @@ Clarity API Tests
 """
 
 import os
-import requests
-
 import unittest
-import pytest
 from unittest.mock import Mock
 
+import pytest
+import requests
+
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Stub, Container, Lab, Project, Artifact, Sample, Process, Workflow, Protocol, QueueStep
+from asf_tools.api.clarity.models import Artifact, Container, Lab, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
+
 from .mocks.clarity_lims_mock import ClarityLimsMock
+
 
 API_TEST_DATA = "tests/data/api/clarity"
 

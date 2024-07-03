@@ -2,12 +2,13 @@
 Child class of Clarity Lims that scrapes data from the LIMS for mocking
 """
 
-import os
 import logging
+import os
 import pickle
 from urllib.parse import urlencode
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
+
 
 log = logging.getLogger(__name__)
 

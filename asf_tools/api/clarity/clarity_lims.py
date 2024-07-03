@@ -2,16 +2,17 @@
 Clarity Lims API Class
 """
 
-import os
 import logging
-from typing import Optional, Dict
+import os
+from typing import Dict, Optional
 from xml.etree import ElementTree
-import requests
 
+import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import ClarityBaseModel, Stub, Lab, Project, Container, Artifact, Sample, Process, Workflow, Protocol, QueueStep
+from asf_tools.api.clarity.models import Artifact, ClarityBaseModel, Container, Lab, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
+
 
 log = logging.getLogger(__name__)
 

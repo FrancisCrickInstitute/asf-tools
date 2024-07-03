@@ -4,8 +4,9 @@ Clarity API Data Models
 
 # pylint: disable=missing-class-docstring
 
-from typing import Optional, List, Union
-from pydantic import BaseModel, Field, model_validator, field_validator
+from typing import List, Optional, Union
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ClarityBaseModel(BaseModel):
