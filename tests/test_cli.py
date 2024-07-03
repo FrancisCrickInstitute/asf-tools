@@ -84,4 +84,5 @@ class TestCli(unittest.TestCase):
             params["container_cache"],
             params["runs_dir"],
             False,
+            None
         )

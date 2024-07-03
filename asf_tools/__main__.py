@@ -193,8 +193,7 @@ def ont(ctx):
 )
 @click.option(
     "--contains",
-    is_flag=True,
-    default=False,
+    default=None,
     help="Search for run folders containing this string",
 )
 def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, contains):  # pylint: disable=W0613,R0913
