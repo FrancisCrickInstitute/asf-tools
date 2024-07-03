@@ -1,6 +1,4 @@
-FROM python:3.11-slim
-
-FROM python:3.11-slim
+FROM python:3.11
 LABEL authors="chris.cheshire@crick.ac.uk"
 
 # Update pip to latest version
