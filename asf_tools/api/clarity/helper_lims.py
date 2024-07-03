@@ -6,7 +6,7 @@ import logging
 from typing import Optional
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact
+from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab
 
 log = logging.getLogger(__name__)
 
@@ -28,29 +28,32 @@ class HelperLims(ClarityLims):
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
         if artifacts_list is None:
             raise ValueError("The artifacts list is None")
-        # print(artifacts_list)
         sample_list = []
         values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
-        # print(value)
         for value_item in values:
             run_samples = value_item.samples
             sample_list.extend(run_samples)
         # Make the entries in sample_list unique
         unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
-        # if len(unique_sample_list) == 0:
-            # raise KeyError("No samples were found") # this would only raise an error if no samples were found. it doesn't handle errors from an invalid input correctly
         return unique_sample_list
     
     def get_sample_info(self, sample: str) -> dict:
         if sample is None:
             raise ValueError("The sample is None")
+        sample_stub = self.get_samples(search_id = sample)
+        # print(sample_stub)
+        sample_name = sample_stub.name
+        project_id = self.get_projects(search_id = sample_stub.project.id)
+        project_id = project_id.name
 
-        sample_name = sample.name
-        lab = sample.submitter.lab.name #shouldn't work
-        user_name = sample.submitter.first_name #first name and last name might be merged
-        user_lastname = sample.submitter.last_name
-        user_fullname = (user_name + '.' + user_lastname).lower()
-        project_id = sample.project.name
+        # user = self.expand_stub(sample, expansion_type = ResearcherStub)
+        # user_name = user.submitter.first_name 
+        # user_lastname = user.submitter.last_name
+        # user_fullname = (user_name + '.' + user_lastname).lower()
+        user_fullname = "placeholder.name"
+
+        # lab = user.submitter.lab.name #shouldn't work
+        lab = "placeholder_lab"
         
         sample_info = {}
         sample_info[sample_name] = {
@@ -58,19 +61,22 @@ class HelperLims(ClarityLims):
             "user": user_fullname, 
             "project_id": project_id
             }
+        # print(sample_info)
         
         return sample_info
     
-    # def collect_sample_info_from_runid(self, run_id: str) -> dict:
+    def collect_sample_info_from_runid(self, run_id: str) -> dict:
 
-    #     artifacts_list = self.get_artifacts_from_runid(run_id)
-    #     sample_list = self.get_samples_from_artifacts(artifacts_list)
+        artifacts_list = self.get_artifacts_from_runid(run_id)
+        sample_list = self.get_samples_from_artifacts(artifacts_list)
+        # print(sample_list)
 
-    #     sample_info = {}
-    #     for sample_id in sample_list:
-    #         info = self.get_sample_info(sample_id)
-    #         sample_info.update(info)
-    #     return sample_info
+        sample_info = {}
+        for sample_id in sample_list:
+            # print(sample_id.id)
+            info = self.get_sample_info(sample_id.id)
+            sample_info.update(info)
+        return sample_info
     
     def get_tcustomindexing_false(self, process: str) -> list:
         if process is None:
