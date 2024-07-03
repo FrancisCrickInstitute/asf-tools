@@ -11,7 +11,7 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import Artifact, ClarityBaseModel, Container, Lab, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
+from asf_tools.api.clarity.models import Artifact, ClarityBaseModel, Container, Lab, Researcher, ResearcherStub, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
 
 
 log = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ class ClarityLims:
     API_TIMEOUT = 16
     STUB_EXP_KEY = {
         "Lab": "lab:lab",
+        "Researcher": "res:researchers",
         "Project": "prj:project",
         "Container": "con:container",
         "Artifact": "art:artifact",
@@ -363,6 +364,14 @@ class ClarityLims:
         """
         return self.get_stub_list(
             Lab, Stub, "labs", "lab:labs", "lab", search_id=search_id, name=name, last_modifie=last_modified, expand_stubs=expand_stubs
+        )
+
+    def get_researchers(self, search_id=None, expand_stubs=True, firstname=None, lastname=None, last_modified=None):
+        """
+        TODO
+        """
+        return self.get_stub_list(
+            Researcher, ResearcherStub, "researchers", "res:researchers", "researcher", search_id=search_id, firstname=firstname, lastname=lastname, last_modified=last_modified, expand_stubs=expand_stubs
         )
 
     def get_projects(self, search_id=None, expand_stubs=True, name=None, open_date=None, last_modified=None):

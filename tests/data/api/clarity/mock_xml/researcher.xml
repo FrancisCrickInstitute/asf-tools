@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<res:researcher xmlns:udf="http://genologics.com/ri/userdefined" xmlns:ri="http://genologics.com/ri" xmlns:res="http://genologics.com/ri/researcher" uri="https://asf-claritylims.thecrick.org/api/v2/researchers/4">
+    <first-name>Mickael</first-name>
+    <last-name>Escudero</last-name>
+    <email>mickael.escudero@crick.ac.uk</email>
+    <lab uri="https://asf-claritylims.thecrick.org/api/v2/labs/2"/>
+    <credentials>
+        <username>escudem</username>
+        <account-locked>false</account-locked>
+        <role roleName="administrator" name="Facility Administrator" uri="https://asf-claritylims.thecrick.org/api/v2/roles/1"/>
+        <role roleName="labtech" name="Researcher" uri="https://asf-claritylims.thecrick.org/api/v2/roles/2"/>
+        <role roleName="webclient" name="Collaborator" uri="https://asf-claritylims.thecrick.org/api/v2/roles/3"/>
+        <role roleName="systemadministrator" name="System Administrator" uri="https://asf-claritylims.thecrick.org/api/v2/roles/4"/>
+    </credentials>
+    <initials>MEX</initials>
+</res:researcher>

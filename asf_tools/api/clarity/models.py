@@ -126,6 +126,15 @@ class ResearcherStub(ClarityBaseModel):
     last_name: str = Field(alias="last-name")
 
 
+class Researcher(ClarityBaseModel):
+    uri: str
+    first_name: str
+    last_name: str
+    initials: str
+    email: str
+    lab: Stub
+
+
 class Artifact(ClarityBaseModel):
     limsid: str
     uri: str

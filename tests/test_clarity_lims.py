@@ -10,7 +10,7 @@ import pytest
 import requests
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Container, Lab, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
+from asf_tools.api.clarity.models import Artifact, Container, Lab, Researcher, ResearcherStub, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
 
 from .mocks.clarity_lims_mock import ClarityLimsMock
 
@@ -146,6 +146,7 @@ class TestClarityWithFixtures:
             ("samples.xml", "smp:samples", "sample", Stub, 333),
             ("processes.xml", "prc:processes", "process", Stub, 453),
             ("workflows.xml", "wkfcnf:workflows", "workflow", Stub, 27),
+            ("researchers.xml", "res:researchers", "researcher", ResearcherStub, 82),
         ],
     )
     def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
@@ -168,6 +169,7 @@ class TestClarityWithFixtures:
         [
             ("container.xml", "con:container", Container, "27-6876"),
             ("lab.xml", "lab:lab", Lab, "602"),
+            ("researcher.xml", "res:researcher", Researcher, "4"),
             ("project.xml", "prj:project", Project, "GOL2"),
             ("artifact.xml", "art:artifact", Artifact, "2-8332743?state=5959893"),
             ("artifact_2.xml", "art:artifact", Artifact, "STR6918A110PA1?state=5982061"),
@@ -217,6 +219,7 @@ class TestClarityEndpoints:
         [
             ("get_labs", None),
             ("get_labs", "2"),
+            ("get_researchers", None),
             ("get_projects", "GOL2"),
             ("get_containers", "27-6876"),
             ("get_artifacts", "2-8332743?state=5959893"),
