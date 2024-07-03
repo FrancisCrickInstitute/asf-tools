@@ -172,7 +172,8 @@ class TestClarityHelperLimsyWithFixtures:
 
     @pytest.mark.parametrize("runid,expected_sample_quantity", [
             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
-            ('HWNT7BBXY',9)
+            ('HWNT7BBXY', 9),
+            ("20240625_1734_2F_PAW20497_d0c3cbb5", 1),
     ])
     def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
         """
@@ -186,8 +187,8 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(sample_dict) == expected_sample_quantity
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}})
-            # ('HWNT7BBXY',9)
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}),
+            ('20240625_1734_2F_PAW20497_d0c3cbb5', {})
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
         """
@@ -196,7 +197,6 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         barcode_dict = api.get_sample_barcode_from_runid(run_id)
-        print(barcode_dict)
 
         # Assert
         assert barcode_dict == expected_dict
@@ -232,7 +232,7 @@ class TestClarityHelperLimsPrototype(unittest.TestCase):
         """
 
         # Test
-        data = self.api.collect_ont_samplesheet_info("20240417_1729_1C_PAW45723_05bb74c5")
+        data = self.api.collect_ont_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
         print("-------")
         print(data)
         for key, value in data.items():
