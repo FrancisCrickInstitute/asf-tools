@@ -33,7 +33,7 @@ class TestClarity(unittest.TestCase):
     def setUp(self):
         self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
-    def test_clarity_load_credentials_valid(self):
+    def test_clarity_api_load_credentials_valid(self):
         """
         Test credentials load properly from toml
         """
@@ -47,7 +47,7 @@ class TestClarity(unittest.TestCase):
         self.assertEqual(credentials["clarity"]["username"], "test")
         self.assertEqual(credentials["clarity"]["password"], "password")
 
-    def test_clarity_init_check_loaded_credentials(self):
+    def test_clarity_api_init_check_loaded_credentials(self):
         """
         Test credentials load properly in init from file
         """
@@ -60,7 +60,7 @@ class TestClarity(unittest.TestCase):
         self.assertEqual(api.username, "test")
         self.assertEqual(api.password, "password")
 
-    def test_clarity_init_check_overide_credentials(self):
+    def test_clarity_api_init_check_overide_credentials(self):
         """
         Test credentials load properly in init with overides
         """
@@ -73,7 +73,7 @@ class TestClarity(unittest.TestCase):
         self.assertEqual(api.username, "test2")
         self.assertEqual(api.password, "test3")
 
-    def test_clarity_construct_uri_endpoint(self):
+    def test_clarity_api_construct_uri_endpoint(self):
         """
         Test construct URI endpoint
         """
@@ -84,7 +84,7 @@ class TestClarity(unittest.TestCase):
         # Assert
         self.assertEqual(uri, "https://localhost:8080/api/v2/test")
 
-    def test_clarity_validate_response_error(self):
+    def test_clarity_api_validate_response_error(self):
         """
         Test validate response with fake data
         """
@@ -98,7 +98,7 @@ class TestClarity(unittest.TestCase):
         with self.assertRaises(requests.exceptions.HTTPError):
             self.api.validate_response("https://localhost:8080/api", mock_response)
 
-    def test_clarity_validate_response_ok(self):
+    def test_clarity_api_validate_response_ok(self):
         """
         Test validate response with fake data
         """
@@ -115,7 +115,7 @@ class TestClarity(unittest.TestCase):
         self.assertTrue(result)
 
 
-    def test_clarity_get_params_from_args_with_none(self):
+    def test_clarity_api_get_params_from_args_with_none(self):
         """
         Get get args with none params
         """
@@ -126,7 +126,7 @@ class TestClarity(unittest.TestCase):
         # Assert
         self.assertDictEqual({"name": "test"}, params)
 
-    def test_clarity_get_params_from_args_with_underscore(self):
+    def test_clarity_api_get_params_from_args_with_underscore(self):
         """
         Get get args with none params
         """
@@ -155,7 +155,7 @@ class TestClarityWithFixtures:
         ("processes.xml", "prc:processes", "process", Stub, 453),
         ("workflows.xml", "wkfcnf:workflows", "workflow", Stub, 27)
     ])
-    def test_clarity_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
+    def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
         """
         Test instance construction
         """
@@ -183,7 +183,7 @@ class TestClarityWithFixtures:
         ("protocol.xml", "protcnf:protocol", Protocol, "1"),
         ("queue_step.xml", "que:queue", QueueStep, "60"),
     ])
-    def test_clarity_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
+    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
         """
         Test instance construction
         """
@@ -230,7 +230,7 @@ class TestClarityEndpoints():
         ("get_protocols", "1"),
         ("get_queues", "60")
     ])
-    def test_clarity_get_endpoints(self, api, func_name, search_id):
+    def test_clarity_api_get_endpoints(self, api, func_name, search_id):
         """
         Test Get against endpoints
         """
@@ -249,7 +249,7 @@ class TestClarityEndpoints():
         if search_id is not None:
             assert data.id == search_id
 
-    def test_clarity_get_stub_list_returns_none_invalid(self, api):
+    def test_clarity_api_get_stub_list_returns_none_invalid(self, api):
         """
         Test returns none when no results exist
         """
@@ -260,7 +260,7 @@ class TestClarityEndpoints():
         # Assert
         assert data is None
 
-    def test_clarity_get_stub_list_noexpand(self, api):
+    def test_clarity_api_get_stub_list_noexpand(self, api):
         """
         Test returns single stub no expansion
         """
@@ -272,7 +272,7 @@ class TestClarityEndpoints():
         # Assert
         assert isinstance(data, Stub)
 
-    def test_clarity_expand_stubs(self, api):
+    def test_clarity_api_expand_stubs(self, api):
         """
         Test expand stubs works
         """
@@ -297,6 +297,9 @@ class TestClarityPrototype(unittest.TestCase):
 
     @pytest.mark.only_run_with_direct_target
     def test_prototype(self):
+        """
+        Test prototyping method
+        """
 
         # Test
         data = self.api.get_queues("60")
