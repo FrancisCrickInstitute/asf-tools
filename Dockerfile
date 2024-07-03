@@ -12,3 +12,5 @@ WORKDIR /usr/src/asf_tools
 
 # Install program
 RUN pip install .
+
+CMD ["bash"]
