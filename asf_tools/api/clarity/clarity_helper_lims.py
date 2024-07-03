@@ -4,6 +4,7 @@ Clarity API Child class with helper functions
 
 import logging
 from typing import Optional
+import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab, Process
@@ -194,35 +195,38 @@ class ClarityHelperLims(ClarityLims):
 
         if initial_process is None:
             raise ValueError("Initial process is None")
+
         visited_processes = set()
-        # print(initial_process)
+        process_queue = queue.Queue()
+        for item in initial_process:
+            process_queue.put(item)
 
         sample_barcode_match = {}
-        while initial_process:
-            process = initial_process.pop()
-            # print(process)
+        while process_queue.qsize() > 0:
+            process = process_queue.get()
             if process.id in visited_processes:
                 continue
 
             visited_processes.add(process.id)
 
             if process.process_type.name != "T Custom Indexing":
-                print(process)
                 # Add parent processes to the stack for further processing
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
                         parent_process = input_output.input.parent_process
                         if parent_process:
-                            initial_process.append(parent_process)
-            # else:
-            #     # Extract barcode information and store it in "sample_barcode_match"
-            #     for input_output in process.input_output_map:
-            #         if input_output.output.output_type == "Analyte":
-            #             uri = input_output.output.uri
-            #             sample_info = uri.samples[0]
-            #             sample_name = sample_info.id
-            #             reagent_barcode = uri.reagent_labels
-            #             sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
-            #     print(sample_barcode_match)
+                            parent_process = self.expand_stub(parent_process, expansion_type = Process)
+                            process_queue.put(parent_process)
+            else:
+                # Extract barcode information and store it in "sample_barcode_match"
+                for input_output in process.input_output_map:
+                    if input_output.output.output_type == "Analyte":
+                        output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
+                        sample_info = output_expanded.samples[0]
+                        sample_name = sample_info.id
+                        reagent_barcode = output_expanded.reagent_labels[0]
+                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
         return sample_barcode_match
+    
+    
