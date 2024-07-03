@@ -7,7 +7,7 @@ from typing import Optional
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab, Process
+from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process
 
 log = logging.getLogger(__name__)
 
@@ -118,24 +118,25 @@ class ClarityHelperLims(ClarityLims):
 
         # Retrieve the expanded sample stub and extract name, project ID, lab and researcher name
         sample_stub = self.get_samples(search_id = sample)
-        # print(sample_stub)
+        print(sample_stub.submitter)
         sample_name = sample_stub.name
         project_id = self.get_projects(search_id = sample_stub.project.id)
         project_id = project_id.name
 
-        # user = self.expand_stub(sample, expansion_type = ResearcherStub)
-        # user_name = user.submitter.first_name 
-        # user_lastname = user.submitter.last_name
+        user = self.expand_stub(sample_stub.submitter, expansion_type = Researcher)
+        print(user)
+        # user_name = user.first_name 
+        # user_lastname = user.last_name
         # user_fullname = (user_name + '.' + user_lastname).lower()
         user_fullname = "placeholder.name"
 
-        # lab = user.submitter.lab.name #shouldn't work
+        # lab = self.expand_stub(user.lab, expansion_type = Lab)
         lab = "placeholder_lab"
 
         # Store obtained information in a dictionary
         sample_info = {}
         sample_info[sample_name] = {
-            "group": lab, 
+            "group": lab.name, 
             "user": user_fullname, 
             "project_id": project_id
             }
@@ -181,7 +182,31 @@ class ClarityHelperLims(ClarityLims):
             sample_info.update(info)
         return sample_info
 
-    def get_sample_barcode(self, run_id: str) -> dict:
+    def get_sample_barcode_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
+
+        This method retrieves all artifacts associated with the specified run ID, traverses 
+        the parent processes to find the "T Custom Indexing" process, and collects barcode 
+        information for each sample. The collected information is returned as a dictionary.
+
+        Args:
+            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+
+        Returns:
+            dict: A dictionary containing the mapping of sample names to their barcodes.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None.
+            ValueError: If the initial process is None.
+        """
         if run_id is None:
             raise ValueError("run_id is None")
 
@@ -229,4 +254,41 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
     
-    
+    def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+        """
+        Collect and merge detailed information for samples associated with a given run ID for ONT samplesheet.
+
+        This method retrieves sample metadata and barcode information for all samples associated 
+        with the specified run ID, and merges this information into a single dictionary.
+
+        Args:
+            run_id (str): The unique identifier for the run whose samplesheet information is to be collected.
+
+        Returns:
+            dict: A dictionary containing merged information for all samples associated with the run ID.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "group": lab (str),
+                        "user": user_fullname (str),
+                        "project_id": project_id (str),
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None.
+        """
+        if run_id is None:
+            raise ValueError("run_id is None")
+        
+        # Collect sample info
+        sample_metadata = self.collect_sample_info_from_runid(run_id)
+        barcode_info = self.get_sample_barcode_from_runid(run_id)
+
+        # Merge dictionaries into 1 using sample names as keys
+        merged_info = {}
+        for key in set(sample_metadata.keys()).union(barcode_info.keys()):
+            merged_info[key] = sample_metadata.get(key, 0) + barcode_info.get(key, 0)
+        return merged_info
