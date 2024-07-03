@@ -186,7 +186,7 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(sample_dict) == expected_sample_quantity
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}})
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}})
             # ('HWNT7BBXY',9)
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
@@ -196,6 +196,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         barcode_dict = api.get_sample_barcode_from_runid(run_id)
+        print(barcode_dict)
 
         # Assert
         assert barcode_dict == expected_dict
