@@ -92,11 +92,27 @@ class OntGenDemuxRun:
         with open(sbatch_script_path, "w", encoding="UTF-8") as file:
             file.write(sbatch_script)
 
-        # Write samplesheet
+        # Samplesheet path
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
-        with open(samplesheet_path, "w", encoding="UTF-8") as file:
-            file.write("sample_id,group,user,project_id,barcode\n")
-            file.write("sample_01,asf,no_name,no_proj,unclassified\n")
+
+        if self.use_api is False:
+            # Write default samplesheet
+            with open(samplesheet_path, "w", encoding="UTF-8") as file:
+                file.write("sample_id,group,user,project_id,barcode\n")
+                file.write("sample_01,asf,no_name,no_proj,unclassified\n")
+        if self.use_api is True:
+            # Get samplesheet from API
+            api = ClarityHelperLims()
+            sample_dict = api.collect_ont_samplesheet_info(run_name)
+
+            # Write samplesheet
+            with open(samplesheet_path, "w", encoding="UTF-8") as file:
+                file.write("sample_id,group,user,project_id,barcode\n")
+                for key, value in sample_dict.items():
+                    barcode = "unclassified"
+                    if "barcode" in value:
+                        barcode = value['barcode']
+                    file.write(f"{key},{value['group']},{value['user']},{value['project_id']},{barcode}")
 
         # Set 777 for the run script
         os.chmod(sbatch_script_path, PERM777)
