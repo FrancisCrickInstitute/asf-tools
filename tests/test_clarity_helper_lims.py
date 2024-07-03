@@ -12,7 +12,6 @@ class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        # self.api = ClarityLims()
         self.api = ClarityHelperLims()
 
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
@@ -215,3 +214,28 @@ class TestClarityHelperLimsyWithFixtures:
 
     #     # Assert
     #     assert len(barcode_info) == expected_dict_len
+
+
+class TestClarityHelperLimsPrototype(unittest.TestCase):
+    """
+    Test class for prototype functions
+    """
+
+    def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
+        self.api = ClarityHelperLims()
+
+    @pytest.mark.only_run_with_direct_target
+    def test_clarity_helper_lims_prototype(self):
+        """
+        Test prototyping method
+        """
+
+        # Test
+        data = self.api.collect_ont_samplesheet_info("20240417_1729_1C_PAW45723_05bb74c5")
+        print("-------")
+        print(data)
+        for key, value in data.items():
+            print(key)
+            print(value)
+
+        raise ValueError

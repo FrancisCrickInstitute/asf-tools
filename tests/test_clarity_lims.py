@@ -298,7 +298,7 @@ class TestClarityPrototype(unittest.TestCase):
         self.api = ClarityLims()
 
     @pytest.mark.only_run_with_direct_target
-    def test_prototype(self):
+    def test_clarity_api_prototype(self):
         """
         Test prototyping method
         """
