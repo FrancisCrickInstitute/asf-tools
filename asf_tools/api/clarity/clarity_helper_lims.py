@@ -7,7 +7,7 @@ from typing import Optional
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process
+from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process, Sample
 
 log = logging.getLogger(__name__)
 
@@ -247,8 +247,9 @@ class ClarityHelperLims(ClarityLims):
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
                         output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
-                        sample_info = output_expanded.samples[0]
-                        sample_name = sample_info.id
+                        sample_stub = output_expanded.samples[0]
+                        sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
+                        sample_name = sample_info.name
                         reagent_barcode = output_expanded.reagent_labels[0]
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
@@ -256,29 +257,7 @@ class ClarityHelperLims(ClarityLims):
 
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
         """
-        Collect and merge detailed information for samples associated with a given run ID for ONT samplesheet.
-
-        This method retrieves sample metadata and barcode information for all samples associated 
-        with the specified run ID, and merges this information into a single dictionary.
-
-        Args:
-            run_id (str): The unique identifier for the run whose samplesheet information is to be collected.
-
-        Returns:
-            dict: A dictionary containing merged information for all samples associated with the run ID.
-                The structure of the dictionary is as follows:
-                {
-                    sample_name (str): {
-                        "group": lab (str),
-                        "user": user_fullname (str),
-                        "project_id": project_id (str),
-                        "barcode": reagent_barcode (str)
-                    },
-                    ...
-                }
-
-        Raises:
-            ValueError: If the provided run_id is None.
+        TODO
         """
         if run_id is None:
             raise ValueError("run_id is None")
@@ -287,9 +266,10 @@ class ClarityHelperLims(ClarityLims):
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
 
-        # Merge dictionaries into 1 using sample names as keys
-        merged_info = {}
-        for key in set(sample_metadata.keys()).union(barcode_info.keys()):
-            merged_info[key] = sample_metadata.get(key, 0) + barcode_info.get(key, 0)
+        # Merge dictionaries using sample names as keys
+        merged_dict = sample_metadata
+        for key, value in barcode_info.items():
+            for sub_key, sub_value in value.items():
+                merged_dict[key][sub_key] = sub_value
 
-        return merged_info
+        return merged_dict
