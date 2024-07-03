@@ -33,6 +33,7 @@ class OntGenDemuxRun:
         container_cache,
         runs_dir,
         execute,
+        contains = None
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -42,6 +43,7 @@ class OntGenDemuxRun:
         self.container_cache = container_cache
         self.runs_dir = runs_dir
         self.execute = execute
+        self.contains = contains
 
     def run(self):
         """
@@ -57,6 +59,11 @@ class OntGenDemuxRun:
         # Get diff
         dir_diff = source_dir_names - target_dir_names
         log.info(f"Found {len(dir_diff)} new run folders")
+
+        # Filter
+        if self.contains is not None:
+            dir_diff = [run for run in dir_diff if self.contains in run]
+            log.info(f"Found {len(dir_diff)} new run folders after filtering for {self.contains}")
 
         # Process runs
         for run_name in dir_diff:
