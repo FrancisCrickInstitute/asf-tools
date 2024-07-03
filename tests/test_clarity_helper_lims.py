@@ -60,8 +60,6 @@ class TestClarityHelperLims(unittest.TestCase):
         # Setup
         artifacts_list = [Stub(id='TestID', uri='https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST', name=None, limsid='TestID')]
 
-        # Get a real artificact from the API that doesnt contain samples
-
         # Test and Assert
         with self.assertRaises(HTTPError):
             self.api.get_samples_from_artifacts(artifacts_list)
@@ -129,7 +127,7 @@ class TestClarityHelperLimsyWithFixtures:
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [
         ("B_04-0004-S6_DT", 1), # Illumina
         ("462-24_MPX-seq", 4) # ONT
-    ]) # test 2 ONT and 2 Illumina
+    ])
     def test_clarity_helper_get_samples_from_artifacts_isvalid(self, api, run_id, expected_sample_quantity):
         """
         Pass real artifact IDs and test expected number of samples back
@@ -137,11 +135,9 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Set up
         artifact = api.get_artifacts(name=run_id)
-        # print(artifact)
 
         # Test 
         get_samples = api.get_samples_from_artifacts(artifact)
-        # print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
@@ -158,11 +154,9 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Set up
         sample = api.get_samples(search_id=sample_id)
-        # print(sample)
         
         # Test 
         get_info = api.get_sample_info(sample.id)
-        print(get_info)
 
         # Assert
         assert get_info == expected_dict
