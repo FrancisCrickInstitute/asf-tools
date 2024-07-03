@@ -6,7 +6,7 @@ import logging
 from typing import Optional
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab
+from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab, Process
 
 log = logging.getLogger(__name__)
 
@@ -183,47 +183,46 @@ class ClarityHelperLims(ClarityLims):
     def get_sample_barcode(self, run_id: str) -> dict:
         if run_id is None:
             raise ValueError("run_id is None")
-        return run_id
-#         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
-#         run_container = lims.get_containers(name=run_id)[0]
-#         artifacts = lims.get_artifacts(containername=run_container.name)
 
-#         for artifact in artifacts:
-#             initial_process = artifact.parent_process
-#             sample_barcode_match = {}
+        artifacts_list = self.get_artifacts_from_runid(run_id)
 
-#             if initial_process is None:
-#                 raise ValueError("Initial process is None")
-#             visited_processes = set()
-#             stack = [initial_process]
-#             print(stack)
+        # Extract parent_process information from each artifact
+        artifacts_list = self.expand_stubs(artifacts_list, expansion_type = Artifact)  
+        initial_parent_process_list = []
+        initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list)
+        initial_process = self.expand_stubs(initial_parent_process_list, expansion_type = Process)
 
-#             while stack:
-#                 process = stack.pop()
-#                 if process.id in visited_processes:
-#                     continue
+        if initial_process is None:
+            raise ValueError("Initial process is None")
+        visited_processes = set()
+        # print(initial_process)
 
-#                 visited_processes.add(process.id)
+        sample_barcode_match = {}
+        while initial_process:
+            process = initial_process.pop()
+            # print(process)
+            if process.id in visited_processes:
+                continue
 
-#                 if process.type.name != "T Custom Indexing":
-#                     # print(process.type.name)
-#                     # Add parent processes to the stack for further processing
-#                     for input, output in process.input_output_maps:
-#                         if output["output-type"] == "Analyte":
-#                             parent_process = input.get('parent-process')
-#                             if parent_process:
-#                                 stack.append(parent_process)
-#                 else:
-#                     # Extract barcode information and store it in "sample_barcode_match"
-#                     for input, output in process.input_output_maps:
-#                         if output["output-type"] == "Analyte":
-#                             uri = output['uri']
-#                             sample_info = uri.samples[0]
-#                             sample_name = sample_info.id
-#                             reagent_barcode = uri.reagent_labels
-#                             sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
-#                     print(sample_barcode_match)
-                    
-#                     # return sample_barcode_match
-#         raise ValueError
-        # pass
+            visited_processes.add(process.id)
+
+            if process.process_type.name != "T Custom Indexing":
+                print(process)
+                # Add parent processes to the stack for further processing
+                for input_output in process.input_output_map:
+                    if input_output.output.output_type == "Analyte":
+                        parent_process = input_output.input.parent_process
+                        if parent_process:
+                            initial_process.append(parent_process)
+            # else:
+            #     # Extract barcode information and store it in "sample_barcode_match"
+            #     for input_output in process.input_output_map:
+            #         if input_output.output.output_type == "Analyte":
+            #             uri = input_output.output.uri
+            #             sample_info = uri.samples[0]
+            #             sample_name = sample_info.id
+            #             reagent_barcode = uri.reagent_labels
+            #             sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+            #     print(sample_barcode_match)
+
+        return sample_barcode_match

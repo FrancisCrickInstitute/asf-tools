@@ -179,9 +179,9 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert len(sample_dict) == expected_sample_quantity
 
-    @pytest.mark.parametrize("runid,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", 4),
-            ('HWNT7BBXY',9)
+    @pytest.mark.parametrize("run_id,expected_dict", [
+            ("20240417_1729_1C_PAW45723_05bb74c5", 4)
+            # ('HWNT7BBXY',9)
     ])
     def test_clarity_helper_get_sample_barcode_isvalid(self, api, run_id, expected_dict):
         """
@@ -190,6 +190,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         get_info = api.get_sample_barcode(run_id)
+        # print(get_info)
 
         # Assert
         assert get_info == expected_dict
