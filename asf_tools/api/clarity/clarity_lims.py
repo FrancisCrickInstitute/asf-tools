@@ -26,7 +26,7 @@ class ClarityLims:
     API_TIMEOUT = 16
     STUB_EXP_KEY = {
         "Lab": "lab:lab",
-        "Researcher": "res:researchers",
+        "Researcher": "res:researcher",
         "Project": "prj:project",
         "Container": "con:container",
         "Artifact": "art:artifact",
