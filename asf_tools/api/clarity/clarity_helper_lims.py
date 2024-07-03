@@ -180,9 +180,10 @@ class ClarityHelperLims(ClarityLims):
             sample_info.update(info)
         return sample_info
 
-    # def test_sample_barcode(self):
-#         lims = ClarityLims()
-
+    def get_sample_barcode(self, run_id: str) -> dict:
+        if run_id is None:
+            raise ValueError("run_id is None")
+        return run_id
 #         run_id = "20240417_1729_1C_PAW45723_05bb74c5"
 #         run_container = lims.get_containers(name=run_id)[0]
 #         artifacts = lims.get_artifacts(containername=run_container.name)
@@ -225,3 +226,4 @@ class ClarityHelperLims(ClarityLims):
                     
 #                     # return sample_barcode_match
 #         raise ValueError
+        # pass
