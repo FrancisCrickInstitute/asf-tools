@@ -219,7 +219,7 @@ class Input(ClarityBaseModel):
     limsid: str
     uri: str
     post_process_uri: str = Field(alias="post-process-uri")
-    parent_process: Stub = Field(alias="parent-process")
+    parent_process: Optional[Stub] = Field(alias="parent-process", default=None)
 
 
 class Output(ClarityBaseModel):
