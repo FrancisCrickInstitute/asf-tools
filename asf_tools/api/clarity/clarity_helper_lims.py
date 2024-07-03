@@ -7,7 +7,7 @@ from typing import Optional
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab, Process
+from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process
 
 log = logging.getLogger(__name__)
 
@@ -118,24 +118,25 @@ class ClarityHelperLims(ClarityLims):
 
         # Retrieve the expanded sample stub and extract name, project ID, lab and researcher name
         sample_stub = self.get_samples(search_id = sample)
-        # print(sample_stub)
+        print(sample_stub.submitter)
         sample_name = sample_stub.name
         project_id = self.get_projects(search_id = sample_stub.project.id)
         project_id = project_id.name
 
-        # user = self.expand_stub(sample, expansion_type = ResearcherStub)
-        # user_name = user.submitter.first_name 
-        # user_lastname = user.submitter.last_name
+        user = self.expand_stub(sample_stub.submitter, expansion_type = Researcher)
+        print(user)
+        # user_name = user.first_name 
+        # user_lastname = user.last_name
         # user_fullname = (user_name + '.' + user_lastname).lower()
         user_fullname = "placeholder.name"
 
-        # lab = user.submitter.lab.name #shouldn't work
+        # lab = self.expand_stub(user.lab, expansion_type = Lab)
         lab = "placeholder_lab"
 
         # Store obtained information in a dictionary
         sample_info = {}
         sample_info[sample_name] = {
-            "group": lab, 
+            "group": lab.name, 
             "user": user_fullname, 
             "project_id": project_id
             }
@@ -181,7 +182,7 @@ class ClarityHelperLims(ClarityLims):
             sample_info.update(info)
         return sample_info
 
-    def get_sample_barcode(self, run_id: str) -> dict:
+    def get_sample_barcode_from_runid(self, run_id: str) -> dict:
         if run_id is None:
             raise ValueError("run_id is None")
 
@@ -229,4 +230,12 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
     
-    
+    def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+        sample_metadata = self.collect_sample_info_from_runid(run_id)
+        barcode_info = self.get_sample_barcode_from_runid(run_id)
+
+        # Merge dictionaries into 1 using sample names as keys
+        merged_info = {}
+        for key in set(sample_metadata.keys()).union(barcode_info.keys()):
+            merged_info[key] = sample_metadata.get(key, 0) + barcode_info.get(key, 0)
+        return merged_info
