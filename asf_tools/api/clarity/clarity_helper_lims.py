@@ -10,7 +10,7 @@ from asf_tools.api.clarity.models import Artifact, ResearcherStub, Lab
 
 log = logging.getLogger(__name__)
 
-class HelperLims(ClarityLims):
+class ClarityHelperLims(ClarityLims):
 
     def get_artifacts_from_runid(self, run_id: str) -> list:
         if run_id is None:

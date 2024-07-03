@@ -7,20 +7,20 @@ from unittest.mock import patch, MagicMock
 import pytest
 from requests.exceptions import HTTPError
 # from tests.mocks.mock_clarity_lims import MockClarityLims
-from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.helper_lims import HelperLims
+# from asf_tools.api.clarity.clarity_lims import ClarityLims
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.api.clarity.models import Stub
 
 
 # MOCK_API_DATA_DIR = "tests/data/api/clarity/mock_data"
 
 
-class TestClarity(unittest.TestCase):
+class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
         # self.api = ClarityLims()
-        self.api = HelperLims()
+        self.api = ClarityHelperLims()
 
     def test_get_artifacts_from_runid_isnone(self):
         """
@@ -103,13 +103,13 @@ class TestClarity(unittest.TestCase):
             self.api.get_tcustomindexing_true(None)
 
 
-class TestClarityWithFixtures:
+class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
 
     @pytest.fixture(scope="class")
     def api(self):
         """Setup API connection"""
-        yield HelperLims()
+        yield ClarityHelperLims()
 
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1)
