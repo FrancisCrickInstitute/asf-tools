@@ -96,7 +96,7 @@ class TestClarityHelperLimsyWithFixtures:
 
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1),
-        # ("B_04-0004-S6_DT", 1)
+        ("20240625_1734_2F_PAW20497_d0c3cbb5", 1)
     ])
     def test_clarity_helper_get_artifacts_from_runid_valid(self, api, runid, expected):
         """
@@ -163,7 +163,7 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(sample_dict) == expected_sample_quantity
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}),
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}), # ONT
             ('20240625_1734_2F_PAW20497_d0c3cbb5', {})
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
@@ -178,9 +178,12 @@ class TestClarityHelperLimsyWithFixtures:
         assert barcode_dict == expected_dict
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            # ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}),
             # ('20240625_1734_2F_PAW20497_d0c3cbb5', {}),
-            ("KAN6921A20", {"KAN6921A20": {"group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}) # ONT
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
+                                                    'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
+                                                    'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
+                                                    'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}}), # ONT
+            # ("KAN6921A20", {"KAN6921A20": {"group": "vanwervenf", "user": "nnennaya.kanu", "project_id": "DN24086"}}) # ONT
     ])
     def test_clarity_helper_collect_ont_samplesheet_info_isvalid(self, api, run_id, expected_dict):
         """
