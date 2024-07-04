@@ -11,7 +11,21 @@ import requests
 import toml
 import xmltodict
 
-from asf_tools.api.clarity.models import Artifact, ClarityBaseModel, Container, Lab, Researcher, ResearcherStub, Process, Project, Protocol, QueueStep, Sample, Stub, Workflow
+from asf_tools.api.clarity.models import (
+    Artifact,
+    ClarityBaseModel,
+    Container,
+    Lab,
+    Process,
+    Project,
+    Protocol,
+    QueueStep,
+    Researcher,
+    ResearcherStub,
+    Sample,
+    Stub,
+    Workflow,
+)
 
 
 log = logging.getLogger(__name__)

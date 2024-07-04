@@ -6,9 +6,9 @@ import logging
 import os
 import stat
 
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 
 
 log = logging.getLogger(__name__)
