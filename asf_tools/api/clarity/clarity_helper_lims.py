@@ -118,7 +118,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
-        sample_name = sample.name
+        sample_name = sample.id
 
         # Search for the project and get the name which is the ASF project id
         project = self.get_projects(search_id=sample.project.id)
@@ -250,7 +250,7 @@ class ClarityHelperLims(ClarityLims):
                         output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
-                        sample_name = sample_info.name
+                        sample_name = sample_info.id
                         reagent_barcode = output_expanded.reagent_labels[0]
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 

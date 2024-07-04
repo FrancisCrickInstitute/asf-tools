@@ -128,8 +128,9 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(get_samples) == expected_sample_quantity
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
+        ("KAN6921A20", {"KAN6921A20": {"group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}), # ONT
         # ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
-        ("ALV729A45", {"MAM040P_5": {"group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}})
+        ("ALV729A45", {"ALV729A45": {"group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}})
     ])
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
         """
@@ -175,6 +176,22 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert barcode_dict == expected_dict
+
+    @pytest.mark.parametrize("run_id,expected_dict", [
+            # ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}),
+            # ('20240625_1734_2F_PAW20497_d0c3cbb5', {}),
+            ("KAN6921A20", {"KAN6921A20": {"group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}) # ONT
+    ])
+    def test_clarity_helper_collect_ont_samplesheet_info_isvalid(self, api, run_id, expected_dict):
+        """
+        Pass real run_id and test expected values in the dictionary output
+        """
+
+        # Test
+        merged_dict = api.collect_ont_samplesheet_info(run_id)
+
+        # Assert
+        assert merged_dict == expected_dict
 
 class TestClarityHelperLimsPrototype(unittest.TestCase):
     """
