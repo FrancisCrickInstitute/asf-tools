@@ -126,7 +126,7 @@ class TestClarityHelperLimsyWithFixtures:
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
         # ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
-        ("ALV729A45", {"MAM040P_5": {"group": "sequencing", "user": "robert.goldstone", "project_id": "RN20066"}})
+        ("ALV729A45", {"MAM040P_5": {"group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}})
     ])
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
         """

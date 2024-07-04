@@ -101,18 +101,18 @@ class Project(ClarityBaseModel):
     limsid: str
     name: str
     open_date: str
-    researcher_uri: str = Field(alias="researcher")
+    researcher: Stub
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
     file_fields: Optional[List[FileField]] = Field(default_factory=list, alias="file:file")
 
-    @field_validator("researcher_uri", mode="before")
-    def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
-        """
-        Extract researcher URI.
-        """
-        if isinstance(values, dict) and "uri" in values:
-            return values["uri"]
-        return values
+    # @field_validator("researcher", mode="before")
+    # def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
+    #     """
+    #     Extract researcher URI.
+    #     """
+    #     if isinstance(values, dict) and "uri" in values:
+    #         return values["uri"]
+    #     return values
 
 
 class Location(ClarityBaseModel):
@@ -130,8 +130,8 @@ class Researcher(ClarityBaseModel):
     uri: str
     first_name: str
     last_name: str
-    initials: str
-    email: str
+    initials: Optional[str] = None
+    email: Optional[str] = None
     lab: Stub
 
 
