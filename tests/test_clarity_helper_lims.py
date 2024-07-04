@@ -83,34 +83,6 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.collect_ont_samplesheet_info(None)
 
-    # def test_clarity_helper_get_sample_barcode_isnone(self):
-    #     """
-    #     Pass None to method
-    #     """
-
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         self.api.get_sample_barcode(None)
-
-    # def test_clarity_helper_get_tcustomindexing_false_isnone(self):
-    #     """
-    #     Pass None to method
-    #     """
-
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         self.api.get_tcustomindexing_false(None)
-
-    # def test_clarity_helper_get_tcustomindexing_true_isnone(self):
-    #     """
-    #     Pass None to method
-    #     """
-
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         self.api.get_tcustomindexing_true(None)
-
-
 class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
 
@@ -130,9 +102,9 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         artifacts = api.get_artifacts_from_runid(runid)
-        print(artifacts)
+
         # Assert
-        assert len(artifacts) == expected, f"Expected {expected} artifacts, but got {len(artifacts)}"
+        assert len(artifacts) == expected
 
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [
         ("B_04-0004-S6_DT", 1), # Illumina
@@ -192,7 +164,7 @@ class TestClarityHelperLimsyWithFixtures:
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
         """
-        TODO
+        Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
@@ -200,22 +172,6 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert barcode_dict == expected_dict
-
-    # @pytest.mark.parametrize("runid,expected_dict_len", [
-    #     ("20240417_1729_1C_PAW45723_05bb74c5", 16)
-    #     # ("24-2060556", 16)
-    # ])
-    # def test_clarity_helper_get_sample_barcode_isvalid(self, api, runid, expected_dict_len):
-    #     """
-    #     Pass real run IDs and test expected number of artifacts back
-    #     """
-
-    #     # Test
-    #     barcode_info = api.get_sample_barcode(runid)
-
-    #     # Assert
-    #     assert len(barcode_info) == expected_dict_len
-
 
 class TestClarityHelperLimsPrototype(unittest.TestCase):
     """

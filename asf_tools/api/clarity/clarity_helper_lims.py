@@ -204,12 +204,9 @@ class ClarityHelperLims(ClarityLims):
                 }
 
         Raises:
-            ValueError: If the provided run_id is None.
+            ValueError: If the provided run_id is None or invalid.
             ValueError: If the initial process is None.
         """
-        if run_id is None:
-            raise ValueError("run_id is None")
-
         artifacts_list = self.get_artifacts_from_runid(run_id)
 
         # Extract parent_process information from each artifact
@@ -221,12 +218,14 @@ class ClarityHelperLims(ClarityLims):
         if initial_process is None:
             raise ValueError("Initial process is None")
 
+        # Set up for a binary search tree
         visited_processes = set()
         process_queue = queue.Queue()
         for item in initial_process:
             process_queue.put(item)
 
         sample_barcode_match = {}
+        # Loop through parent process until the "T Custom Indexing"
         while process_queue.qsize() > 0:
             process = process_queue.get()
             if process.id in visited_processes:
@@ -257,11 +256,31 @@ class ClarityHelperLims(ClarityLims):
 
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
         """
-        TODO
-        """
-        if run_id is None:
-            raise ValueError("run_id is None")
+        Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
 
+        This method retrieves sample metadata and barcode information for all samples associated
+        with the specified run ID, and merges this information into a single dictionary. The merged
+        information is useful for generating an ONT samplesheet.
+
+        Args:
+            run_id (str): The unique identifier for the run whose samplesheet information is to be collected.
+
+        Returns:
+            dict: A dictionary containing merged information for all samples associated with the run ID.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "group": lab (str),
+                        "user": user_fullname (str),
+                        "project_id": project_id (str),
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None or invalid.
+        """
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
