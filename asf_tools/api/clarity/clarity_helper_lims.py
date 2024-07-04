@@ -123,24 +123,30 @@ class ClarityHelperLims(ClarityLims):
         # Search for the project and get the name which is the ASF project id
         project = self.get_projects(search_id=sample.project.id)
         project_name = project.name
+        print(project.researcher_uri)
 
         # Get the submitter details
-        user = self.expand_stub(sample.submitter, expansion_type=Researcher)
-        user_firstname = user.first_name
-        user_lastname = user.last_name
-        user_fullname = (user_firstname + '.' + user_lastname).lower()
+        researcher = self.expand_stub(project.researcher_uri, expansion_type=Researcher)
+        # researcher = self.get_with_uri(project.researcher_uri)
+        print(researcher)
+
+        # these get the submitter, not the scientist, info
+        # user = self.expand_stub(sample.submitter, expansion_type=Researcher)
+        # user_firstname = user.first_name
+        # user_lastname = user.last_name
+        # user_fullname = (user_firstname + '.' + user_lastname).lower()
 
         # Get the lab details
-        lab = self.expand_stub(user.lab, expansion_type=Lab)
-        lab_name = lab.name
+        # lab = self.expand_stub(user.lab, expansion_type=Lab)
+        # lab_name = lab.name
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_name] = {
-            "group": lab_name,
-            "user": user_fullname,
-            "project_id": project_name
-            }
+        # sample_info[sample_name] = {
+        #     "group": lab_name,
+        #     "user": user_fullname,
+        #     "project_id": project_name
+        #     }
 
         return sample_info
 
