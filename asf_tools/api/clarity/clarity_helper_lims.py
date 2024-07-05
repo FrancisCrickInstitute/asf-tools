@@ -3,17 +3,18 @@ Clarity API Child class with helper functions
 """
 
 import logging
-from typing import Optional
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process, Sample
+from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sample
+
 
 log = logging.getLogger(__name__)
 
+
 class ClarityHelperLims(ClarityLims):
     """
-    A helper class extending ClarityLims to provide additional methods for handling 
+    A helper class extending ClarityLims to provide additional methods for handling
     samples and artifacts in the Clarity LIMS system.
 
     Methods:
@@ -82,7 +83,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand each artifact to extract sample information and save it in a list
         sample_list = []
-        values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
+        values = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         for value_item in values:
             run_samples = value_item.samples
             sample_list.extend(run_samples)
@@ -118,17 +119,19 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
-        sample_name = sample.name
+        sample_name = sample.id
 
         # Search for the project and get the name which is the ASF project id
         project = self.get_projects(search_id=sample.project.id)
         project_name = project.name
 
         # Get the submitter details
-        user = self.expand_stub(sample.submitter, expansion_type=Researcher)
+        user = self.expand_stub(project.researcher, expansion_type=Researcher)
+
+        # these get the submitter, not the scientist, info
         user_firstname = user.first_name
         user_lastname = user.last_name
-        user_fullname = (user_firstname + '.' + user_lastname).lower()
+        user_fullname = (user_firstname + "." + user_lastname).lower()
 
         # Get the lab details
         lab = self.expand_stub(user.lab, expansion_type=Lab)
@@ -136,11 +139,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_name] = {
-            "group": lab_name,
-            "user": user_fullname,
-            "project_id": project_name
-            }
+        sample_info[sample_name] = {"group": lab_name, "user": user_fullname, "project_id": project_name}
 
         return sample_info
 
@@ -186,8 +185,8 @@ class ClarityHelperLims(ClarityLims):
         """
         Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
 
-        This method retrieves all artifacts associated with the specified run ID, traverses 
-        the parent processes to find the "T Custom Indexing" process, and collects barcode 
+        This method retrieves all artifacts associated with the specified run ID, traverses
+        the parent processes to find the "T Custom Indexing" process, and collects barcode
         information for each sample. The collected information is returned as a dictionary.
 
         Args:
@@ -204,29 +203,28 @@ class ClarityHelperLims(ClarityLims):
                 }
 
         Raises:
-            ValueError: If the provided run_id is None.
+            ValueError: If the provided run_id is None or invalid.
             ValueError: If the initial process is None.
         """
-        if run_id is None:
-            raise ValueError("run_id is None")
-
         artifacts_list = self.get_artifacts_from_runid(run_id)
 
         # Extract parent_process information from each artifact
-        artifacts_list = self.expand_stubs(artifacts_list, expansion_type = Artifact)  
+        artifacts_list = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         initial_parent_process_list = []
         initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list)
-        initial_process = self.expand_stubs(initial_parent_process_list, expansion_type = Process)
+        initial_process = self.expand_stubs(initial_parent_process_list, expansion_type=Process)
 
         if initial_process is None:
             raise ValueError("Initial process is None")
 
+        # Set up for a binary search tree
         visited_processes = set()
         process_queue = queue.Queue()
         for item in initial_process:
             process_queue.put(item)
 
         sample_barcode_match = {}
+        # Loop through parent process until the "T Custom Indexing"
         while process_queue.qsize() > 0:
             process = process_queue.get()
             if process.id in visited_processes:
@@ -240,16 +238,16 @@ class ClarityHelperLims(ClarityLims):
                     if input_output.output.output_type == "Analyte":
                         parent_process = input_output.input.parent_process
                         if parent_process:
-                            parent_process = self.expand_stub(parent_process, expansion_type = Process)
+                            parent_process = self.expand_stub(parent_process, expansion_type=Process)
                             process_queue.put(parent_process)
             else:
                 # Extract barcode information and store it in "sample_barcode_match"
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
-                        output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
+                        output_expanded = self.expand_stub(input_output.output, expansion_type=Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
-                        sample_name = sample_info.name
+                        sample_name = sample_info.id
                         reagent_barcode = output_expanded.reagent_labels[0]
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
@@ -257,11 +255,31 @@ class ClarityHelperLims(ClarityLims):
 
     def collect_ont_samplesheet_info(self, run_id: str) -> dict:
         """
-        TODO
-        """
-        if run_id is None:
-            raise ValueError("run_id is None")
+        Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
 
+        This method retrieves sample metadata and barcode information for all samples associated
+        with the specified run ID, and merges this information into a single dictionary. The merged
+        information is useful for generating an ONT samplesheet.
+
+        Args:
+            run_id (str): The unique identifier for the run whose samplesheet information is to be collected.
+
+        Returns:
+            dict: A dictionary containing merged information for all samples associated with the run ID.
+                The structure of the dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "group": lab (str),
+                        "user": user_fullname (str),
+                        "project_id": project_id (str),
+                        "barcode": reagent_barcode (str)
+                    },
+                    ...
+                }
+
+        Raises:
+            ValueError: If the provided run_id is None or invalid.
+        """
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
@@ -270,6 +288,7 @@ class ClarityHelperLims(ClarityLims):
         merged_dict = sample_metadata
         for key, value in barcode_info.items():
             for sub_key, sub_value in value.items():
-                merged_dict[key][sub_key] = sub_value
+                if key in merged_dict:
+                    merged_dict[key][sub_key] = sub_value
 
         return merged_dict

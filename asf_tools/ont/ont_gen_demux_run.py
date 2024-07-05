@@ -6,9 +6,9 @@ import logging
 import os
 import stat
 
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 
 
 log = logging.getLogger(__name__)
@@ -25,17 +25,7 @@ class OntGenDemuxRun:
     """
 
     def __init__(
-        self,
-        source_dir,
-        target_dir,
-        pipeline_dir,
-        nextflow_cache,
-        nextflow_work,
-        container_cache,
-        runs_dir,
-        execute,
-        use_api,
-        contains = None
+        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains=None
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -111,7 +101,7 @@ class OntGenDemuxRun:
                 for key, value in sample_dict.items():
                     barcode = "unclassified"
                     if "barcode" in value:
-                        barcode = value['barcode']
+                        barcode = value["barcode"]
                     file.write(f"{key},{value['group']},{value['user']},{value['project_id']},{barcode}")
 
         # Set 777 for the run script
@@ -142,7 +132,7 @@ class OntGenDemuxRun:
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=72:00:00
+#SBATCH --time=168:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 
@@ -153,6 +143,7 @@ export NXF_WORK="{self.nextflow_work}"
 export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
+  -resume \\
   -profile crick,nemo \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
