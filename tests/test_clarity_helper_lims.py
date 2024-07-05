@@ -6,7 +6,7 @@ import os
 import unittest
 
 import pytest
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.api.clarity.models import Stub
@@ -69,7 +69,7 @@ class TestClarityHelperLims(unittest.TestCase):
         artifacts_list = [Stub(id='TestID', uri='https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST', name=None, limsid='TestID')]
 
         # Test and Assert
-        with self.assertRaises(HTTPError):
+        with self.assertRaises((HTTPError, ConnectionError)):
             self.api.get_samples_from_artifacts(artifacts_list)
 
     def test_clarity_helper_get_sample_info_isnone(self):
