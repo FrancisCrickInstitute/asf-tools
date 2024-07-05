@@ -6,7 +6,7 @@ import os
 import unittest
 
 import pytest
-from requests.exceptions import HTTPError, ConnectionError
+from requests.exceptions import ConnectionError, HTTPError
 
 from asf_tools.api.clarity.models import Stub
 
