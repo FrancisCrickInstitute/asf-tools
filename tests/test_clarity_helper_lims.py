@@ -2,6 +2,7 @@
 Clarity helper API Tests
 """
 
+import os
 import unittest
 
 import pytest
@@ -9,13 +10,15 @@ from requests.exceptions import HTTPError
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.api.clarity.models import Stub
+from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
+API_TEST_DATA = "tests/data/api/clarity"
 
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = ClarityHelperLims()
+        self.api = ClarityHelperLimsMock()
 
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
         """
@@ -90,9 +93,13 @@ class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
 
     @pytest.fixture(scope="class")
-    def api(self):
+    def api(self, request):
         """Setup API connection"""
-        yield ClarityHelperLims()
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        lims = ClarityHelperLimsMock()
+        lims.load_tracked_requests(data_file_path)
+        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+        yield lims
 
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1),
@@ -204,26 +211,26 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert merged_dict == expected_dict
 
-class TestClarityHelperLimsPrototype(unittest.TestCase):
-    """
-    Test class for prototype functions
-    """
+# class TestClarityHelperLimsPrototype(unittest.TestCase):
+#     """
+#     Test class for prototype functions
+#     """
 
-    def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
-        self.api = ClarityHelperLims()
+#     def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
+#         self.api = ClarityHelperLims()
 
-    @pytest.mark.only_run_with_direct_target
-    def test_clarity_helper_lims_prototype(self):
-        """
-        Test prototyping method
-        """
+#     @pytest.mark.only_run_with_direct_target
+#     def test_clarity_helper_lims_prototype(self):
+#         """
+#         Test prototyping method
+#         """
 
-        # Test
-        data = self.api.collect_ont_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
-        print("-------")
-        print(data)
-        for key, value in data.items():
-            print(key)
-            print(value)
+#         # Test
+#         data = self.api.collect_ont_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
+#         print("-------")
+#         print(data)
+#         for key, value in data.items():
+#             print(key)
+#             print(value)
 
-        raise ValueError
+#         raise ValueError
