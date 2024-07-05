@@ -85,5 +85,5 @@ class TestCli(unittest.TestCase):
             params["runs_dir"],
             False,
             False,
-            None
+            None,
         )

@@ -202,7 +202,17 @@ def ont(ctx):
     default=None,
     help="Search for run folders containing this string",
 )
-def ont_gen_demux_run(ctx, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains):  # pylint: disable=W0613,R0913
+def ont_gen_demux_run(ctx,  # pylint: disable=W0613
+                      source_dir,
+                      target_dir,
+                      pipeline_dir,
+                      nextflow_cache,
+                      nextflow_work,
+                      container_cache,
+                      runs_dir,
+                      execute,
+                      use_api,
+                      contains):
     """
     Create run directory for the ONT demux pipeline
     """

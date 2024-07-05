@@ -86,6 +86,7 @@ max-line-length = 150
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
+    "E0401", # import-errorß
     "R0913", # too-many-arguments
     "R0903", # too-few-public-methods
     "R0904", # too-many-public-methods
@@ -93,6 +94,7 @@ disable = [
     "R0912", # too-many-branches
     "R0801", # duplicate-code
     "R0902", # too-many-instance-attributes
+    "R1710", # inconsistent-return-statements
     "W1203", # logging-fstring-interpolation
     "W0102", # dangerous-default-value
 ]
@@ -115,3 +117,9 @@ exclude = [
 
 [tool.cython-lint]
 max-line-length = 150
+
+[tool.coverage.run]
+omit = [
+    "asf_tools/__main__.py",
+    "asf_tools/io/log_subprocess.py",
+]

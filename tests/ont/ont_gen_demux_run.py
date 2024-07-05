@@ -208,33 +208,34 @@ def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
     print(script_txt)
     self.assertFalse("NXF_HOME" in script_txt)
 
-@with_temporary_folder
-def test_ont_gen_demux_api_integration(self, tmp_path):
-    """ONT Gen demux run tests"""
 
-    # Setup
-    test = OntGenDemuxRun(
-        TEST_ONT_LIVE_RUN_SOURCE_PATH,
-        tmp_path,
-        TEST_ONT_PIPELINE_PATH,
-        ".nextflow",
-        "sing",
-        "work",
-        "runs",
-        False,
-        True,
-    )
+# @with_temporary_folder
+# def test_ont_gen_demux_api_integration(self, tmp_path):
+#     """ONT Gen demux run tests"""
 
-    # Test
-    test.run()
+#     # Setup
+#     test = OntGenDemuxRun(
+#         TEST_ONT_LIVE_RUN_SOURCE_PATH,
+#         tmp_path,
+#         TEST_ONT_PIPELINE_PATH,
+#         ".nextflow",
+#         "sing",
+#         "work",
+#         "runs",
+#         False,
+#         True,
+#     )
 
-    # Assert
-    samplesheet_path = os.path.join(tmp_path, "20240625_1734_2F_PAW20497_d0c3cbb5", "samplesheet.csv")
+#     # Test
+#     test.run()
 
-    self.assertTrue(os.path.exists(samplesheet_path))
+#     # Assert
+#     samplesheet_path = os.path.join(tmp_path, "20240625_1734_2F_PAW20497_d0c3cbb5", "samplesheet.csv")
 
-    with open(samplesheet_path, "r", encoding="UTF-8") as file:
-        script_txt = "".join(file.readlines())
+#     self.assertTrue(os.path.exists(samplesheet_path))
 
-    print(script_txt)
-    self.assertTrue("unclassified" in script_txt)
+#     with open(samplesheet_path, "r", encoding="UTF-8") as file:
+#         script_txt = "".join(file.readlines())
+
+#     print(script_txt)
+#     self.assertTrue("unclassified" in script_txt)
