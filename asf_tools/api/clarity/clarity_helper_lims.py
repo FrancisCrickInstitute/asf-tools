@@ -291,6 +291,7 @@ class ClarityHelperLims(ClarityLims):
         merged_dict = sample_metadata
         for key, value in barcode_info.items():
             for sub_key, sub_value in value.items():
-                merged_dict[key][sub_key] = sub_value
+                if key in merged_dict:
+                    merged_dict[key][sub_key] = sub_value
 
         return merged_dict

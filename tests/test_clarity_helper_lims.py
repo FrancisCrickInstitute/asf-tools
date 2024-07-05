@@ -177,12 +177,10 @@ class TestClarityHelperLimsyWithFixtures:
         assert barcode_dict == expected_dict
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            # ('20240625_1734_2F_PAW20497_d0c3cbb5', {}),
             ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"},
                                                     'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
                                                     'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
                                                     'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}}), # ONT
-            # ("KAN6921A20", {"KAN6921A20": {"group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}) # ONT
             ('HWNT7BBXY', {'TLG66A2839': {'barcode': "SXT 40 H05 (CTGAGCCA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
                            'TLG66A2840': {'barcode': "SXT 41 A06 (AGCCATGC)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
                            'TLG66A2841': {'barcode': "SXT 42 B06 (GTACGCAA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
@@ -191,7 +189,8 @@ class TestClarityHelperLimsyWithFixtures:
                            'TLG66A2844': {'barcode': "SXT 45 E06 (ATTGAGGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
                            'TLG66A2845': {'barcode': "SXT 46 F06 (GTCGTAGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
                            'TLG66A2848': {'barcode': "SXT 03 C01 (AACGTGAT)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
-                           'TLG66A2849': {'barcode': "SXT 04 D01 (CACTTCGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}}) # Illumina
+                           'TLG66A2849': {'barcode': "SXT 04 D01 (CACTTCGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}}), # Illumina
+            ('20240625_1734_2F_PAW20497_d0c3cbb5', {'KAN6921A20': {'group': 'swantonc', 'user': 'nnennaya.kanu', 'project_id': 'DN24086'}}) # ONT, no barcode info
     ])
     def test_clarity_helper_collect_ont_samplesheet_info_isvalid(self, api, run_id, expected_dict):
         """
@@ -200,6 +199,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         merged_dict = api.collect_ont_samplesheet_info(run_id)
+        print(merged_dict)
 
         # Assert
         assert merged_dict == expected_dict
