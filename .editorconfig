@@ -8,7 +8,7 @@ trim_trailing_whitespace = true
 indent_size = 4
 indent_style = space
 
-[*.{md,yml,yaml,html,css,scss,js,cff,xml,pkl}]
+[*.{md,yml,yaml,html,css,scss,js,cff}]
 indent_size = 2
 
 # ignore python and markdown files
@@ -19,4 +19,10 @@ indent_style = unset
 indent_style = unset
 
 [**/Makefile]
+indent_style = unset
+
+[*.xml]
+indent_style = unset
+
+[*.pkl]
 indent_style = unset
