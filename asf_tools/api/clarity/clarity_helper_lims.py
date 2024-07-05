@@ -11,9 +11,10 @@ from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sam
 
 log = logging.getLogger(__name__)
 
+
 class ClarityHelperLims(ClarityLims):
     """
-    A helper class extending ClarityLims to provide additional methods for handling 
+    A helper class extending ClarityLims to provide additional methods for handling
     samples and artifacts in the Clarity LIMS system.
 
     Methods:
@@ -82,7 +83,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand each artifact to extract sample information and save it in a list
         sample_list = []
-        values = self.expand_stubs(artifacts_list, expansion_type = Artifact)
+        values = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         for value_item in values:
             run_samples = value_item.samples
             sample_list.extend(run_samples)
@@ -130,7 +131,7 @@ class ClarityHelperLims(ClarityLims):
         # these get the submitter, not the scientist, info
         user_firstname = user.first_name
         user_lastname = user.last_name
-        user_fullname = (user_firstname + '.' + user_lastname).lower()
+        user_fullname = (user_firstname + "." + user_lastname).lower()
 
         # Get the lab details
         lab = self.expand_stub(user.lab, expansion_type=Lab)
@@ -138,11 +139,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_name] = {
-            "group": lab_name,
-            "user": user_fullname,
-            "project_id": project_name
-            }
+        sample_info[sample_name] = {"group": lab_name, "user": user_fullname, "project_id": project_name}
 
         return sample_info
 
@@ -188,8 +185,8 @@ class ClarityHelperLims(ClarityLims):
         """
         Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
 
-        This method retrieves all artifacts associated with the specified run ID, traverses 
-        the parent processes to find the "T Custom Indexing" process, and collects barcode 
+        This method retrieves all artifacts associated with the specified run ID, traverses
+        the parent processes to find the "T Custom Indexing" process, and collects barcode
         information for each sample. The collected information is returned as a dictionary.
 
         Args:
@@ -212,10 +209,10 @@ class ClarityHelperLims(ClarityLims):
         artifacts_list = self.get_artifacts_from_runid(run_id)
 
         # Extract parent_process information from each artifact
-        artifacts_list = self.expand_stubs(artifacts_list, expansion_type = Artifact)  
+        artifacts_list = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         initial_parent_process_list = []
         initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list)
-        initial_process = self.expand_stubs(initial_parent_process_list, expansion_type = Process)
+        initial_process = self.expand_stubs(initial_parent_process_list, expansion_type=Process)
 
         if initial_process is None:
             raise ValueError("Initial process is None")
@@ -241,13 +238,13 @@ class ClarityHelperLims(ClarityLims):
                     if input_output.output.output_type == "Analyte":
                         parent_process = input_output.input.parent_process
                         if parent_process:
-                            parent_process = self.expand_stub(parent_process, expansion_type = Process)
+                            parent_process = self.expand_stub(parent_process, expansion_type=Process)
                             process_queue.put(parent_process)
             else:
                 # Extract barcode information and store it in "sample_barcode_match"
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
-                        output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
+                        output_expanded = self.expand_stub(input_output.output, expansion_type=Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
                         sample_name = sample_info.id

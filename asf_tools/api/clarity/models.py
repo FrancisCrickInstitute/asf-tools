@@ -159,8 +159,8 @@ class Artifact(ClarityBaseModel):
         """
         Reagent label is nested name
         """
-        if isinstance(values, dict) and 'name' in values:
-            return [values['name']]
+        if isinstance(values, dict) and "name" in values:
+            return [values["name"]]
         if isinstance(values, list):
             return [d["name"] for d in values]
 
@@ -278,6 +278,7 @@ class Process(ClarityBaseModel):
         if isinstance(values, dict):
             return [values]
         return values
+
 
 class Workflow(ClarityBaseModel):
     uri: str

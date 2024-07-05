@@ -25,17 +25,7 @@ class OntGenDemuxRun:
     """
 
     def __init__(
-        self,
-        source_dir,
-        target_dir,
-        pipeline_dir,
-        nextflow_cache,
-        nextflow_work,
-        container_cache,
-        runs_dir,
-        execute,
-        use_api,
-        contains = None
+        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains=None
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -111,7 +101,7 @@ class OntGenDemuxRun:
                 for key, value in sample_dict.items():
                     barcode = "unclassified"
                     if "barcode" in value:
-                        barcode = value['barcode']
+                        barcode = value["barcode"]
                     file.write(f"{key},{value['group']},{value['user']},{value['project_id']},{barcode}")
 
         # Set 777 for the run script
