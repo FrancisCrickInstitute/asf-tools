@@ -17,8 +17,18 @@ API_TEST_DATA = "tests/data/api/clarity"
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
-    def setUp(self):
-        self.api = ClarityHelperLimsMock()
+    @classmethod
+    def setUpClass(cls):
+        """Setup API connection"""
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        cls.api = ClarityHelperLimsMock()
+        cls.api.load_tracked_requests(data_file_path)
+        cls.data_file_path = data_file_path
+
+    @classmethod
+    def tearDownClass(cls):
+        """Teardown API connection"""
+        cls.api.save_tracked_requests(cls.data_file_path)
 
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
         """
