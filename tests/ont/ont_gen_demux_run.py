@@ -208,6 +208,7 @@ def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
     print(script_txt)
     self.assertFalse("NXF_HOME" in script_txt)
 
+
 @with_temporary_folder
 def test_ont_gen_demux_api_integration(self, tmp_path):
     """ONT Gen demux run tests"""

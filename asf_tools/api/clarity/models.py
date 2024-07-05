@@ -159,8 +159,8 @@ class Artifact(ClarityBaseModel):
         """
         Reagent label is nested name
         """
-        if isinstance(values, dict) and 'name' in values:
-            return [values['name']]
+        if isinstance(values, dict) and "name" in values:
+            return [values["name"]]
         if isinstance(values, list):
             return [d["name"] for d in values]
 
@@ -195,7 +195,7 @@ class Artifact(ClarityBaseModel):
         return values
 
     @field_validator("udf_fields", mode="before")
-    def udf_fields(cls, values):  # pylint: disable=no-self-argument
+    def extract_udf_fields(cls, values):  # pylint: disable=no-self-argument
         """
         udf_fields is one item sometimes
         """
@@ -278,6 +278,7 @@ class Process(ClarityBaseModel):
         if isinstance(values, dict):
             return [values]
         return values
+
 
 class Workflow(ClarityBaseModel):
     uri: str

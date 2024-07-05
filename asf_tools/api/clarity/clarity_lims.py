@@ -385,7 +385,16 @@ class ClarityLims:
         TODO
         """
         return self.get_stub_list(
-            Researcher, ResearcherStub, "researchers", "res:researchers", "researcher", search_id=search_id, firstname=firstname, lastname=lastname, last_modified=last_modified, expand_stubs=expand_stubs
+            Researcher,
+            ResearcherStub,
+            "researchers",
+            "res:researchers",
+            "researcher",
+            search_id=search_id,
+            firstname=firstname,
+            lastname=lastname,
+            last_modified=last_modified,
+            expand_stubs=expand_stubs,
         )
 
     def get_projects(self, search_id=None, expand_stubs=True, name=None, open_date=None, last_modified=None):
