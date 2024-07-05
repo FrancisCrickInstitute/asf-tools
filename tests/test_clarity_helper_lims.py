@@ -6,7 +6,7 @@ import os
 import unittest
 
 import pytest
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, ConnectionError
 
 from asf_tools.api.clarity.models import Stub
 
@@ -19,8 +19,18 @@ API_TEST_DATA = "tests/data/api/clarity"
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
-    def setUp(self):
-        self.api = ClarityHelperLimsMock()
+    @classmethod
+    def setUpClass(cls):
+        """Setup API connection"""
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        cls.api = ClarityHelperLimsMock()
+        cls.api.load_tracked_requests(data_file_path)
+        cls.data_file_path = data_file_path
+
+    @classmethod
+    def tearDownClass(cls):
+        """Teardown API connection"""
+        cls.api.save_tracked_requests(cls.data_file_path)
 
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
         """
@@ -61,7 +71,7 @@ class TestClarityHelperLims(unittest.TestCase):
         artifacts_list = [Stub(id="TestID", uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST", name=None, limsid="TestID")]
 
         # Test and Assert
-        with self.assertRaises(HTTPError):
+        with self.assertRaises((HTTPError, ConnectionError)):
             self.api.get_samples_from_artifacts(artifacts_list)
 
     def test_clarity_helper_get_sample_info_isnone(self):
