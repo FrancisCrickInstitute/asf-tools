@@ -6,7 +6,7 @@ import os
 import unittest
 
 import pytest
-from requests.exceptions import ConnectionError, HTTPError
+from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub
 
