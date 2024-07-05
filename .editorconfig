@@ -24,5 +24,10 @@ indent_style = unset
 [*.xml]
 indent_style = unset
 
-[*.pkl]
+[*.{xml,pkl}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_size = unset
 indent_style = unset
