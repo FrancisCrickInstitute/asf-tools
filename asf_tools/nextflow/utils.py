@@ -2,7 +2,7 @@
 Common utility functions for nextflow
 """
 
-NEXTFLOW_VERSION = "23.10.0"
+NEXTFLOW_VERSION = "24.04.2"
 SINGULARITY_VERSION = "3.6.4"
 
 
