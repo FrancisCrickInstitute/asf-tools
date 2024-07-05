@@ -5,7 +5,7 @@ Clarity helper API Tests
 import os
 import unittest
 
-import pytest
+import pytest # pylint: disable=import-error
 from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub

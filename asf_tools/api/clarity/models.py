@@ -195,7 +195,7 @@ class Artifact(ClarityBaseModel):
         return values
 
     @field_validator("udf_fields", mode="before")
-    def udf_fields(cls, values):  # pylint: disable=no-self-argument
+    def extract_udf_fields(cls, values):  # pylint: disable=no-self-argument
         """
         udf_fields is one item sometimes
         """
