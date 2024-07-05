@@ -142,7 +142,7 @@ class OntGenDemuxRun:
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=72:00:00
+#SBATCH --time=168:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 
@@ -153,6 +153,7 @@ export NXF_WORK="{self.nextflow_work}"
 export NXF_SINGULARITY_CACHEDIR="{self.container_cache}"
 
 nextflow run {self.pipeline_dir} \\
+  -resume \\
   -profile crick,nemo \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
