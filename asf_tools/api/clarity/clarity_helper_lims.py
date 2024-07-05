@@ -6,7 +6,8 @@ import logging
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Researcher, Lab, Process, Sample
+from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sample
+
 
 log = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
-        sample_name = sample.name
+        sample_name = sample.id
 
         # Search for the project and get the name which is the ASF project id
         project = self.get_projects(search_id=sample.project.id)
@@ -249,7 +250,7 @@ class ClarityHelperLims(ClarityLims):
                         output_expanded = self.expand_stub(input_output.output, expansion_type = Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
-                        sample_name = sample_info.name
+                        sample_name = sample_info.id
                         reagent_barcode = output_expanded.reagent_labels[0]
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
@@ -290,6 +291,7 @@ class ClarityHelperLims(ClarityLims):
         merged_dict = sample_metadata
         for key, value in barcode_info.items():
             for sub_key, sub_value in value.items():
-                merged_dict[key][sub_key] = sub_value
+                if key in merged_dict:
+                    merged_dict[key][sub_key] = sub_value
 
         return merged_dict

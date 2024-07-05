@@ -2,17 +2,23 @@
 Clarity helper API Tests
 """
 
+import os
 import unittest
+
 import pytest
 from requests.exceptions import HTTPError
+
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.api.clarity.models import Stub
+from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
+
+API_TEST_DATA = "tests/data/api/clarity"
 
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
-        self.api = ClarityHelperLims()
+        self.api = ClarityHelperLimsMock()
 
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
         """
@@ -87,13 +93,17 @@ class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
 
     @pytest.fixture(scope="class")
-    def api(self):
+    def api(self, request):
         """Setup API connection"""
-        yield ClarityHelperLims()
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        lims = ClarityHelperLimsMock()
+        lims.load_tracked_requests(data_file_path)
+        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+        yield lims
 
     @pytest.mark.parametrize("runid,expected", [
         ("20240417_1729_1C_PAW45723_05bb74c5", 1),
-        # ("B_04-0004-S6_DT", 1)
+        ("20240625_1734_2F_PAW20497_d0c3cbb5", 1)
     ])
     def test_clarity_helper_get_artifacts_from_runid_valid(self, api, runid, expected):
         """
@@ -125,8 +135,8 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(get_samples) == expected_sample_quantity
 
     @pytest.mark.parametrize("sample_id,expected_dict", [
-        # ("BR1_D0", {"BR1_D0": {"group": "Administrative Lab", "user": "api.tempest", "project_id": "RN24071"}}),
-        ("ALV729A45", {"MAM040P_5": {"group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}})
+        ("KAN6921A20", {"KAN6921A20": {"group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}), # ONT
+        ("ALV729A45", {"ALV729A45": {"group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}})
     ])
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
         """
@@ -159,7 +169,7 @@ class TestClarityHelperLimsyWithFixtures:
         assert len(sample_dict) == expected_sample_quantity
 
     @pytest.mark.parametrize("run_id,expected_dict", [
-            ("20240417_1729_1C_PAW45723_05bb74c5", {'BR1_D0': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'BR1_D7': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'BR2_D0': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'BR2_D7': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}),
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'}, 'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'}, 'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'}, 'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'}}), # ONT
             ('20240625_1734_2F_PAW20497_d0c3cbb5', {})
     ])
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
@@ -173,26 +183,54 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert barcode_dict == expected_dict
 
-class TestClarityHelperLimsPrototype(unittest.TestCase):
-    """
-    Test class for prototype functions
-    """
-
-    def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
-        self.api = ClarityHelperLims()
-
-    @pytest.mark.only_run_with_direct_target
-    def test_clarity_helper_lims_prototype(self):
+    @pytest.mark.parametrize("run_id,expected_dict", [
+            ("20240417_1729_1C_PAW45723_05bb74c5", {'VIV6902A1': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"},
+                                                    'VIV6902A2': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
+                                                    'VIV6902A3': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}, 
+                                                    'VIV6902A4': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)', "group": "vanwervenf", "user": "claudia.vivori", "project_id": "RN24071"}}), # ONT
+            ('HWNT7BBXY', {'TLG66A2839': {'barcode': "SXT 40 H05 (CTGAGCCA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2840': {'barcode': "SXT 41 A06 (AGCCATGC)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2841': {'barcode': "SXT 42 B06 (GTACGCAA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2842': {'barcode': "SXT 43 C06 (AGTACAAG)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2843': {'barcode': "SXT 44 D06 (ACATTGGC)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2844': {'barcode': "SXT 45 E06 (ATTGAGGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2845': {'barcode': "SXT 46 F06 (GTCGTAGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2848': {'barcode': "SXT 03 C01 (AACGTGAT)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}, 
+                           'TLG66A2849': {'barcode': "SXT 04 D01 (CACTTCGA)", 'group': 'swantonc', 'user': 'tracerx.tlg', 'project_id': 'TRACERx_Lung'}}), # Illumina
+            ('20240625_1734_2F_PAW20497_d0c3cbb5', {'KAN6921A20': {'group': 'swantonc', 'user': 'nnennaya.kanu', 'project_id': 'DN24086'}}) # ONT, no barcode info
+    ])
+    def test_clarity_helper_collect_ont_samplesheet_info_isvalid(self, api, run_id, expected_dict):
         """
-        Test prototyping method
+        Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        data = self.api.collect_ont_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
-        print("-------")
-        print(data)
-        for key, value in data.items():
-            print(key)
-            print(value)
+        merged_dict = api.collect_ont_samplesheet_info(run_id)
+        print(merged_dict)
 
-        raise ValueError
+        # Assert
+        assert merged_dict == expected_dict
+
+# class TestClarityHelperLimsPrototype(unittest.TestCase):
+#     """
+#     Test class for prototype functions
+#     """
+
+#     def setUp(self):  # pylint: disable=missing-function-docstring,invalid-name
+#         self.api = ClarityHelperLims()
+
+#     @pytest.mark.only_run_with_direct_target
+#     def test_clarity_helper_lims_prototype(self):
+#         """
+#         Test prototyping method
+#         """
+
+#         # Test
+#         data = self.api.collect_ont_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
+#         print("-------")
+#         print(data)
+#         for key, value in data.items():
+#             print(key)
+#             print(value)
+
+#         raise ValueError
