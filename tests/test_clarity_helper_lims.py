@@ -138,7 +138,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Set up
         sample = api.get_samples(search_id=sample_id)
-        
+
         # Test
         get_info = api.get_sample_info(sample.id)
 
