@@ -25,7 +25,7 @@ class OntGenDemuxRun:
     """
 
     def __init__(
-        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains=None
+        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains=None, samplesheet_only=False
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -37,6 +37,7 @@ class OntGenDemuxRun:
         self.execute = execute
         self.use_api = use_api
         self.contains = contains
+        self.samplesheet_only = samplesheet_only
 
     def run(self):
         """
@@ -50,8 +51,12 @@ class OntGenDemuxRun:
         target_dir_names = set(list_directory_names(self.target_dir))
 
         # Get diff
-        dir_diff = source_dir_names - target_dir_names
-        log.info(f"Found {len(dir_diff)} new run folders")
+        if self.samplesheet_only is False:
+            dir_diff = source_dir_names - target_dir_names
+            log.info(f"Found {len(dir_diff)} new run folders")
+        else:
+            dir_diff = target_dir_names
+            log.info(f"Found {len(dir_diff)} existing run folders")
 
         # Filter
         if self.contains is not None:
@@ -73,14 +78,17 @@ class OntGenDemuxRun:
 
         # Create folder
         folder_path = os.path.join(self.target_dir, run_name)
-        if not os.path.exists(folder_path):
+        if self.samplesheet_only is False and not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
         # Generate and write sbatch script
-        sbatch_script = self.create_sbatch_text(run_name)
-        sbatch_script_path = os.path.join(folder_path, "run_script.sh")
-        with open(sbatch_script_path, "w", encoding="UTF-8") as file:
-            file.write(sbatch_script)
+        if self.samplesheet_only is False:
+            sbatch_script = self.create_sbatch_text(run_name)
+            sbatch_script_path = os.path.join(folder_path, "run_script.sh")
+            with open(sbatch_script_path, "w", encoding="UTF-8") as file:
+                file.write(sbatch_script)
+            # Set 777 for the run script
+            os.chmod(sbatch_script_path, PERM777)
 
         # Samplesheet path
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
@@ -103,9 +111,6 @@ class OntGenDemuxRun:
                     if "barcode" in value:
                         barcode = value["barcode"]
                     file.write(f"{key},{value['group']},{value['user']},{value['project_id']},{barcode}")
-
-        # Set 777 for the run script
-        os.chmod(sbatch_script_path, PERM777)
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)

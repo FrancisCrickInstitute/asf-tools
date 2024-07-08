@@ -86,4 +86,5 @@ class TestCli(unittest.TestCase):
             False,
             False,
             None,
+            False
         )
