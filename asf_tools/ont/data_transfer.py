@@ -39,8 +39,11 @@ class DataTransfer:
                 raise FileNotFoundError(f"{symlink_data_path} does not exist.")
 
             # Simlink data
-            cmd = f"ln -sn {data_path} {symlink_data_path}"
+            cmd = f"ln -sfn {data_path} {symlink_data_path}" #apparently ln -sn is incorrect
             subprocess.run(cmd, shell=True, check=True)
+            content_temp_folder = f"ls {symlink_data_path}"
+            subprocess.run(content_temp_folder, shell=True, check=True)
+
 
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
