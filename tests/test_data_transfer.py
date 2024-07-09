@@ -4,6 +4,7 @@ Tests covering the data_transfer module
 
 import unittest
 import os
+import subprocess
 
 from asf_tools.ont.data_transfer import DataTransfer
 from .utils import with_temporary_folder
@@ -39,17 +40,21 @@ class TestDataTransfer(unittest.TestCase):
 
         # Set up
         dt = DataTransfer()
-        data_path = "./tests/data/ont/runs/run01"
+        data_path = "tests/data/ont/runs/run01/"
 
         # Test
         dt.data_transfer(data_path, tmp_path)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
-        print(tmp_path)
-        print(run_dir_1)
-        print(os.path.exists(run_dir_1))
+        subprocess.run(f"ls -la {tmp_path}", shell=True, check=True)
+        # print(tmp_path)
+        # print(run_dir_1)
+        # print(os.path.exists(run_dir_1))
+        # print(f"Contents of tmp_path: {os.listdir(tmp_path)}")
+        print(f"Contents of tmp_path: {os.path.islink(run_dir_1)}") # returns true
         self.assertTrue(os.path.exists(run_dir_1))
+
 
         # # Set up
         # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"

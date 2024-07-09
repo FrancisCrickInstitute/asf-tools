@@ -44,14 +44,13 @@ class DataTransfer:
             content_temp_folder = f"ls {symlink_data_path}"
             subprocess.run(content_temp_folder, shell=True, check=True)
 
-
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
                 # Check if target paths exists
                 if not os.path.exists(item):
                     raise FileNotFoundError(f"{item} does not exist.")
                 # Simlink data
-                cmd = f"ln -sn {data_path} {item}"
+                cmd = f"ln -sfn {data_path} {item}"
                 subprocess.run(cmd, shell=True, check=True)
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
