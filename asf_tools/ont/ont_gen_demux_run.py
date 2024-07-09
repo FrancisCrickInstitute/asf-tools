@@ -25,7 +25,7 @@ class OntGenDemuxRun:
     """
 
     def __init__(
-        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, execute, use_api, contains=None, samplesheet_only=False
+        self, source_dir, target_dir, pipeline_dir, nextflow_cache, nextflow_work, container_cache, runs_dir, use_api, contains=None, samplesheet_only=False
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -34,7 +34,6 @@ class OntGenDemuxRun:
         self.nextflow_work = nextflow_work
         self.container_cache = container_cache
         self.runs_dir = runs_dir
-        self.execute = execute
         self.use_api = use_api
         self.contains = contains
         self.samplesheet_only = samplesheet_only

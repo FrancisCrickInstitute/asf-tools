@@ -28,7 +28,6 @@ def test_ont_gen_demux_run_folder_creation(self, tmp_path):
         "sing",
         "work",
         "runs",
-        False,
         False
     )
 
@@ -59,7 +58,6 @@ def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         "work",
         "runs",
         False,
-        False,
         "run02"
     )
 
@@ -87,7 +85,6 @@ def test_ont_gen_demux_run_sbatch_file(self, tmp_path):
         "work",
         "sing",
         "runs",
-        False,
         False
     )
 
@@ -125,7 +122,6 @@ def test_ont_gen_demux_run_samplesheet_file(self, tmp_path):
         "sing",
         "work",
         "runs",
-        False,
         False
     )
 
@@ -159,7 +155,6 @@ def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         "sing",
         "work",
         "runs",
-        False,
         False
     )
 
@@ -188,7 +183,6 @@ def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
         "work",
         "sing",
         "runs",
-        False,
         False
     )
 
@@ -222,7 +216,6 @@ def test_ont_gen_demux_samplesheet_only(self, tmp_path):
         "sing",
         "work",
         "runs",
-        False,
         False,
         samplesheet_only=True
     )

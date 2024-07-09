@@ -186,12 +186,6 @@ def ont(ctx):
     help=r"Host path for runs folder",
 )
 @click.option(
-    "--execute",
-    is_flag=True,
-    default=False,
-    help="Trigger pipeline run on cluster",
-)
-@click.option(
     "--use_api",
     is_flag=True,
     default=False,
@@ -216,7 +210,6 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       nextflow_work,
                       container_cache,
                       runs_dir,
-                      execute,
                       use_api,
                       contains,
                       samplesheet_only):
@@ -235,7 +228,6 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
             nextflow_work,
             container_cache,
             runs_dir,
-            execute,
             use_api,
             contains,
             samplesheet_only
