@@ -4,14 +4,51 @@ Helper functions for data management
 
 # import os
 # import pandas as pd
+import subprocess
 
 class DataTransfer:
     """
     Creates symlinks from raw data to scientist folder
     """
 
-    def transfer_data(self, data_path: str, symlink_data_path: str):
-        pass
+    def transfer_data(self, data_path: str, symlink_data_path):
+        """
+        Creates symbolic links for a given data path in one or multiple destination paths.
+
+        Args:
+        - data_path (str): Path to the source data to be symlinked.
+        - symlink_data_path (Union[str, list]): Single path or list of paths where the symlinks should be created.
+
+        Raises:
+        - ValueError: If symlink_data_path is neither a string nor a list.
+        - subprocess.CalledProcessError: If the subprocess command fails.
+
+        Example usage:
+        transfer_data('/path/to/source', '/path/to/destination')
+        transfer_data('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
+        """
+        if isinstance(symlink_data_path, str):
+            cmd = f"ln -s {data_path} {symlink_data_path}"
+            subprocess.run(cmd, shell=True, check=True)
+        elif isinstance(symlink_data_path, list):
+            for item in symlink_data_path:
+                cmd = f"ln -s {data_path} {item}"
+                subprocess.run(cmd, shell=True, check=True)
+        else:
+            raise ValueError("symlink_data_path must be either a string or a list of strings")
+
+
+
+
+        if symlink_data_path is str:
+            cmd = f"ln -s {data_path} {symlink_data_path}"
+        if symlink_data_path is list:
+            for item in symlink_data_path:
+                cmd = f"ln -s {data_path} {item}"
+        subprocess.run(cmd, shell=True, check=True)
+        # pass
+
+    # check if data_path and symlink_data_path exist
     #set up default values for data_path + symlink_data_path
 
 

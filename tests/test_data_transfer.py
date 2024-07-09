@@ -2,29 +2,40 @@
 Tests covering the data_transfer module
 """
 
-import unittest
-
-from asf_tools.ont.data_transfer import DataTransfer
+# import unittest
+import os
 
 from utils import with_temporary_folder
+# from asf_tools.ont.data_transfer import DataTransfer
 
-class TestDataTransfer(unittest.TestCase):
-    """Class for data_transfer tests""" 
+# class TestDataTransfer(unittest.TestCase):
+#     """Class for data_transfer tests""" 
 
+@with_temporary_folder
+def test_clarity_helper_transfer_data(self, tmp_path):
 
-    def test_clarity_helper_transfer_data(self, api):
-        # Set up
-        samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
-        data_path = "./tests/data/ont/runs/run01"
-        symlink_data_path = "./tests/data/ont/temp_symlink/"
+    # Set up
+    data_path = "./tests/data/ont/runs/run01"
 
-        # Test
-        symlinked_data = api.transfer_data(samplesheet, data_path, symlink_data_path) # shouldn't require api connection, but returns error if api not included
+    # Test
+    self.DataTransfer.transfer_data(data_path, tmp_path)
 
-        # Assert
-        # Check if symlinks were created (if symlinked path+file exists) then remove symlink
-        # temp_location = symlink_data_path + "dummy.txt"
-        # assert os.path.exists(temp_location)
-        # then remove symlink
-        # if assert:
-            # unlink temp_location
+    # Assert
+    run_dir_1 = os.path.join(tmp_path, "run01")
+    self.assertTrue(os.path.exists(run_dir_1))
+
+        # # Set up
+        # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
+        # data_path = "./tests/data/ont/runs/run01"
+        # symlink_data_path = "./tests/data/ont/temp_symlink/"
+
+        # # Test
+        # symlinked_data = api.transfer_data(samplesheet, data_path, symlink_data_path) # shouldn't require api connection, but returns error if api not included
+
+        # # Assert
+        # # Check if symlinks were created (if symlinked path+file exists) then remove symlink
+        # # temp_location = symlink_data_path + "dummy.txt"
+        # # assert os.path.exists(temp_location)
+        # # then remove symlink
+        # # if assert:
+        #     # unlink temp_location
