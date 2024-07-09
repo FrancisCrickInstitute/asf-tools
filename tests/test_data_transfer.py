@@ -2,27 +2,50 @@
 Tests covering the data_transfer module
 """
 
-# import unittest
+import unittest
 import os
 
-from utils import with_temporary_folder
-# from asf_tools.ont.data_transfer import DataTransfer
+from asf_tools.ont.data_transfer import DataTransfer
+from .utils import with_temporary_folder
 
-# class TestDataTransfer(unittest.TestCase):
-#     """Class for data_transfer tests""" 
+class TestDataTransfer(unittest.TestCase):
+    """Class for data_transfer tests""" 
 
-@with_temporary_folder
-def test_clarity_helper_transfer_data(self, tmp_path):
+    @with_temporary_folder
+    def test_data_transfer_isinvalid_source(self, tmp_path):
 
-    # Set up
-    data_path = "./tests/data/ont/runs/run01"
+        # Set up
+        dt = DataTransfer()
+        invalid_path = "./invalid"
 
-    # Test
-    self.DataTransfer.transfer_data(data_path, tmp_path)
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            dt.data_transfer(invalid_path, tmp_path)
 
-    # Assert
-    run_dir_1 = os.path.join(tmp_path, "run01")
-    self.assertTrue(os.path.exists(run_dir_1))
+    def test_data_transfer_isinvalid_target(self):
+
+        # Set up
+        dt = DataTransfer()
+        valid_path = "./tests/data/ont/runs/run01"
+        invalid_path = "./invalid"
+
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            dt.data_transfer(valid_path, invalid_path)
+
+    @with_temporary_folder
+    def test_data_transfer_isvalid(self, tmp_path):
+
+        # Set up
+        dt = DataTransfer()
+        data_path = "./tests/data/ont/runs/run01"
+
+        # Test
+        dt.data_transfer(data_path, tmp_path)
+
+        # Assert
+        run_dir_1 = os.path.join(tmp_path, "run01")
+        self.assertTrue(os.path.exists(run_dir_1))
 
         # # Set up
         # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
@@ -30,7 +53,7 @@ def test_clarity_helper_transfer_data(self, tmp_path):
         # symlink_data_path = "./tests/data/ont/temp_symlink/"
 
         # # Test
-        # symlinked_data = api.transfer_data(samplesheet, data_path, symlink_data_path) # shouldn't require api connection, but returns error if api not included
+        # symlinked_data = api.data_transfer(samplesheet, data_path, symlink_data_path) # shouldn't require api connection, but returns error if api not included
 
         # # Assert
         # # Check if symlinks were created (if symlinked path+file exists) then remove symlink

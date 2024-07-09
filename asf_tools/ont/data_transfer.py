@@ -2,7 +2,7 @@
 Helper functions for data management
 """
 
-# import os
+import os
 # import pandas as pd
 import subprocess
 
@@ -11,7 +11,7 @@ class DataTransfer:
     Creates symlinks from raw data to scientist folder
     """
 
-    def transfer_data(self, data_path: str, symlink_data_path):
+    def data_transfer(self, data_path: str, symlink_data_path):
         """
         Creates symbolic links for a given data path in one or multiple destination paths.
 
@@ -27,11 +27,26 @@ class DataTransfer:
         transfer_data('/path/to/source', '/path/to/destination')
         transfer_data('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
         """
+
+        # Check if source paths exists
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"{data_path} does not exist.")
+
+        # Check if it's a single or multiple target paths
         if isinstance(symlink_data_path, str):
+            # Check if target path exists
+            if not os.path.exists(symlink_data_path):
+                raise FileNotFoundError(f"{symlink_data_path} does not exist.")
+
+            # Simlink data
             cmd = f"ln -s {data_path} {symlink_data_path}"
             subprocess.run(cmd, shell=True, check=True)
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
+                # Check if target paths exists
+                if not os.path.exists(item):
+                    raise FileNotFoundError(f"{item} does not exist.")
+                # Simlink data
                 cmd = f"ln -s {data_path} {item}"
                 subprocess.run(cmd, shell=True, check=True)
         else:
