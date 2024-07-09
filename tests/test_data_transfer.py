@@ -3,16 +3,14 @@ Tests covering the data_transfer module
 """
 
 import unittest
-import tempfile
 
-from click.testing import CliRunner
+from asf_tools.ont.data_transfer import DataTransfer
+
+from utils import with_temporary_folder
 
 class TestDataTransfer(unittest.TestCase):
     """Class for data_transfer tests""" 
 
-    def setUp(self):
-        self.runner = CliRunner()
-        self.tmp_dir = tempfile.mkdtemp()
 
     def test_clarity_helper_transfer_data(self, api):
         # Set up
