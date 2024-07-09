@@ -39,29 +39,20 @@ class DataTransfer:
                 raise FileNotFoundError(f"{symlink_data_path} does not exist.")
 
             # Simlink data
-            cmd = f"ln -s {data_path} {symlink_data_path}"
+            cmd = f"ln -sn {data_path} {symlink_data_path}"
             subprocess.run(cmd, shell=True, check=True)
+
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
                 # Check if target paths exists
                 if not os.path.exists(item):
                     raise FileNotFoundError(f"{item} does not exist.")
                 # Simlink data
-                cmd = f"ln -s {data_path} {item}"
+                cmd = f"ln -sn {data_path} {item}"
                 subprocess.run(cmd, shell=True, check=True)
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-
-
-
-        if symlink_data_path is str:
-            cmd = f"ln -s {data_path} {symlink_data_path}"
-        if symlink_data_path is list:
-            for item in symlink_data_path:
-                cmd = f"ln -s {data_path} {item}"
-        subprocess.run(cmd, shell=True, check=True)
-        # pass
 
     # check if data_path and symlink_data_path exist
     #set up default values for data_path + symlink_data_path

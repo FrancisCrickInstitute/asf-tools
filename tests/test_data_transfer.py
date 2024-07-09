@@ -16,18 +16,19 @@ class TestDataTransfer(unittest.TestCase):
 
         # Set up
         dt = DataTransfer()
-        invalid_path = "./invalid"
+        invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             dt.data_transfer(invalid_path, tmp_path)
 
-    def test_data_transfer_isinvalid_target(self):
+    @with_temporary_folder
+    def test_data_transfer_isinvalid_target(self, tmp_path):
 
         # Set up
         dt = DataTransfer()
         valid_path = "./tests/data/ont/runs/run01"
-        invalid_path = "./invalid"
+        invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
@@ -45,6 +46,7 @@ class TestDataTransfer(unittest.TestCase):
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
+        print(run_dir_1)
         self.assertTrue(os.path.exists(run_dir_1))
 
         # # Set up
