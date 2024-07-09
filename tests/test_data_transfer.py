@@ -46,7 +46,9 @@ class TestDataTransfer(unittest.TestCase):
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
+        print(tmp_path)
         print(run_dir_1)
+        print(os.path.exists(run_dir_1))
         self.assertTrue(os.path.exists(run_dir_1))
 
         # # Set up
