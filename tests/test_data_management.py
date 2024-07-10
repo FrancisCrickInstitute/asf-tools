@@ -71,8 +71,8 @@ class TestDataManagement(unittest.TestCase):
         data_path = "tests/data/ont/runs/run01/"
 
         # Create list of temporary paths
-        tmp_path1 = os.path.join(tmp_path, 'test1')
-        tmp_path2 = os.path.join(tmp_path, 'test2')
+        tmp_path1 = os.path.join(tmp_path, "test1")
+        tmp_path2 = os.path.join(tmp_path, "test2")
         tmp_paths = [tmp_path1, tmp_path2]
         # Create directories if they do not exist
         os.makedirs(tmp_path1, exist_ok=True)
@@ -86,19 +86,3 @@ class TestDataManagement(unittest.TestCase):
         run_dir_2 = os.path.join(tmp_path2, "run01")
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
-
-        # # Set up
-        # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
-        # data_path = "./tests/data/ont/runs/run01"
-        # symlink_data_path = "./tests/data/ont/temp_symlink/"
-
-        # # Test
-        # symlinked_data = api.data_transfer(samplesheet, data_path, symlink_data_path)
-
-        # # Assert
-        # # Check if symlinks were created (if symlinked path+file exists) then remove symlink
-        # # temp_location = symlink_data_path + "dummy.txt"
-        # # assert os.path.exists(temp_location)
-        # # then remove symlink
-        # # if assert:
-        #     # unlink temp_location
