@@ -3,7 +3,6 @@ Tests covering the data_transfer module
 """
 
 import os
-import subprocess
 import unittest
 
 from asf_tools.io.data_management import DataManagement
