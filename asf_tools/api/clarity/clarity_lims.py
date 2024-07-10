@@ -54,6 +54,10 @@ class ClarityLims:
     def __init__(
         self, credentials_path: Optional[str] = None, baseuri: Optional[str] = None, username: Optional[str] = None, password: Optional[str] = None
     ):
+        # Init self
+        self.baseuri = ""
+        self.username = ""
+        self.password = ""
 
         # Resolve credentials path
         resolved_cred_path = credentials_path
