@@ -2,11 +2,12 @@
 Tests covering the data_transfer module
 """
 
-import unittest
 import os
 import subprocess
+import unittest
 
 from asf_tools.ont.data_transfer import DataTransfer
+
 from .utils import with_temporary_folder
 
 
