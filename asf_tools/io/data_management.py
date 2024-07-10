@@ -10,7 +10,7 @@ import subprocess
 
 class DataManagement:
     """
-    Creates symlinks from raw data to scientist folder
+    Creates symlinks from raw data to symlink_folder
     """
 
     def data_management(self, data_path: str, symlink_data_path):
@@ -40,18 +40,15 @@ class DataManagement:
             if not os.path.exists(symlink_data_path):
                 raise FileNotFoundError(f"{symlink_data_path} does not exist.")
 
-            # Simlink data
-            cmd = f"ln -sfn {data_path} {symlink_data_path}"  # apparently ln -sn is incorrect
+            cmd = f"ln -sfn {data_path} {symlink_data_path}"
             subprocess.run(cmd, shell=True, check=True)
-            content_temp_folder = f"ls {symlink_data_path}"
-            subprocess.run(content_temp_folder, shell=True, check=True)
 
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
                 # Check if target paths exists
                 if not os.path.exists(item):
                     raise FileNotFoundError(f"{item} does not exist.")
-                # Simlink data
+
                 cmd = f"ln -sfn {data_path} {item}"
                 subprocess.run(cmd, shell=True, check=True)
         else:
