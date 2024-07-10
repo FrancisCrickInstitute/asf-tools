@@ -15,4 +15,5 @@ class TestOnt(unittest.TestCase):
         test_ont_gen_demux_run_samplesheet_file,
         test_ont_gen_demux_run_sbatch_file,
         test_ont_gen_demux_run_sbatch_file_nonfhome,
+        test_ont_gen_demux_samplesheet_only,
     )
