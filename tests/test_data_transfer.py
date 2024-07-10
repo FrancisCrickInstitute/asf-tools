@@ -16,6 +16,9 @@ class TestDataTransfer(unittest.TestCase):
 
     @with_temporary_folder
     def test_data_transfer_isinvalid_source(self, tmp_path):
+        """
+        Check existence of input path
+        """
 
         # Set up
         dt = DataTransfer()
@@ -27,6 +30,9 @@ class TestDataTransfer(unittest.TestCase):
 
     @with_temporary_folder
     def test_data_transfer_isinvalid_target(self, tmp_path):
+        """
+        Check existence of target path
+        """
 
         # Set up
         dt = DataTransfer()
@@ -39,6 +45,9 @@ class TestDataTransfer(unittest.TestCase):
 
     @with_temporary_folder
     def test_data_transfer_isvalid(self, tmp_path):
+        """
+        Check folder has been symlinked correctly
+        """
 
         # Set up
         dt = DataTransfer()
@@ -63,7 +72,7 @@ class TestDataTransfer(unittest.TestCase):
         # symlink_data_path = "./tests/data/ont/temp_symlink/"
 
         # # Test
-        # symlinked_data = api.data_transfer(samplesheet, data_path, symlink_data_path) # shouldn't require api connection, but returns error if api not included
+        # symlinked_data = api.data_transfer(samplesheet, data_path, symlink_data_path)
 
         # # Assert
         # # Check if symlinks were created (if symlinked path+file exists) then remove symlink
