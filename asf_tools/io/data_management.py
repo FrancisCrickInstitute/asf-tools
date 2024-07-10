@@ -8,12 +8,12 @@ import os
 import subprocess
 
 
-class DataTransfer:
+class DataManagement:
     """
     Creates symlinks from raw data to scientist folder
     """
 
-    def data_transfer(self, data_path: str, symlink_data_path):
+    def data_management(self, data_path: str, symlink_data_path):
         """
         Creates symbolic links for a given data path in one or multiple destination paths.
 

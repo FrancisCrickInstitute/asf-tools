@@ -6,13 +6,13 @@ import os
 import subprocess
 import unittest
 
-from asf_tools.ont.data_transfer import DataTransfer
+from asf_tools.io.data_management import DataManagement
 
 from .utils import with_temporary_folder
 
 
 class TestDataTransfer(unittest.TestCase):
-    """Class for data_transfer tests"""
+    """Class for data_management tests"""
 
     @with_temporary_folder
     def test_data_transfer_isinvalid_source(self, tmp_path):
@@ -21,12 +21,12 @@ class TestDataTransfer(unittest.TestCase):
         """
 
         # Set up
-        dt = DataTransfer()
+        dt = DataManagement()
         invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            dt.data_transfer(invalid_path, tmp_path)
+            dt.data_management(invalid_path, tmp_path)
 
     @with_temporary_folder
     def test_data_transfer_isinvalid_target(self, tmp_path):
@@ -35,13 +35,13 @@ class TestDataTransfer(unittest.TestCase):
         """
 
         # Set up
-        dt = DataTransfer()
+        dt = DataManagement()
         valid_path = "./tests/data/ont/runs/run01"
         invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            dt.data_transfer(valid_path, invalid_path)
+            dt.data_management(valid_path, invalid_path)
 
     @with_temporary_folder
     def test_data_transfer_isvalid(self, tmp_path):
@@ -50,21 +50,16 @@ class TestDataTransfer(unittest.TestCase):
         """
 
         # Set up
-        dt = DataTransfer()
+        dt = DataManagement()
         data_path = "tests/data/ont/runs/run01/"
 
         # Test
-        dt.data_transfer(data_path, tmp_path)
+        dt.data_management(data_path, tmp_path)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
         subprocess.run(f"ls -la {tmp_path}", shell=True, check=True)
-        # print(tmp_path)
-        # print(run_dir_1)
-        # print(os.path.exists(run_dir_1))
-        # print(f"Contents of tmp_path: {os.listdir(tmp_path)}")
-        print(f"Contents of tmp_path: {os.path.islink(run_dir_1)}")  # returns true
-        self.assertTrue(os.path.exists(run_dir_1))
+        self.assertTrue(os.path.islink(run_dir_1))
 
         # # Set up
         # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
