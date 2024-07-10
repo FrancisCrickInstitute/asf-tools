@@ -3,8 +3,10 @@ Helper functions for data management
 """
 
 import os
+
 # import pandas as pd
 import subprocess
+
 
 class DataTransfer:
     """
@@ -39,7 +41,7 @@ class DataTransfer:
                 raise FileNotFoundError(f"{symlink_data_path} does not exist.")
 
             # Simlink data
-            cmd = f"ln -sfn {data_path} {symlink_data_path}" #apparently ln -sn is incorrect
+            cmd = f"ln -sfn {data_path} {symlink_data_path}"  # apparently ln -sn is incorrect
             subprocess.run(cmd, shell=True, check=True)
             content_temp_folder = f"ls {symlink_data_path}"
             subprocess.run(content_temp_folder, shell=True, check=True)
@@ -55,10 +57,8 @@ class DataTransfer:
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-
     # check if data_path and symlink_data_path exist
-    #set up default values for data_path + symlink_data_path
-
+    # set up default values for data_path + symlink_data_path
 
     ### for future use ###
     # uses samplesheet to build the target dir (ie. where data is shared with the users)
@@ -75,16 +75,14 @@ class DataTransfer:
     #         samplesheet_dict[key] = row_dict
     #     runID = os.path.basename(data_path)
 
-    #     # build delivery path for each 
+    #     # build delivery path for each
     #     for key in samplesheet_dict:
-
 
     #     symlink_data_full_path = os.path.join(symlink_data_path, group, user, project_id, runID)
     #     cmd = f'ln -s {data_path} {symlink_data_full_path}'
 
 
-
-# check samplesheet 
+# check samplesheet
 #   if user or group missing -> raise warning or error
 
 # include situation where target dir does not exist -> only root users can create a new folder

@@ -9,8 +9,9 @@ import subprocess
 from asf_tools.ont.data_transfer import DataTransfer
 from .utils import with_temporary_folder
 
+
 class TestDataTransfer(unittest.TestCase):
-    """Class for data_transfer tests""" 
+    """Class for data_transfer tests"""
 
     @with_temporary_folder
     def test_data_transfer_isinvalid_source(self, tmp_path):
@@ -52,9 +53,8 @@ class TestDataTransfer(unittest.TestCase):
         # print(run_dir_1)
         # print(os.path.exists(run_dir_1))
         # print(f"Contents of tmp_path: {os.listdir(tmp_path)}")
-        print(f"Contents of tmp_path: {os.path.islink(run_dir_1)}") # returns true
+        print(f"Contents of tmp_path: {os.path.islink(run_dir_1)}")  # returns true
         self.assertTrue(os.path.exists(run_dir_1))
-
 
         # # Set up
         # samplesheet = "./tests/data/ont/samplesheet/samplesheet.csv"
