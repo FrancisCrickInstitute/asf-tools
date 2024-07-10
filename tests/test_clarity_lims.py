@@ -222,7 +222,7 @@ class TestClarityEndpoints:
     def api(self, request):
         """Setup API connection"""
         data_file_path = os.path.join(API_TEST_DATA, "mock_data", "data.pkl")
-        lims = ClarityLimsMock()
+        lims = ClarityLimsMock(baseuri="https://asf-claritylims.thecrick.org")
         lims.load_tracked_requests(data_file_path)
         request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
         yield lims
