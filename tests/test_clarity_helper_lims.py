@@ -23,7 +23,7 @@ class TestClarityHelperLims(unittest.TestCase):
     def setUpClass(cls):
         """Setup API connection"""
         data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        cls.api = ClarityHelperLimsMock()
+        cls.api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
         cls.api.load_tracked_requests(data_file_path)
         cls.data_file_path = data_file_path
 
@@ -109,7 +109,7 @@ class TestClarityHelperLimsyWithFixtures:
     def api(self, request):
         """Setup API connection"""
         data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        lims = ClarityHelperLimsMock()
+        lims = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
         lims.load_tracked_requests(data_file_path)
         request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
         yield lims

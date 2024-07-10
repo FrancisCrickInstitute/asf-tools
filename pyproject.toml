@@ -117,3 +117,9 @@ exclude = [
 
 [tool.cython-lint]
 max-line-length = 150
+
+[tool.coverage.run]
+omit = [
+    "asf_tools/__main__.py",
+    "asf_tools/io/log_subprocess.py",
+]

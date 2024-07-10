@@ -186,12 +186,6 @@ def ont(ctx):
     help=r"Host path for runs folder",
 )
 @click.option(
-    "--execute",
-    is_flag=True,
-    default=False,
-    help="Trigger pipeline run on cluster",
-)
-@click.option(
     "--use_api",
     is_flag=True,
     default=False,
@@ -202,6 +196,12 @@ def ont(ctx):
     default=None,
     help="Search for run folders containing this string",
 )
+@click.option(
+    "--samplesheet_only",
+    is_flag=True,
+    default=False,
+    help="Update samplesheets only for all runs in target folder. Contains will still restrict this list.",
+)
 def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
@@ -210,9 +210,9 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       nextflow_work,
                       container_cache,
                       runs_dir,
-                      execute,
                       use_api,
-                      contains):
+                      contains,
+                      samplesheet_only):
     """
     Create run directory for the ONT demux pipeline
     """
@@ -228,9 +228,9 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
             nextflow_work,
             container_cache,
             runs_dir,
-            execute,
             use_api,
-            contains
+            contains,
+            samplesheet_only
         )
         exit_status = function.run()
         if not exit_status:
