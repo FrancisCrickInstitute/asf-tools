@@ -20,7 +20,7 @@ PERM666 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IRO
 
 class OntGenDemuxRun:
     """
-    Generates a run folder for the deumux pipeline and associated support files
+    Generates a run folder for the demux pipeline and associated support files
     including a run script and default samplesheet
     """
 
