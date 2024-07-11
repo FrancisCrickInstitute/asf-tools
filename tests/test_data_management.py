@@ -101,4 +101,4 @@ class TestDataManagement(unittest.TestCase):
 
         # Test
         dt.deliver_to_targets(basepath_target, tmp_path)
-        raise ValueError
+        # raise ValueError

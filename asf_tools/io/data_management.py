@@ -62,9 +62,8 @@ class DataManagement:
             if not dirs:
                 source_paths_list.append(root)
 
-        # split paths
-        folder_structure_info = []
         for path in source_paths_list:
+            # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
             if len(split_path) == 4:
@@ -75,55 +74,13 @@ class DataManagement:
                     "project_ID": project_ID,
                     "run_ID": run_ID
                 }
-                folder_structure_info.append(info_dict)
-        # print(folder_structure_info)
 
-        # check if folders exist
-        path_exists = []
-        for entry in folder_structure_info:
-            permissions_path = os.path.join(symlink_data_basepath, entry["group"], entry['user'])
-            if os.path.exists(permissions_path):
-                project_path = os.path.join(permissions_path, entry["project_ID"])
-                os.mkdir(project_path)
+                # create project folders in target path
+                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict['user'])
+                if os.path.exists(permissions_path):
+                    project_path = os.path.join(permissions_path, info_dict["project_ID"])
+                    if not os.path.exists(project_path):
+                        os.mkdir(project_path)
 
-                path_exists.append(project_path)
-        print(path_exists)
-
-
-
-
-# source_path = /path/to/results
-# target_base_path = /path/to/target
-# permission_depth = 2
-
-# source_path_list = [
-# /path/to/results/group_1/user_1/proj_1/run_id,
-# /path/to/results/group_2/user_2/proj_2/run_id,
-# /path/to/results/group_3/user_3/proj_3/run_id
-# ]
-
-# target_path_list = source_path_list.copy()
-# for path in target_path_list:
-#     target_path_list[i] = target_path_list[i].replace(source_path, "")
-#     target_path_list[i] = os.path.join(basepath, target_path_list[i])
-
-
-# other_list [
-#     group_1/user_1/proj_1/run_id
-#     group_1/user_1/proj_1/run_id
-#     group_1/user_1/proj_1/run_id
-#     group_1/user_1/proj_1/run_id
-# ]
-
-# for target in other_list:
-#     t_split = target.split("/")
-#     t_depth = t_split[:2]
-#     t_depth //  group_1/user_1
-#     check_path = os.join(target_base_path, t_depth)
-
-#     // check if path exists
-
-# // go through target_path_list - depth -1
-# // mkdir
-
-# // symlink to target
+                # symlink data to target path
+                self.symlink_to_target(path, project_path)
