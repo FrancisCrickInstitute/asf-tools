@@ -54,8 +54,18 @@ class DataManagement:
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-
     def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):
+        """
+        Recursively collects subdirectories from `data_path`, collects info based on the path structure,
+        and creates symlinks to `symlink_data_basepath`.
+
+        Args:
+            data_path (str): The base input directory containing the data to be symlinked.
+            symlink_data_basepath (str): The base target directory where symlinks will be created.
+
+        Returns:
+            None
+        """
         # collect all sub dirs
         source_paths_list = []
         for root, dirs, files in os.walk(data_path):

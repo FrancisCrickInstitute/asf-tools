@@ -4,6 +4,7 @@ Tests covering the data_transfer module
 
 import os
 import unittest
+import subprocess
 
 from asf_tools.io.data_management import DataManagement
 
@@ -88,10 +89,14 @@ class TestDataManagement(unittest.TestCase):
 
     @with_temporary_folder
     def test_deliver_to_targets(self, tmp_path):
+        """
+        Check folders has been symlinked correctly
+        """
+
         # Set up
         dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
-        
+
         tmp_path1 = os.path.join(tmp_path, 'swantonc', 'nnennaya.kanu')
         tmp_path2 = os.path.join(tmp_path, 'ogarraa', 'marisol.alvarez-martinez')
         tmp_path3 = os.path.join(tmp_path, 'ogarraa', 'richard.hewitt')
@@ -101,4 +106,7 @@ class TestDataManagement(unittest.TestCase):
 
         # Test
         dt.deliver_to_targets(basepath_target, tmp_path)
-        # raise ValueError
+
+        # Assert
+        run_dir_1 = os.path.join(tmp_path1, "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        self.assertTrue(os.path.islink(run_dir_1))
