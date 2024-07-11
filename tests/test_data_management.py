@@ -92,6 +92,13 @@ class TestDataManagement(unittest.TestCase):
         dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
         
+        tmp_path1 = os.path.join(tmp_path, 'swantonc', 'nnennaya.kanu')
+        tmp_path2 = os.path.join(tmp_path, 'ogarraa', 'marisol.alvarez-martinez')
+        tmp_path3 = os.path.join(tmp_path, 'ogarraa', 'richard.hewitt')
+        os.makedirs(tmp_path1)
+        os.makedirs(tmp_path2)
+        os.makedirs(tmp_path3)
+
         # Test
         dt.deliver_to_targets(basepath_target, tmp_path)
         raise ValueError

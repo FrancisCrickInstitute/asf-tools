@@ -61,24 +61,33 @@ class DataManagement:
         for root, dirs, files in os.walk(data_path):
             if not dirs:
                 source_paths_list.append(root)
-        # print(source_paths_list)
 
         # split paths
-        folder_strucure_info = []
+        folder_structure_info = []
         for path in source_paths_list:
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
             if len(split_path) == 4:
-                group, user, projectID, runID = split_path
+                group, user, project_ID, run_ID = split_path
                 info_dict = {
                     "group": group,
                     "user": user,
-                    "project_ID": projectID,
-                    "run_ID": runID
+                    "project_ID": project_ID,
+                    "run_ID": run_ID
                 }
-                folder_strucure_info.append(info_dict)
+                folder_structure_info.append(info_dict)
+        # print(folder_structure_info)
 
-        print(folder_strucure_info)        
+        # check if folders exist
+        path_exists = []
+        for entry in folder_structure_info:
+            permissions_path = os.path.join(symlink_data_basepath, entry["group"], entry['user'])
+            if os.path.exists(permissions_path):
+                project_path = os.path.join(permissions_path, entry["project_ID"])
+                os.mkdir(project_path)
+
+                path_exists.append(project_path)
+        print(path_exists)
 
 
 
