@@ -13,7 +13,7 @@ class DataManagement:
     Creates symlinks from raw data to symlink_folder
     """
 
-    def data_management(self, data_path: str, symlink_data_path):
+    def symlink_to_target(self, data_path: str, symlink_data_path):
         """
         Creates symbolic links for a given data path in one or multiple destination paths.
 
@@ -53,3 +53,6 @@ class DataManagement:
                 subprocess.run(cmd, shell=True, check=True)
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
+
+
+    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):

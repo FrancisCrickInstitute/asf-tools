@@ -239,31 +239,31 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
         log.error(e)
         sys.exit(1)
 
-# asf-tools data management subcommands
-@data_tools.command("symlink-folders") #needs a data_tools function written
-@click.pass_context
-@click.option(
-    "-s",
-    "--source_dir",
-    type=click.Path(exists=True),
-    required=True,
-    help=r"Source directory with data",
-)
-@click.option(
-    "-t",
-    "--target_dir",
-    type=click.Path(exists=True),
-    required=True,
-    help=r"Target directory to symlink data to",
-)
-def data_symlink(source_dir, target_dir):
-    from asf_tools.ont.data_cli import DataManagementCli
+# # asf-tools data management subcommands
+# @data_tools.command("symlink-folders") #needs a data_tools function written
+# @click.pass_context
+# @click.option(
+#     "-s",
+#     "--source_dir",
+#     type=click.Path(exists=True),
+#     required=True,
+#     help=r"Source directory with data",
+# )
+# @click.option(
+#     "-t",
+#     "--target_dir",
+#     type=click.Path(exists=True),
+#     required=True,
+#     help=r"Target directory to symlink data to",
+# )
+# def data_symlink(source_dir, target_dir):
+#     from asf_tools.ont.data_cli import DataManagementCli
 
-    try:
-        DataManagementCli(source_dir, target_dir)
-    except (UserWarning, LookupError) as e:
-        log.error(e)
-        sys.exit(1)
+#     try:
+#         DataManagementCli(source_dir, target_dir)
+#     except (UserWarning, LookupError) as e:
+#         log.error(e)
+#         sys.exit(1)
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":

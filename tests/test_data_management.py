@@ -14,7 +14,7 @@ class TestDataManagement(unittest.TestCase):
     """Class for data_management tests"""
 
     @with_temporary_folder
-    def test_data_management_isinvalid_source(self, tmp_path):
+    def test_symlink_to_target_isinvalid_source(self, tmp_path):
         """
         Check existence of input path
         """
@@ -25,10 +25,10 @@ class TestDataManagement(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            dt.data_management(invalid_path, tmp_path)
+            dt.symlink_to_target(invalid_path, tmp_path)
 
     @with_temporary_folder
-    def test_data_management_isinvalid_target(self, tmp_path):
+    def test_symlink_to_target_isinvalid_target(self, tmp_path):
         """
         Check existence of target path
         """
@@ -40,10 +40,10 @@ class TestDataManagement(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            dt.data_management(valid_path, invalid_path)
+            dt.symlink_to_target(valid_path, invalid_path)
 
     @with_temporary_folder
-    def test_data_management_isvalid_str(self, tmp_path):
+    def test_symlink_to_target_isvalid_str(self, tmp_path):
         """
         Check folder has been symlinked correctly
         """
@@ -53,14 +53,14 @@ class TestDataManagement(unittest.TestCase):
         data_path = "tests/data/ont/runs/run01/"
 
         # Test
-        dt.data_management(data_path, tmp_path)
+        dt.symlink_to_target(data_path, tmp_path)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
         self.assertTrue(os.path.islink(run_dir_1))
 
     @with_temporary_folder
-    def test_data_management_isvalid_list(self, tmp_path):
+    def test_symlink_to_target_isvalid_list(self, tmp_path):
         """
         Check folder has been symlinked correctly
         """
@@ -78,7 +78,7 @@ class TestDataManagement(unittest.TestCase):
         os.makedirs(tmp_path2, exist_ok=True)
 
         # Test
-        dt.data_management(data_path, tmp_paths)
+        dt.symlink_to_target(data_path, tmp_paths)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "run01")
