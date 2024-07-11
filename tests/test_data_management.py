@@ -86,6 +86,12 @@ class TestDataManagement(unittest.TestCase):
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
 
-    def test_deliver_to_targets(self):
+    @with_temporary_folder
+    def test_deliver_to_targets(self, tmp_path):
+        # Set up
+        dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
-        pass
+        
+        # Test
+        dt.deliver_to_targets(basepath_target, tmp_path)
+        raise ValueError

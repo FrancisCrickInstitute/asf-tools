@@ -56,7 +56,33 @@ class DataManagement:
 
 
     def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):
-        
+        # collect all sub dirs
+        source_paths_list = []
+        for root, dirs, files in os.walk(data_path):
+            if not dirs:
+                source_paths_list.append(root)
+        # print(source_paths_list)
+
+        # split paths
+        folder_strucure_info = []
+        for path in source_paths_list:
+            relative_path = os.path.relpath(path, data_path)
+            split_path = relative_path.split(os.sep)
+            if len(split_path) == 4:
+                group, user, projectID, runID = split_path
+                info_dict = {
+                    "group": group,
+                    "user": user,
+                    "project_ID": projectID,
+                    "run_ID": runID
+                }
+                folder_strucure_info.append(info_dict)
+
+        print(folder_strucure_info)        
+
+
+
+
 # source_path = /path/to/results
 # target_base_path = /path/to/target
 # permission_depth = 2
