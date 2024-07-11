@@ -85,3 +85,7 @@ class TestDataManagement(unittest.TestCase):
         run_dir_2 = os.path.join(tmp_path2, "run01")
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
+
+    def test_deliver_to_targets(self):
+        basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        pass

@@ -56,3 +56,39 @@ class DataManagement:
 
 
     def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):
+        
+# source_path = /path/to/results
+# target_base_path = /path/to/target
+# permission_depth = 2
+
+# source_path_list = [
+# /path/to/results/group_1/user_1/proj_1/run_id,
+# /path/to/results/group_2/user_2/proj_2/run_id,
+# /path/to/results/group_3/user_3/proj_3/run_id
+# ]
+
+# target_path_list = source_path_list.copy()
+# for path in target_path_list:
+#     target_path_list[i] = target_path_list[i].replace(source_path, "")
+#     target_path_list[i] = os.path.join(basepath, target_path_list[i])
+
+
+# other_list [
+#     group_1/user_1/proj_1/run_id
+#     group_1/user_1/proj_1/run_id
+#     group_1/user_1/proj_1/run_id
+#     group_1/user_1/proj_1/run_id
+# ]
+
+# for target in other_list:
+#     t_split = target.split("/")
+#     t_depth = t_split[:2]
+#     t_depth //  group_1/user_1
+#     check_path = os.join(target_base_path, t_depth)
+
+#     // check if path exists
+
+# // go through target_path_list - depth -1
+# // mkdir
+
+# // symlink to target
