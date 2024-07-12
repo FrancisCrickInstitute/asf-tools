@@ -68,7 +68,7 @@ class DataManagement:
         """
         # collect all sub dirs
         source_paths_list = []
-        for root, dirs, files in os.walk(data_path):
+        for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
             if not dirs:
                 source_paths_list.append(root)
 
@@ -77,18 +77,13 @@ class DataManagement:
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
             if len(split_path) == 4:
-                group, user, project_ID, run_ID = split_path
-                info_dict = {
-                    "group": group,
-                    "user": user,
-                    "project_ID": project_ID,
-                    "run_ID": run_ID
-                }
+                group, user, project_id, run_id = split_path
+                info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
 
                 # create project folders in target path
-                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict['user'])
+                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict["user"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, info_dict["project_ID"])
+                    project_path = os.path.join(permissions_path, info_dict["project_id"])
                     if not os.path.exists(project_path):
                         os.mkdir(project_path)
 

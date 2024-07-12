@@ -4,7 +4,6 @@ Tests covering the data_transfer module
 
 import os
 import unittest
-import subprocess
 
 from asf_tools.io.data_management import DataManagement
 
@@ -97,9 +96,9 @@ class TestDataManagement(unittest.TestCase):
         dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
 
-        tmp_path1 = os.path.join(tmp_path, 'swantonc', 'nnennaya.kanu')
-        tmp_path2 = os.path.join(tmp_path, 'ogarraa', 'marisol.alvarez-martinez')
-        tmp_path3 = os.path.join(tmp_path, 'ogarraa', 'richard.hewitt')
+        tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
+        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
+        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
         os.makedirs(tmp_path1)
         os.makedirs(tmp_path2)
         os.makedirs(tmp_path3)
@@ -109,4 +108,8 @@ class TestDataManagement(unittest.TestCase):
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_3 = os.path.join(tmp_path3, "SC19230", "201008_K00371_0409_BHHY7WBBXY")
         self.assertTrue(os.path.islink(run_dir_1))
+        self.assertTrue(os.path.islink(run_dir_2))
+        self.assertTrue(os.path.islink(run_dir_3))
