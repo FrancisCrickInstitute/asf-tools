@@ -72,12 +72,13 @@ class DataManagement:
             if not dirs:
                 source_paths_list.append(root)
 
+        user_path_not_exist = []
         for path in source_paths_list:
             # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
-            if len(split_path) == 4:
-                group, user, project_id, run_id = split_path
+            if len(split_path) >= 4:
+                group, user, project_id, run_id = split_path[:4]
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
 
                 # create project folders in target path
@@ -87,5 +88,11 @@ class DataManagement:
                     if not os.path.exists(project_path):
                         os.mkdir(project_path)
 
-                # symlink data to target path
-                self.symlink_to_target(path, project_path)
+                    # symlink data to target path
+                    self.symlink_to_target(path, project_path)
+                else:
+                    user_path_not_exist.append(permissions_path)
+
+        if len(user_path_not_exist) > 0:
+            err_msg = f"Path does not exist. Failed to symlink here: {user_path_not_exist}"
+            return err_msg
