@@ -3,10 +3,11 @@ Helper functions for data management
 """
 
 import os
-
-# import pandas as pd
 import subprocess
+import logging
 
+# Set up logging as the root logger
+log = logging.getLogger()
 
 class DataManagement:
     """
@@ -94,5 +95,5 @@ class DataManagement:
                     user_path_not_exist.append(permissions_path)
 
         if len(user_path_not_exist) > 0:
-            err_msg = f"Path does not exist. Failed to symlink here: {user_path_not_exist}"
-            return err_msg
+            log.WARN(f"{user_path_not_exist} does not exist.")
+            raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
