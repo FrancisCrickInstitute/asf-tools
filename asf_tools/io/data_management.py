@@ -2,10 +2,13 @@
 Helper functions for data management
 """
 
+import logging
 import os
-
-# import pandas as pd
 import subprocess
+
+
+# Set up logging as the root logger
+log = logging.getLogger()
 
 
 class DataManagement:
@@ -13,7 +16,7 @@ class DataManagement:
     Creates symlinks from raw data to symlink_folder
     """
 
-    def data_management(self, data_path: str, symlink_data_path):
+    def symlink_to_target(self, data_path: str, symlink_data_path):
         """
         Creates symbolic links for a given data path in one or multiple destination paths.
 
@@ -53,3 +56,55 @@ class DataManagement:
                 subprocess.run(cmd, shell=True, check=True)
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
+
+    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):
+        """
+        Recursively collects subdirectories from `data_path`, collects info based on the path structure,
+        and creates symlinks to `symlink_data_basepath`.
+
+        Args:
+            data_path (str): The base input directory containing the data to be symlinked.
+            symlink_data_basepath (str): The base target directory where symlinks will be created.
+
+        Returns:
+            None
+
+        Raises:
+        FileNotFoundError: If `data_path` or any required target directories do not exist.
+        """
+        # check if data_path exists
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"{data_path} does not exist.")
+
+        # collect all sub dirs
+        source_paths_list = []
+        for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
+            if not dirs:
+                source_paths_list.append(root)
+
+        user_path_not_exist = []
+        for path in source_paths_list:
+            # split paths
+            relative_path = os.path.relpath(path, data_path)
+            split_path = relative_path.split(os.sep)
+            if len(split_path) >= 4:
+                split_path = split_path[:4]
+                group, user, project_id, run_id = split_path
+                info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
+                # create source path up to the final run_id dir
+                source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], info_dict["project_id"], info_dict["run_id"])
+
+                # create project folders in target path
+                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict["user"])
+                if os.path.exists(permissions_path):
+                    project_path = os.path.join(permissions_path, info_dict["project_id"])
+                    if not os.path.exists(project_path):
+                        os.mkdir(project_path)
+
+                    # symlink data to target path
+                    self.symlink_to_target(source_path_to_runid, project_path)
+                else:
+                    user_path_not_exist.append(permissions_path)
+        if len(user_path_not_exist) > 0:
+            log.warning(f"{user_path_not_exist} does not exist.")
+            raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
