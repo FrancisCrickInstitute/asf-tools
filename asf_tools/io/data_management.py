@@ -67,6 +67,10 @@ class DataManagement:
         Returns:
             None
         """
+        # check if data_path exists
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"{data_path} does not exist.")
+
         # collect all sub dirs
         source_paths_list = []
         for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
@@ -78,7 +82,6 @@ class DataManagement:
             # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
-            # print(split_path)
             if len(split_path) >= 4:
                 split_path = split_path[:4]
                 group, user, project_id, run_id = split_path
@@ -90,9 +93,9 @@ class DataManagement:
                     project_path = os.path.join(permissions_path, info_dict["project_id"])
                     if not os.path.exists(project_path):
                         os.mkdir(project_path)
-
+                    source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], info_dict["project_id"], info_dict["run_id"])
                     # symlink data to target path
-                    self.symlink_to_target(path, project_path)
+                    self.symlink_to_target(source_path_to_runid, project_path)
                 else:
                     user_path_not_exist.append(permissions_path)
         if len(user_path_not_exist) > 0:
