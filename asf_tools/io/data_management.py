@@ -2,12 +2,14 @@
 Helper functions for data management
 """
 
+import logging
 import os
 import subprocess
-import logging
+
 
 # Set up logging as the root logger
 log = logging.getLogger()
+
 
 class DataManagement:
     """
@@ -66,6 +68,9 @@ class DataManagement:
 
         Returns:
             None
+
+        Raises:
+        FileNotFoundError: If `data_path` or any required target directories do not exist.
         """
         # check if data_path exists
         if not os.path.exists(data_path):
