@@ -86,6 +86,8 @@ class DataManagement:
                 split_path = split_path[:4]
                 group, user, project_id, run_id = split_path
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
+                # create source path up to the final run_id dir
+                source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], info_dict["project_id"], info_dict["run_id"])
 
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict["user"])
@@ -93,11 +95,11 @@ class DataManagement:
                     project_path = os.path.join(permissions_path, info_dict["project_id"])
                     if not os.path.exists(project_path):
                         os.mkdir(project_path)
-                    source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], info_dict["project_id"], info_dict["run_id"])
+
                     # symlink data to target path
                     self.symlink_to_target(source_path_to_runid, project_path)
                 else:
                     user_path_not_exist.append(permissions_path)
         if len(user_path_not_exist) > 0:
-            log.WARN(f"{user_path_not_exist} does not exist.")
+            log.warning(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
