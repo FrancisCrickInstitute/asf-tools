@@ -78,8 +78,10 @@ class DataManagement:
             # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
+            # print(split_path)
             if len(split_path) >= 4:
-                group, user, project_id, run_id = split_path[:4]
+                split_path = split_path[:4]
+                group, user, project_id, run_id = split_path
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
 
                 # create project folders in target path
@@ -93,7 +95,6 @@ class DataManagement:
                     self.symlink_to_target(path, project_path)
                 else:
                     user_path_not_exist.append(permissions_path)
-
         if len(user_path_not_exist) > 0:
             log.WARN(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")

@@ -4,6 +4,7 @@ Tests covering the data_transfer module
 
 import os
 import unittest
+import subprocess
 
 from asf_tools.io.data_management import DataManagement
 
@@ -110,6 +111,8 @@ class TestDataManagement(unittest.TestCase):
         run_dir_1 = os.path.join(tmp_path1, "DN20049", "201008_K00371_0409_BHHY7WBBXY")
         run_dir_2 = os.path.join(tmp_path2, "RN20066", "201008_K00371_0409_BHHY7WBBXY")
         run_dir_3 = os.path.join(tmp_path3, "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        cmd = f"ls -lah {run_dir_2} "
+        subprocess.run(cmd, shell=True, check=True)
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
         self.assertTrue(os.path.islink(run_dir_3))
