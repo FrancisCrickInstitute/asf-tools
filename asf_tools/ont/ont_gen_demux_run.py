@@ -105,8 +105,8 @@ class OntGenDemuxRun:
         if self.use_api is False:
             # Write default samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,group,user,project_id,barcode\n")
-                file.write("sample_01,asf,no_name,no_proj,unclassified\n")
+                file.write("sample_id,sample_name,group,user,project_id,barcode\n")
+                file.write("sample_01,sample_01,asf,no_name,no_proj,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
             api = ClarityHelperLims()
@@ -114,12 +114,12 @@ class OntGenDemuxRun:
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,group,user,project_id,barcode\n")
+                file.write("sample_id,sample_name,group,user,project_id,barcode\n")
                 for key, value in sample_dict.items():
                     barcode = "unclassified"
                     if "barcode" in value:
                         barcode = value["barcode"]
-                    file.write(f"{key},{value['group']},{value['user']},{value['project_id']},{barcode}")
+                    file.write(f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{barcode}")
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)
