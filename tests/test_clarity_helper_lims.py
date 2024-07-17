@@ -174,6 +174,7 @@ class TestClarityHelperLimsyWithFixtures:
             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
             ("HWNT7BBXY", 9),
             ("20240625_1734_2F_PAW20497_d0c3cbb5", 1),
+            ("PAW45729_20240715_1306_20108e83", 48)
         ],
     )
     def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
