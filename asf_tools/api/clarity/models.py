@@ -105,6 +105,24 @@ class Project(ClarityBaseModel):
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
     file_fields: Optional[List[FileField]] = Field(default_factory=list, alias="file:file")
 
+    @field_validator("file_fields", mode="before")
+    def extract_file_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        Field validator
+        """
+        if isinstance(values, dict):
+            values = [values]
+        return values
+
+    @field_validator("udf_fields", mode="before")
+    def extract_udf_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        Field validator
+        """
+        if isinstance(values, dict):
+            values = [values]
+        return values
+
     # @field_validator("researcher", mode="before")
     # def extract_researcher_uri(cls, values):  # pylint: disable=no-self-argument
     #     """
