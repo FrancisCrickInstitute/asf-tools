@@ -239,42 +239,38 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
         log.error(e)
         sys.exit(1)
 
-@click.command('deliver_data_to_targets')
+# asf-tools ont deliver-to-targets
+@ont.command("deliver-to-targets")
+@click.pass_context
 @click.option(
     "-s",
     "--source_dir",
     type=click.Path(exists=True),
     required=True,
-    help=r"Source directory to look for runs results",
+    help=r"Source directory",
 )
 @click.option(
     "-t",
     "--target_dir",
     type=click.Path(exists=True),
     required=True,
-    help=r"Target directory to symlink runs",
+    help=r"Target directory",
 )
 def deliver_to_targets(
-    ctx,
+    ctx,  # pylint: disable=W0613
     source_dir,
     target_dir):
     """
     Symlinks demux outputs to the user directory
     """
-    from asf_tools.io.data_management import DataManagement
+    from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
-    try:
-        dm = DataManagement()
-        exit_status = dm.deliver_to_targets(
-            source_dir,
-            target_dir
-        )
-        # exit_status = function()
-        if not exit_status:
-            sys.exit(1)
-    except (UserWarning, LookupError) as e:
-        log.error(e)
-        sys.exit(1)
+    dm = DataManagement()
+    dm.deliver_to_targets(
+        source_dir,
+        target_dir
+    )
+
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":

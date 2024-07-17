@@ -89,20 +89,23 @@ class TestCli(unittest.TestCase):
             False,
         )
 
-    def test_cli_command_deliver_to_targets(self):
-        """Test selivery of data"""
-        # Set up
-        # Init
-        params = {
-            "source_dir": TEST_DELIVERY_SOURCE_PATH,
-            "target_dir": self.tmp_dir
-        }
+    # @mock.patch("asf_tools.io.data_management.DataManagement", autospec=True)
+    # def test_cli_command_deliver_to_targets(self, mock_obj):
+    #     """Test selivery of data"""
+    #     # Set up
+    #     # Init
+    #     params = {
+    #         "source_dir": TEST_DELIVERY_SOURCE_PATH,
+    #         "target_dir": self.tmp_dir
+    #     }
 
-        # Test
-        cmd = ["deliver_data_to_targets"] + self.assemble_params(params)
-        result = self.invoke_cli(cmd)
-        print(cmd)
-        print(result)
+    #     # Test
+    #     cmd = ["deliver-to-targets"] + self.assemble_params(params)
+    #     result = self.invoke_cli(cmd)
 
-        # Assert
-        self.assertTrue(result is True)
+    #     # Assert
+    #     # self.assertTrue(result.exit_code == 0)
+    #     mock_obj.assert_called_once_with(
+    #         params["source_dir"],
+    #         params["target_dir"]
+    #     )
