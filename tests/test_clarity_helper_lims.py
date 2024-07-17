@@ -144,8 +144,14 @@ class TestClarityHelperLimsyWithFixtures:
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
         [
-            ("KAN6921A20", {"KAN6921A20": {"sample_name": "99-005-0496_98-290_bp", "group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}}),  # ONT
-            ("ALV729A45", {"ALV729A45": {"sample_name": "MAM040P_5", "group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}}),
+            (
+                "KAN6921A20",
+                {"KAN6921A20": {"sample_name": "99-005-0496_98-290_bp", "group": "swantonc", "user": "nnennaya.kanu", "project_id": "DN24086"}},
+            ),  # ONT
+            (
+                "ALV729A45",
+                {"ALV729A45": {"sample_name": "MAM040P_5", "group": "ogarraa", "user": "marisol.alvarez-martinez", "project_id": "RN20066"}},
+            ),
         ],
     )
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
@@ -168,6 +174,7 @@ class TestClarityHelperLimsyWithFixtures:
             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
             ("HWNT7BBXY", 9),
             ("20240625_1734_2F_PAW20497_d0c3cbb5", 1),
+            ("PAW45729_20240715_1306_20108e83", 48),
         ],
     )
     def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
@@ -246,15 +253,69 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "HWNT7BBXY",
                 {
-                    "TLG66A2839": {"barcode": "SXT 40 H05 (CTGAGCCA)", "sample_name": "A_LTX265_NP_T1_FR1", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2840": {"barcode": "SXT 41 A06 (AGCCATGC)", "sample_name": "L_LTX877_MR_T1_FR4", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2841": {"barcode": "SXT 42 B06 (GTACGCAA)", "sample_name": "L_LTX877_MR_T1_FR5", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2842": {"barcode": "SXT 43 C06 (AGTACAAG)", "sample_name": "A_LTX1310_MR_T1_FR3", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2843": {"barcode": "SXT 44 D06 (ACATTGGC)", "sample_name": "A_LTX1331_BR_T1_FR1", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2844": {"barcode": "SXT 45 E06 (ATTGAGGA)", "sample_name": "U_LTX1350_BR_T1_FR3", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2845": {"barcode": "SXT 46 F06 (GTCGTAGA)", "sample_name": "U_LTX1335_SU_FLN1", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2848": {"barcode": "SXT 03 C01 (AACGTGAT)", "sample_name": "U_LTX1335_BS_GL", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
-                    "TLG66A2849": {"barcode": "SXT 04 D01 (CACTTCGA)", "sample_name": "U_LTX1335_BP_LN1", "group": "swantonc", "user": "tracerx.tlg", "project_id": "TRACERx_Lung"},
+                    "TLG66A2839": {
+                        "barcode": "SXT 40 H05 (CTGAGCCA)",
+                        "sample_name": "A_LTX265_NP_T1_FR1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2840": {
+                        "barcode": "SXT 41 A06 (AGCCATGC)",
+                        "sample_name": "L_LTX877_MR_T1_FR4",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2841": {
+                        "barcode": "SXT 42 B06 (GTACGCAA)",
+                        "sample_name": "L_LTX877_MR_T1_FR5",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2842": {
+                        "barcode": "SXT 43 C06 (AGTACAAG)",
+                        "sample_name": "A_LTX1310_MR_T1_FR3",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2843": {
+                        "barcode": "SXT 44 D06 (ACATTGGC)",
+                        "sample_name": "A_LTX1331_BR_T1_FR1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2844": {
+                        "barcode": "SXT 45 E06 (ATTGAGGA)",
+                        "sample_name": "U_LTX1350_BR_T1_FR3",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2845": {
+                        "barcode": "SXT 46 F06 (GTCGTAGA)",
+                        "sample_name": "U_LTX1335_SU_FLN1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2848": {
+                        "barcode": "SXT 03 C01 (AACGTGAT)",
+                        "sample_name": "U_LTX1335_BS_GL",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2849": {
+                        "barcode": "SXT 04 D01 (CACTTCGA)",
+                        "sample_name": "U_LTX1335_BP_LN1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
                 },
             ),  # Illumina
             (
