@@ -13,6 +13,7 @@ import asf_tools.__main__
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
+TEST_DELIVERY_SOURCE_PATH = "tests/data/ont/live_runs/pipeline_output"
 
 
 class TestCli(unittest.TestCase):
@@ -87,3 +88,19 @@ class TestCli(unittest.TestCase):
             None,
             False,
         )
+
+    def test_cli_command_deliver_to_targets(self):
+        """Test selivery of data"""
+        # Set up
+        # Init
+        params = {
+            "source_dir": TEST_DELIVERY_SOURCE_PATH,
+            "target_dir": ".",
+        }
+
+        # Test
+        cmd = ["deliver_data_to_targets"] + self.assemble_params(params)
+        result = self.invoke_cli(cmd)
+
+        # Assert
+        self.assertTrue(result.exit_code == 0)
