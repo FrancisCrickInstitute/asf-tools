@@ -95,12 +95,14 @@ class TestCli(unittest.TestCase):
         # Init
         params = {
             "source_dir": TEST_DELIVERY_SOURCE_PATH,
-            "target_dir": ".",
+            "target_dir": self.tmp_dir
         }
 
         # Test
         cmd = ["deliver_data_to_targets"] + self.assemble_params(params)
         result = self.invoke_cli(cmd)
+        print(cmd)
+        print(result)
 
         # Assert
-        self.assertTrue(result.exit_code == 0)
+        self.assertTrue(result is True)
