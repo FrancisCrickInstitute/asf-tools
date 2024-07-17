@@ -119,7 +119,8 @@ class ClarityHelperLims(ClarityLims):
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
-        sample_name = sample.id
+        sample_id = sample.id
+        sample_name = sample.name
 
         # Search for the project and get the name which is the ASF project id
         project = self.get_projects(search_id=sample.project.id)
@@ -139,7 +140,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_name] = {"group": lab_name, "user": user_fullname, "project_id": project_name}
+        sample_info[sample_id] = {"sample_name": sample_name, "group": lab_name, "user": user_fullname, "project_id": project_name}
 
         return sample_info
 
