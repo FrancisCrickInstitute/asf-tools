@@ -47,6 +47,7 @@ class TestRunInfoParse(unittest.TestCase):
 
     #     # Assert
     #     assert xml_info == []
+
     def test_filter_readinfo(self):
         # Set up
         iu = IlluminaUtils()
@@ -59,3 +60,15 @@ class TestRunInfoParse(unittest.TestCase):
 
         # Assert
         assert read_info == []
+
+    def test_merge_runinfo_dict_fromfile(self):
+        # Set up
+        iu = IlluminaUtils()
+        file = "./tests/data/illumina/RunInfo.xml"
+
+        # Test
+        filtered_info = iu.merge_runinfo_dict_fromfile(file)
+        # print(filtered_info)
+
+        # Assert
+        assert filtered_info == []

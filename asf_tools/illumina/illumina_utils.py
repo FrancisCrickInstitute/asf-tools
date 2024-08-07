@@ -38,7 +38,7 @@ class IlluminaUtils:
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         runinfo_dict = {"current_date":current_datetime, "run_id": run_id, "instrument": instrument, "machine": machine}
-        print(runinfo_dict)
+        # print(runinfo_dict)
         return runinfo_dict
 
     def filter_readinfo(self, runinfo_dict: dict) -> dict:
@@ -71,7 +71,7 @@ class IlluminaUtils:
         readinfo_dict["run_id"] = run_id
         readinfo_dict["end_type"] = end_type
         readinfo_dict["reads"] = read_data
-        print(readinfo_dict)
+        # print(readinfo_dict)
 
         return readinfo_dict
     
@@ -81,6 +81,12 @@ class IlluminaUtils:
         reads_dict = self.filter_readinfo(original_dict)
 
         merged_dict = filtered_dict
+        # for key, value in reads_dict.items():
+        #     for sub_key, sub_value in value.items():
+        #         if key in merged_dict:
+        #             merged_dict[key][sub_key] = sub_value
+        # print(merged_dict)
 
+        return merged_dict
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
