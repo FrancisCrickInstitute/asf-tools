@@ -16,5 +16,7 @@ class TestRunInfoParse(unittest.TestCase):
 
         # Test
         xml_info = iu.runinfo_parser(file)
-        print(xml_info)
+        # print(xml_info)
+
+        # Assert
         assert xml_info == []
