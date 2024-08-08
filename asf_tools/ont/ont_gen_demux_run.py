@@ -119,7 +119,7 @@ class OntGenDemuxRun:
                     barcode = "unclassified"
                     if "barcode" in value:
                         barcode = value["barcode"]
-                    file.write(f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{barcode}")
+                    file.write(f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{barcode}\n")
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)

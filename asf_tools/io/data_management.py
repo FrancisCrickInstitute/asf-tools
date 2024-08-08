@@ -108,3 +108,4 @@ class DataManagement:
         if len(user_path_not_exist) > 0:
             log.warning(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
+        return True
