@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 """
-Shouldn't do much, as everything is under subcommands.
+Set app version
 """
 
-# import pkg_resources
-__version__ = "1.0"
+from importlib.metadata import version
+
+# Set version from package information
+__version__ = version("asf-tools")
+print(__version__)
