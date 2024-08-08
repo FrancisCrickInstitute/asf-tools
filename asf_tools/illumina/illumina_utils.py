@@ -111,6 +111,7 @@ class IlluminaUtils:
             if re.match(pattern, instrument):
                 machine = machine_name
             else:
+                print(instrument)
                 raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -163,7 +164,6 @@ class IlluminaUtils:
         readinfo_dict["run_id"] = run_id
         readinfo_dict["end_type"] = end_type
         readinfo_dict["reads"] = read_data
-        print(readinfo_dict)
 
         return readinfo_dict
 
