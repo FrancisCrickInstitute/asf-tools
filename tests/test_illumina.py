@@ -16,19 +16,8 @@ class TestRunInfoParse(unittest.TestCase):
 
     # filter_runinfo - need to test for: machine that isn't in the mapping dict
     # filter_runinfo - can't parametrize bc datetime is a dynamic value
-    # add test for find_key_recursively and extract_matching_item_from_xmldict
-
-    def test_runinfo_xml_to_dict_isnone(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-        iu = IlluminaUtils()
-
-        # Test and Assert
-        with self.assertRaises(TypeError):
-            iu.runinfo_xml_to_dict(None)
+    # filter_readinfo - needs invalid test 
+    # add test for extract_matching_item_from_xmldict
 
     def test_runinfo_xml_to_dict_filenotexist(self):
         """
@@ -69,7 +58,7 @@ class TestRunInfoParse(unittest.TestCase):
         with self.assertRaises(ExpatError):
             iu.runinfo_xml_to_dict(invalid_file)
 
-    def test_filter_runinfo_isnone(self):
+    def test_find_key_recursively_none(self):
         """
         Pass None to method
         """
@@ -79,7 +68,22 @@ class TestRunInfoParse(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.filter_runinfo(None)
+            iu.find_key_recursively(None, "None")
+
+    def test_extract_matching_item_from_xmldict(self):
+        """
+        Pass empty list to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        file = "./tests/data/illumina/RunInfo.xml"
+        xml_dict = iu.runinfo_xml_to_dict(file)
+        xml_list = iu.find_key_recursively(xml_dict, "@Id")
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            iu.extract_matching_item_from_xmldict(xml_list, "@Id")
 
     def test_filter_runinfo_isvalid(self):
         # Set up

@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 
 import xmltodict
+from xml.parsers.expat import ExpatError
 
 
 class IlluminaUtils:
@@ -24,11 +25,22 @@ class IlluminaUtils:
         Returns:
             dict: A dictionary representation of the XML file content.
         """
-        with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
-            runinfo_file_content = runinfo_file.read()
+        try:
+            with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
+                runinfo_file_content = runinfo_file.read()
 
-        full_runinfo_dict = xmltodict.parse(runinfo_file_content)
-        return full_runinfo_dict
+                try:
+                    full_runinfo_dict = xmltodict.parse(runinfo_file_content)
+                    return full_runinfo_dict
+                except ExpatError as exc:
+                    raise ExpatError from exc
+
+        except FileNotFoundError as fnfe:
+            raise FileNotFoundError(f"The file {runinfo_file} does not exist.") from fnfe
+        except IOError as e:
+            raise IOError(f"An IOError occurred: {str(e)}") from e
+
+
 
     def find_key_recursively(self, d: dict, target_key: str) -> list:
         """
@@ -41,6 +53,11 @@ class IlluminaUtils:
         Returns:
         list: A list of values associated with the target key.
         """
+        if not isinstance(d, dict):
+            raise ValueError("The provided argument is not a dictionary.")
+        if not isinstance(target_key, str) or target_key == "":
+            raise ValueError("target_key must be a non-empty string.")
+
         results = []
 
         # If the dictionary has the target key at the top level, add the value to results
