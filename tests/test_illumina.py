@@ -4,14 +4,17 @@ Tests covering the data_transfer module
 
 import unittest
 from xml.parsers.expat import ExpatError
+
 import pytest
 
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
+
 class TestRunInfoParse(unittest.TestCase):
     """Class for parse_runinfo tests"""
-# filter_runinfo - need to test for: the presence of runid,instrument info, machine that isn't in the mapping dict
-# filter_readinfo - need to test for: the presence of runid and reads
+
+    # filter_runinfo - need to test for: the presence of runid,instrument info, machine that isn't in the mapping dict
+    # filter_readinfo - need to test for: the presence of runid and reads
 
     def test_runinfo_xml_to_dict_isnone(self):
         """
@@ -64,8 +67,6 @@ class TestRunInfoParse(unittest.TestCase):
         with self.assertRaises(ExpatError):
             iu.runinfo_xml_to_dict(invalid_file)
 
-
-
     # def test_runinfo_parser(self):
     #     # Set up
     #     iu = IlluminaUtils()
@@ -103,13 +104,72 @@ class TestRunInfoParse(unittest.TestCase):
         # Assert
         assert filtered_info == []
 
+
 class TestRunInfoParseWithFixtures:
     """Class for parse_runinfo tests with fixtures"""
 
-    @pytest.mark.parametrize("file,expected_dict", [("./tests/data/illumina/RunInfo.xml", {'RunInfo': {'@Version': '6', 'Run': {'@Id': '20240711_LH00442_0033_A22MKK5LT3', '@Number': '33', 'Flowcell': '22MKK5LT3', 'Instrument': 'LH00442', 'Date': '2024-07-11T18:44:29Z', 'Reads': {'Read': [{'@Number': '1', '@NumCycles': '151', '@IsIndexedRead': 'N', '@IsReverseComplement': 'N'}, {'@Number': '2', '@NumCycles': '10', '@IsIndexedRead': 'Y', '@IsReverseComplement': 'N'}, {'@Number': '3', '@NumCycles': '10', '@IsIndexedRead': 'Y', '@IsReverseComplement': 'Y'}, {'@Number': '4', '@NumCycles': '151', '@IsIndexedRead': 'N', '@IsReverseComplement': 'N'}]}, 'FlowcellLayout': {'@LaneCount': '8', '@SurfaceCount': '2', '@SwathCount': '2', '@TileCount': '98', 'TileSet': {'@TileNamingConvention': 'FourDigit', 'Tiles': {'Tile': ['1_1101', '2_1101', '3_1101', '4_1101', '5_1101', '6_1232', '7_1101', '8_1101', '1_2298', '2_2101', '3_2101', '4_2101', '5_2101', '6_2101', '7_2101', '8_2101']}}}, 'ImageDimensions': {'@Width': '5120', '@Height': '2879'}, 'ImageChannels': {'Name': ['blue', 'green']}}}})])
+    @pytest.mark.parametrize(
+        "file,expected_dict",
+        [
+            (
+                "./tests/data/illumina/RunInfo.xml",
+                {
+                    "RunInfo": {
+                        "@Version": "6",
+                        "Run": {
+                            "@Id": "20240711_LH00442_0033_A22MKK5LT3",
+                            "@Number": "33",
+                            "Flowcell": "22MKK5LT3",
+                            "Instrument": "LH00442",
+                            "Date": "2024-07-11T18:44:29Z",
+                            "Reads": {
+                                "Read": [
+                                    {"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
+                                    {"@Number": "2", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "N"},
+                                    {"@Number": "3", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "Y"},
+                                    {"@Number": "4", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
+                                ]
+                            },
+                            "FlowcellLayout": {
+                                "@LaneCount": "8",
+                                "@SurfaceCount": "2",
+                                "@SwathCount": "2",
+                                "@TileCount": "98",
+                                "TileSet": {
+                                    "@TileNamingConvention": "FourDigit",
+                                    "Tiles": {
+                                        "Tile": [
+                                            "1_1101",
+                                            "2_1101",
+                                            "3_1101",
+                                            "4_1101",
+                                            "5_1101",
+                                            "6_1232",
+                                            "7_1101",
+                                            "8_1101",
+                                            "1_2298",
+                                            "2_2101",
+                                            "3_2101",
+                                            "4_2101",
+                                            "5_2101",
+                                            "6_2101",
+                                            "7_2101",
+                                            "8_2101",
+                                        ]
+                                    },
+                                },
+                            },
+                            "ImageDimensions": {"@Width": "5120", "@Height": "2879"},
+                            "ImageChannels": {"Name": ["blue", "green"]},
+                        },
+                    }
+                },
+            )
+        ],
+    )
     def test_runinfo_xml_to_dict_isvalid(self, file, expected_dict):
         """
-        Pass a valid XML file 
+        Pass a valid XML file
         """
 
         # Set up
