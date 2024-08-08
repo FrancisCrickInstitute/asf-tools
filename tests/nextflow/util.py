@@ -14,3 +14,14 @@ def test_create_sbatch_header(self):
     # Assert
     self.assertTrue(f"ml Nextflow/{NEXTFLOW_VERSION}" in header_str)
     self.assertTrue(f"ml Singularity/{SINGULARITY_VERSION}" in header_str)
+
+
+def test_create_sbatch_header_withversion(self):
+    """Test create sbatch header with version"""
+
+    # Test
+    header_str = create_sbatch_header("1.0")
+
+    # Assert
+    self.assertTrue("ml Nextflow/1.0" in header_str)
+    self.assertTrue(f"ml Singularity/{SINGULARITY_VERSION}" in header_str)

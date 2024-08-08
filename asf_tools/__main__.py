@@ -202,6 +202,11 @@ def ont(ctx):
     default=False,
     help="Update samplesheets only for all runs in target folder. Contains will still restrict this list.",
 )
+@click.option(
+    "--nextflow_version",
+    default=None,
+    help="Set the version of Nextflow to use in the sbatch header",
+)
 def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
@@ -212,7 +217,8 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       runs_dir,
                       use_api,
                       contains,
-                      samplesheet_only):
+                      samplesheet_only,
+                      nextflow_version):
     """
     Create run directory for the ONT demux pipeline
     """
@@ -230,7 +236,8 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
             runs_dir,
             use_api,
             contains,
-            samplesheet_only
+            samplesheet_only,
+            nextflow_version,
         )
         exit_status = function.run()
         if not exit_status:

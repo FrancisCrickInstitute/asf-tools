@@ -87,6 +87,7 @@ class TestCli(unittest.TestCase):
             False,
             None,
             False,
+            None,
         )
 
     # @mock.patch("asf_tools.io.data_management.DataManagement", autospec=True)
