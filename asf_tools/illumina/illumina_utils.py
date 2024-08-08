@@ -90,7 +90,7 @@ class IlluminaUtils:
 
         This method extracts specific information from the provided RunInfo dictionary, 
         such as the run ID and instrument name. It then maps the instrument to its 
-        corresponding machine type using predefined patterns. The resulting dictionary 
+        corresponding machine type using predefined patterns. If the instrument does not match any of the patterns, a `ValueError` is raised. The resulting dictionary 
         includes the current date and time, the run ID, the instrument name, and the 
         machine type.
 
@@ -111,6 +111,8 @@ class IlluminaUtils:
         for pattern, machine_name in machine_mapping.items():
             if re.match(pattern, instrument):
                 machine = machine_name
+            else:
+                raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -119,7 +121,22 @@ class IlluminaUtils:
         return runinfo_dict
 
     def filter_readinfo(self, runinfo_dict: dict) -> dict:
+        """
+        Filters and structures read information from a RunInfo dictionary.
 
+        This method extracts details about sequencing reads from the provided RunInfo
+        dictionary, including the run ID and information about each read (e.g., number
+        of cycles, whether it is indexed). It determines if the sequencing run is 
+        single-end (SR) or paired-end (PE) based on the number of non-indexed reads.
+
+        Args:
+            runinfo_dict (dict): The dictionary containing the RunInfo data.
+
+        Returns:
+            dict: A dictionary containing the run ID, the sequencing end type (SR or PE),
+                and a list of dictionaries with read-specific information such as the
+                number of cycles for each read.
+        """
         run_id = self.extract_matching_item_from_xmldict(runinfo_dict, "@Id")
         reads_fullinfo = self.extract_matching_item_from_xmldict(runinfo_dict, "Reads")
 

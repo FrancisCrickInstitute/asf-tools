@@ -12,8 +12,8 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 class TestRunInfoParse(unittest.TestCase):
     """Class for parse_runinfo tests"""
-    # filter_runinfo - need to test for: the presence of runid,instrument info, machine that isn't in the mapping dict
-    # filter_readinfo - need to test for: the presence of runid and reads
+    # filter_runinfo - need to test for: machine that isn't in the mapping dict
+    # add test for find_key_recursively and extract_matching_item_from_xmldict
 
     def test_runinfo_xml_to_dict_isnone(self):
         """
