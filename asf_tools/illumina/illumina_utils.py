@@ -77,7 +77,7 @@ class IlluminaUtils:
 
         return results
 
-    def extract_matching_item_from_xmldict(self, item_dict: dict, item_name: str):
+    def extract_matching_item_from_dict(self, item_dict: dict, item_name: str):
         """
         Extracts the first occurrence of a specified item from a list.
 
@@ -122,8 +122,8 @@ class IlluminaUtils:
         """
 
         # Extract info from the dictionary as required
-        run_id = self.extract_matching_item_from_xmldict(runinfo_dict, "@Id")
-        instrument = self.extract_matching_item_from_xmldict(runinfo_dict, "Instrument")
+        run_id = self.extract_matching_item_from_dict(runinfo_dict, "@Id")
+        instrument = self.extract_matching_item_from_dict(runinfo_dict, "Instrument")
 
         machine_mapping = {"^M": "MiSeq", "^K": "HiSeq 4000", "^D": "HiSeq 2500", "^N": "NextSeq", "^A": "NovaSeq", "^LH": "NovaSeqX"}
         for pattern, machine_name in machine_mapping.items():
@@ -156,17 +156,18 @@ class IlluminaUtils:
                 and a list of dictionaries with read-specific information such as the
                 number of cycles for each read.
         """
-        run_id = self.extract_matching_item_from_xmldict(runinfo_dict, "@Id")
-        reads_fullinfo = self.extract_matching_item_from_xmldict(runinfo_dict, "Reads")
+        run_id = self.extract_matching_item_from_dict(runinfo_dict, "@Id")
+        reads_fullinfo = self.extract_matching_item_from_dict(runinfo_dict, "Reads")
 
         # Extract single or paired end info for each read
         end_type_count = 0
         read_data = []
 
         for read in reads_fullinfo["Read"]:
-            number = read["@Number"]
-            num_cycles = read["@NumCycles"]
-            is_indexed_read = read["@IsIndexedRead"]
+            print(read)
+            number = self.extract_matching_item_from_dict(read, "@Number")
+            num_cycles = self.extract_matching_item_from_dict(read, "@NumCycles")
+            is_indexed_read = self.extract_matching_item_from_dict(read, "@IsIndexedRead")
 
             if is_indexed_read == "N":
                 read_data.append({"read": f"Read {number}", "num_cycles": f"{num_cycles} Seq"})

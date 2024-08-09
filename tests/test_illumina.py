@@ -17,7 +17,7 @@ class TestRunInfoParse(unittest.TestCase):
     # filter_runinfo - need to test for: machine that isn't in the mapping dict
     # filter_runinfo - can't parametrize bc datetime is a dynamic value
     # filter_readinfo - needs invalid test 
-    # add test for extract_matching_item_from_xmldict
+    # add test for extract_matching_item_from_dict
 
     def test_runinfo_xml_to_dict_filenotexist(self):
         """
@@ -84,7 +84,7 @@ class TestRunInfoParse(unittest.TestCase):
         with self.assertRaises(ValueError):
             iu.find_key_recursively(xml_dict, "")
 
-    def test_extract_matching_item_from_xmldict_returnnone(self):
+    def test_extract_matching_item_from_dict_returnnone(self):
         """
         Pass empty list to method
         """
@@ -96,9 +96,44 @@ class TestRunInfoParse(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.extract_matching_item_from_xmldict(xml_dict, "info_not_in_file")
+            iu.extract_matching_item_from_dict(xml_dict, "info_not_in_file")
+
+    def test_filter_runinfo_machinenotexist(self):
+        # Set up
+        iu = IlluminaUtils()
+        xml_dict = {"@Version": "6",
+                    "Run": {
+                        "@Id": "20240711_LH00442_0033_A22MKK5LT3",
+                        "@Number": "33",
+                        "Flowcell": "22MKK5LT3",
+                        "Instrument": "instrument_not_valid",
+                        "Date": "2024-07-11T18:44:29Z",
+                        "Reads": {
+                            "Read": [
+                                {"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},},}
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.filter_runinfo(xml_dict)
 
     def test_filter_runinfo_isvalid(self):
+        """
+        Tests the `filter_runinfo` method for correct functionality.
+
+        This test method sets up a mock RunInfo dictionary representing an XML structure 
+        and verifies that the `filter_runinfo` method processes this input correctly. 
+        The test compares the output of `filter_runinfo` against an expected dictionary 
+        that includes the current date and time, run ID, instrument, and machine type.
+
+        The test checks that the `filter_runinfo` method correctly identifies the machine 
+        type based on the instrument pattern and returns the expected structured dictionary.
+
+        Assertions:
+            - The output of `filter_runinfo` should match the expected dictionary.
+
+        Raises:
+            AssertionError: If the output does not match the expected dictionary.
+        """
         # Set up
         iu = IlluminaUtils()
         xml_dict = {"@Version": "6",
@@ -138,11 +173,10 @@ class TestRunInfoParse(unittest.TestCase):
 
         # Test
         run_info = iu.filter_runinfo(xml_dict)
-        # print(xml_info)
+        # print(run_info)
 
         # Assert
         assert run_info == expected_dict
-
 
     def test_merge_runinfo_dict_fromfile(self):
         # Set up
@@ -221,7 +255,7 @@ class TestRunInfoParseWithFixtures:
     )
     def test_runinfo_xml_to_dict_isvalid(self, file, expected_dict):
         """
-        Pass a valid XML file
+        Pass a valid XML file and test expected values in the dictionary output
         """
 
         # Set up
@@ -237,7 +271,7 @@ class TestRunInfoParseWithFixtures:
     @pytest.mark.parametrize("dic,expected_list", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, ["20240711_LH00442_0033_A22MKK5LT3"]), ({"run" : { "other_info": {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}}, ["20240711_LH00442_0033_A22MKK5LT3"])])
     def test_find_key_recursively_isvalid(self, dic, expected_list):
         """
-        Pass None to method
+        Pass a valid dictionary from XML file and test expected values in the output list
         """
 
         # Set up
@@ -250,16 +284,16 @@ class TestRunInfoParseWithFixtures:
         assert list_extracted_info == expected_list
 
     @pytest.mark.parametrize("list_info,expected_output", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, "20240711_LH00442_0033_A22MKK5LT3")])
-    def test_extract_matching_item_from_xmldict_isvalid(self, list_info, expected_output):
+    def test_extract_matching_item_from_dict_isvalid(self, list_info, expected_output):
         """
-        Pass None to method
+        Pass a valid dictionary and test expected values in the output
         """
 
         # Set up
         iu = IlluminaUtils()
 
         # Test and Assert
-        list_extracted_info = iu.extract_matching_item_from_xmldict(list_info, "@Id")
+        list_extracted_info = iu.extract_matching_item_from_dict(list_info, "@Id")
 
         # Assert
         assert list_extracted_info == expected_output
