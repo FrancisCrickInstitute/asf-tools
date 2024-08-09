@@ -26,6 +26,7 @@ class IlluminaUtils:
             IOError: For other file-related errors.
             ExpatError: If the XML is not formatted correctly.
         """
+        
         try:
             with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
                 runinfo_file_content = runinfo_file.read()
@@ -39,9 +40,6 @@ class IlluminaUtils:
 
         except FileNotFoundError as fnfe:
             raise FileNotFoundError(f"The file {runinfo_file} does not exist.") from fnfe
-        except IOError as e:
-            # Return any other file related error
-            raise IOError(f"An IOError occurred: {str(e)}") from e
 
     def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
