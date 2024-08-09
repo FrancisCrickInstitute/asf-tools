@@ -123,7 +123,7 @@ class IlluminaUtils:
                 including the current date, run ID, instrument, and machine type.
 
         Raises:
-            ValueError: If the instrument does not match any predefined patterns.
+            ValueError: If the instrument does not match any of the predefined patterns in `machine_mapping`.
         """
 
         # Extract info from the dictionary as required
@@ -131,12 +131,14 @@ class IlluminaUtils:
         instrument = self.extract_matching_item_from_dict(runinfo_dict, "Instrument")
 
         machine_mapping = {"^M": "MiSeq", "^K": "HiSeq 4000", "^D": "HiSeq 2500", "^N": "NextSeq", "^A": "NovaSeq", "^LH": "NovaSeqX"}
+        machine = None
         for pattern, machine_name in machine_mapping.items():
             if re.match(pattern, instrument):
                 machine = machine_name
-            else:
-                print(instrument)
-                raise ValueError("Machine type not recognised")
+                break
+        if machine is None:
+            print(instrument)
+            raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
