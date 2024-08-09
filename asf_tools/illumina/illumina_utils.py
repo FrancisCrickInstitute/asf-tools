@@ -67,7 +67,7 @@ class IlluminaUtils:
             results.append(dic[target_key])
 
         # Otherwise, continue searching recursively in nested dictionaries or lists
-        for key, value in dic.items():
+        for key, value in dic.items(): # pylint: disable=unused-variable
             if isinstance(value, dict):
                 results.extend(self.find_key_recursively(value, target_key))
             elif isinstance(value, list):
@@ -99,7 +99,7 @@ class IlluminaUtils:
         item = item_results[0] if item_results else None
 
         if item is None:
-            raise TypeError(f"No {item_name} found in the XML structure.")
+            raise TypeError(f"{item_name} not found in the XML structure.")
 
         return item
 
@@ -135,13 +135,11 @@ class IlluminaUtils:
                 machine = machine_name
                 break
         if machine is None:
-            print(instrument)
             raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         runinfo_dict = {"current_date": current_datetime, "run_id": run_id, "instrument": instrument, "machine": machine}
-        # print(runinfo_dict)
         return runinfo_dict
 
     def filter_readinfo(self, runinfo_dict: dict) -> dict:
@@ -249,9 +247,7 @@ class IlluminaUtils:
 
         # Merge the dictionaries
         merged_result = self.merge_dicts(filtered_dict, reads_dict, "run_id")
-        print(merged_result)
 
         return merged_result
-
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
