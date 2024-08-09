@@ -70,7 +70,7 @@ class TestRunInfoParse(unittest.TestCase):
         with self.assertRaises(TypeError):
             iu.find_key_recursively(None, "None")
 
-    def test_extract_matching_item_from_xmldict(self):
+    def test_extract_matching_item_from_xmldict_returnnone(self):
         """
         Pass empty list to method
         """
@@ -79,11 +79,11 @@ class TestRunInfoParse(unittest.TestCase):
         iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
         xml_dict = iu.runinfo_xml_to_dict(file)
-        xml_list = iu.find_key_recursively(xml_dict, "@Id")
+        # xml_list = iu.find_key_recursively(xml_dict, "@Id")
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.extract_matching_item_from_xmldict(xml_list, "@Id")
+            iu.extract_matching_item_from_xmldict(xml_dict, "info_not_in_file")
 
     def test_filter_runinfo_isvalid(self):
         # Set up
@@ -220,6 +220,36 @@ class TestRunInfoParseWithFixtures:
 
         # Assert
         assert xml_info == expected_dict
+
+    @pytest.mark.parametrize("dic,expected_list", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, ["20240711_LH00442_0033_A22MKK5LT3"]), ({"run" : { "other_info": {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}}, ["20240711_LH00442_0033_A22MKK5LT3"])])
+    def test_find_key_recursively_isvalid(self, dic, expected_list):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        list_extracted_info = iu.find_key_recursively(dic, "@Id")
+
+        # Assert
+        assert list_extracted_info == expected_list
+
+    @pytest.mark.parametrize("list_info,expected_output", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, "20240711_LH00442_0033_A22MKK5LT3")])
+    def test_extract_matching_item_from_xmldict_isvalid(self, list_info, expected_output):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        list_extracted_info = iu.extract_matching_item_from_xmldict(list_info, "@Id")
+
+        # Assert
+        assert list_extracted_info == expected_output
 
     @pytest.mark.parametrize("file,expected_dict", [("./tests/data/illumina/RunInfo.xml", {'run_id': '20240711_LH00442_0033_A22MKK5LT3', 'end_type': 'PE', 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '10 Seq'}, {'read': 'Read 3', 'num_cycles': '10 Seq'}, {'read': 'Read 4', 'num_cycles': '151 Seq'}]})])
     def test_filter_readinfo_isvalid(self, file, expected_dict):

@@ -33,16 +33,18 @@ class IlluminaUtils:
                     full_runinfo_dict = xmltodict.parse(runinfo_file_content)
                     return full_runinfo_dict
                 except ExpatError as exc:
+                    # Return error if xml is not formatted according to the xml schema
                     raise ExpatError from exc
 
         except FileNotFoundError as fnfe:
             raise FileNotFoundError(f"The file {runinfo_file} does not exist.") from fnfe
         except IOError as e:
+            # Return any other file related error
             raise IOError(f"An IOError occurred: {str(e)}") from e
 
 
 
-    def find_key_recursively(self, d: dict, target_key: str) -> list:
+    def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
         Recursively searches for a target key in a nested dictionary.
 
@@ -53,7 +55,7 @@ class IlluminaUtils:
         Returns:
         list: A list of values associated with the target key.
         """
-        if not isinstance(d, dict):
+        if not isinstance(dic, dict):
             raise ValueError("The provided argument is not a dictionary.")
         if not isinstance(target_key, str) or target_key == "":
             raise ValueError("target_key must be a non-empty string.")
@@ -61,11 +63,11 @@ class IlluminaUtils:
         results = []
 
         # If the dictionary has the target key at the top level, add the value to results
-        if target_key in d:
-            results.append(d[target_key])
+        if target_key in dic:
+            results.append(dic[target_key])
 
         # Otherwise, continue searching recursively in nested dictionaries or lists
-        for key, value in d.items():
+        for key, value in dic.items():
             if isinstance(value, dict):
                 results.extend(self.find_key_recursively(value, target_key))
             elif isinstance(value, list):
@@ -75,7 +77,7 @@ class IlluminaUtils:
 
         return results
 
-    def extract_matching_item_from_xmldict(self, item_list: list, item_name: str):
+    def extract_matching_item_from_xmldict(self, item_dict: dict, item_name: str):
         """
         Extracts the first occurrence of a specified item from a list.
 
@@ -93,11 +95,11 @@ class IlluminaUtils:
         Raises:
             ValueError: If the item is not found in the list.
         """
-        item_results = self.find_key_recursively(item_list, item_name)
+        item_results = self.find_key_recursively(item_dict, item_name)
         item = item_results[0] if item_results else None
 
         if item is None:
-            raise ValueError(f"No {item_name} found in the XML structure.")
+            raise TypeError(f"No {item_name} found in the XML structure.")
 
         return item
 
