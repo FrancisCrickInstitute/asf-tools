@@ -127,9 +127,9 @@ class IlluminaUtils:
         for pattern, machine_name in machine_mapping.items():
             if re.match(pattern, instrument):
                 machine = machine_name
-            else:
-                print(instrument)
-                raise ValueError("Machine type not recognised")
+            # else:
+            # print(instrument)
+            # raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -162,7 +162,6 @@ class IlluminaUtils:
         read_data = []
 
         for read in reads_fullinfo["Read"]:
-            print(read)
             number = self.extract_matching_item_from_dict(read, "@Number")
             num_cycles = self.extract_matching_item_from_dict(read, "@NumCycles")
             is_indexed_read = self.extract_matching_item_from_dict(read, "@IsIndexedRead")
@@ -185,19 +184,46 @@ class IlluminaUtils:
 
         return readinfo_dict
 
+    def merge_dicts(self, dict1, dict2, key):
+        """
+        Merges two dictionaries based on a common key. The function keeps all
+        information from both dictionaries, even if some keys are not shared
+        between the dictionaries.
+
+        Parameters:
+        dict1 (dict): The first dictionary to merge.
+        dict2 (dict): The second dictionary to merge.
+        key (str): The key that both dictionaries share, used to merge them.
+
+        Returns:
+        dict: A new dictionary that contains all keys and values from both
+        input dictionaries. If a key exists in both dictionaries, the value
+        from either dictionary is retained (since it is expected to be identical).
+        """
+        # Initialize an empty dictionary to store the merged result
+        merged_dict = {}
+
+        # Combine the dictionaries
+        all_keys = set(list(dict1.keys()) + list(dict2.keys()))
+
+        for k in all_keys:
+            if k == key:
+                merged_dict[k] = dict1[k] if k in dict1 else dict2[k]
+            else:
+                merged_dict.update(dict1 if k in dict1 else {})
+                merged_dict.update(dict2 if k in dict2 else {})
+
+        return merged_dict
+
     def merge_runinfo_dict_fromfile(self, runinfo_file) -> dict:
         original_dict = self.runinfo_xml_to_dict(runinfo_file)
         filtered_dict = self.filter_runinfo(original_dict)
         reads_dict = self.filter_readinfo(original_dict)
 
-        merged_dict = filtered_dict
-        # for key, value in reads_dict.items():
-        #     for sub_key, sub_value in value.items():
-        #         if key in merged_dict:
-        #             merged_dict[key][sub_key] = sub_value
-        # print(merged_dict)
+        # Merge the dictionaries
+        merged_result = self.merge_dicts(filtered_dict, reads_dict, "run_id")
+        print(merged_result)
 
-        return merged_dict
-
+        return merged_result
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}

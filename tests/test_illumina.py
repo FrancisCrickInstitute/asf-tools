@@ -209,12 +209,15 @@ class TestRunInfoParse(unittest.TestCase):
         iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
 
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        expected_dict = {'run_id': '20240711_LH00442_0033_A22MKK5LT3', 'end_type': 'PE', 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '10 Seq'}, {'read': 'Read 3', 'num_cycles': '10 Seq'}, {'read': 'Read 4', 'num_cycles': '151 Seq'}], 'current_date': current_datetime, 'instrument': 'LH00442', 'machine': 'NovaSeqX'}
+
         # Test
         filtered_info = iu.merge_runinfo_dict_fromfile(file)
         # print(filtered_info)
 
         # Assert
-        assert filtered_info == []
+        assert filtered_info == expected_dict
 
 
 class TestRunInfoParseWithFixtures:
@@ -354,7 +357,6 @@ class TestRunInfoParseWithFixtures:
         """
         Pass a valid XML file and test expected values in the dictionary output
         """
-
         # Set up
         iu = IlluminaUtils()
 
@@ -365,3 +367,16 @@ class TestRunInfoParseWithFixtures:
 
         # Assert
         assert read_info == expected_dict
+
+    @pytest.mark.parametrize("dict1,dict2,expected_merged_dict", [({"run_id": "20240711_LH00442_0033_A22MKK5LT3", 'instrument': 'LH00442'},
+                                                                  {"run_id": "20240711_LH00442_0033_A22MKK5LT3", 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '10 Seq'}]},
+                                                                  {"run_id": "20240711_LH00442_0033_A22MKK5LT3", 'instrument': 'LH00442', 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '10 Seq'}]})])
+    def test_merge_dicts(self, dict1, dict2, expected_merged_dict):
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test
+        merged_dict = iu.merge_dicts(dict1, dict2, "run_id")
+
+        # Assert
+        assert merged_dict == expected_merged_dict
