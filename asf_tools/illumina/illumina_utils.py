@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime
 from xml.parsers.expat import ExpatError
@@ -26,20 +27,19 @@ class IlluminaUtils:
             IOError: For other file-related errors.
             ExpatError: If the XML is not formatted correctly.
         """
-        
-        try:
-            with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
-                runinfo_file_content = runinfo_file.read()
+        if not os.path.isfile(runinfo_file):
+            raise FileNotFoundError(f"{runinfo_file} does not exist or is not a file.")
 
-                try:
-                    full_runinfo_dict = xmltodict.parse(runinfo_file_content)
-                    return full_runinfo_dict
-                except ExpatError as exc:
-                    # Return error if xml is not formatted according to the xml schema
-                    raise ExpatError from exc
+        # Convert xml file into a dict or raise an error to warn that the file is not xml formatted
+        with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
+            runinfo_file_content = runinfo_file.read()
 
-        except FileNotFoundError as fnfe:
-            raise FileNotFoundError(f"The file {runinfo_file} does not exist.") from fnfe
+            try:
+                full_runinfo_dict = xmltodict.parse(runinfo_file_content)
+                return full_runinfo_dict
+            except ExpatError as exc:
+                # Return error if xml is not formatted according to the xml schema
+                raise ExpatError(f"{runinfo_file_content} content is compromised or not xml format") from exc
 
     def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
@@ -67,7 +67,7 @@ class IlluminaUtils:
             results.append(dic[target_key])
 
         # Otherwise, continue searching recursively in nested dictionaries or lists
-        for key, value in dic.items(): # pylint: disable=unused-variable
+        for key, value in dic.items():  # pylint: disable=unused-variable
             if isinstance(value, dict):
                 results.extend(self.find_key_recursively(value, target_key))
             elif isinstance(value, list):
@@ -128,12 +128,14 @@ class IlluminaUtils:
         run_id = self.extract_matching_item_from_dict(runinfo_dict, "@Id")
         instrument = self.extract_matching_item_from_dict(runinfo_dict, "Instrument")
 
+        # Determine the machine type used based on the initial letters of the string value in instrumet
         machine_mapping = {"^M": "MiSeq", "^K": "HiSeq 4000", "^D": "HiSeq 2500", "^N": "NextSeq", "^A": "NovaSeq", "^LH": "NovaSeqX"}
         machine = None
         for pattern, machine_name in machine_mapping.items():
             if re.match(pattern, instrument):
                 machine = machine_name
                 break
+        # If there are no matches, it could be a new machine or incorrect information
         if machine is None:
             raise ValueError("Machine type not recognised")
 
@@ -249,5 +251,6 @@ class IlluminaUtils:
         merged_result = self.merge_dicts(filtered_dict, reads_dict, "run_id")
 
         return merged_result
+
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
