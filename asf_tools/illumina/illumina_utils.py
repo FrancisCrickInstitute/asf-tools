@@ -5,9 +5,9 @@
 
 import re
 from datetime import datetime
+from xml.parsers.expat import ExpatError
 
 import xmltodict
-from xml.parsers.expat import ExpatError
 
 
 class IlluminaUtils:
@@ -41,8 +41,6 @@ class IlluminaUtils:
         except IOError as e:
             # Return any other file related error
             raise IOError(f"An IOError occurred: {str(e)}") from e
-
-
 
     def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
@@ -200,5 +198,6 @@ class IlluminaUtils:
         # print(merged_dict)
 
         return merged_dict
+
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}

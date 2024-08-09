@@ -2,10 +2,10 @@
 Tests covering the data_transfer module
 """
 
-from xml.parsers.expat import ExpatError
-from datetime import datetime
-
 import unittest
+from datetime import datetime
+from xml.parsers.expat import ExpatError
+
 import pytest
 
 from asf_tools.illumina.illumina_utils import IlluminaUtils
@@ -16,7 +16,7 @@ class TestRunInfoParse(unittest.TestCase):
 
     # filter_runinfo - need to test for: machine that isn't in the mapping dict
     # filter_runinfo - can't parametrize bc datetime is a dynamic value
-    # filter_readinfo - needs invalid test 
+    # filter_readinfo - needs invalid test
     # add test for extract_matching_item_from_dict
 
     def test_runinfo_xml_to_dict_filenotexist(self):
@@ -99,18 +99,36 @@ class TestRunInfoParse(unittest.TestCase):
             iu.extract_matching_item_from_dict(xml_dict, "info_not_in_file")
 
     def test_filter_runinfo_machinenotexist(self):
+        """
+        Tests the `filter_runinfo` method for handling an unrecognized instrument.
+
+        This test method sets up a mock RunInfo dictionary where the instrument
+        name does not match any of the predefined patterns in the `filter_runinfo` method.
+        The test verifies that the method raises a `ValueError` when it encounters an
+        unrecognized instrument.
+
+        The test ensures that `filter_runinfo` properly handles invalid or unknown
+        instrument names by raising the appropriate exception.
+
+        Assertions:
+            - A `ValueError` is raised when the instrument is not recognized.
+
+        Raises:
+            ValueError: If the instrument type does not match any predefined patterns.
+        """
         # Set up
         iu = IlluminaUtils()
-        xml_dict = {"@Version": "6",
-                    "Run": {
-                        "@Id": "20240711_LH00442_0033_A22MKK5LT3",
-                        "@Number": "33",
-                        "Flowcell": "22MKK5LT3",
-                        "Instrument": "instrument_not_valid",
-                        "Date": "2024-07-11T18:44:29Z",
-                        "Reads": {
-                            "Read": [
-                                {"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},},}
+        xml_dict = {
+            "@Version": "6",
+            "Run": {
+                "@Id": "20240711_LH00442_0033_A22MKK5LT3",
+                "@Number": "33",
+                "Flowcell": "22MKK5LT3",
+                "Instrument": "instrument_not_valid",
+                "Date": "2024-07-11T18:44:29Z",
+                "Reads": {"Read": [{"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},
+            },
+        }
 
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -120,12 +138,12 @@ class TestRunInfoParse(unittest.TestCase):
         """
         Tests the `filter_runinfo` method for correct functionality.
 
-        This test method sets up a mock RunInfo dictionary representing an XML structure 
-        and verifies that the `filter_runinfo` method processes this input correctly. 
-        The test compares the output of `filter_runinfo` against an expected dictionary 
+        This test method sets up a mock RunInfo dictionary representing an XML structure
+        and verifies that the `filter_runinfo` method processes this input correctly.
+        The test compares the output of `filter_runinfo` against an expected dictionary
         that includes the current date and time, run ID, instrument, and machine type.
 
-        The test checks that the `filter_runinfo` method correctly identifies the machine 
+        The test checks that the `filter_runinfo` method correctly identifies the machine
         type based on the instrument pattern and returns the expected structured dictionary.
 
         Assertions:
@@ -136,40 +154,48 @@ class TestRunInfoParse(unittest.TestCase):
         """
         # Set up
         iu = IlluminaUtils()
-        xml_dict = {"@Version": "6",
-                    "Run": {
-                        "@Id": "20240711_LH00442_0033_A22MKK5LT3",
-                        "@Number": "33",
-                        "Flowcell": "22MKK5LT3",
-                        "Instrument": "LH00442",
-                        "Date": "2024-07-11T18:44:29Z",
-                        "Reads": {
-                            "Read": [
-                                {"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
-                                {"@Number": "2", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "N"},
-                                {"@Number": "3", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "Y"},
-                                {"@Number": "4", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
+        xml_dict = {
+            "@Version": "6",
+            "Run": {
+                "@Id": "20240711_LH00442_0033_A22MKK5LT3",
+                "@Number": "33",
+                "Flowcell": "22MKK5LT3",
+                "Instrument": "LH00442",
+                "Date": "2024-07-11T18:44:29Z",
+                "Reads": {
+                    "Read": [
+                        {"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
+                        {"@Number": "2", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "N"},
+                        {"@Number": "3", "@NumCycles": "10", "@IsIndexedRead": "Y", "@IsReverseComplement": "Y"},
+                        {"@Number": "4", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"},
+                    ]
+                },
+                "FlowcellLayout": {
+                    "@LaneCount": "8",
+                    "@SurfaceCount": "2",
+                    "@SwathCount": "2",
+                    "@TileCount": "98",
+                    "TileSet": {
+                        "@TileNamingConvention": "FourDigit",
+                        "Tiles": {
+                            "Tile": [
+                                "1_1101",
                             ]
                         },
-                        "FlowcellLayout": {
-                            "@LaneCount": "8",
-                            "@SurfaceCount": "2",
-                            "@SwathCount": "2",
-                            "@TileCount": "98",
-                            "TileSet": {
-                                "@TileNamingConvention": "FourDigit",
-                                "Tiles": {
-                                    "Tile": [
-                                        "1_1101",
-                                    ]
-                                },
-                            },
-                        },
-                        "ImageDimensions": {"@Width": "5120", "@Height": "2879"},
-                        "ImageChannels": {"Name": ["blue", "green"]}}}
+                    },
+                },
+                "ImageDimensions": {"@Width": "5120", "@Height": "2879"},
+                "ImageChannels": {"Name": ["blue", "green"]},
+            },
+        }
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        expected_dict = {"current_date": current_datetime, "run_id": "20240711_LH00442_0033_A22MKK5LT3", "instrument": "LH00442", "machine": "NovaSeqX"}
+        expected_dict = {
+            "current_date": current_datetime,
+            "run_id": "20240711_LH00442_0033_A22MKK5LT3",
+            "instrument": "LH00442",
+            "machine": "NovaSeqX",
+        }
 
         # Test
         run_info = iu.filter_runinfo(xml_dict)
@@ -268,7 +294,13 @@ class TestRunInfoParseWithFixtures:
         # Assert
         assert xml_info == expected_dict
 
-    @pytest.mark.parametrize("dic,expected_list", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, ["20240711_LH00442_0033_A22MKK5LT3"]), ({"run" : { "other_info": {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}}, ["20240711_LH00442_0033_A22MKK5LT3"])])
+    @pytest.mark.parametrize(
+        "dic,expected_list",
+        [
+            ({"run": {"@Id": "20240711_LH00442_0033_A22MKK5LT3"}}, ["20240711_LH00442_0033_A22MKK5LT3"]),
+            ({"run": {"other_info": {"@Id": "20240711_LH00442_0033_A22MKK5LT3"}}}, ["20240711_LH00442_0033_A22MKK5LT3"]),
+        ],
+    )
     def test_find_key_recursively_isvalid(self, dic, expected_list):
         """
         Pass a valid dictionary from XML file and test expected values in the output list
@@ -283,7 +315,9 @@ class TestRunInfoParseWithFixtures:
         # Assert
         assert list_extracted_info == expected_list
 
-    @pytest.mark.parametrize("list_info,expected_output", [({"run" : {"@Id" : "20240711_LH00442_0033_A22MKK5LT3"}}, "20240711_LH00442_0033_A22MKK5LT3")])
+    @pytest.mark.parametrize(
+        "list_info,expected_output", [({"run": {"@Id": "20240711_LH00442_0033_A22MKK5LT3"}}, "20240711_LH00442_0033_A22MKK5LT3")]
+    )
     def test_extract_matching_item_from_dict_isvalid(self, list_info, expected_output):
         """
         Pass a valid dictionary and test expected values in the output
@@ -298,7 +332,24 @@ class TestRunInfoParseWithFixtures:
         # Assert
         assert list_extracted_info == expected_output
 
-    @pytest.mark.parametrize("file,expected_dict", [("./tests/data/illumina/RunInfo.xml", {'run_id': '20240711_LH00442_0033_A22MKK5LT3', 'end_type': 'PE', 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '10 Seq'}, {'read': 'Read 3', 'num_cycles': '10 Seq'}, {'read': 'Read 4', 'num_cycles': '151 Seq'}]})])
+    @pytest.mark.parametrize(
+        "file,expected_dict",
+        [
+            (
+                "./tests/data/illumina/RunInfo.xml",
+                {
+                    "run_id": "20240711_LH00442_0033_A22MKK5LT3",
+                    "end_type": "PE",
+                    "reads": [
+                        {"read": "Read 1", "num_cycles": "151 Seq"},
+                        {"read": "Read 2", "num_cycles": "10 Seq"},
+                        {"read": "Read 3", "num_cycles": "10 Seq"},
+                        {"read": "Read 4", "num_cycles": "151 Seq"},
+                    ],
+                },
+            )
+        ],
+    )
     def test_filter_readinfo_isvalid(self, file, expected_dict):
         """
         Pass a valid XML file and test expected values in the dictionary output
