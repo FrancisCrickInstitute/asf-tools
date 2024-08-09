@@ -18,4 +18,10 @@ class TestIo(unittest.TestCase):
         test_deliver_to_targets_valid,
         test_deliver_to_targets_no_user,
         test_deliver_to_targets_source_invalid,
+        test_check_pipeline_run_complete_false,
+        test_check_pipeline_run_complete_true,
+        test_scan_delivery_state_source_invalid,
+        test_scan_delivery_state_target_invalid,
+        test_scan_delivery_state_all_to_deliver,
+        test_scan_delivery_state_partial_to_deliver
     )

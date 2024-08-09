@@ -109,3 +109,62 @@ class DataManagement:
             log.warning(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
+
+    def check_pipeline_run_complete(self, run_dir: str):
+        """
+        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
+        return os.path.exists(completed_file)
+
+
+    def scan_delivery_state(self, source_dir: str, target_dir: str):
+        """
+        Compare the source and target directories for the delivery state of the data. First check the source directory for completion and then check the target directory for the presence of the data.
+        """
+        # check if source_dir exists
+        if not os.path.exists(source_dir):
+            raise FileNotFoundError(f"{source_dir} does not exist.")
+
+        # check if target_dir exists
+        if not os.path.exists(target_dir):
+            raise FileNotFoundError(f"{target_dir} does not exist.")
+
+        # collect run directories and filter for completed runs
+        complete_pipeline_runs = []
+        abs_source_path = os.path.abspath(source_dir)
+        for entry in os.listdir(abs_source_path):
+            full_path = os.path.join(abs_source_path, entry)
+            if os.path.isdir(full_path):
+                if self.check_pipeline_run_complete(full_path):
+                    complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
+        complete_pipeline_runs.sort()
+
+        # scan target directory for symlinked folders in the grouped directory
+        deliverable_runs = {}
+        for complete_run in complete_pipeline_runs:
+            for root, dirs, files in os.walk(complete_run): # pylint: disable=unused-variable
+                relative_path = os.path.relpath(root, complete_run)
+                split_path = relative_path.split(os.sep)
+
+                # Find the group, user, project_id, run_id
+                if len(split_path) == 7:
+                    split_path = split_path[2:]
+
+                    # build target path
+                    target_path = os.path.join(target_dir, *split_path)
+
+                    # Check if the target path exists as a symlink
+                    if not os.path.islink(target_path):
+                        deliverable_runs[split_path[-1]] = {
+                            "source": complete_run,
+                            "target": target_dir
+                        }
+
+        return deliverable_runs

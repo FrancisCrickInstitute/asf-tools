@@ -138,3 +138,108 @@ def test_deliver_to_targets_source_invalid(self, tmp_path):
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
         dt.deliver_to_targets(basepath_target, tmp_path)
+
+def test_check_pipeline_run_complete_false(self):
+    """
+    Test function when the pipeline run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run01"
+
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+def test_check_pipeline_run_complete_true(self):
+    """
+    Test function when the pipeline run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/complete_runs/complete_run_01"
+
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
+
+
+def test_scan_delivery_state_source_invalid(self):
+    """
+    Test function when the source path doesn't exist
+    """
+
+    # Set up
+    dm = DataManagement()
+    source_dir = "fake/path/"
+    target_dir = "tests/data/ont/live_runs/pipeline_output"
+
+    # Test and Assert
+    with self.assertRaises(FileNotFoundError):
+        dm.scan_delivery_state(source_dir, target_dir)
+
+
+def test_scan_delivery_state_target_invalid(self):
+    """
+    Test function when the target path doesn't exist
+    """
+
+    # Set up
+    dm = DataManagement()
+    source_dir = "tests/data/ont/runs/run01"
+    target_dir = "fake/path/"
+
+    # Test and Assert
+    with self.assertRaises(FileNotFoundError):
+        dm.scan_delivery_state(source_dir, target_dir)
+
+
+@with_temporary_folder
+def test_scan_delivery_state_all_to_deliver(self, tmp_path):
+    """
+    Test function when all data is to be delivered
+    """
+
+    # Set up
+    tmp_path1 = os.path.join(tmp_path, "swantonc")
+    os.makedirs(tmp_path1)
+    dm = DataManagement()
+    source_dir = "tests/data/ont/runs/complete_runs"
+    target_dir = tmp_path
+
+    # Test
+    result = dm.scan_delivery_state(source_dir, target_dir)
+
+    # Assert
+    self.assertEqual(len(result), 2)
+
+
+@with_temporary_folder
+def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
+    """
+    Test function when all data is to be delivered
+    """
+
+    # Set up
+    tmp_path1 = os.path.join(tmp_path, "swantonc")
+    os.makedirs(tmp_path1)
+    dm = DataManagement()
+    source_dir = "tests/data/ont/runs/complete_runs"
+    target_dir = tmp_path
+    dm.deliver_to_targets(source_dir + "/complete_run_01", tmp_path1)
+
+    # Test
+    result = dm.scan_delivery_state(source_dir, target_dir)
+
+    # Assert
+    self.assertEqual(len(result), 2)
+
+
+# def test_scan_delivery_state_partial_to_deliver
+# def test_scan_delivery_state_none_to_deliver(self):
