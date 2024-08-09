@@ -67,8 +67,22 @@ class TestRunInfoParse(unittest.TestCase):
         iu = IlluminaUtils()
 
         # Test and Assert
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             iu.find_key_recursively(None, "None")
+
+    def test_find_key_recursively_emptytarget(self):
+        """
+        Pass empty target string to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        file = "./tests/data/illumina/RunInfo.xml"
+        xml_dict = iu.runinfo_xml_to_dict(file)
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.find_key_recursively(xml_dict, "")
 
     def test_extract_matching_item_from_xmldict_returnnone(self):
         """
@@ -79,7 +93,6 @@ class TestRunInfoParse(unittest.TestCase):
         iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
         xml_dict = iu.runinfo_xml_to_dict(file)
-        # xml_list = iu.find_key_recursively(xml_dict, "@Id")
 
         # Test and Assert
         with self.assertRaises(TypeError):
