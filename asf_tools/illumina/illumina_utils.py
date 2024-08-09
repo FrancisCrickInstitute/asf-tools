@@ -1,8 +1,3 @@
-# i'll write the functionality function then split it into a class with subfunctions
-
-# i need to parse through runinfo and save this info in a dict
-# dict would eventually be saved as a file or info added to a database
-
 import re
 from datetime import datetime
 from xml.parsers.expat import ExpatError
@@ -11,6 +6,7 @@ import xmltodict
 
 
 class IlluminaUtils:
+    """Class for extracting read run information from the RunInfo.xml file"""
 
     def runinfo_xml_to_dict(self, runinfo_file) -> dict:
         """
@@ -24,6 +20,11 @@ class IlluminaUtils:
 
         Returns:
             dict: A dictionary representation of the XML file content.
+
+        Raises:
+            FileNotFoundError: If the file does not exist or cannot be opened.
+            IOError: For other file-related errors.
+            ExpatError: If the XML is not formatted correctly.
         """
         try:
             with open(runinfo_file, "r", encoding="utf-8") as runinfo_file:
@@ -47,11 +48,14 @@ class IlluminaUtils:
         Recursively searches for a target key in a nested dictionary.
 
         Args:
-        d (dict): The dictionary to search through.
-        target_key (str): The key to find.
+            d (dict): The dictionary to search through.
+            target_key (str): The key to find.
 
         Returns:
-        list: A list of values associated with the target key.
+            list: A list of values associated with the target key.
+
+        Raises:
+            ValueError: If the provided argument is not a dictionary or if `target_key` is not a non-empty string.
         """
         if not isinstance(dic, dict):
             raise ValueError("The provided argument is not a dictionary.")
@@ -91,7 +95,7 @@ class IlluminaUtils:
             str: The first occurrence of the specified item in the list.
 
         Raises:
-            ValueError: If the item is not found in the list.
+            TypeError: If the item is not found in the list.
         """
         item_results = self.find_key_recursively(item_dict, item_name)
         item = item_results[0] if item_results else None
@@ -117,6 +121,9 @@ class IlluminaUtils:
         Returns:
             dict: A dictionary containing filtered and structured RunInfo data,
                 including the current date, run ID, instrument, and machine type.
+
+        Raises:
+            ValueError: If the instrument does not match any predefined patterns.
         """
 
         # Extract info from the dictionary as required
@@ -127,9 +134,9 @@ class IlluminaUtils:
         for pattern, machine_name in machine_mapping.items():
             if re.match(pattern, instrument):
                 machine = machine_name
-            # else:
-            # print(instrument)
-            # raise ValueError("Machine type not recognised")
+            else:
+                print(instrument)
+                raise ValueError("Machine type not recognised")
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -186,19 +193,20 @@ class IlluminaUtils:
 
     def merge_dicts(self, dict1, dict2, key):
         """
-        Merges two dictionaries based on a common key. The function keeps all
-        information from both dictionaries, even if some keys are not shared
-        between the dictionaries.
+        Merges two dictionaries based on a common key.
 
-        Parameters:
-        dict1 (dict): The first dictionary to merge.
-        dict2 (dict): The second dictionary to merge.
-        key (str): The key that both dictionaries share, used to merge them.
+        This method merges two dictionaries, keeping all information from both
+        dictionaries. If a key exists in both dictionaries, the value from `dict1` is retained.
+
+        Args:
+            dict1 (dict): The first dictionary to merge.
+            dict2 (dict): The second dictionary to merge.
+            key (str): The key that both dictionaries share, used to merge them.
 
         Returns:
-        dict: A new dictionary that contains all keys and values from both
-        input dictionaries. If a key exists in both dictionaries, the value
-        from either dictionary is retained (since it is expected to be identical).
+            dict: A new dictionary that contains all keys and values from both
+                input dictionaries. If a key exists in both dictionaries, the value
+                from `dict1` is retained.
         """
         # Initialize an empty dictionary to store the merged result
         merged_dict = {}
@@ -216,6 +224,25 @@ class IlluminaUtils:
         return merged_dict
 
     def merge_runinfo_dict_fromfile(self, runinfo_file) -> dict:
+        """
+        Merges RunInfo data from an XML file into a single dictionary.
+
+        This method processes a RunInfo XML file by converting it into a dictionary,
+        filtering the data, and extracting read information. It then merges the filtered
+        RunInfo data with the extracted read information into a single dictionary based on
+        a common key.
+
+        Args:
+            runinfo_file (str): The file path to the RunInfo XML file.
+
+        Returns:
+            dict: A dictionary containing merged RunInfo and read information,
+                including details like run ID, instrument, machine type, and read data.
+
+        Raises:
+            FileNotFoundError: If the provided XML file does not exist or cannot be opened.
+            KeyError: If required keys are missing in the XML structure or in the merge operation.
+        """
         original_dict = self.runinfo_xml_to_dict(runinfo_file)
         filtered_dict = self.filter_runinfo(original_dict)
         reads_dict = self.filter_readinfo(original_dict)
@@ -225,5 +252,6 @@ class IlluminaUtils:
         print(merged_result)
 
         return merged_result
+
 
 # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
