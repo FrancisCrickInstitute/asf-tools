@@ -87,19 +87,20 @@ class DataManagement:
             # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
-            if len(split_path) >= 4:
-                split_path = split_path[:4]
-                group, user, project_id, run_id = split_path
+            print(split_path)
+            if len(split_path) >= 5:
+                split_path = split_path[:5]
+                group, user, asf, project_id, run_id = split_path # pylint: disable=unused-variable
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
                 # create source path up to the final run_id dir
-                source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], info_dict["project_id"], info_dict["run_id"])
+                source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"])
 
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict["user"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, info_dict["project_id"])
+                    project_path = os.path.join(permissions_path, "asf", info_dict["project_id"])
                     if not os.path.exists(project_path):
-                        os.mkdir(project_path)
+                        os.makedirs(project_path, exist_ok=True)
 
                     # symlink data to target path
                     self.symlink_to_target(source_path_to_runid, project_path)

@@ -104,9 +104,9 @@ def test_deliver_to_targets_valid(self, tmp_path):
     dt.deliver_to_targets(basepath_target, tmp_path)
 
     # Assert
-    run_dir_1 = os.path.join(tmp_path1, "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_2 = os.path.join(tmp_path2, "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_3 = os.path.join(tmp_path3, "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_1 = os.path.join(tmp_path1, "asf", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_2 = os.path.join(tmp_path2, "asf", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_3 = os.path.join(tmp_path3, "asf", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
     self.assertTrue(os.path.islink(run_dir_1))
     self.assertTrue(os.path.islink(run_dir_2))
     self.assertTrue(os.path.islink(run_dir_3))
