@@ -232,14 +232,32 @@ def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
     dm = DataManagement()
     source_dir = "tests/data/ont/runs/complete_runs"
     target_dir = tmp_path
-    dm.deliver_to_targets(source_dir + "/complete_run_01", tmp_path1)
+    dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
 
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
 
     # Assert
-    self.assertEqual(len(result), 2)
+    self.assertEqual(len(result), 1)
 
 
-# def test_scan_delivery_state_partial_to_deliver
-# def test_scan_delivery_state_none_to_deliver(self):
+@with_temporary_folder
+def test_scan_delivery_state_none_to_deliver(self, tmp_path):
+    """
+    Test function when all data is to be delivered
+    """
+
+    # Set up
+    tmp_path1 = os.path.join(tmp_path, "swantonc")
+    os.makedirs(tmp_path1)
+    dm = DataManagement()
+    source_dir = "tests/data/ont/runs/complete_runs"
+    target_dir = tmp_path
+    dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
+    dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path)
+
+    # Test
+    result = dm.scan_delivery_state(source_dir, target_dir)
+
+    # Assert
+    self.assertEqual(len(result), 0)

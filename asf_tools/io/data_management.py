@@ -87,7 +87,6 @@ class DataManagement:
             # split paths
             relative_path = os.path.relpath(path, data_path)
             split_path = relative_path.split(os.sep)
-            print(split_path)
             if len(split_path) >= 5:
                 split_path = split_path[:5]
                 group, user, asf, project_id, run_id = split_path # pylint: disable=unused-variable
@@ -96,9 +95,9 @@ class DataManagement:
                 source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"])
 
                 # create project folders in target path
-                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"], info_dict["user"])
+                permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, "asf", info_dict["project_id"])
+                    project_path = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
                     if not os.path.exists(project_path):
                         os.makedirs(project_path, exist_ok=True)
 
@@ -127,7 +126,29 @@ class DataManagement:
 
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
-        Compare the source and target directories for the delivery state of the data. First check the source directory for completion and then check the target directory for the presence of the data.
+        Scans the given source directory for completed pipeline runs and checks 
+        if corresponding symlinks exist in the target directory. Returns a dictionary
+        of runs that are ready to be delivered but do not yet have symlinks in the 
+        target directory.
+
+        Args:
+            source_dir (str): The path to the directory containing pipeline run folders.
+            target_dir (str): The path to the directory where the symlinks should be checked.
+
+        Returns:
+            dict: A dictionary where the keys are the `run_id` of deliverable runs and 
+            the values are dictionaries containing the source directory of the completed 
+            run and the target directory where the symlink should be created.
+
+        Raises:
+            FileNotFoundError: If `source_dir` or `target_dir` does not exist.
+
+        Notes:
+            - The function expects each pipeline run folder to be structured such that 
+            the relevant symlinks in the target directory would correspond to a relative 
+            path derived from the pipeline run folder structure.
+            - Only directories that represent completed pipeline runs, as determined by 
+            `self.check_pipeline_run_complete`, will be considered for potential delivery.
         """
         # check if source_dir exists
         if not os.path.exists(source_dir):

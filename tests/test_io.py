@@ -23,5 +23,6 @@ class TestIo(unittest.TestCase):
         test_scan_delivery_state_source_invalid,
         test_scan_delivery_state_target_invalid,
         test_scan_delivery_state_all_to_deliver,
-        test_scan_delivery_state_partial_to_deliver
+        test_scan_delivery_state_partial_to_deliver,
+        test_scan_delivery_state_none_to_deliver
     )
