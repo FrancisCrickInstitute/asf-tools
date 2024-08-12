@@ -333,7 +333,7 @@ class ClarityHelperLims(ClarityLims):
         for sample in sample_metadata:
             sample_ext = self.get_samples(search_id=sample)
             # print(sample_ext)
-            project_limsid = sample_ext.project.name
+            project_limsid = sample_ext.project.limsid
             reference_genome = sample_ext.udf_fields[4].value
             data_analysis_type = sample_ext.udf_fields[7].value
 
