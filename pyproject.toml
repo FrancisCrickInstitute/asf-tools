@@ -1,6 +1,11 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name="asf-tools"
-version = "1.0.0"
+# version = "1.0.0"
+dynamic = ["version"]
 requires-python = ">=3.11"
 description = "A set of helper functions for ASF."
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -33,6 +38,8 @@ tests = [
     "pytest-cov",
     "pytest-sugar",
 ]
+
+[tool.setuptools_scm]
 
 [tool.setuptools]
 include-package-data = true

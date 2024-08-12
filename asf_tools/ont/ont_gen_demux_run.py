@@ -36,6 +36,7 @@ class OntGenDemuxRun:
         use_api,
         contains=None,
         samplesheet_only=False,
+        nextflow_version=None,
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
@@ -47,6 +48,7 @@ class OntGenDemuxRun:
         self.use_api = use_api
         self.contains = contains
         self.samplesheet_only = samplesheet_only
+        self.nextflow_version = nextflow_version
 
     def run(self):
         """
@@ -132,7 +134,7 @@ class OntGenDemuxRun:
         """
 
         # Create sbatch header
-        header_str = create_sbatch_header()
+        header_str = create_sbatch_header(self.nextflow_version)
 
         # Create NXF_HOME string
         nxf_home = ""
