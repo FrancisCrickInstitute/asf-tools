@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<RunInfo Version="6">
+	<Run Id="20240711_LH00442_0033_A22MKK5LT3" Number="33">
+		<Flowcell>22MKK5LT3</Flowcell>
+		<Instrument>LH00442</Instrument>
+		<Date>2024-07-11T18:44:29Z</Date>
+		<Reads>
+			<Read Number="1" NumCycles="151" IsIndexedRead="N" IsReverseComplement="N"/>
+			<Read Number="2" NumCycles="10" IsIndexedRead="Y" IsReverseComplement="N"/>
+			<Read Number="3" NumCycles="10" IsIndexedRead="Y" IsReverseComplement="Y"/>
+			<Read Number="4" NumCycles="151" IsIndexedRead="N" IsReverseComplement="N"/>
+		</Reads>
+		<FlowcellLayout LaneCount="8" SurfaceCount="2" SwathCount="2" TileCount="98">
+			<TileSet TileNamingConvention="FourDigit">
+				<Tiles>
+					<Tile>1_1101</Tile>
+					<Tile>2_1101</Tile>
+					<Tile>3_1101</Tile>
+					<Tile>4_1101</Tile>
+					<Tile>5_1101</Tile>
+					<Tile>6_1232</Tile>
+					<Tile>7_1101</Tile>
+					<Tile>8_1101</Tile>
+
+					<Tile>1_2298</Tile>
+					<Tile>2_2101</Tile>
+					<Tile>3_2101</Tile>
+					<Tile>4_2101</Tile>
+					<Tile>5_2101</Tile>
+					<Tile>6_2101</Tile>
+					<Tile>7_2101</Tile>
+					<Tile>8_2101</Tile>
+				</Tiles>
+			</TileSet>
+		</FlowcellLayout>
+		<ImageDimensions Width="5120" Height="2879"/>
+		<ImageChannels>
+			<Name>blue</Name>
+			<Name>green</Name>
+		</ImageChannels>
+	</Run>
+</RunInfo>
+

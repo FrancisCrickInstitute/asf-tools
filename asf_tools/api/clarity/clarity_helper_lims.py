@@ -293,3 +293,68 @@ class ClarityHelperLims(ClarityLims):
                     merged_dict[key][sub_key] = sub_value
 
         return merged_dict
+
+    def collect_illumina_samplesheet_info(self, run_id: str) -> dict:
+        """
+        Collects basic sample information and extracts additional metadata for each sample associated with a given run ID, then merges the information
+        into a single dictionary.
+
+        Args:
+            run_id (str): The identifier for the current run.
+
+        Returns:
+            dict: A dictionary where each key is a sample name and the value is another dictionary containing both the
+                general and additional metadata for the sample. The structure of the returned dictionary is as follows:
+                {
+                    sample_name (str): {
+                        "group": lab (str),
+                        "user": user_fullname (str),
+                        "project_id": project_id (str),
+                        "barcode": reagent_barcode (str),
+                        "project_name": project_name (str),
+                        "reference_genome": reference_genome (str),
+                        "data_analysis_type": data_analysis_type (str)
+                    },
+                    ...
+                }
+
+        Description:
+            - Collects general sample information using the `collect_ont_samplesheet_info` method.
+            - Extracts additional metadata for each sample using the `get_samples` method, including project name,
+            reference genome, and data analysis type.
+            - Merges the general and additional metadata into a single dictionary for each sample.
+        """
+        # Collect general sample info
+        sample_metadata = self.collect_ont_samplesheet_info(run_id)
+        # print(sample_metadata)
+
+        # Extract additional sample info
+        expanded_metadata = {}
+        for sample in sample_metadata:
+            sample_ext = self.get_samples(search_id=sample)
+            # print(sample_ext)
+            project_limsid = sample_ext.project.limsid
+            reference_genome = sample_ext.udf_fields[4].value
+            data_analysis_type = sample_ext.udf_fields[7].value
+
+            expanded_metadata[sample] = {
+                "project_limsid": project_limsid,
+                "reference_genome": reference_genome,
+                "data_analysis_type": data_analysis_type,
+            }
+
+        # Merge info all in one dictionary
+        for key, value in sample_metadata.items():
+            for sub_key, sub_value in value.items():
+                if key in expanded_metadata:
+                    expanded_metadata[key][sub_key] = sub_value
+
+        # print(expanded_metadata)
+        return expanded_metadata
+
+
+# currently index,index2 and Index_ID is all merged into "barcode"
+# this is the header created by the perl scripts:
+# Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
+# 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+# 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
