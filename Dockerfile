@@ -9,6 +9,7 @@ COPY . /usr/src/asf_tools
 WORKDIR /usr/src/asf_tools
 
 # Install program
-RUN pip install .
+# RUN pip install .
+RUN --mount=source=.git,target=.git,type=bind pip install .
 
 CMD ["bash"]

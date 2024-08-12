@@ -254,29 +254,41 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
     "--source_dir",
     type=click.Path(exists=True),
     required=True,
-    help=r"Source directory",
+    help="Source directory. For non-interactive mode, this is the run directory of the demux pipeline; for interactive mode, this is the source directory containing all the runs.",
 )
 @click.option(
     "-t",
     "--target_dir",
     type=click.Path(exists=True),
     required=True,
-    help=r"Target directory",
+    help="Target directory",
+)
+@click.option(
+    "-i",
+    "--interactive",
+    is_flag=True,
+    default=False,
+    help="Run in interactive mode",
 )
 def deliver_to_targets(
     ctx,  # pylint: disable=W0613
     source_dir,
-    target_dir):
+    target_dir,
+    interactive,):
     """
     Symlinks demux outputs to the user directory
     """
     from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
     dm = DataManagement()
-    dm.deliver_to_targets(
-        source_dir,
-        target_dir
-    )
+    if interactive is False:
+        # Take the source / target literally and deliver
+        dm.deliver_to_targets(
+            source_dir,
+            target_dir
+        )
+    # else:
+
 
 
 # Main script is being run - launch the CLI
