@@ -126,9 +126,9 @@ class DataManagement:
 
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
-        Scans the given source directory for completed pipeline runs and checks 
+        Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
-        of runs that are ready to be delivered but do not yet have symlinks in the 
+        of runs that are ready to be delivered but do not yet have symlinks in the
         target directory.
 
         Args:
@@ -136,18 +136,18 @@ class DataManagement:
             target_dir (str): The path to the directory where the symlinks should be checked.
 
         Returns:
-            dict: A dictionary where the keys are the `run_id` of deliverable runs and 
-            the values are dictionaries containing the source directory of the completed 
+            dict: A dictionary where the keys are the `run_id` of deliverable runs and
+            the values are dictionaries containing the source directory of the completed
             run and the target directory where the symlink should be created.
 
         Raises:
             FileNotFoundError: If `source_dir` or `target_dir` does not exist.
 
         Notes:
-            - The function expects each pipeline run folder to be structured such that 
-            the relevant symlinks in the target directory would correspond to a relative 
+            - The function expects each pipeline run folder to be structured such that
+            the relevant symlinks in the target directory would correspond to a relative
             path derived from the pipeline run folder structure.
-            - Only directories that represent completed pipeline runs, as determined by 
+            - Only directories that represent completed pipeline runs, as determined by
             `self.check_pipeline_run_complete`, will be considered for potential delivery.
         """
         # check if source_dir exists
