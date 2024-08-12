@@ -7,4 +7,3 @@ from importlib.metadata import version
 
 # Set version from package information
 __version__ = version("asf-tools")
-print(__version__)
