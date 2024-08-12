@@ -163,6 +163,7 @@ nextflow run {self.pipeline_dir} \\
   -profile crick,nemo \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
-  --run_dir {os.path.join(self.runs_dir, run_name)}
+  --run_dir {os.path.join(self.runs_dir, run_name)} \\
+  --dorado_bc_parse_pos 9
 """
         return bash_script

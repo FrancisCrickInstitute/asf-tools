@@ -336,6 +336,118 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert merged_dict == expected_dict
 
+    @pytest.mark.parametrize(
+        "run_id,expected_dict",
+        [
+            (
+                "HWNT7BBXY",
+                {
+                    "TLG66A2839": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 40 H05 (CTGAGCCA)",
+                        "sample_name": "A_LTX265_NP_T1_FR1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2840": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 41 A06 (AGCCATGC)",
+                        "sample_name": "L_LTX877_MR_T1_FR4",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2841": {
+                        "barcode": "SXT 42 B06 (GTACGCAA)",
+                        "sample_name": "L_LTX877_MR_T1_FR5",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                    },
+                    "TLG66A2842": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 43 C06 (AGTACAAG)",
+                        "sample_name": "A_LTX1310_MR_T1_FR3",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2843": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 44 D06 (ACATTGGC)",
+                        "sample_name": "A_LTX1331_BR_T1_FR1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2844": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 45 E06 (ATTGAGGA)",
+                        "sample_name": "U_LTX1350_BR_T1_FR3",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2845": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "FFPE DNA",
+                        "barcode": "SXT 46 F06 (GTCGTAGA)",
+                        "sample_name": "U_LTX1335_SU_FLN1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2848": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "gDNA",
+                        "barcode": "SXT 03 C01 (AACGTGAT)",
+                        "sample_name": "U_LTX1335_BS_GL",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                    "TLG66A2849": {
+                        "project_limsid": "TLG66",
+                        "reference_genome": "Homo sapiens",
+                        "data_analysis_type": "gDNA",
+                        "barcode": "SXT 04 D01 (CACTTCGA)",
+                        "sample_name": "U_LTX1335_BP_LN1",
+                        "group": "swantonc",
+                        "user": "tracerx.tlg",
+                        "project_id": "TRACERx_Lung",
+                    },
+                },
+            )
+        ],
+    )
+    def test_collect_illumina_samplesheet_info_isvalid(self, api, run_id, expected_dict):
+        """
+        Pass real run_id and test expected values in the dictionary output
+        """
+
+        # Test
+        merged_dict = api.collect_illumina_samplesheet_info(run_id)
+        print(merged_dict)
+
+        # Assert
+        assert merged_dict == expected_dict
+
 
 # class TestClarityHelperLimsPrototype(unittest.TestCase):
 #     """
