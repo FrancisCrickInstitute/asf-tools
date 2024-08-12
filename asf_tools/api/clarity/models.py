@@ -232,6 +232,15 @@ class Sample(ClarityBaseModel):
     artifact: Optional[Stub] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
 
+    @field_validator("udf_fields", mode="before")
+    def ensure_list_udf_fields(cls, values):  # pylint: disable=no-self-argument
+        """
+        Ensure list
+        """
+        if isinstance(values, dict):
+            return [values]
+        return values
+
 
 class Input(ClarityBaseModel):
     limsid: str
