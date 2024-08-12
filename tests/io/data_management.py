@@ -23,6 +23,7 @@ def test_symlink_to_target_isinvalid_source(self, tmp_path):
     with self.assertRaises(FileNotFoundError):
         dt.symlink_to_target(invalid_path, tmp_path)
 
+
 @with_temporary_folder
 def test_symlink_to_target_isinvalid_target(self, tmp_path):
     """
@@ -37,6 +38,7 @@ def test_symlink_to_target_isinvalid_target(self, tmp_path):
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
         dt.symlink_to_target(valid_path, invalid_path)
+
 
 @with_temporary_folder
 def test_symlink_to_target_isvalid_str(self, tmp_path):
@@ -54,6 +56,7 @@ def test_symlink_to_target_isvalid_str(self, tmp_path):
     # Assert
     run_dir_1 = os.path.join(tmp_path, "run01")
     self.assertTrue(os.path.islink(run_dir_1))
+
 
 @with_temporary_folder
 def test_symlink_to_target_isvalid_list(self, tmp_path):
@@ -81,6 +84,7 @@ def test_symlink_to_target_isvalid_list(self, tmp_path):
     run_dir_2 = os.path.join(tmp_path2, "run01")
     self.assertTrue(os.path.islink(run_dir_1))
     self.assertTrue(os.path.islink(run_dir_2))
+
 
 @with_temporary_folder
 def test_deliver_to_targets_valid(self, tmp_path):
@@ -111,6 +115,7 @@ def test_deliver_to_targets_valid(self, tmp_path):
     self.assertTrue(os.path.islink(run_dir_2))
     self.assertTrue(os.path.islink(run_dir_3))
 
+
 @with_temporary_folder
 def test_deliver_to_targets_no_user(self, tmp_path):
     """
@@ -124,6 +129,7 @@ def test_deliver_to_targets_no_user(self, tmp_path):
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
         dt.deliver_to_targets(basepath_target, tmp_path)
+
 
 @with_temporary_folder
 def test_deliver_to_targets_source_invalid(self, tmp_path):
@@ -139,6 +145,7 @@ def test_deliver_to_targets_source_invalid(self, tmp_path):
     with self.assertRaises(FileNotFoundError):
         dt.deliver_to_targets(basepath_target, tmp_path)
 
+
 def test_check_pipeline_run_complete_false(self):
     """
     Test function when the pipeline run is not complete
@@ -153,6 +160,7 @@ def test_check_pipeline_run_complete_false(self):
 
     # Assert
     self.assertFalse(result)
+
 
 def test_check_pipeline_run_complete_true(self):
     """
@@ -216,7 +224,7 @@ def test_scan_delivery_state_all_to_deliver(self, tmp_path):
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
 
-    # Assert
+    # Assert
     self.assertEqual(len(result), 2)
 
 
@@ -237,7 +245,7 @@ def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
 
-    # Assert
+    # Assert
     self.assertEqual(len(result), 1)
 
 
@@ -259,5 +267,5 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
 
-    # Assert
+    # Assert
     self.assertEqual(len(result), 0)

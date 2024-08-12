@@ -89,10 +89,12 @@ class DataManagement:
             split_path = relative_path.split(os.sep)
             if len(split_path) >= 5:
                 split_path = split_path[:5]
-                group, user, asf, project_id, run_id = split_path # pylint: disable=unused-variable
+                group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
                 # create source path up to the final run_id dir
-                source_path_to_runid = os.path.join(data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"])
+                source_path_to_runid = os.path.join(
+                    data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"]
+                )
 
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
@@ -122,7 +124,6 @@ class DataManagement:
         """
         completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
         return os.path.exists(completed_file)
-
 
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
@@ -171,22 +172,19 @@ class DataManagement:
         # scan target directory for symlinked folders in the grouped directory
         deliverable_runs = {}
         for complete_run in complete_pipeline_runs:
-            for root, dirs, files in os.walk(complete_run): # pylint: disable=unused-variable
+            for root, dirs, files in os.walk(complete_run):  # pylint: disable=unused-variable
                 relative_path = os.path.relpath(root, complete_run)
                 split_path = relative_path.split(os.sep)
 
-                # Find the group, user, project_id, run_id
+                # Find the group, user, project_id, run_id
                 if len(split_path) == 7:
                     split_path = split_path[2:]
 
                     # build target path
                     target_path = os.path.join(target_dir, *split_path)
 
-                    # Check if the target path exists as a symlink
+                    # Check if the target path exists as a symlink
                     if not os.path.islink(target_path):
-                        deliverable_runs[split_path[-1]] = {
-                            "source": complete_run,
-                            "target": target_dir
-                        }
+                        deliverable_runs[split_path[-1]] = {"source": complete_run, "target": target_dir}
 
         return deliverable_runs
