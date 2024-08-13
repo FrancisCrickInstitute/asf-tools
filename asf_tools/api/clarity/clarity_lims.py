@@ -224,8 +224,11 @@ class ClarityLims:
         except ValidationError as e:
             for error in e.errors():
                 # pylint: disable=logging-format-interpolation, consider-using-f-string
-                log.error("\nPydantic Validation Error:\nType: {type}\nLoc: {loc}\nMsg: {msg}\nData: {input}".format(
-                    type=error['type'], loc=error['loc'], msg=error['msg'], input=error['input']))
+                log.error(
+                    "\nPydantic Validation Error:\nType: {type}\nLoc: {loc}\nMsg: {msg}\nData: {input}".format(
+                        type=error["type"], loc=error["loc"], msg=error["msg"], input=error["input"]
+                    )
+                )
             raise e
         return model
 

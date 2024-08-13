@@ -201,17 +201,18 @@ class TestClarityHelperLimsyWithFixtures:
                 },
             ),  # ONT
             ("20240625_1734_2F_PAW20497_d0c3cbb5", {}),
-            ("20240807_1248_P2S-02348-A_PAW31464_90cccf6c",
+            (
+                "20240807_1248_P2S-02348-A_PAW31464_90cccf6c",
                 {
-                    'SWA6667A7': {'barcode': 'BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)'},
-                    'SWA6667A8': {'barcode': 'BC02 (TCGATTCCGTTTGTAGTCGTCTGT)'},
-                    'SWA6667A37': {'barcode': 'BC03 (GAGTCTTGTGTCCCAGTTACCAGG)'},
-                    'SWA6667A38': {'barcode': 'BC04 (TTCGGATTCTATCGTGTTTCCCTA)'},
-                    'SWA6667A39': {'barcode': 'BC05 (CTTGTCCAGGGTTTGTGTAACCTT)'},
-                    'SWA6667A41': {'barcode': 'BC06 (TTCTCGCAAAGGCAGAAAGTAGTC)'},
-                    '201C-2072202': {'barcode': 'BC07 (GTGTTACCGTGGGAATGAATCCTT)'},
-                }
-            )
+                    "SWA6667A7": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
+                    "SWA6667A8": {"barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"},
+                    "SWA6667A37": {"barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"},
+                    "SWA6667A38": {"barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)"},
+                    "SWA6667A39": {"barcode": "BC05 (CTTGTCCAGGGTTTGTGTAACCTT)"},
+                    "SWA6667A41": {"barcode": "BC06 (TTCTCGCAAAGGCAGAAAGTAGTC)"},
+                    "201C-2072202": {"barcode": "BC07 (GTGTTACCGTGGGAATGAATCCTT)"},
+                },
+            ),
         ],
     )
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
