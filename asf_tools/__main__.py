@@ -5,16 +5,16 @@ Main entry point for command line application
 """
 
 import logging
-import sys
 import os
+import sys
 
+import questionary
 import rich
 import rich.console
 import rich.logging
 import rich.traceback
 import rich_click as click
 from rich.table import Table
-import questionary
 
 import asf_tools
 

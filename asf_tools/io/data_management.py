@@ -186,6 +186,12 @@ class DataManagement:
 
                     # Check if the target path exists as a symlink
                     if not os.path.islink(target_path):
-                        deliverable_runs[split_path[-1]] = {"source": complete_run, "target": target_dir, "group": group, "user": user, "project_id": project_id}
+                        deliverable_runs[split_path[-1]] = {
+                            "source": complete_run,
+                            "target": target_dir,
+                            "group": group,
+                            "user": user,
+                            "project_id": project_id,
+                        }
 
         return deliverable_runs
