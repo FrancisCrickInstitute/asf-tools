@@ -7,7 +7,7 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.utils import list_directory_names
+from asf_tools.io.utils import list_directory_names, check_file_exist
 from asf_tools.nextflow.utils import create_sbatch_header
 
 
@@ -79,8 +79,9 @@ class OntGenDemuxRun:
         # Check for a completed_run file in source directory
         dir_diff_with_completed_run = []
         for run_name in dir_diff:
-            sequence_summary_path = os.path.join(self.source_dir, run_name, self.completed_run_file)
-            if os.path.isfile(sequence_summary_path):
+            sequence_summary_path = os.path.join(self.source_dir, run_name)
+            completed_file_exists = check_file_exist(sequence_summary_path, "sequencing_summary")
+            if completed_file_exists:
                 dir_diff_with_completed_run.append(run_name)
             else:
                 log.debug(f"Skipping {run_name}: {self.completed_run_file} file not found in source directory")
