@@ -20,7 +20,7 @@ def test_ont_gen_demux_run_folder_creation(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path,  TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+    test = OntGenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
     # Test
     test.run()

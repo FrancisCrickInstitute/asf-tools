@@ -4,7 +4,7 @@ Tests for io util functions
 
 import os
 
-from asf_tools.io.utils import list_directory_names, check_file_exist
+from asf_tools.io.utils import check_file_exist, list_directory_names
 
 from ..utils import with_temporary_folder
 
@@ -59,6 +59,7 @@ def test_check_file_exist_isvalid(self):
     # Assert
     self.assertTrue(run1)
     self.assertFalse(run2)
+
 
 def test_check_file_exist_pathnotexist(self):
     """Test if different paths return true/false as expected"""
