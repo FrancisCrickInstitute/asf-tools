@@ -254,7 +254,8 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
     "--source_dir",
     type=click.Path(exists=True),
     required=True,
-    help="Source directory. For non-interactive mode, this is the run directory of the demux pipeline; for interactive mode, this is the source directory containing all the runs.",
+    help="Source directory. For non-interactive mode, this is the run directory of the demux pipeline; \
+        for interactive mode, this is the source directory containing all the runs.",
 )
 @click.option(
     "-t",
