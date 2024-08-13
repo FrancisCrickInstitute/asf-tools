@@ -227,7 +227,7 @@ class Sample(ClarityBaseModel):
     uri: str
     name: str
     date_received: str
-    project: Stub
+    project: Optional[Stub] = None
     submitter: ResearcherStub
     artifact: Optional[Stub] = None
     udf_fields: Optional[List[UdfField]] = Field(default_factory=list, alias="udf:field")
