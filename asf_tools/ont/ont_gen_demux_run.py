@@ -74,7 +74,7 @@ class OntGenDemuxRun:
             dir_diff = [run for run in dir_diff if self.contains in run]
             log.info(f"Found {len(dir_diff)} new run folders after filtering for {self.contains}")
 
-        # Check for a completed_run file in source directory
+        # Check for a sequencing_summary file in source directory
         dir_diff_with_completed_run = []
         for run_name in dir_diff:
             sequence_summary_path = os.path.join(self.source_dir, run_name)

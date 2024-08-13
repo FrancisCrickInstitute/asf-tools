@@ -88,9 +88,6 @@ def check_file_exist(path: str, pattern: str) -> bool:
     """
     if not os.path.exists(path):
         raise FileNotFoundError(f"{path} does not exist.")
-    # Check if the path is a directory
-    if not os.path.isdir(path):
-        raise NotADirectoryError(f"{path} is not a directory.")
 
     for filename in os.listdir(path):
         print(filename)
