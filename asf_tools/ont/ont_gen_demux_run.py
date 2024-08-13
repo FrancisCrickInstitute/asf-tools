@@ -28,6 +28,7 @@ class OntGenDemuxRun:
         self,
         source_dir,
         target_dir,
+        completed_run_file,
         pipeline_dir,
         nextflow_cache,
         nextflow_work,
@@ -40,6 +41,7 @@ class OntGenDemuxRun:
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
+        self.completed_run_file = completed_run_file
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
@@ -74,8 +76,19 @@ class OntGenDemuxRun:
             dir_diff = [run for run in dir_diff if self.contains in run]
             log.info(f"Found {len(dir_diff)} new run folders after filtering for {self.contains}")
 
-        # Process runs
+        # Check for a completed_run file in source directory
+        dir_diff_with_completed_run = []
         for run_name in dir_diff:
+            sequence_summary_path = os.path.join(self.source_dir, run_name, {self.completed_run_file})
+            if os.path.isfile(sequence_summary_path):
+                dir_diff_with_completed_run.append(run_name)
+            else:
+                log.debug(f"Skipping {run_name}: {self.completed_run_file} file not found in source directory")
+
+        log.info(f"Found {len(dir_diff_with_completed_run)} run folders with {self.completed_run_file} file in source directory")
+
+        # Process runs
+        for run_name in dir_diff_with_completed_run:
             self.process_run(run_name)
 
         return 0
