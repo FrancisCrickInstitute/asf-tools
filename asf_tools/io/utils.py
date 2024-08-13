@@ -70,3 +70,30 @@ def list_directory_names(path: str) -> list:
         elif os.path.islink(full_path) and (not os.path.isfile(os.readlink(full_path))):  # For mounted file systems in containers
             directories.append(entry)
     return directories
+
+
+def check_file_exist(path: str, pattern: str) -> bool:
+    """
+    Searches for a file that contains a specific pattern in its name within the top-level directory.
+
+    Args:
+    path (str): The directory path where the search should be performed.
+    pattern (str): The pattern to search for within file names.
+
+    Returns:
+    bool: True if a file containing the given pattern is found, False otherwise.
+
+    Raises:
+    FileNotFoundError: If the provided path does not exist or is not a directory.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"{path} does not exist.")
+    # Check if the path is a directory
+    if not os.path.isdir(path):
+        raise NotADirectoryError(f"{path} is not a directory.")
+
+    for filename in os.listdir(path):
+        print(filename)
+        if os.path.isfile(os.path.join(path, filename)) and pattern in filename:
+            return True
+    return False

@@ -156,13 +156,6 @@ def ont(ctx):
     help=r"Target directory to write runs",
 )
 @click.option(
-    "-t",
-    "--completed_run_file",
-    type=click.Path(exists=True),
-    required=True,
-    help=r"Target directory to write runs",
-)
-@click.option(
     "-p",
     "--pipeline_dir",
     required=True,
@@ -217,7 +210,6 @@ def ont(ctx):
 def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
-                      completed_run_file,
                       pipeline_dir,
                       nextflow_cache,
                       nextflow_work,
@@ -237,7 +229,6 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
         function = OntGenDemuxRun(
             source_dir,
             target_dir,
-            completed_run_file,
             pipeline_dir,
             nextflow_cache,
             nextflow_work,

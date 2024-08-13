@@ -24,4 +24,4 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
     )
-    from .io.utils import test_list_directory, test_list_directory_symlink  # type: ignore[misc]  # pylint: disable=C0415
+    from .io.utils import test_list_directory, test_list_directory_symlink, test_check_file_exist_isvalid, test_check_file_exist_pathnotexist # type: ignore[misc]  # pylint: disable=C0415 

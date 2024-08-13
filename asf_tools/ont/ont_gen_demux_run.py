@@ -79,7 +79,7 @@ class OntGenDemuxRun:
         # Check for a completed_run file in source directory
         dir_diff_with_completed_run = []
         for run_name in dir_diff:
-            sequence_summary_path = os.path.join(self.source_dir, run_name, {self.completed_run_file})
+            sequence_summary_path = os.path.join(self.source_dir, run_name, self.completed_run_file)
             if os.path.isfile(sequence_summary_path):
                 dir_diff_with_completed_run.append(run_name)
             else:
