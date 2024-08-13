@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 import requests
 import toml
 import xmltodict
+from pydantic import ValidationError
 
 from asf_tools.api.clarity.models import (
     Artifact,
@@ -214,6 +215,20 @@ class ClarityLims:
         # Call main get
         return self.get_with_uri(uri, params)
 
+    def initialise_model(self, model_type: ClarityBaseModel, data: dict) -> ClarityBaseModel:
+        """
+        Initialise a model instance and check for validation error. if deteced give a rich error message
+        """
+        try:
+            model = model_type(**data)
+        except ValidationError as e:
+            for error in e.errors():
+                # pylint: disable=logging-format-interpolation, consider-using-f-string
+                log.error("\nPydantic Validation Error:\nType: {type}\nLoc: {loc}\nMsg: {msg}\nData: {input}".format(
+                    type=error['type'], loc=error['loc'], msg=error['msg'], input=error['input']))
+            raise e
+        return model
+
     def get_single_page_instances(self, xml_data: str, outer_key: str, inner_key: str, model_type: ClarityBaseModel) -> list[ClarityBaseModel]:
         """
         Parse XML data to get instances of a specified model from a single page.
@@ -239,10 +254,10 @@ class ClarityLims:
         if isinstance(inner_dict, list):
             for item in inner_dict:
                 # Create type
-                data_item = model_type(**item)
+                data_item = self.initialise_model(model_type, item)
                 instances.append(data_item)
         if isinstance(inner_dict, dict):
-            data_item = model_type(**inner_dict)
+            data_item = self.initialise_model(model_type, inner_dict)
             instances.append(data_item)
 
         # Look for next page
@@ -308,7 +323,7 @@ class ClarityLims:
         data_dict = {key.replace("-", "_"): value for key, value in data_dict.items()}
 
         # Create and return model
-        instance = model_type(**data_dict)
+        instance = self.initialise_model(model_type, data_dict)
         return instance
 
     def expand_stub(self, stub: ClarityBaseModel, expansion_type: ClarityBaseModel = ClarityBaseModel) -> ClarityBaseModel:
