@@ -5,13 +5,16 @@ Main entry point for command line application
 """
 
 import logging
+import os
 import sys
 
+import questionary
 import rich
 import rich.console
 import rich.logging
 import rich.traceback
 import rich_click as click
+from rich.table import Table
 
 import asf_tools
 
@@ -288,7 +291,51 @@ def deliver_to_targets(
             source_dir,
             target_dir
         )
-    # else:
+    else:
+        # Interactivly scan for delivery targets
+        scan_result = dm.scan_delivery_state(
+            source_dir,
+            target_dir
+        )
+
+        # If no runs are found, exit
+        if not scan_result:
+            log.info("No deliverable runs found.")
+            return
+
+        # Display table of scan results
+        table = Table(title="Deliverable Runs", show_header=True, header_style="bold magenta")
+        table.add_column("Run ID", style="bold")
+        table.add_column("Group")
+        table.add_column("User")
+        table.add_column("Project Id")
+        for run_id, data in scan_result.items():
+            table.add_row(run_id, data["group"], data["user"], data["project_id"])
+        stdout.print(table)
+
+        # User choice run ids
+        results = questionary.checkbox(
+            'Select Run Ids to deliver',
+            choices=scan_result.keys()).ask()
+
+        # Confirm selected runs
+        if results:
+            stdout.print("\n")
+            table = Table(title="Selected Runs", show_header=True, header_style="bold magenta")
+            table.add_column("Run ID", style="bold")
+            for result in results:
+                table.add_row(result)
+            stdout.print(table)
+            confirmation = questionary.confirm("Are you sure you want to deliver the selected runs?").ask()
+
+            # Deliver the selected runs
+            if confirmation:
+                for result in results:
+                    log.info(f"Delivering {result}")
+                    dm.deliver_to_targets(
+                        os.path.join(source_dir, result, "results", "grouped"),
+                        target_dir
+                    )
 
 
 
