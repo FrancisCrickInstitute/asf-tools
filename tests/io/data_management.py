@@ -169,7 +169,7 @@ def test_check_pipeline_run_complete_true(self):
 
     # Set up
     dm = DataManagement()
-    run_dir = "tests/data/ont/runs/complete_runs/complete_run_01"
+    run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
 
     # Test
     result = dm.check_pipeline_run_complete(run_dir)
@@ -218,7 +218,7 @@ def test_scan_delivery_state_all_to_deliver(self, tmp_path):
     tmp_path1 = os.path.join(tmp_path, "swantonc")
     os.makedirs(tmp_path1)
     dm = DataManagement()
-    source_dir = "tests/data/ont/runs/complete_runs"
+    source_dir = "tests/data/ont/complete_pipeline_outputs"
     target_dir = tmp_path
 
     # Test
@@ -238,7 +238,7 @@ def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
     tmp_path1 = os.path.join(tmp_path, "swantonc")
     os.makedirs(tmp_path1)
     dm = DataManagement()
-    source_dir = "tests/data/ont/runs/complete_runs"
+    source_dir = "tests/data/ont/complete_pipeline_outputs"
     target_dir = tmp_path
     dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
 
@@ -259,7 +259,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     tmp_path1 = os.path.join(tmp_path, "swantonc")
     os.makedirs(tmp_path1)
     dm = DataManagement()
-    source_dir = "tests/data/ont/runs/complete_runs"
+    source_dir = "tests/data/ont/complete_pipeline_outputs"
     target_dir = tmp_path
     dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
     dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path)
