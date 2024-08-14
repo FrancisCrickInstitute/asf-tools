@@ -270,7 +270,7 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
 @click.option(
     "-d",
     "--host_delivery_folder",
-    type=click.Path(exists=True),
+    type=click.Path(exists=False),
     required=False,
     help="Use when running inside a container to ensure sylinks are created in the correct location",
 )
