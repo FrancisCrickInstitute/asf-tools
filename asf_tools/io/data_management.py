@@ -114,7 +114,7 @@ class DataManagement:
                             info_dict["user"],
                             "asf",
                             info_dict["project_id"],
-                            info_dict["run_id"]
+                            info_dict["run_id"],
                         )
 
                     # symlink data to target path
