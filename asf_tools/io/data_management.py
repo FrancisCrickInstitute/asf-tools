@@ -166,6 +166,7 @@ class DataManagement:
             full_path = os.path.join(abs_source_path, entry)
             if os.path.isdir(full_path):
                 if self.check_pipeline_run_complete(full_path):
+                    log.debug(f"Found completed run: {entry}")
                     complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
         complete_pipeline_runs.sort()
 
@@ -193,5 +194,7 @@ class DataManagement:
                             "user": user,
                             "project_id": project_id,
                         }
+                    else:
+                        log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
