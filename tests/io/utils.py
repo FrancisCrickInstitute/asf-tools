@@ -49,16 +49,31 @@ def test_check_file_exist_isvalid(self):
     # Setup
     path1 = "tests/data/ont/runs/run01"
     path2 = "tests/data/ont/runs/run02"
-    pattern = "sequencing_summary"
+    path3 = "tests/data/ont/runs/run03"
+    pattern = "sequencing_summary*"
 
     # Test
     run1 = check_file_exist(path1, pattern)
     run2 = check_file_exist(path2, pattern)
-    print(run1)
+    run3 = check_file_exist(path3, pattern)
 
     # Assert
     self.assertTrue(run1)
-    self.assertFalse(run2)
+    self.assertTrue(run2)
+    self.assertFalse(run3)
+
+def test_check_file_exist_invalid(self):
+    """Test path returns false"""
+
+    # Setup
+    path1 = "tests/data/ont/runs/run03"
+    pattern = "sequencing_summary*"
+
+    # Test
+    run = check_file_exist(path1, pattern)
+
+    # Assert
+    self.assertFalse(run)
 
 
 def test_check_file_exist_pathnotexist(self):

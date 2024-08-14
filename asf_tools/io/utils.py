@@ -6,6 +6,7 @@ import hashlib
 import io
 import logging
 import os
+import re
 
 
 log = logging.getLogger(__name__)
@@ -89,8 +90,17 @@ def check_file_exist(path: str, pattern: str) -> bool:
     if not os.path.exists(path):
         raise FileNotFoundError(f"{path} does not exist.")
 
+    # Search for files that match regex with error handling
+    try:
+        re_pattern = re.compile(pattern)
+    except re.error:
+        log.error(f"Invalid regex pattern: {pattern}")
+        return False
     for filename in os.listdir(path):
-        print(filename)
-        if os.path.isfile(os.path.join(path, filename)) and pattern in filename:
-            return True
+        if os.path.isfile(os.path.join(path, filename)):
+            try:
+                if re_pattern.search(filename):
+                    return True
+            except re.error:
+                return False
     return False
