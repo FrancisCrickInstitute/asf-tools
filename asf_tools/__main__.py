@@ -268,6 +268,13 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
     help="Target directory",
 )
 @click.option(
+    "-d",
+    "--host_delivery_folder",
+    type=click.Path(exists=True),
+    required=False,
+    help="Use when running inside a container to ensure sylinks are created in the correct location",
+)
+@click.option(
     "-i",
     "--interactive",
     is_flag=True,
@@ -278,6 +285,7 @@ def deliver_to_targets(
     ctx,  # pylint: disable=W0613
     source_dir,
     target_dir,
+    host_delivery_folder,
     interactive,):
     """
     Symlinks demux outputs to the user directory
@@ -289,7 +297,8 @@ def deliver_to_targets(
         # Take the source / target literally and deliver
         dm.deliver_to_targets(
             source_dir,
-            target_dir
+            target_dir,
+            host_delivery_folder
         )
     else:
         # Interactivly scan for delivery targets
@@ -334,7 +343,8 @@ def deliver_to_targets(
                     log.info(f"Delivering {result}")
                     dm.deliver_to_targets(
                         os.path.join(source_dir, result, "results", "grouped"),
-                        target_dir
+                        target_dir,
+                        host_delivery_folder
                     )
 
 
