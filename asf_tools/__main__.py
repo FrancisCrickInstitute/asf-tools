@@ -343,7 +343,8 @@ def deliver_to_targets(
                     log.info(f"Delivering {result}")
                     dm.deliver_to_targets(
                         os.path.join(source_dir, result, "results", "grouped"),
-                        target_dir
+                        target_dir,
+                        host_delivery_folder
                     )
 
 
