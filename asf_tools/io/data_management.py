@@ -106,7 +106,15 @@ class DataManagement:
                     # Override symlink path if host provided to deal with symlink paths in containers
                     if symlink_host_base_path is not None:
                         source_path_to_runid = os.path.join(
-                            symlink_host_base_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"]
+                            symlink_host_base_path,
+                            info_dict["run_id"],
+                            "results",
+                            "grouped",
+                            info_dict["group"],
+                            info_dict["user"],
+                            "asf",
+                            info_dict["project_id"],
+                            info_dict["run_id"]
                         )
 
                     # symlink data to target path
