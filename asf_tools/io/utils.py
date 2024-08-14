@@ -6,6 +6,7 @@ import hashlib
 import io
 import logging
 import os
+import re
 
 
 log = logging.getLogger(__name__)
@@ -70,3 +71,36 @@ def list_directory_names(path: str) -> list:
         elif os.path.islink(full_path) and (not os.path.isfile(os.readlink(full_path))):  # For mounted file systems in containers
             directories.append(entry)
     return directories
+
+
+def check_file_exist(path: str, pattern: str) -> bool:
+    """
+    Searches for a file that contains a specific pattern in its name within the top-level directory.
+
+    Args:
+    path (str): The directory path where the search should be performed.
+    pattern (str): The pattern to search for within file names.
+
+    Returns:
+    bool: True if a file containing the given pattern is found, False otherwise.
+
+    Raises:
+    FileNotFoundError: If the provided path does not exist or is not a directory.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"{path} does not exist.")
+
+    # Search for files that match regex with error handling
+    try:
+        re_pattern = re.compile(pattern)
+    except re.error:
+        log.error(f"Invalid regex pattern: {pattern}")
+        return False
+    for filename in os.listdir(path):
+        if os.path.isfile(os.path.join(path, filename)):
+            try:
+                if re_pattern.search(filename):
+                    return True
+            except re.error:
+                return False
+    return False
