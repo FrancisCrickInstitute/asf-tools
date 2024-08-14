@@ -90,7 +90,7 @@ def check_file_exist(path: str, pattern: str) -> bool:
     if not os.path.exists(path):
         raise FileNotFoundError(f"{path} does not exist.")
 
-    # Search for files that match regex with error handling
+    # Search for files that match regex with error handling
     try:
         re_pattern = re.compile(pattern)
     except re.error:

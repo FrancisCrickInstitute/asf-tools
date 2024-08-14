@@ -36,6 +36,7 @@ def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
     self.assertFalse(os.path.exists(run_dir_3))
     self.assertFalse(os.path.exists(run_dir_4))
 
+
 @with_temporary_folder
 def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
     """ONT Gen demux run tests"""

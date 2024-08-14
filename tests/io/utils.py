@@ -62,6 +62,7 @@ def test_check_file_exist_isvalid(self):
     self.assertTrue(run2)
     self.assertFalse(run3)
 
+
 def test_check_file_exist_invalid(self):
     """Test path returns false"""
 
