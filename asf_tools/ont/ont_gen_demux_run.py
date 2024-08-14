@@ -61,6 +61,18 @@ class OntGenDemuxRun:
         source_dir_names = set(list_directory_names(self.source_dir))
         target_dir_names = set(list_directory_names(self.target_dir))
 
+        # Check for a sequencing_summary file in source directory to show that the run is completed
+        completed_runs = []
+        for run_name in source_dir_names:
+            sequence_summary_path = os.path.join(self.source_dir, run_name)
+            completed_file_exists = check_file_exist(sequence_summary_path, "sequencing_summary*")
+            if completed_file_exists:
+                completed_runs.append(run_name)
+            else:
+                log.debug(f"Skipping {run_name}: no summary file detected, run not completed.")
+        source_dir_names = set(completed_runs)
+        log.info(f"Found {len(completed_runs)} completed runs")
+
         # Get diff
         if self.samplesheet_only is False:
             dir_diff = source_dir_names - target_dir_names
@@ -69,25 +81,13 @@ class OntGenDemuxRun:
             dir_diff = target_dir_names
             log.info(f"Found {len(dir_diff)} existing run folders")
 
-        # Filter
+        # Filter for contains
         if self.contains is not None:
             dir_diff = [run for run in dir_diff if self.contains in run]
             log.info(f"Found {len(dir_diff)} new run folders after filtering for {self.contains}")
 
-        # Check for a sequencing_summary file in source directory
-        dir_diff_with_completed_run = []
-        for run_name in dir_diff:
-            sequence_summary_path = os.path.join(self.source_dir, run_name)
-            completed_file_exists = check_file_exist(sequence_summary_path, "sequencing_summary")
-            if completed_file_exists:
-                dir_diff_with_completed_run.append(run_name)
-            else:
-                log.debug(f"Skipping {run_name}: 'sequencing_summary' file not found in source directory")
-
-        log.info(f"Found {len(dir_diff_with_completed_run)} run folders with 'sequencing_summary' file in source directory")
-
         # Process runs
-        for run_name in dir_diff_with_completed_run:
+        for run_name in dir_diff:
             self.process_run(run_name)
 
         return 0
