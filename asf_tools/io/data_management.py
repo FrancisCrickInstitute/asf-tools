@@ -37,9 +37,9 @@ class DataManagement:
         transfer_data('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
         """
 
-        # Check if source paths exists
-        if not os.path.exists(data_path):
-            raise FileNotFoundError(f"{data_path} does not exist.")
+        # Check if source paths exists - commented out as I need to be able to symlink to non-existent paths
+        # if not os.path.exists(data_path):
+        #     raise FileNotFoundError(f"{data_path} does not exist.")
 
         # Check if it's a single or multiple target paths
         if isinstance(symlink_data_path, str):
@@ -61,7 +61,7 @@ class DataManagement:
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str):
+    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str, symlink_host_base_path: str = None):
         """
         Recursively collects subdirectories from `data_path`, collects info based on the path structure,
         and creates symlinks to `symlink_data_basepath`.
@@ -106,6 +106,20 @@ class DataManagement:
                     project_path = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
                     if not os.path.exists(project_path):
                         os.makedirs(project_path, exist_ok=True)
+
+                    # Override symlink path if host provided to deal with symlink paths in containers
+                    if symlink_host_base_path is not None:
+                        source_path_to_runid = os.path.join(
+                            symlink_host_base_path,
+                            info_dict["run_id"],
+                            "results",
+                            "grouped",
+                            info_dict["group"],
+                            info_dict["user"],
+                            "asf",
+                            info_dict["project_id"],
+                            info_dict["run_id"],
+                        )
 
                     # symlink data to target path
                     self.symlink_to_target(source_path_to_runid, project_path)
@@ -170,6 +184,7 @@ class DataManagement:
             full_path = os.path.join(abs_source_path, entry)
             if os.path.isdir(full_path):
                 if self.check_pipeline_run_complete(full_path):
+                    log.debug(f"Found completed run: {entry}")
                     complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
         complete_pipeline_runs.sort()
 
@@ -197,6 +212,8 @@ class DataManagement:
                             "user": user,
                             "project_id": project_id,
                         }
+                    else:
+                        log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
 
