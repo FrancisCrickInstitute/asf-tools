@@ -257,8 +257,9 @@ class DataManagement:
 
                 if dir_mtime < threshold_time:
                     formatted_mtime = dir_mtime.strftime("%B %d, %Y, %H:%M:%S UTC")
+                    days_since_modified = (current_time - dir_mtime).days
 
                     if not check_file_exist(dir_path, "archived_data"):
-                        old_folders[dir_path] = formatted_mtime
-
+                        old_folders[dir_name] = {"path": dir_name, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
+        print(old_folders)
         return old_folders

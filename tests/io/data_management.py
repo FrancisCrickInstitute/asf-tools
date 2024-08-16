@@ -334,8 +334,16 @@ def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_
 
     # Assert the result
     expected_result = {
-        "/test/path/dir1": "June 15, 2024, 00:00:00 UTC",
-        "/test/path/dir2": "June 15, 2024, 00:00:00 UTC",
+        "dir1": {
+            "path": "dir1",
+            "days_since_modified": 61,
+            "last_modified": "June 15, 2024, 00:00:00 UTC",
+        },
+        "dir2": {
+            "path": "dir2",
+            "days_since_modified": 61,
+            "last_modified": "June 15, 2024, 00:00:00 UTC",
+        },
     }
     self.assertEqual(result, expected_result)
 
