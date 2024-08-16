@@ -3,8 +3,8 @@ Tests for the data transfer class
 """
 
 import os
+from datetime import datetime
 from unittest import mock
-from datetime import datetime, timedelta
 
 from asf_tools.io.data_management import DataManagement
 
@@ -283,6 +283,7 @@ def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
     # Assert
     self.assertEqual(len(result), 1)
 
+
 @with_temporary_folder
 def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     """
@@ -304,13 +305,14 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     # Assert
     self.assertEqual(len(result), 0)
 
-@mock.patch('asf_tools.io.data_management.os.walk')
-@mock.patch('asf_tools.io.data_management.os.path.getmtime')
-@mock.patch('asf_tools.io.data_management.check_file_exist')
-@mock.patch('asf_tools.io.data_management.datetime')
+
+@mock.patch("asf_tools.io.data_management.os.walk")
+@mock.patch("asf_tools.io.data_management.os.path.getmtime")
+@mock.patch("asf_tools.io.data_management.check_file_exist")
+@mock.patch("asf_tools.io.data_management.datetime")
 def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
     """
-    Test function when the target path is newer than set time
+    Test function when the with mocked, older paths
     """
 
     # Set Up
@@ -321,23 +323,24 @@ def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_
 
     # setup mock return values
     mock_walk.return_value = [
-        ('/test/path', ['dir1', 'dir2'], []),
+        ("/test/path", ["dir1", "dir2"], []),
     ]
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15).timestamp()  # time older than threshold
     mock_check_file_exist.side_effect = lambda path, flag: False
 
     # Test
     dm = DataManagement()
-    result = dm.data_to_archive('/test/path', 2)
+    result = dm.data_to_archive("/test/path", 2)
 
     # Assert the result
     expected_result = {
-        '/test/path/dir1': 'June 15, 2024, 00:00:00 UTC',
-        '/test/path/dir2': 'June 15, 2024, 10:00:00 UTC',
+        "/test/path/dir1": "June 15, 2024, 00:00:00 UTC",
+        "/test/path/dir2": "June 15, 2024, 00:00:00 UTC",
     }
     self.assertEqual(result, expected_result)
 
-def test_test_data_to_archive_noolddir():
+
+def test_test_data_to_archive_noolddir(self):
     """
     Test function when the target path is newer than set time
     """
@@ -353,7 +356,8 @@ def test_test_data_to_archive_noolddir():
     # Assert
     assert not old_data
 
-def test_test_data_to_archive_nodirs():
+
+def test_test_data_to_archive_nodirs(self):
     """
     Test function when the target path has no sub-directories
     """
