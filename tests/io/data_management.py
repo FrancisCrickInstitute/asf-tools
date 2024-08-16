@@ -348,7 +348,7 @@ def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_
     self.assertEqual(result, expected_result)
 
 
-def test_test_data_to_archive_noolddir(self):
+def test_test_data_to_archive_noolddir(self):  # pylint: disable=unused-variable
     """
     Test function when the target path is newer than set time
     """
@@ -365,7 +365,7 @@ def test_test_data_to_archive_noolddir(self):
     assert not old_data
 
 
-def test_test_data_to_archive_nodirs(self):
+def test_test_data_to_archive_nodirs(self):  # pylint: disable=unused-variable
     """
     Test function when the target path has no sub-directories
     """

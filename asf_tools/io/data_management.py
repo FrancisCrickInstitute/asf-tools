@@ -261,5 +261,5 @@ class DataManagement:
 
                     if not check_file_exist(dir_path, "archived_data"):
                         old_folders[dir_name] = {"path": dir_name, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
-        print(old_folders)
+
         return old_folders
