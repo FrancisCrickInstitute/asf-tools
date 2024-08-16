@@ -6,7 +6,7 @@ import os
 
 from asf_tools.io.data_management import DataManagement
 
-from .utils import with_temporary_folder
+from .utils import with_temporary_folder, check_file_exist
 
 
 @with_temporary_folder
@@ -269,3 +269,56 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
     # Assert
     self.assertEqual(len(result), 0)
+
+def test_data_to_archive(self):
+    # Set up
+    dm = DataManagement()
+    data_path = "tests/data/ont/runs"
+    archived = []
+    for root, dirs, files in os.walk(data_path):
+        for dir_name in dirs:
+            if check_file_exist(dir_name, "archived_data"):
+                archived.extend(dir_name)
+
+
+    # Test
+    # Return dirs that are older than 1 hr
+    old_data = dm.data_to_archive(data_path, 0.00137)
+    print(old_data)
+
+    # Assert
+    for dir_path in archived:
+        assert dir_path not in old_data
+    #     self.assertNotIn(dir_path, old_data)
+    assert old_data == {'tests/data/ont/runs/run01': 'August 15, 2024, 10:09:38 UTC', 'tests/data/ont/runs/run02': 'August 15, 2024, 10:09:38 UTC'}
+
+def test_test_data_to_archive_noolddir(self):
+    """
+    Test function when the target path is newer than set time
+    """
+
+    # Set up
+    dm = DataManagement()
+    data_path = "tests/data/ont/runs"
+
+    # Test
+    # Return dirs that are older than 1000 months
+    old_data = dm.data_to_archive(data_path, 1000)
+
+    # Assert
+    assert old_data == {}
+
+def test_test_data_to_archive_nodirs(self):
+    """
+    Test function when the target path has no sub-directories
+    """
+
+    # Set up
+    dm = DataManagement()
+    data_path = "tests/data/ont/runs/run01"
+
+    # Test
+    old_data = dm.data_to_archive(data_path, 10)
+
+    # Assert
+    assert old_data == {}
