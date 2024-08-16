@@ -3,10 +3,12 @@ Tests for the data transfer class
 """
 
 import os
+from unittest import mock
+from datetime import datetime, timedelta
 
 from asf_tools.io.data_management import DataManagement
 
-from .utils import check_file_exist, with_temporary_folder
+from .utils import with_temporary_folder
 
 
 # @with_temporary_folder
@@ -281,7 +283,6 @@ def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
     # Assert
     self.assertEqual(len(result), 1)
 
-
 @with_temporary_folder
 def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     """
@@ -303,32 +304,38 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     # Assert
     self.assertEqual(len(result), 0)
 
-
-def test_data_to_archive():
+@mock.patch('asf_tools.io.data_management.os.walk')
+@mock.patch('asf_tools.io.data_management.os.path.getmtime')
+@mock.patch('asf_tools.io.data_management.check_file_exist')
+@mock.patch('asf_tools.io.data_management.datetime')
+def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
     """
-    Test function when the source path has dirs older than 1 hr
+    Test function when the target path is newer than set time
     """
 
-    # Set up
-    dm = DataManagement()
-    data_path = "tests/data/ont/runs"
-    archived = []
-    for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
-        for dir_name in dirs:
-            if check_file_exist(dir_name, "archived_data"):
-                archived.extend(dir_name)
+    # Set Up
+    # mock current time
+    fixed_current_time = datetime(2024, 8, 15)
+    mock_datetime.now.return_value = fixed_current_time
+    mock_datetime.fromtimestamp = datetime.fromtimestamp
+
+    # setup mock return values
+    mock_walk.return_value = [
+        ('/test/path', ['dir1', 'dir2'], []),
+    ]
+    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15).timestamp()  # time older than threshold
+    mock_check_file_exist.side_effect = lambda path, flag: False
 
     # Test
-    # Return dirs that are older than 1 hr
-    old_data = dm.data_to_archive(data_path, 0.00137)
-    print(old_data)
+    dm = DataManagement()
+    result = dm.data_to_archive('/test/path', 2)
 
-    # Assert
-    for dir_path in archived:
-        assert dir_path not in old_data
-    #     self.assertNotIn(dir_path, old_data)
-    assert old_data == {"tests/data/ont/runs/run01": "August 15, 2024, 10:09:38 UTC", "tests/data/ont/runs/run02": "August 15, 2024, 10:09:38 UTC"}
-
+    # Assert the result
+    expected_result = {
+        '/test/path/dir1': 'June 15, 2024, 00:00:00 UTC',
+        '/test/path/dir2': 'June 15, 2024, 10:00:00 UTC',
+    }
+    self.assertEqual(result, expected_result)
 
 def test_test_data_to_archive_noolddir():
     """
@@ -345,7 +352,6 @@ def test_test_data_to_archive_noolddir():
 
     # Assert
     assert not old_data
-
 
 def test_test_data_to_archive_nodirs():
     """
