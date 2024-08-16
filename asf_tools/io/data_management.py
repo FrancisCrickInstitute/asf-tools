@@ -232,10 +232,13 @@ class DataManagement:
                             in the last `n_months` will be included.
 
         Returns:
-            dict: A dictionary where each key is the path of a directory that meets the
-                criteria (older than `n_months` and not already archived), and the
-                value is a string representing the last modification time of that directory
-                in the format "Month Day, Year, HH:MM:SS UTC".
+            dict: A dictionary where each key is the name of a directory that meets the
+                criteria (older than `n_months` and not already archived). The value
+                is a dictionary containing:
+                    - "path": The full path to the directory.
+                    - "days_since_modified": The number of days since the directory was last modified.
+                    - "last_modified": A string representing the last modification time of the directory
+                    in the format "Month Day, Year, HH:MM:SS UTC".
 
         Notes:
             - The threshold for old directories is calculated based on an average month length
