@@ -5,8 +5,7 @@ Helper functions for data management
 import logging
 import os
 import subprocess
-import time
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 from .utils import check_file_exist
 
@@ -219,27 +218,27 @@ class DataManagement:
 
     def data_to_archive(self, path: str, n_months: int) -> dict:
         """
-        Identify directories within a specified path that have not been modified in the 
+        Identify directories within a specified path that have not been modified in the
         last `n_months` and are not already archived.
 
-        This method traverses the directory tree starting from the given `path` and 
-        collects paths of directories that have not been modified for at least `n_months`. 
+        This method traverses the directory tree starting from the given `path` and
+        collects paths of directories that have not been modified for at least `n_months`.
         It excludes directories that have already been marked as archived.
 
         Args:
             path (str): The root directory path to start the search from.
-            n_months (int): The number of months to use as the threshold for determining 
-                            which directories are considered old. Directories not modified 
+            n_months (int): The number of months to use as the threshold for determining
+                            which directories are considered old. Directories not modified
                             in the last `n_months` will be included.
 
         Returns:
-            dict: A dictionary where each key is the path of a directory that meets the 
-                criteria (older than `n_months` and not already archived), and the 
-                value is a string representing the last modification time of that directory 
+            dict: A dictionary where each key is the path of a directory that meets the
+                criteria (older than `n_months` and not already archived), and the
+                value is a string representing the last modification time of that directory
                 in the format "Month Day, Year, HH:MM:SS UTC".
 
         Notes:
-            - The threshold for old directories is calculated based on an average month length 
+            - The threshold for old directories is calculated based on an average month length
             of 30.44 days.
         """
 
@@ -249,14 +248,14 @@ class DataManagement:
 
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         old_folders = {}
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
             for dir_name in dirs:
                 dir_path = os.path.join(root, dir_name)
 
                 # Get the folder's last modification time
                 dir_mtime = datetime.fromtimestamp(os.path.getmtime(dir_path))
 
-                if  dir_mtime < threshold_time:
+                if dir_mtime < threshold_time:
                     formatted_mtime = dir_mtime.strftime("%B %d, %Y, %H:%M:%S UTC")
 
                     if not check_file_exist(dir_path, "archived_data"):

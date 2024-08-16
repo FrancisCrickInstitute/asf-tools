@@ -6,7 +6,7 @@ import os
 
 from asf_tools.io.data_management import DataManagement
 
-from .utils import with_temporary_folder, check_file_exist
+from .utils import check_file_exist, with_temporary_folder
 
 
 # @with_temporary_folder
@@ -303,16 +303,20 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     # Assert
     self.assertEqual(len(result), 0)
 
-def test_data_to_archive(self):
+
+def test_data_to_archive():
+    """
+    Test function when the source path has dirs older than 1 hr
+    """
+
     # Set up
     dm = DataManagement()
     data_path = "tests/data/ont/runs"
     archived = []
-    for root, dirs, files in os.walk(data_path):
+    for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
         for dir_name in dirs:
             if check_file_exist(dir_name, "archived_data"):
                 archived.extend(dir_name)
-
 
     # Test
     # Return dirs that are older than 1 hr
@@ -323,9 +327,10 @@ def test_data_to_archive(self):
     for dir_path in archived:
         assert dir_path not in old_data
     #     self.assertNotIn(dir_path, old_data)
-    assert old_data == {'tests/data/ont/runs/run01': 'August 15, 2024, 10:09:38 UTC', 'tests/data/ont/runs/run02': 'August 15, 2024, 10:09:38 UTC'}
+    assert old_data == {"tests/data/ont/runs/run01": "August 15, 2024, 10:09:38 UTC", "tests/data/ont/runs/run02": "August 15, 2024, 10:09:38 UTC"}
 
-def test_test_data_to_archive_noolddir(self):
+
+def test_test_data_to_archive_noolddir():
     """
     Test function when the target path is newer than set time
     """
@@ -339,9 +344,10 @@ def test_test_data_to_archive_noolddir(self):
     old_data = dm.data_to_archive(data_path, 1000)
 
     # Assert
-    assert old_data == {}
+    assert not old_data
 
-def test_test_data_to_archive_nodirs(self):
+
+def test_test_data_to_archive_nodirs():
     """
     Test function when the target path has no sub-directories
     """
@@ -354,4 +360,4 @@ def test_test_data_to_archive_nodirs(self):
     old_data = dm.data_to_archive(data_path, 10)
 
     # Assert
-    assert old_data == {}
+    assert not old_data
