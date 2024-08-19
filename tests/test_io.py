@@ -11,6 +11,8 @@ class TestIo(unittest.TestCase):
     from .io.data_management import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_pipeline_run_complete_false,
         test_check_pipeline_run_complete_true,
+        test_check_ont_sequencing_run_complete_false,
+        test_check_ont_sequencing_run_complete_true,
         test_deliver_to_targets_no_user,
         test_deliver_to_targets_source_invalid,
         test_deliver_to_targets_symlink_overide,

@@ -6,6 +6,8 @@ import logging
 import os
 import subprocess
 
+from asf_tools.io.utils import check_file_exist
+
 
 # Set up logging as the root logger
 log = logging.getLogger()
@@ -13,8 +15,31 @@ log = logging.getLogger()
 
 class DataManagement:
     """
-    Creates symlinks from raw data to symlink_folder
+    Helper functions for data management
     """
+
+    def check_pipeline_run_complete(self, run_dir: str):
+        """
+        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
+        return os.path.exists(completed_file)
+
+    def check_ont_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an ONT sequencing run is complete by checking for the presence of the `sequencing_summary`
+        file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+        """
+        return check_file_exist(run_dir, "sequencing_summary*")
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
@@ -125,19 +150,6 @@ class DataManagement:
             log.warning(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
-
-    def check_pipeline_run_complete(self, run_dir: str):
-        """
-        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
-
-        Args:
-        - run_dir (str): Path to the run directory.
-
-        Returns:
-        - bool: True if the run directory is complete, False otherwise.
-        """
-        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
-        return os.path.exists(completed_file)
 
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
