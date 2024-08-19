@@ -9,19 +9,68 @@ from asf_tools.io.data_management import DataManagement
 from .utils import with_temporary_folder
 
 
-# @with_temporary_folder
-# def test_symlink_to_target_isinvalid_source(self, tmp_path):
-#     """
-#     Check existence of input path
-#     """
+def test_check_pipeline_run_complete_false(self):
+    """
+    Test function when the pipeline run is not complete
+    """
 
-#     # Set up
-#     dt = DataManagement()
-#     invalid_path = os.path.join(tmp_path, "invalid")
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run01"
 
-#     # Test and Assert
-#     with self.assertRaises(FileNotFoundError):
-#         dt.symlink_to_target(invalid_path, tmp_path)
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_pipeline_run_complete_true(self):
+    """
+    Test function when the pipeline run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
+
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
+
+
+def test_check_ont_sequencing_run_complete_false(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run03"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_true(self):
+    """
+    Test function when the ONT sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run01"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
 
 
 @with_temporary_folder
@@ -179,38 +228,6 @@ def test_deliver_to_targets_symlink_overide(self, tmp_path):
     self.assertTrue("/test/path" in link)
 
 
-def test_check_pipeline_run_complete_false(self):
-    """
-    Test function when the pipeline run is not complete
-    """
-
-    # Set up
-    dm = DataManagement()
-    run_dir = "tests/data/ont/runs/run01"
-
-    # Test
-    result = dm.check_pipeline_run_complete(run_dir)
-
-    # Assert
-    self.assertFalse(result)
-
-
-def test_check_pipeline_run_complete_true(self):
-    """
-    Test function when the pipeline run is complete
-    """
-
-    # Set up
-    dm = DataManagement()
-    run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
-
-    # Test
-    result = dm.check_pipeline_run_complete(run_dir)
-
-    # Assert
-    self.assertTrue(result)
-
-
 def test_scan_delivery_state_source_invalid(self):
     """
     Test function when the source path doesn't exist
@@ -302,3 +319,29 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
     # Assert
     self.assertEqual(len(result), 0)
+
+
+def test_scan_run_state_valid(self):
+    """
+    Test scan run state with a valid configuration
+    """
+
+    # Set up
+    dm = DataManagement()
+    raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
+    run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
+    target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+
+    # Test
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir)
+
+    # Assert
+    target_dict = {
+        # 'run_01': {'status': 'delivered'},
+        "run_02": {"status": "ready_to_deliver"},
+        "run_03": {"status": "samplesheet_generated"},
+        "run_04": {"status": "samplesheet_generated"},
+        "run_05": {"status": "sequencing_complete"},
+        "run_06": {"status": "sequencing_in_progress"},
+    }
+    self.assertEqual(data, target_dict)

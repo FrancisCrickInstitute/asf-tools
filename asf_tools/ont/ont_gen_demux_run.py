@@ -7,6 +7,7 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
+from asf_tools.io.data_management import DataManagement
 from asf_tools.io.utils import check_file_exist, list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
 
@@ -57,6 +58,9 @@ class OntGenDemuxRun:
 
         log.debug("Scanning run folder")
 
+        # Init
+        dm = DataManagement()
+
         # Pull list of directory names
         source_dir_names = set(list_directory_names(self.source_dir))
         target_dir_names = set(list_directory_names(self.target_dir))
@@ -64,8 +68,8 @@ class OntGenDemuxRun:
         # Check for a sequencing_summary file in source directory to show that the run is completed
         completed_runs = []
         for run_name in source_dir_names:
-            sequence_summary_path = os.path.join(self.source_dir, run_name)
-            completed_file_exists = check_file_exist(sequence_summary_path, "sequencing_summary*")
+            run_dir = os.path.join(self.source_dir, run_name)
+            completed_file_exists = dm.check_ont_sequencing_run_complete(run_dir)
             if completed_file_exists:
                 completed_runs.append(run_name)
             else:
