@@ -6,6 +6,8 @@ import logging
 import os
 import subprocess
 
+from asf_tools.io.utils import check_file_exist
+
 
 # Set up logging as the root logger
 log = logging.getLogger()
@@ -13,8 +15,31 @@ log = logging.getLogger()
 
 class DataManagement:
     """
-    Creates symlinks from raw data to symlink_folder
+    Helper functions for data management
     """
+
+    def check_pipeline_run_complete(self, run_dir: str):
+        """
+        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
+        return os.path.exists(completed_file)
+
+    def check_ont_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an ONT sequencing run is complete by checking for the presence of the `sequencing_summary`
+        file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+        """
+        return check_file_exist(run_dir, "sequencing_summary*")
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
@@ -126,19 +151,6 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def check_pipeline_run_complete(self, run_dir: str):
-        """
-        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
-
-        Args:
-        - run_dir (str): Path to the run directory.
-
-        Returns:
-        - bool: True if the run directory is complete, False otherwise.
-        """
-        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
-        return os.path.exists(completed_file)
-
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
         Scans the given source directory for completed pipeline runs and checks
@@ -212,3 +224,89 @@ class DataManagement:
                         log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
+
+    def scan_run_state(self, raw_dir: str, run_dir: str, target_dir: str):
+        """
+        Scans and determines the state of sequencing runs based on their presence in
+        raw, run, and target directories. The method checks if the directories exist,
+        processes the directories to determine the status of sequencing and pipeline runs,
+        and updates the status based on the delivery state.
+
+        Parameters:
+        -----------
+        raw_dir : str
+            Path to the directory containing raw sequencing data.
+
+        run_dir : str
+            Path to the directory containing run-related data (e.g., pipeline outputs).
+
+        target_dir : str
+            Path to the directory intended for final delivery of processed data.
+
+        Returns:
+        --------
+        dict
+            A dictionary where the keys are run identifiers and the values are dictionaries
+            containing the status of each run. The possible statuses are:
+
+            - "sequencing_in_progress": Sequencing is currently ongoing for the run.
+            - "sequencing_complete": Sequencing has completed for the run.
+            - "samplesheet_generated": A samplesheet has been generated for the run.
+            - "pipeline_complete": The pipeline has completed processing for the run.
+            - "ready_to_deliver": The run is ready to be delivered.
+            - "delivered": The run has already been delivered.
+
+        Raises:
+        -------
+        FileNotFoundError
+        If any of `raw_dir`, `run_dir`, or `target_dir` do not exist.
+        """
+        # check if source_dir exists
+        if not os.path.exists(raw_dir):
+            raise FileNotFoundError(f"{raw_dir} does not exist.")
+
+        # check if run_dir exists
+        if not os.path.exists(run_dir):
+            raise FileNotFoundError(f"{run_dir} does not exist.")
+
+        # check if target_dir exists
+        if not os.path.exists(target_dir):
+            raise FileNotFoundError(f"{target_dir} does not exist.")
+
+        # process raw directories
+        run_info = {}
+        abs_raw_path = os.path.abspath(raw_dir)
+        for entry in os.listdir(abs_raw_path):
+            full_path = os.path.join(abs_raw_path, entry)
+            if os.path.isdir(full_path):
+                status = "sequencing_in_progress"
+                if self.check_ont_sequencing_run_complete(full_path):
+                    status = "sequencing_complete"
+                run_info[entry] = {"status": status}
+        run_info = dict(sorted(run_info.items()))
+
+        # process run directories
+        abs_run_path = os.path.abspath(run_dir)
+        for entry in os.listdir(abs_run_path):
+            full_path = os.path.join(abs_run_path, entry)
+            if os.path.isdir(full_path):
+                status = "samplesheet_generated"
+                if self.check_pipeline_run_complete(full_path):
+                    status = "pipeline_complete"
+                run_info[entry]["status"] = status
+
+        # scan for delivery state
+        deliverable_runs = self.scan_delivery_state(run_dir, target_dir)
+
+        # Scan for delivery state
+        for run_id, info in run_info.items():
+            if info["status"] == "pipeline_complete":
+                if run_id in deliverable_runs:
+                    run_info[run_id]["status"] = "ready_to_deliver"
+                else:
+                    run_info[run_id]["status"] = "delivered"
+
+        # Remove delivered items
+        run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
+
+        return run_info
