@@ -374,9 +374,9 @@ def scan_run_state(
     def get_state_color(status):
         if status == "sequencing_in_progress":
             return "red"
-        elif status == "sequencing_complete":
+        if status == "sequencing_complete":
             return "rgb(255,165,0)"
-        elif status == "samplesheet_generated":
+        if status == "samplesheet_generated":
             return "yellow"
         else:
             return "green"
