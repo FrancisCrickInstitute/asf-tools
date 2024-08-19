@@ -4,7 +4,9 @@ Helper functions for updating version
 """
 
 import subprocess
+
 import toml
+
 
 def get_version():
     """
@@ -18,20 +20,21 @@ def get_version():
         str: The generated version string.
     """
     try:
-        tag = subprocess.check_output(['git', 'describe', '--tags']).strip().decode('utf-8')
-        if '-' in tag:
-            tag, commits, _ = tag.split('-')
+        tag = subprocess.check_output(["git", "describe", "--tags"]).strip().decode("utf-8")
+        if "-" in tag:
+            tag, commits, _ = tag.split("-")
             version = f"{tag}.{commits}"
         else:
             version = tag
     except subprocess.CalledProcessError:
         version = "0.1"
 
-    branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
-    if branch != 'main':
+    branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip().decode("utf-8")
+    if branch != "main":
         version += "-dev"
 
     return version
+
 
 def update_pyproject_version():
     """
@@ -44,17 +47,18 @@ def update_pyproject_version():
     version = get_version()
 
     # Load pyproject.toml
-    with open('pyproject.toml', 'r', encoding='utf-8') as file:
+    with open("pyproject.toml", "r", encoding="utf-8") as file:
         pyproject_data = toml.load(file)
 
     # Update the version field
-    pyproject_data['project']['version'] = version
+    pyproject_data["project"]["version"] = version
 
     # Write back the changes to pyproject.toml
-    with open('pyproject.toml', 'w', encoding='utf-8') as file:
+    with open("pyproject.toml", "w", encoding="utf-8") as file:
         toml.dump(pyproject_data, file)
 
     print(f"Updated pyproject.toml version to {version}")
+
 
 if __name__ == "__main__":
     update_pyproject_version()
