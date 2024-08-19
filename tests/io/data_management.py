@@ -337,7 +337,7 @@ def test_scan_run_state_valid(self):
 
     # Assert
     target_dict = {
-        'run_01': {'status': 'delivered'},
+        # 'run_01': {'status': 'delivered'},
         'run_02': {'status': 'ready_to_deliver'},
         'run_03': {'status': 'samplesheet_generated'},
         'run_04': {'status': 'samplesheet_generated'},

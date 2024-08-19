@@ -306,4 +306,7 @@ class DataManagement:
                 else:
                     run_info[run_id]["status"] = "delivered"
 
+        # Remove delivered items
+        run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
+
         return run_info
