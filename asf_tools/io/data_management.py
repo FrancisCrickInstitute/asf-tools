@@ -227,35 +227,35 @@ class DataManagement:
 
     def scan_run_state(self, raw_dir: str, run_dir: str, target_dir: str):
         """
-        Scans and determines the state of sequencing runs based on their presence in 
-        raw, run, and target directories. The method checks if the directories exist, 
-        processes the directories to determine the status of sequencing and pipeline runs, 
+        Scans and determines the state of sequencing runs based on their presence in
+        raw, run, and target directories. The method checks if the directories exist,
+        processes the directories to determine the status of sequencing and pipeline runs,
         and updates the status based on the delivery state.
 
         Parameters:
         -----------
         raw_dir : str
             Path to the directory containing raw sequencing data.
-            
+
         run_dir : str
             Path to the directory containing run-related data (e.g., pipeline outputs).
-            
+
         target_dir : str
             Path to the directory intended for final delivery of processed data.
 
         Returns:
         --------
         dict
-            A dictionary where the keys are run identifiers and the values are dictionaries 
+            A dictionary where the keys are run identifiers and the values are dictionaries
             containing the status of each run. The possible statuses are:
-            
+
             - "sequencing_in_progress": Sequencing is currently ongoing for the run.
             - "sequencing_complete": Sequencing has completed for the run.
             - "samplesheet_generated": A samplesheet has been generated for the run.
             - "pipeline_complete": The pipeline has completed processing for the run.
             - "ready_to_deliver": The run is ready to be delivered.
             - "delivered": The run has already been delivered.
-        
+
         Raises:
         -------
         FileNotFoundError
@@ -295,7 +295,7 @@ class DataManagement:
                     status = "pipeline_complete"
                 run_info[entry]["status"] = status
 
-        # scan for delivery state
+        # scan for delivery state
         deliverable_runs = self.scan_delivery_state(run_dir, target_dir)
 
         # Scan for delivery state
@@ -306,7 +306,7 @@ class DataManagement:
                 else:
                     run_info[run_id]["status"] = "delivered"
 
-        # Remove delivered items
+        # Remove delivered items
         run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
 
         return run_info

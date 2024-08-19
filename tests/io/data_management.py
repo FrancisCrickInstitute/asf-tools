@@ -335,13 +335,13 @@ def test_scan_run_state_valid(self):
     # Test
     data = dm.scan_run_state(raw_dir, run_dir, target_dir)
 
-    # Assert
+    # Assert
     target_dict = {
         # 'run_01': {'status': 'delivered'},
-        'run_02': {'status': 'ready_to_deliver'},
-        'run_03': {'status': 'samplesheet_generated'},
-        'run_04': {'status': 'samplesheet_generated'},
-        'run_05': {'status': 'sequencing_complete'},
-        'run_06': {'status': 'sequencing_in_progress'}
-                }
+        "run_02": {"status": "ready_to_deliver"},
+        "run_03": {"status": "samplesheet_generated"},
+        "run_04": {"status": "samplesheet_generated"},
+        "run_05": {"status": "sequencing_complete"},
+        "run_06": {"status": "sequencing_in_progress"},
+    }
     self.assertEqual(data, target_dict)
