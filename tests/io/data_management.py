@@ -319,3 +319,29 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
     # Assert
     self.assertEqual(len(result), 0)
+
+
+def test_scan_run_state_valid(self):
+    """
+    Test scan run state with a valid configuration
+    """
+
+    # Set up
+    dm = DataManagement()
+    raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
+    run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
+    target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+
+    # Test
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir)
+
+    # Assert
+    target_dict = {
+        'run_01': {'status': 'delivered'},
+        'run_02': {'status': 'ready_to_deliver'},
+        'run_03': {'status': 'samplesheet_generated'},
+        'run_04': {'status': 'samplesheet_generated'},
+        'run_05': {'status': 'sequencing_complete'},
+        'run_06': {'status': 'sequencing_in_progress'}
+                }
+    self.assertEqual(data, target_dict)
