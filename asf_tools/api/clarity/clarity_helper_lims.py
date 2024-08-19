@@ -326,13 +326,11 @@ class ClarityHelperLims(ClarityLims):
         """
         # Collect general sample info
         sample_metadata = self.collect_ont_samplesheet_info(run_id)
-        # print(sample_metadata)
 
         # Extract additional sample info
         expanded_metadata = {}
         for sample in sample_metadata:
             sample_ext = self.get_samples(search_id=sample)
-            # print(sample_ext)
             project_limsid = sample_ext.project.limsid
             reference_genome = sample_ext.udf_fields[4].value
             data_analysis_type = sample_ext.udf_fields[7].value
@@ -349,7 +347,6 @@ class ClarityHelperLims(ClarityLims):
                 if key in expanded_metadata:
                     expanded_metadata[key][sub_key] = sub_value
 
-        # print(expanded_metadata)
         return expanded_metadata
 
 
