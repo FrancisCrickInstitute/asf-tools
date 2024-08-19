@@ -13,7 +13,6 @@ RUN pip install toml
 RUN python update_version.py
 
 # Install program
-# RUN pip install .
-RUN --mount=source=.git,target=.git,type=bind pip install .
+RUN pip install .
 
 CMD ["bash"]
