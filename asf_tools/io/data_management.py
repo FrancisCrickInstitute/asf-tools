@@ -277,6 +277,8 @@ class DataManagement:
         run_info = {}
         abs_raw_path = os.path.abspath(raw_dir)
         for entry in os.listdir(abs_raw_path):
+            if entry.startswith("."):
+                continue
             full_path = os.path.join(abs_raw_path, entry)
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
