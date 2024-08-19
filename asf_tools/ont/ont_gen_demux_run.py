@@ -163,6 +163,7 @@ class OntGenDemuxRun:
 #SBATCH --time=168:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
+#SBATCH --res=asf
 
 {header_str}
 
