@@ -27,22 +27,6 @@ log = logging.getLogger()
 click.rich_click.MAX_WIDTH = 100
 click.rich_click.USE_RICH_MARKUP = True
 
-# Setup command groups
-click.rich_click.COMMAND_GROUPS = {
-    "asf-tools": [
-    ],
-    "asf-tools ont": [
-        {
-            "name": "Manual",
-            "commands": [],
-        },
-        {
-            "name": "Automation",
-            "commands": ["gen-demux-run"],
-        },
-    ]
-}
-
 # Set up rich stderr console
 stderr = rich.console.Console(stderr=True)
 stdout = rich.console.Console()
