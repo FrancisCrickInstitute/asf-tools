@@ -5,7 +5,7 @@ Helper functions for data management
 import logging
 import os
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from .utils import check_file_exist
 
@@ -216,7 +216,7 @@ class DataManagement:
 
         return deliverable_runs
 
-    def data_to_archive(self, path: str, n_months: int) -> dict:
+    def list_old_files(self, path: str, months: int) -> dict:
         """
         Identify directories within a specified path that have not been modified in the
         last `n_months` and are not already archived.
@@ -246,23 +246,35 @@ class DataManagement:
         """
 
         # Get the current time and calculate the threshold time for archival
-        current_time = datetime.now()
-        threshold_time = current_time - timedelta(days=n_months * 30.44)
+        current_time = datetime.now(timezone.utc)
+        threshold_time = current_time - timedelta(days=months * 30.44)
+        threshold_time = threshold_time.replace(tzinfo=timezone.utc)
 
+        print(threshold_time)
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         old_folders = {}
         for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
-            for dir_name in dirs:
-                dir_path = os.path.join(root, dir_name)
+            if root == path:
+                for dir_name in dirs:
+                    dir_path = os.path.join(root, dir_name)
 
-                # Get the folder's last modification time
-                dir_mtime = datetime.fromtimestamp(os.path.getmtime(dir_path))
+                    # Get the folder's last modification time
+                    latest_mod_time = datetime.fromtimestamp(os.path.getmtime(dir_path), tz=timezone.utc)
 
-                if dir_mtime < threshold_time:
-                    formatted_mtime = dir_mtime.strftime("%B %d, %Y, %H:%M:%S UTC")
-                    days_since_modified = (current_time - dir_mtime).days
+                    # Check all files in the directory
+                    for filename in files:
+                        file_path = os.path.join(dir_path, filename)
+                        mod_time = datetime.fromtimestamp(os.path.getmtime(file_path), tz=timezone.utc)
+                        if mod_time > latest_mod_time:
+                            latest_mod_time = mod_time
 
-                    if not check_file_exist(dir_path, "archive_readme"):
-                        old_folders[dir_name] = {"path": dir_name, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
+                    print(latest_mod_time)
+                    print(current_time)
+                    if latest_mod_time < threshold_time:
+                        formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
+                        days_since_modified = (current_time - latest_mod_time).days
+
+                        if not check_file_exist(dir_path, "archive_readme"):
+                            old_folders[dir_name] = {"path": dir_name, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
 
         return old_folders

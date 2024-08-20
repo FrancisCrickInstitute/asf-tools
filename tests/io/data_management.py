@@ -310,7 +310,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.check_file_exist")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
+def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
     """
     Test function when the with mocked, older paths
     """
@@ -330,7 +330,7 @@ def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_
 
     # Test
     dm = DataManagement()
-    result = dm.data_to_archive("/test/path", 2)
+    result = dm.list_old_files("/test/path", 2)
 
     # Assert the result
     expected_result = {
@@ -348,7 +348,7 @@ def test_data_to_archive_valid(self, mock_datetime, mock_check_file_exist, mock_
     self.assertEqual(result, expected_result)
 
 
-def test_test_data_to_archive_noolddir(self):  # pylint: disable=unused-variable
+def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
     """
     Test function when the target path is newer than set time
     """
@@ -359,13 +359,13 @@ def test_test_data_to_archive_noolddir(self):  # pylint: disable=unused-variable
 
     # Test
     # Return dirs that are older than 1000 months
-    old_data = dm.data_to_archive(data_path, 1000)
+    old_data = dm.list_old_files(data_path, 1000)
 
     # Assert
     assert not old_data
 
 
-def test_test_data_to_archive_nodirs(self):  # pylint: disable=unused-variable
+def test_list_old_files_nodirs(self):  # pylint: disable=unused-variable
     """
     Test function when the target path has no sub-directories
     """
@@ -375,7 +375,7 @@ def test_test_data_to_archive_nodirs(self):  # pylint: disable=unused-variable
     data_path = "tests/data/ont/runs/run01"
 
     # Test
-    old_data = dm.data_to_archive(data_path, 10)
+    old_data = dm.list_old_files(data_path, 10)
 
     # Assert
     assert not old_data
