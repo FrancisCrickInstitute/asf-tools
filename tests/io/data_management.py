@@ -335,12 +335,12 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
     # Assert the result
     expected_result = {
         "dir1": {
-            "path": "dir1",
+            "path": "/test/path/dir1",
             "days_since_modified": 61,
             "last_modified": "June 15, 2024, 00:00:00 UTC",
         },
         "dir2": {
-            "path": "dir2",
+            "path": "/test/path/dir2",
             "days_since_modified": 61,
             "last_modified": "June 15, 2024, 00:00:00 UTC",
         },
@@ -351,7 +351,7 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.check_file_exist")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_list_old_files_with_files_in_dir(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
+def test_list_old_files_with_modified_files_in_dir(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
     """
     Test function with directories that have files affecting the modification time
     """
@@ -377,18 +377,16 @@ def test_list_old_files_with_files_in_dir(self, mock_datetime, mock_check_file_e
     # Assert the result
     expected_result = {
         "dir1": {
-            "path": "dir1",
+            "path": "/test/path/dir1",
             "days_since_modified": 61,
             "last_modified": "June 15, 2024, 00:00:00 UTC",
         },
     }
     self.assertEqual(result, expected_result)
 
-@mock.patch("asf_tools.io.data_management.os.walk")
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
-@mock.patch("asf_tools.io.data_management.check_file_exist")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
+def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):
     """
     Test function with directories that have files affecting the modification time
     """
@@ -397,19 +395,16 @@ def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_check_file_
     fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
     mock_datetime.now.return_value = fixed_current_time
     mock_datetime.fromtimestamp = datetime.fromtimestamp
-
-    mock_walk.return_value = [
-        ("/test/path", ["dir1"], ["archive_readme.txt"]),
-    ]
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
-    mock_check_file_exist.side_effect = lambda path, flag: True if "archive_readme" in path else False
 
     # Test
     dm = DataManagement()
-    old_data = dm.list_old_files("/test/path", 2)
+    old_data = dm.list_old_files("tests/data/ont/runs", 2)
     print(old_data)
+
     # Assert
-    assert not old_data
+    expected_results = {'run01': {'path': 'tests/data/ont/runs/run01', 'days_since_modified': 61, 'last_modified': 'June 15, 2024, 00:00:00 UTC'}, 'run02': {'path': 'tests/data/ont/runs/run02', 'days_since_modified': 61, 'last_modified': 'June 15, 2024, 00:00:00 UTC'}}
+    assert  old_data == expected_results
 
 def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
     """
