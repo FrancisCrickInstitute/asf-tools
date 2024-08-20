@@ -347,6 +347,7 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
     }
     self.assertEqual(result, expected_result)
 
+
 @mock.patch("asf_tools.io.data_management.os.walk")
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.check_file_exist")
@@ -384,9 +385,10 @@ def test_list_old_files_with_modified_files_in_dir(self, mock_datetime, mock_che
     }
     self.assertEqual(result, expected_result)
 
+
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):
+def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
     """
     Test function with directories that have files affecting the modification time
     """
@@ -403,8 +405,12 @@ def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):
     print(old_data)
 
     # Assert
-    expected_results = {'run01': {'path': 'tests/data/ont/runs/run01', 'days_since_modified': 61, 'last_modified': 'June 15, 2024, 00:00:00 UTC'}, 'run02': {'path': 'tests/data/ont/runs/run02', 'days_since_modified': 61, 'last_modified': 'June 15, 2024, 00:00:00 UTC'}}
-    assert  old_data == expected_results
+    expected_results = {
+        "run01": {"path": "tests/data/ont/runs/run01", "days_since_modified": 61, "last_modified": "June 15, 2024, 00:00:00 UTC"},
+        "run02": {"path": "tests/data/ont/runs/run02", "days_since_modified": 61, "last_modified": "June 15, 2024, 00:00:00 UTC"},
+    }
+    assert old_data == expected_results
+
 
 def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
     """
@@ -421,6 +427,7 @@ def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
 
     # Assert
     assert not old_data
+
 
 @mock.patch("asf_tools.io.data_management.os.walk")
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")

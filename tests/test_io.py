@@ -11,11 +11,15 @@ class TestIo(unittest.TestCase):
     from .io.data_management import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_pipeline_run_complete_false,
         test_check_pipeline_run_complete_true,
-        test_list_old_files_valid,
         test_deliver_to_targets_no_user,
         test_deliver_to_targets_source_invalid,
         test_deliver_to_targets_symlink_overide,
         test_deliver_to_targets_valid,
+        test_list_old_files_nodirs,
+        test_list_old_files_noolddir,
+        test_list_old_files_valid,
+        test_list_old_files_with_archived_dirs,
+        test_list_old_files_with_modified_files_in_dir,
         test_scan_delivery_state_all_to_deliver,
         test_scan_delivery_state_none_to_deliver,
         test_scan_delivery_state_partial_to_deliver,
@@ -24,10 +28,6 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
-        test_list_old_files_nodirs,
-        test_list_old_files_noolddir,
-        test_list_old_files_with_modified_files_in_dir,
-        test_list_old_files_with_archived_dirs
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,

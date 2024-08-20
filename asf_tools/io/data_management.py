@@ -5,7 +5,7 @@ Helper functions for data management
 import logging
 import os
 import subprocess
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from .utils import check_file_exist
 
@@ -253,7 +253,7 @@ class DataManagement:
 
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         old_folders = {}
-        for root, dirs, files in os.walk(path):  
+        for root, dirs, files in os.walk(path):
             if root == path:
                 for dir_name in dirs:
                     dir_path = os.path.join(root, dir_name)
@@ -265,8 +265,7 @@ class DataManagement:
                     for filename in files:
                         file_path = os.path.join(dir_path, filename)
                         mod_time = datetime.fromtimestamp(os.path.getmtime(file_path), tz=timezone.utc)
-                        if mod_time > latest_mod_time:
-                            latest_mod_time = mod_time
+                        latest_mod_time = max(latest_mod_time, mod_time)
 
                     if latest_mod_time < threshold_time:
                         formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
