@@ -3,9 +3,10 @@ Tests for the data transfer class
 """
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement
+
 from .utils import with_temporary_folder
 
 
@@ -321,7 +322,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     self.assertEqual(len(result), 0)
 
 
-@patch('asf_tools.slurm.utils.subprocess.run')
+@patch("asf_tools.slurm.utils.subprocess.run")
 def test_scan_run_state_valid(self, mock_run):
     """
     Test scan run state with a valid configuration
@@ -333,7 +334,7 @@ def test_scan_run_state_valid(self, mock_run):
     run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
     target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
 
-    with open("tests/data/slurm/squeue/fake_job_report.txt", 'r', encoding='UTF-8') as file:
+    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
         mock_output = file.read()
     mock_run.return_value = MagicMock(stdout=mock_output)
 

@@ -230,7 +230,7 @@ class DataManagement:
         """
         Scans and returns the current state of sequencing and pipeline runs.
 
-        This method checks the specified directories for sequencing and pipeline runs, 
+        This method checks the specified directories for sequencing and pipeline runs,
         determines their current status, and identifies runs that are ready for delivery.
         The SLURM job status is checked using an optional job name suffix.
 
@@ -243,7 +243,7 @@ class DataManagement:
 
         Returns:
             dict: A dictionary with run identifiers as keys and their statuses as values.
-        
+
         Raises:
             FileNotFoundError: If any of the specified directories do not exist.
         """

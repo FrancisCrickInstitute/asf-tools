@@ -4,6 +4,7 @@ This module provides utility functions for the SLURM workload manager.
 
 import subprocess
 
+
 def get_job_status(job_name: str, user_name: str) -> str:
     """
     Retrieve the status of a job from the SLURM job scheduler using the `squeue` command.
@@ -18,7 +19,7 @@ def get_job_status(job_name: str, user_name: str) -> str:
 
     Raises:
         subprocess.CalledProcessError: If the `squeue` command fails to execute.
-    
+
     Notes:
         - The function assumes that the `squeue` command is available in the system's PATH.
         - The job status is determined by parsing the output of `squeue`. The job status codes checked are:
@@ -26,11 +27,12 @@ def get_job_status(job_name: str, user_name: str) -> str:
         - If the job name is not found in the `squeue` output, the function returns `None`.
     """
     # Run the squeue command and capture the output
-    result = subprocess.run(['squeue', '-u', user_name, '--format', '%.8i %.7P %.60j %.8u %.2t %.10M %.6D %R'], 
-                            stdout=subprocess.PIPE, text=True, check=True)
+    result = subprocess.run(
+        ["squeue", "-u", user_name, "--format", "%.8i %.7P %.60j %.8u %.2t %.10M %.6D %R"], stdout=subprocess.PIPE, text=True, check=True
+    )
 
     # Split the output into lines
-    lines = result.stdout.strip().split('\n')
+    lines = result.stdout.strip().split("\n")
 
     # Iterate through lines to find the job
     for line in lines:
@@ -38,10 +40,10 @@ def get_job_status(job_name: str, user_name: str) -> str:
 
         job_nm, job_status = parts[2], parts[4]
         if job_nm == job_name:
-            if job_status in ['R', 'CG']:  # Running or Completing
-                return 'running'
-            elif job_status in ['PD']:  # Pending (queued)
-                return 'queued'
+            if job_status in ["R", "CG"]:  # Running or Completing
+                return "running"
+            elif job_status in ["PD"]:  # Pending (queued)
+                return "queued"
 
     # If the job name was not found in the list
     return None
