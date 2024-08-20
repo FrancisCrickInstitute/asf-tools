@@ -3,6 +3,7 @@ Tests for the data transfer class
 """
 
 import os
+from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement
 
@@ -321,7 +322,8 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     self.assertEqual(len(result), 0)
 
 
-def test_scan_run_state_valid(self):
+@patch("asf_tools.slurm.utils.subprocess.run")
+def test_scan_run_state_valid(self, mock_run):
     """
     Test scan run state with a valid configuration
     """
@@ -332,15 +334,19 @@ def test_scan_run_state_valid(self):
     run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
     target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
 
+    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
+        mock_output = file.read()
+    mock_run.return_value = MagicMock(stdout=mock_output)
+
     # Test
-    data = dm.scan_run_state(raw_dir, run_dir, target_dir)
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
 
     # Assert
     target_dict = {
         # 'run_01': {'status': 'delivered'},
         "run_02": {"status": "ready_to_deliver"},
-        "run_03": {"status": "samplesheet_generated"},
-        "run_04": {"status": "samplesheet_generated"},
+        "run_03": {"status": "pipeline_running"},
+        "run_04": {"status": "pipeline_pending"},
         "run_05": {"status": "sequencing_complete"},
         "run_06": {"status": "sequencing_in_progress"},
     }

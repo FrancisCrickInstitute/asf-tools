@@ -7,6 +7,7 @@ import os
 import subprocess
 
 from asf_tools.io.utils import check_file_exist
+from asf_tools.slurm.utils import get_job_status
 
 
 # Set up logging as the root logger
@@ -225,41 +226,26 @@ class DataManagement:
 
         return deliverable_runs
 
-    def scan_run_state(self, raw_dir: str, run_dir: str, target_dir: str):
+    def scan_run_state(self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str, job_name_suffix: str = None) -> dict:
         """
-        Scans and determines the state of sequencing runs based on their presence in
-        raw, run, and target directories. The method checks if the directories exist,
-        processes the directories to determine the status of sequencing and pipeline runs,
-        and updates the status based on the delivery state.
+        Scans and returns the current state of sequencing and pipeline runs.
 
-        Parameters:
-        -----------
-        raw_dir : str
-            Path to the directory containing raw sequencing data.
+        This method checks the specified directories for sequencing and pipeline runs,
+        determines their current status, and identifies runs that are ready for delivery.
+        The SLURM job status is checked using an optional job name suffix.
 
-        run_dir : str
-            Path to the directory containing run-related data (e.g., pipeline outputs).
-
-        target_dir : str
-            Path to the directory intended for final delivery of processed data.
+        Args:
+            raw_dir (str): Directory containing raw sequencing data.
+            run_dir (str): Directory containing pipeline run data.
+            target_dir (str): Directory where delivery-ready data is stored.
+            slurm_user (str): Username for checking SLURM job status.
+            job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
 
         Returns:
-        --------
-        dict
-            A dictionary where the keys are run identifiers and the values are dictionaries
-            containing the status of each run. The possible statuses are:
-
-            - "sequencing_in_progress": Sequencing is currently ongoing for the run.
-            - "sequencing_complete": Sequencing has completed for the run.
-            - "samplesheet_generated": A samplesheet has been generated for the run.
-            - "pipeline_complete": The pipeline has completed processing for the run.
-            - "ready_to_deliver": The run is ready to be delivered.
-            - "delivered": The run has already been delivered.
+            dict: A dictionary with run identifiers as keys and their statuses as values.
 
         Raises:
-        -------
-        FileNotFoundError
-        If any of `raw_dir`, `run_dir`, or `target_dir` do not exist.
+            FileNotFoundError: If any of the specified directories do not exist.
         """
         # check if source_dir exists
         if not os.path.exists(raw_dir):
@@ -277,6 +263,8 @@ class DataManagement:
         run_info = {}
         abs_raw_path = os.path.abspath(raw_dir)
         for entry in os.listdir(abs_raw_path):
+            if entry.startswith("."):
+                continue
             full_path = os.path.join(abs_raw_path, entry)
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
@@ -290,9 +278,21 @@ class DataManagement:
         for entry in os.listdir(abs_run_path):
             full_path = os.path.join(abs_run_path, entry)
             if os.path.isdir(full_path):
-                status = "samplesheet_generated"
+                status = "pipeline_pending"
                 if self.check_pipeline_run_complete(full_path):
                     status = "pipeline_complete"
+                else:
+                    # check slurm status
+                    job_name = entry
+                    if job_name_suffix is not None:
+                        job_name = job_name_suffix + entry
+                    slurm_status = get_job_status(job_name, slurm_user)
+                    if slurm_status == "running":
+                        status = "pipeline_running"
+                    elif slurm_status == "queued":
+                        status = "pipeline_queued"
+                    else:
+                        status = "pipeline_pending"
                 run_info[entry]["status"] = status
 
         # scan for delivery state
