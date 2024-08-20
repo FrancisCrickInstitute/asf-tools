@@ -1,0 +1,2 @@
+   JOBID PARTITI                                                 NAME     USER ST       TIME  NODES NODELIST(REASON)
+ 8123255    ncpu asf_nanopore_demux_run_03 svc-asf-  R       2:34      1 cn053

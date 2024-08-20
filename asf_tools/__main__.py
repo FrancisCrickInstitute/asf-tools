@@ -353,11 +353,29 @@ def deliver_to_targets(
     required=True,
     help="Target data delivery directory",
 )
+@click.option(
+    "--slurm_user",
+    required=False,
+    help="Slurm user to check job status",
+)
+@click.option(
+    "--job_prefix",
+    required=False,
+    help="Slurm job name prefix",
+)
+@click.option(
+    "--slurm_file",
+    required=False,
+    help="Slurm job output file",
+)
 def scan_run_state(
     ctx,  # pylint: disable=W0613
     raw_dir,
     run_dir,
-    target_dir,):
+    target_dir,
+    slurm_user,
+    job_prefix,
+    slurm_file):
     """
     Scans the state ONT sequencing runs
     """
@@ -369,17 +387,23 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
+        slurm_user,
+        job_prefix,
+        slurm_file,
     )
 
     def get_state_color(status):
         if status == "sequencing_in_progress":
             return "red"
-        elif status == "sequencing_complete":
+        if status == "sequencing_complete":
             return "rgb(255,165,0)"
-        elif status == "samplesheet_generated":
+        if status == "pipeline_pending":
             return "yellow"
-        else:
-            return "green"
+        if status == "pipeline_queued":
+            return "yellow"
+        if status == "pipeline_running":
+            return "rgb(173,216,230)"
+        return "green"
 
     # Display table of scan results
     table = Table(title="Run state", show_header=True, header_style="bold magenta")
