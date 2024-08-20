@@ -2,7 +2,10 @@
 This module provides utility functions for the SLURM workload manager.
 """
 
+import logging
 import subprocess
+
+log = logging.getLogger()
 
 
 def get_job_status(job_name: str, user_name: str) -> str:
@@ -27,9 +30,13 @@ def get_job_status(job_name: str, user_name: str) -> str:
         - If the job name is not found in the `squeue` output, the function returns `None`.
     """
     # Run the squeue command and capture the output
-    result = subprocess.run(
-        ["squeue", "-u", user_name, "--format=\"%.8i %.7P %.60j %.8u %.2t %.10M %.6D %R\""], stdout=subprocess.PIPE, text=True, check=True, shell=True
-    )
+    command = [
+        "squeue",
+        "-u", user_name,
+        "--format=\"%.8i %.7P %.52j %.8u %.2t %.10M %.6D %R\""
+    ]
+    log.debug("Running command: %s", " ".join(command))
+    result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=True, shell=True)
 
     # Split the output into lines
     lines = result.stdout.strip().split("\n")
