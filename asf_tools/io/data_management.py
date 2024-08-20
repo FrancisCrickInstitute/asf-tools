@@ -231,14 +231,14 @@ class DataManagement:
         """
         Recursively determine the latest modification time within a directory, including all its subdirectories and files.
 
-        This method traverses the directory tree starting from the given `root_path` and checks the modification times of 
+        This method traverses the directory tree starting from the given `root_path` and checks the modification times of
         all files and subdirectories. It returns the most recent modification time found.
 
         Args:
             root_path (str): The path to the root directory from which to start the search.
 
         Returns:
-            datetime: A timezone-aware `datetime` object representing the latest modification time of any file or directory 
+            datetime: A timezone-aware `datetime` object representing the latest modification time of any file or directory
                     within the given `root_path`. If the directory is empty, it returns the modification time of the directory itself.
         """
         latest_mod_time = datetime.fromtimestamp(0, tz=timezone.utc)
@@ -263,25 +263,24 @@ class DataManagement:
 
         return latest_mod_time
 
-
     def list_old_files(self, path: str, months: int) -> dict:
         """
         Identify directories within a specified path that contain files that have not been modified
         in the last `months` and are not already archived.
 
         This method traverses the directory tree starting from the given `path` and collects directories
-        where the most recently modified file within each directory has not been modified for at least 
+        where the most recently modified file within each directory has not been modified for at least
         `months`. It excludes directories that have already been marked as archived.
 
         Args:
             path (str): The root directory path to start the search from.
-            months (int): The number of months to use as the threshold for determining which directories 
-                        are considered old. Directories where the latest file modification time is 
+            months (int): The number of months to use as the threshold for determining which directories
+                        are considered old. Directories where the latest file modification time is
                         older than `months` will be included.
 
         Returns:
-            dict: A dictionary where each key is the name of a directory that meets the criteria 
-                (containing files older than `months` and not already archived). The value is a 
+            dict: A dictionary where each key is the name of a directory that meets the criteria
+                (containing files older than `months` and not already archived). The value is a
                 dictionary containing:
                     - "path": The full path to the directory.
                     - "days_since_modified": The number of days since the latest file in the directory was last modified.
@@ -291,7 +290,7 @@ class DataManagement:
         Notes:
             - The threshold for old directories is calculated based on an average month length
             of 30.44 days.
-            - The method assumes that if any file within a directory is older than the specified threshold, 
+            - The method assumes that if any file within a directory is older than the specified threshold,
             the entire directory is considered for archiving.
         """
         # if not os.path.exists(path):
