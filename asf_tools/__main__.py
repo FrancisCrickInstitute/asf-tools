@@ -399,6 +399,8 @@ def scan_run_state(
             return "rgb(255,165,0)"
         if status == "pipeline_pending":
             return "yellow"
+        if status == "pipeline_queued":
+            return "yellow"
         if status == "pipeline_running":
             return "rgb(173,216,230)"
         return "green"
