@@ -28,7 +28,7 @@ def get_job_status(job_name: str, user_name: str) -> str:
     """
     # Run the squeue command and capture the output
     result = subprocess.run(
-        ["squeue", "-u", user_name, "--format", "%.8i %.7P %.60j %.8u %.2t %.10M %.6D %R"], stdout=subprocess.PIPE, text=True, check=True
+        ["squeue", "-u", user_name, "--format=\"%.8i %.7P %.60j %.8u %.2t %.10M %.6D %R\""], stdout=subprocess.PIPE, text=True, check=True, shell=True
     )
 
     # Split the output into lines
