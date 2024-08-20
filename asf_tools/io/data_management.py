@@ -228,6 +228,19 @@ class DataManagement:
         return deliverable_runs
 
     def get_latest_mod_time_for_directory(self, root_path):
+        """
+        Recursively determine the latest modification time within a directory, including all its subdirectories and files.
+
+        This method traverses the directory tree starting from the given `root_path` and checks the modification times of 
+        all files and subdirectories. It returns the most recent modification time found.
+
+        Args:
+            root_path (str): The path to the root directory from which to start the search.
+
+        Returns:
+            datetime: A timezone-aware `datetime` object representing the latest modification time of any file or directory 
+                    within the given `root_path`. If the directory is empty, it returns the modification time of the directory itself.
+        """
         latest_mod_time = datetime.fromtimestamp(0, tz=timezone.utc)
 
         # Get the list of all entries in the root_path
@@ -242,31 +255,29 @@ class DataManagement:
                 mod_time = datetime.fromtimestamp(os.path.getmtime(entry_path), tz=timezone.utc)
             else:
                 continue
-
             latest_mod_time = max(latest_mod_time, mod_time)
 
         # Get the root folder's last modification time
         dir_mod_time = datetime.fromtimestamp(os.path.getmtime(root_path), tz=timezone.utc)
         latest_mod_time = max(latest_mod_time, dir_mod_time)
-        # latest_mod_time = latest_mod_time.replace(tzinfo=timezone.utc)
 
         return latest_mod_time
 
 
     def list_old_files(self, path: str, months: int) -> dict:
         """
-        Identify directories within a specified path that have not been modified in the
-        last `n_months` and are not already archived.
+        Identify directories within a specified path that contain files that have not been modified
+        in the last `months` and are not already archived.
 
-        This method traverses the directory tree starting from the given `path` and
-        collects paths of directories that have not been modified for at least `n_months`.
-        It excludes directories that have already been marked as archived.
+        This method traverses the directory tree starting from the given `path` and collects directories
+        where the most recently modified file within each directory has not been modified for at least 
+        `months`. It excludes directories that have already been marked as archived.
 
         Args:
             path (str): The root directory path to start the search from.
-            months (int): The number of months to use as the threshold for determining
-                            which directories are considered old. Directories not modified
-                            in the last `n_months` will be included.
+            months (int): The number of months to use as the threshold for determining which directories 
+                        are considered old. Directories where the latest file modification time is 
+                        older than `months` will be included.
 
         Returns:
             dict: A dictionary where each key is the name of a directory that meets the criteria 
@@ -299,13 +310,9 @@ class DataManagement:
             if root == path:
                 for dir_name in dirs:
                     dir_path = os.path.join(root, dir_name)
-                    print(dir_path)
 
                     # Check all files in the directory
                     latest_mod_time = self.get_latest_mod_time_for_directory(dir_path)
-                    # latest_mod_time = datetime.fromtimestamp(os.path.getmtime(latest_mod_time), tz=timezone.utc)
-                    # latest_mod_time.replace(tzinfo=timezone.utc)
-                    print(latest_mod_time)
 
                     if latest_mod_time < threshold_time:
                         formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
