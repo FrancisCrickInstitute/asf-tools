@@ -15,6 +15,7 @@ import rich.logging
 import rich.traceback
 import rich_click as click
 from rich.table import Table
+from rich.text import Text
 
 import asf_tools
 
@@ -26,22 +27,6 @@ log = logging.getLogger()
 # Set up nicer formatting of click cli help messages
 click.rich_click.MAX_WIDTH = 100
 click.rich_click.USE_RICH_MARKUP = True
-
-# Setup command groups
-click.rich_click.COMMAND_GROUPS = {
-    "asf-tools": [
-    ],
-    "asf-tools ont": [
-        {
-            "name": "Manual",
-            "commands": [],
-        },
-        {
-            "name": "Automation",
-            "commands": ["gen-demux-run"],
-        },
-    ]
-}
 
 # Set up rich stderr console
 stderr = rich.console.Console(stderr=True)
@@ -347,6 +332,87 @@ def deliver_to_targets(
                         host_delivery_folder
                     )
 
+# asf-tools ont scan-run-state
+@ont.command("scan-run-state")
+@click.pass_context
+@click.option(
+    "--raw_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help="ONT sequencing directory",
+)
+@click.option(
+    "--run_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help="ONT pipeline directory",
+)
+@click.option(
+    "--target_dir",
+    type=click.Path(exists=True),
+    required=True,
+    help="Target data delivery directory",
+)
+@click.option(
+    "--slurm_user",
+    required=False,
+    help="Slurm user to check job status",
+)
+@click.option(
+    "--job_prefix",
+    required=False,
+    help="Slurm job name prefix",
+)
+@click.option(
+    "--slurm_file",
+    required=False,
+    help="Slurm job output file",
+)
+def scan_run_state(
+    ctx,  # pylint: disable=W0613
+    raw_dir,
+    run_dir,
+    target_dir,
+    slurm_user,
+    job_prefix,
+    slurm_file):
+    """
+    Scans the state ONT sequencing runs
+    """
+    from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
+
+    # Scan for run id states
+    dm = DataManagement()
+    scan_result = dm.scan_run_state(
+        raw_dir,
+        run_dir,
+        target_dir,
+        slurm_user,
+        job_prefix,
+        slurm_file,
+    )
+
+    def get_state_color(status):
+        if status == "sequencing_in_progress":
+            return "red"
+        if status == "sequencing_complete":
+            return "rgb(255,165,0)"
+        if status == "pipeline_pending":
+            return "yellow"
+        if status == "pipeline_queued":
+            return "yellow"
+        if status == "pipeline_running":
+            return "rgb(173,216,230)"
+        return "green"
+
+    # Display table of scan results
+    table = Table(title="Run state", show_header=True, header_style="bold magenta")
+    table.add_column("Run ID", style="bold")
+    table.add_column("State")
+    for run_id, data in scan_result.items():
+        state_text = Text(data["status"], style=get_state_color(data["status"]))
+        table.add_row(run_id, state_text)
+    stdout.print(table)
 
 
 # Main script is being run - launch the CLI

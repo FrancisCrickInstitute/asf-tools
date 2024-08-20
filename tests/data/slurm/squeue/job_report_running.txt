@@ -1,0 +1,11 @@
+   JOBID PARTITI                                                 NAME     USER ST       TIME  NODES NODELIST(REASON)
+ 8123307    ncpu                              nf-CHOPPER_(KAN6921A21) svc-asf-  R       0:32      1 cn036
+ 8123308    ncpu                               nf-FASTQC_(KAN6921A21) svc-asf-  R       0:32      1 cn051
+ 8123309    ncpu     nf-MERGE_GROUPS_(swantonc_clare.puttick_DN24086) svc-asf-  R       0:32      1 cn042
+ 8123300    ncpu                                       Demultiplexing svc-asf-  R       1:02      1 cn078
+ 8123255    ncpu asf_nanopore_demux_20240717_1730_1A_PAW36768_7b0e525 svc-asf-  R       2:34      1 cn053
+ 8118894    ncpu                                       Demultiplexing svc-asf-  R      11:09      1 cn078
+ 8051214    ncpu        nf-bcl2fastq_problem_SS_(problem_samplesheet) svc-asf-  R    7:29:31      1 cn053
+ 8051100    ncpu                                       Demultiplexing svc-asf-  R    7:31:17      1 cn078
+ 8051028    ncpu    nf-bcl2fastq_default_(ReformattedSampleSheet.csv) svc-asf-  R    7:34:23      1 cn064
+ 8050674    ncpu                                       Demultiplexing svc-asf-  R    7:41:17      1 cn045

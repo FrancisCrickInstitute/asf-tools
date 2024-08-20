@@ -5,25 +5,75 @@ Tests for the data transfer class
 import os
 from datetime import datetime, timezone
 from unittest import mock
+from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement
 
 from .utils import with_temporary_folder
 
 
-# @with_temporary_folder
-# def test_symlink_to_target_isinvalid_source(self, tmp_path):
-#     """
-#     Check existence of input path
-#     """
+def test_check_pipeline_run_complete_false(self):
+    """
+    Test function when the pipeline run is not complete
+    """
 
-#     # Set up
-#     dt = DataManagement()
-#     invalid_path = os.path.join(tmp_path, "invalid")
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run01"
 
-#     # Test and Assert
-#     with self.assertRaises(FileNotFoundError):
-#         dt.symlink_to_target(invalid_path, tmp_path)
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_pipeline_run_complete_true(self):
+    """
+    Test function when the pipeline run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
+
+    # Test
+    result = dm.check_pipeline_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
+
+
+def test_check_ont_sequencing_run_complete_false(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run03"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_true(self):
+    """
+    Test function when the ONT sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run01"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
 
 
 @with_temporary_folder
@@ -179,38 +229,6 @@ def test_deliver_to_targets_symlink_overide(self, tmp_path):
 
     link = os.readlink(run_dir_1)
     self.assertTrue("/test/path" in link)
-
-
-def test_check_pipeline_run_complete_false(self):
-    """
-    Test function when the pipeline run is not complete
-    """
-
-    # Set up
-    dm = DataManagement()
-    run_dir = "tests/data/ont/runs/run01"
-
-    # Test
-    result = dm.check_pipeline_run_complete(run_dir)
-
-    # Assert
-    self.assertFalse(result)
-
-
-def test_check_pipeline_run_complete_true(self):
-    """
-    Test function when the pipeline run is complete
-    """
-
-    # Set up
-    dm = DataManagement()
-    run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
-
-    # Test
-    result = dm.check_pipeline_run_complete(run_dir)
-
-    # Assert
-    self.assertTrue(result)
 
 
 def test_scan_delivery_state_source_invalid(self):
@@ -457,3 +475,34 @@ def test_list_old_files_nodirs(self, mock_datetime, mock_check_file_exist, mock_
 
     # Assert
     assert not old_data
+
+
+@patch("asf_tools.slurm.utils.subprocess.run")
+def test_scan_run_state_valid(self, mock_run):
+    """
+    Test scan run state with a valid configuration
+    """
+
+    # Set up
+    dm = DataManagement()
+    raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
+    run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
+    target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+
+    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
+        mock_output = file.read()
+    mock_run.return_value = MagicMock(stdout=mock_output)
+
+    # Test
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
+
+    # Assert
+    target_dict = {
+        # 'run_01': {'status': 'delivered'},
+        "run_02": {"status": "ready_to_deliver"},
+        "run_03": {"status": "pipeline_running"},
+        "run_04": {"status": "pipeline_pending"},
+        "run_05": {"status": "sequencing_complete"},
+        "run_06": {"status": "sequencing_in_progress"},
+    }
+    self.assertEqual(data, target_dict)

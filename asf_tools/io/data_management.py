@@ -8,6 +8,8 @@ import subprocess
 from datetime import datetime, timedelta, timezone
 
 from .utils import check_file_exist
+from asf_tools.io.utils import check_file_exist
+from asf_tools.slurm.utils import get_job_status
 
 
 # Set up logging as the root logger
@@ -16,8 +18,31 @@ log = logging.getLogger()
 
 class DataManagement:
     """
-    Creates symlinks from raw data to symlink_folder
+    Helper functions for data management
     """
+
+    def check_pipeline_run_complete(self, run_dir: str):
+        """
+        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
+        return os.path.exists(completed_file)
+
+    def check_ont_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an ONT sequencing run is complete by checking for the presence of the `sequencing_summary`
+        file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+        """
+        return check_file_exist(run_dir, "sequencing_summary*")
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
@@ -128,19 +153,6 @@ class DataManagement:
             log.warning(f"{user_path_not_exist} does not exist.")
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
-
-    def check_pipeline_run_complete(self, run_dir: str):
-        """
-        Check if a pipeline run directory is complete by checking for the presence of the `workflow_complete` file.
-
-        Args:
-        - run_dir (str): Path to the run directory.
-
-        Returns:
-        - bool: True if the run directory is complete, False otherwise.
-        """
-        completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
-        return os.path.exists(completed_file)
 
     def scan_delivery_state(self, source_dir: str, target_dir: str):
         """
@@ -275,3 +287,90 @@ class DataManagement:
                             old_folders[dir_name] = {"path": dir_path, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
 
         return old_folders
+
+    def scan_run_state(
+        self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+    ) -> dict:
+        """
+        Scans and returns the current state of sequencing and pipeline runs.
+
+        This method checks the specified directories for sequencing and pipeline runs,
+        determines their current status, and identifies runs that are ready for delivery.
+        The SLURM job status is checked using an optional job name suffix.
+
+        Args:
+            raw_dir (str): Directory containing raw sequencing data.
+            run_dir (str): Directory containing pipeline run data.
+            target_dir (str): Directory where delivery-ready data is stored.
+            slurm_user (str): Username for checking SLURM job status.
+            job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
+
+        Returns:
+            dict: A dictionary with run identifiers as keys and their statuses as values.
+
+        Raises:
+            FileNotFoundError: If any of the specified directories do not exist.
+        """
+        # check if source_dir exists
+        if not os.path.exists(raw_dir):
+            raise FileNotFoundError(f"{raw_dir} does not exist.")
+
+        # check if run_dir exists
+        if not os.path.exists(run_dir):
+            raise FileNotFoundError(f"{run_dir} does not exist.")
+
+        # check if target_dir exists
+        if not os.path.exists(target_dir):
+            raise FileNotFoundError(f"{target_dir} does not exist.")
+
+        # process raw directories
+        run_info = {}
+        abs_raw_path = os.path.abspath(raw_dir)
+        for entry in os.listdir(abs_raw_path):
+            if entry.startswith("."):
+                continue
+            full_path = os.path.join(abs_raw_path, entry)
+            if os.path.isdir(full_path):
+                status = "sequencing_in_progress"
+                if self.check_ont_sequencing_run_complete(full_path):
+                    status = "sequencing_complete"
+                run_info[entry] = {"status": status}
+        run_info = dict(sorted(run_info.items()))
+
+        # process run directories
+        abs_run_path = os.path.abspath(run_dir)
+        for entry in os.listdir(abs_run_path):
+            full_path = os.path.join(abs_run_path, entry)
+            if os.path.isdir(full_path):
+                status = "pipeline_pending"
+                if self.check_pipeline_run_complete(full_path):
+                    status = "pipeline_complete"
+                else:
+                    # check slurm status
+                    job_name = entry
+                    if job_name_suffix is not None:
+                        job_name = job_name_suffix + entry
+                    slurm_status = get_job_status(job_name, slurm_user, slurm_file)
+                    if slurm_status == "running":
+                        status = "pipeline_running"
+                    elif slurm_status == "queued":
+                        status = "pipeline_queued"
+                    else:
+                        status = "pipeline_pending"
+                run_info[entry]["status"] = status
+
+        # scan for delivery state
+        deliverable_runs = self.scan_delivery_state(run_dir, target_dir)
+
+        # Scan for delivery state
+        for run_id, info in run_info.items():
+            if info["status"] == "pipeline_complete":
+                if run_id in deliverable_runs:
+                    run_info[run_id]["status"] = "ready_to_deliver"
+                else:
+                    run_info[run_id]["status"] = "delivered"
+
+        # Remove delivered items
+        run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
+
+        return run_info
