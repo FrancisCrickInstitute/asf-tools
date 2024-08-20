@@ -52,3 +52,16 @@ def test_get_job_status_report_queued(self, mock_run):
     status = get_job_status("asf_nanopore_demux_20240717_1730_1A_PAW36768_7b0e525", "svc-asf-seq")
 
     self.assertEqual(status, "queued")
+
+
+def test_get_job_status_report_from_file(self):
+    """
+    Test the get_job_status function when the job is queued
+    """
+
+    # Test for a running job
+    status = get_job_status(
+        "asf_nanopore_demux_20240717_1730_1A_PAW36768_7b0e525", "svc-asf-seq", status_file="tests/data/slurm/squeue/job_report_queued.txt"
+    )
+
+    self.assertEqual(status, "queued")
