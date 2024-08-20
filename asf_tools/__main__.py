@@ -353,11 +353,23 @@ def deliver_to_targets(
     required=True,
     help="Target data delivery directory",
 )
+@click.option(
+    "--slurm_user",
+    required=True,
+    help="Slurm user to check job status",
+)
+@click.option(
+    "--job_prefix",
+    required=True,
+    help="Slurm job name prefix",
+)
 def scan_run_state(
     ctx,  # pylint: disable=W0613
     raw_dir,
     run_dir,
-    target_dir,):
+    target_dir,
+    slurm_user,
+    job_prefix,):
     """
     Scans the state ONT sequencing runs
     """
@@ -369,6 +381,8 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
+        slurm_user,
+        job_prefix
     )
 
     def get_state_color(status):
@@ -376,8 +390,10 @@ def scan_run_state(
             return "red"
         if status == "sequencing_complete":
             return "rgb(255,165,0)"
-        if status == "samplesheet_generated":
+        if status == "pieline_pending":
             return "yellow"
+        if status == "pieline_running":
+            return "blue"
         else:
             return "green"
 
