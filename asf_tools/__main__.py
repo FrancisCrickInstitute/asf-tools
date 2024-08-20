@@ -397,7 +397,7 @@ def scan_run_state(
             return "red"
         if status == "sequencing_complete":
             return "rgb(255,165,0)"
-        if status == "pieline_pending":
+        if status == "pipeline_pending":
             return "yellow"
         if status == "pieline_running":
             return "blue"
