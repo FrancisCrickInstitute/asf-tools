@@ -394,8 +394,7 @@ def scan_run_state(
             return "yellow"
         if status == "pieline_running":
             return "blue"
-        else:
-            return "green"
+        return "green"
 
     # Display table of scan results
     table = Table(title="Run state", show_header=True, header_style="bold magenta")
