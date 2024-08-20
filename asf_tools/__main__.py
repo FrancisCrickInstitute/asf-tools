@@ -360,7 +360,7 @@ def deliver_to_targets(
 )
 @click.option(
     "--job_prefix",
-    required=True,
+    required=False,
     help="Slurm job name prefix",
 )
 def scan_run_state(
