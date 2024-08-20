@@ -355,7 +355,7 @@ def deliver_to_targets(
 )
 @click.option(
     "--slurm_user",
-    required=True,
+    required=False,
     help="Slurm user to check job status",
 )
 @click.option(
@@ -363,13 +363,19 @@ def deliver_to_targets(
     required=False,
     help="Slurm job name prefix",
 )
+@click.option(
+    "--slurm_file",
+    required=False,
+    help="Slurm job output file",
+)
 def scan_run_state(
     ctx,  # pylint: disable=W0613
     raw_dir,
     run_dir,
     target_dir,
     slurm_user,
-    job_prefix,):
+    job_prefix,
+    slurm_file):
     """
     Scans the state ONT sequencing runs
     """
@@ -382,7 +388,8 @@ def scan_run_state(
         run_dir,
         target_dir,
         slurm_user,
-        job_prefix
+        job_prefix,
+        slurm_file,
     )
 
     def get_state_color(status):

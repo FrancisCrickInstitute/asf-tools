@@ -9,14 +9,14 @@ import subprocess
 log = logging.getLogger()
 
 
-def get_job_status(job_name: str, user_name: str, status_file: str = None) -> str:
+def get_job_status(job_name: str, user_name: str = None, status_file: str = None) -> str:
     """
     Retrieve the status of a job from the SLURM job scheduler using the `squeue` command
     or from a provided status file.
 
     Args:
         job_name (str): The name of the job to check the status of.
-        user_name (str): The username of the user who submitted the job.
+        user_name (str, optional): The username of the user who submitted the job.
         status_file (str, optional): Path to a file containing the job status information.
 
     Returns:
