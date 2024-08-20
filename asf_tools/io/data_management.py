@@ -248,12 +248,12 @@ class DataManagement:
         # Get the current time and calculate the threshold time for archival
         current_time = datetime.now(timezone.utc)
         threshold_time = current_time - timedelta(days=months * 30.44)
+        current_time = current_time.replace(tzinfo=timezone.utc)
         threshold_time = threshold_time.replace(tzinfo=timezone.utc)
 
-        print(threshold_time)
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         old_folders = {}
-        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
+        for root, dirs, files in os.walk(path):  
             if root == path:
                 for dir_name in dirs:
                     dir_path = os.path.join(root, dir_name)
@@ -268,8 +268,6 @@ class DataManagement:
                         if mod_time > latest_mod_time:
                             latest_mod_time = mod_time
 
-                    print(latest_mod_time)
-                    print(current_time)
                     if latest_mod_time < threshold_time:
                         formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
                         days_since_modified = (current_time - latest_mod_time).days

@@ -26,6 +26,8 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isvalid_str,
         test_list_old_files_nodirs,
         test_list_old_files_noolddir,
+        test_list_old_files_with_files_in_dir,
+        test_list_old_files_with_archived_dirs
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,

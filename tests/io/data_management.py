@@ -3,7 +3,7 @@ Tests for the data transfer class
 """
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest import mock
 
 from asf_tools.io.data_management import DataManagement
@@ -317,7 +317,7 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
 
     # Set Up
     # mock current time
-    fixed_current_time = datetime(2024, 8, 15)
+    fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
     mock_datetime.now.return_value = fixed_current_time
     mock_datetime.fromtimestamp = datetime.fromtimestamp
 
@@ -325,7 +325,7 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
     mock_walk.return_value = [
         ("/test/path", ["dir1", "dir2"], []),
     ]
-    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15).timestamp()  # time older than threshold
+    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()  # time older than threshold
     mock_check_file_exist.side_effect = lambda path, flag: False
 
     # Test
@@ -347,6 +347,69 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
     }
     self.assertEqual(result, expected_result)
 
+@mock.patch("asf_tools.io.data_management.os.walk")
+@mock.patch("asf_tools.io.data_management.os.path.getmtime")
+@mock.patch("asf_tools.io.data_management.check_file_exist")
+@mock.patch("asf_tools.io.data_management.datetime")
+def test_list_old_files_with_files_in_dir(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
+    """
+    Test function with directories that have files affecting the modification time
+    """
+
+    # Set Up
+    fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = fixed_current_time
+    mock_datetime.fromtimestamp = datetime.fromtimestamp
+
+    mock_walk.return_value = [
+        ("/test/path", ["dir1"], ["file1.txt"]),
+    ]
+    mock_getmtime.side_effect = lambda path: {
+        "/test/path/dir1/file1.txt": datetime(2024, 5, 15, tzinfo=timezone.utc).timestamp(),
+        "/test/path/dir1": datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp(),
+    }.get(path, datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp())
+    mock_check_file_exist.side_effect = lambda path, flag: False
+
+    # Test
+    dm = DataManagement()
+    result = dm.list_old_files("/test/path", 2)
+
+    # Assert the result
+    expected_result = {
+        "dir1": {
+            "path": "dir1",
+            "days_since_modified": 61,
+            "last_modified": "June 15, 2024, 00:00:00 UTC",
+        },
+    }
+    self.assertEqual(result, expected_result)
+
+@mock.patch("asf_tools.io.data_management.os.walk")
+@mock.patch("asf_tools.io.data_management.os.path.getmtime")
+@mock.patch("asf_tools.io.data_management.check_file_exist")
+@mock.patch("asf_tools.io.data_management.datetime")
+def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):
+    """
+    Test function with directories that have files affecting the modification time
+    """
+
+    # Set Up
+    fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = fixed_current_time
+    mock_datetime.fromtimestamp = datetime.fromtimestamp
+
+    mock_walk.return_value = [
+        ("/test/path", ["dir1"], ["archive_readme.txt"]),
+    ]
+    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
+    mock_check_file_exist.side_effect = lambda path, flag: True if "archive_readme" in path else False
+
+    # Test
+    dm = DataManagement()
+    old_data = dm.list_old_files("/test/path", 2)
+    print(old_data)
+    # Assert
+    assert not old_data
 
 def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
     """
@@ -364,18 +427,31 @@ def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
     # Assert
     assert not old_data
 
-
-def test_list_old_files_nodirs(self):  # pylint: disable=unused-variable
+@mock.patch("asf_tools.io.data_management.os.walk")
+@mock.patch("asf_tools.io.data_management.os.path.getmtime")
+@mock.patch("asf_tools.io.data_management.check_file_exist")
+@mock.patch("asf_tools.io.data_management.datetime")
+def test_list_old_files_nodirs(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk):  # pylint: disable=unused-variable
     """
     Test function when the target path has no sub-directories
     """
 
-    # Set up
-    dm = DataManagement()
-    data_path = "tests/data/ont/runs/run01"
+    # Set Up
+    # mock current time
+    fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = fixed_current_time
+    mock_datetime.fromtimestamp = datetime.fromtimestamp
+
+    # setup mock return values
+    mock_walk.return_value = [
+        ("/test/path", [], []),
+    ]
+    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()  # time older than threshold
+    mock_check_file_exist.side_effect = lambda path, flag: False
 
     # Test
-    old_data = dm.list_old_files(data_path, 10)
+    dm = DataManagement()
+    old_data = dm.list_old_files("/test/path", 2)
 
     # Assert
     assert not old_data
