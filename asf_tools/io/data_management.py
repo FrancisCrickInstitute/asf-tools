@@ -226,7 +226,9 @@ class DataManagement:
 
         return deliverable_runs
 
-    def scan_run_state(self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str, job_name_suffix: str = None) -> dict:
+    def scan_run_state(
+        self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+    ) -> dict:
         """
         Scans and returns the current state of sequencing and pipeline runs.
 
@@ -286,7 +288,7 @@ class DataManagement:
                     job_name = entry
                     if job_name_suffix is not None:
                         job_name = job_name_suffix + entry
-                    slurm_status = get_job_status(job_name, slurm_user)
+                    slurm_status = get_job_status(job_name, slurm_user, slurm_file)
                     if slurm_status == "running":
                         status = "pipeline_running"
                     elif slurm_status == "queued":

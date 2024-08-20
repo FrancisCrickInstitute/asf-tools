@@ -2,20 +2,22 @@
 This module provides utility functions for the SLURM workload manager.
 """
 
-import os
 import logging
 import subprocess
+
 
 log = logging.getLogger()
 
 
-def get_job_status(job_name: str, user_name: str) -> str:
+def get_job_status(job_name: str, user_name: str = None, status_file: str = None) -> str:
     """
-    Retrieve the status of a job from the SLURM job scheduler using the `squeue` command.
+    Retrieve the status of a job from the SLURM job scheduler using the `squeue` command
+    or from a provided status file.
 
     Args:
         job_name (str): The name of the job to check the status of.
-        user_name (str): The username of the user who submitted the job.
+        user_name (str, optional): The username of the user who submitted the job.
+        status_file (str, optional): Path to a file containing the job status information.
 
     Returns:
         str: The status of the job, which can be 'running' if the job is currently running,
@@ -25,19 +27,21 @@ def get_job_status(job_name: str, user_name: str) -> str:
         subprocess.CalledProcessError: If the `squeue` command fails to execute.
 
     Notes:
-        - The function assumes that the `squeue` command is available in the system's PATH.
-        - The job status is determined by parsing the output of `squeue`. The job status codes checked are:
-          'R' or 'CG' for running/completing jobs, and 'PD' for queued jobs.
-        - If the job name is not found in the `squeue` output, the function returns `None`.
+        - If `status_file` is provided, the job status will be read from the file.
+        - If `status_file` is not provided, the function will use the `squeue` command.
+        - The job status is determined by parsing the output of `squeue` or the file content.
+        - If the job name is not found, the function returns `None`.
     """
-    # Run the squeue command and capture the output
-    os.environ['PATH'] += os.pathsep + "/usr/bin"
-    command = f"squeue -u {user_name} --format=\"%.8i %.7P %.52j %.8u %.2t %.10M %.6D %R\""
-    log.debug("Running command: %s", " ".join(command))
-    result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=True, shell=True)
-
-    # Split the output into lines
-    lines = result.stdout.strip().split("\n")
+    lines = []
+    if status_file:
+        with open(status_file, "r", encoding="UTF-8") as file:
+            lines = file.readlines()
+    else:
+        # Run the squeue command and capture the output
+        command = f'/host/bin/squeue -u {user_name} --format="%.8i %.7P %.52j %.8u %.2t %.10M %.6D %R"'
+        log.debug("Running command: %s", command)
+        result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=True, shell=True)
+        lines = result.stdout.strip().split("\n")
 
     # Iterate through lines to find the job
     for line in lines:
