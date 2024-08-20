@@ -227,6 +227,32 @@ class DataManagement:
 
         return deliverable_runs
 
+    def get_latest_mod_time_for_directory(self, root_path):
+        latest_mod_time = datetime.fromtimestamp(0, tz=timezone.utc)
+
+        # Get the list of all entries in the root_path
+        for entry in os.listdir(root_path):
+            entry_path = os.path.join(root_path, entry)
+
+            if os.path.isdir(entry_path):
+                # Recursively check subdirectories
+                mod_time = self.get_latest_mod_time_for_directory(entry_path)
+            elif os.path.isfile(entry_path):
+                # Get the modification time of the file
+                mod_time = datetime.fromtimestamp(os.path.getmtime(entry_path), tz=timezone.utc)
+            else:
+                continue
+
+            latest_mod_time = max(latest_mod_time, mod_time)
+
+        # Get the root folder's last modification time
+        dir_mod_time = datetime.fromtimestamp(os.path.getmtime(root_path), tz=timezone.utc)
+        latest_mod_time = max(latest_mod_time, dir_mod_time)
+        # latest_mod_time = latest_mod_time.replace(tzinfo=timezone.utc)
+
+        return latest_mod_time
+
+
     def list_old_files(self, path: str, months: int) -> dict:
         """
         Identify directories within a specified path that have not been modified in the
@@ -257,6 +283,8 @@ class DataManagement:
             - The method assumes that if any file within a directory is older than the specified threshold, 
             the entire directory is considered for archiving.
         """
+        # if not os.path.exists(path):
+        #     raise FileNotFoundError(f"{path} does not exist.")
 
         # Get the current time and calculate the threshold time for archival
         current_time = datetime.now(timezone.utc)
@@ -266,19 +294,18 @@ class DataManagement:
 
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         old_folders = {}
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
+
             if root == path:
                 for dir_name in dirs:
                     dir_path = os.path.join(root, dir_name)
-
-                    # Get the folder's last modification time
-                    latest_mod_time = datetime.fromtimestamp(os.path.getmtime(dir_path), tz=timezone.utc)
+                    print(dir_path)
 
                     # Check all files in the directory
-                    for filename in files:
-                        file_path = os.path.join(dir_path, filename)
-                        mod_time = datetime.fromtimestamp(os.path.getmtime(file_path), tz=timezone.utc)
-                        latest_mod_time = max(latest_mod_time, mod_time)
+                    latest_mod_time = self.get_latest_mod_time_for_directory(dir_path)
+                    # latest_mod_time = datetime.fromtimestamp(os.path.getmtime(latest_mod_time), tz=timezone.utc)
+                    # latest_mod_time.replace(tzinfo=timezone.utc)
+                    print(latest_mod_time)
 
                     if latest_mod_time < threshold_time:
                         formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
