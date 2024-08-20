@@ -400,7 +400,7 @@ def scan_run_state(
         if status == "pipeline_pending":
             return "yellow"
         if status == "pipeline_running":
-            return "rgb(173, 216, 230)"
+            return "rgb(173,216,230)"
         return "green"
 
     # Display table of scan results
