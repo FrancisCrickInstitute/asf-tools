@@ -7,7 +7,6 @@ import os
 import subprocess
 from datetime import datetime, timedelta, timezone
 
-from .utils import check_file_exist
 from asf_tools.io.utils import check_file_exist
 from asf_tools.slurm.utils import get_job_status
 
@@ -154,7 +153,7 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def scan_delivery_state(self, source_dir: str, target_dir: str):
+    def scan_delivery_state(self, source_dir: str, target_dir: str) -> dict:
         """
         Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
@@ -239,22 +238,24 @@ class DataManagement:
 
         Args:
             path (str): The root directory path to start the search from.
-            n_months (int): The number of months to use as the threshold for determining
+            months (int): The number of months to use as the threshold for determining
                             which directories are considered old. Directories not modified
                             in the last `n_months` will be included.
 
         Returns:
-            dict: A dictionary where each key is the name of a directory that meets the
-                criteria (older than `n_months` and not already archived). The value
-                is a dictionary containing:
+            dict: A dictionary where each key is the name of a directory that meets the criteria 
+                (containing files older than `months` and not already archived). The value is a 
+                dictionary containing:
                     - "path": The full path to the directory.
-                    - "days_since_modified": The number of days since the directory was last modified.
-                    - "last_modified": A string representing the last modification time of the directory
+                    - "days_since_modified": The number of days since the latest file in the directory was last modified.
+                    - "last_modified": A string representing the latest modification time of any file in the directory
                     in the format "Month Day, Year, HH:MM:SS UTC".
 
         Notes:
             - The threshold for old directories is calculated based on an average month length
             of 30.44 days.
+            - The method assumes that if any file within a directory is older than the specified threshold, 
+            the entire directory is considered for archiving.
         """
 
         # Get the current time and calculate the threshold time for archival
