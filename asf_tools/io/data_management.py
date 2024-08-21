@@ -5,6 +5,7 @@ Helper functions for data management
 import logging
 import os
 import subprocess
+from datetime import datetime, timedelta, timezone
 
 from asf_tools.io.utils import check_file_exist
 from asf_tools.slurm.utils import get_job_status
@@ -152,7 +153,7 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def scan_delivery_state(self, source_dir: str, target_dir: str):
+    def scan_delivery_state(self, source_dir: str, target_dir: str) -> dict:
         """
         Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
@@ -225,6 +226,112 @@ class DataManagement:
                         log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
+
+    def get_latest_mod_time_for_directory(self, root_path):
+        """
+        Recursively determine the latest modification time within a directory, including all its subdirectories and files.
+
+        This method traverses the directory tree starting from the given `root_path` and checks the modification times of
+        all files and subdirectories. It returns the most recent modification time found.
+
+        Args:
+            root_path (str): The path to the root directory from which to start the search.
+
+        Returns:
+            datetime: A timezone-aware `datetime` object representing the latest modification time of any file or directory
+                    within the given `root_path`. If the directory is empty, it returns the modification time of the directory itself.
+        """
+        latest_mod_time = datetime.fromtimestamp(0, tz=timezone.utc)
+
+        # Get the list of all entries in the root_path
+        for entry in os.listdir(root_path):
+            entry_path = os.path.join(root_path, entry)
+
+            if os.path.isdir(entry_path):
+                # Recursively check subdirectories
+                mod_time = self.get_latest_mod_time_for_directory(entry_path)
+            elif os.path.isfile(entry_path):
+                # Get the modification time of the file
+                mod_time = datetime.fromtimestamp(os.path.getmtime(entry_path), tz=timezone.utc)
+            else:
+                continue
+            latest_mod_time = max(latest_mod_time, mod_time)
+
+        # Get the root folder's last modification time
+        dir_mod_time = datetime.fromtimestamp(os.path.getmtime(root_path), tz=timezone.utc)
+        latest_mod_time = max(latest_mod_time, dir_mod_time)
+
+        return latest_mod_time
+
+    def find_stale_directories(self, path: str, months: int) -> dict:
+        """
+        Identify directories within a specified path that contain files that have not been modified
+        in the last `months` and are not already archived.
+
+        This method traverses the directory tree starting from the given `path` and collects directories
+        where the most recently modified file within each directory has not been modified for at least
+        `months`. It excludes directories that have already been marked as archived.
+
+        Args:
+            path (str): The root directory path to start the search from.
+            months (int): The number of months to use as the threshold for determining which directories
+                        are considered old. Directories where the latest file modification time is
+                        older than `months` will be included.
+
+        Returns:
+            dict: A dictionary where each key is the name of a directory that meets the criteria
+                (containing files older than `months` and not already archived). The value is a
+                dictionary containing:
+                    - "path": The full path to the directory.
+                    - "days_since_modified": The number of days since the latest file in the directory was last modified.
+                    - "last_modified": A string representing the latest modification time of any file in the directory
+                    in the format "Month Day, Year, HH:MM:SS UTC".
+
+        Notes:
+            - The threshold for old directories is calculated based on an average month length
+            of 30.44 days.
+            - The method assumes that if any file within a directory is older than the specified threshold,
+            the entire directory is considered for archiving.
+        """
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} does not exist.")
+
+        # Get the current time and calculate the threshold time for archival
+        current_time = datetime.now(timezone.utc)
+        threshold_time = current_time - timedelta(days=months * 30.44)
+        current_time = current_time.replace(tzinfo=timezone.utc)
+        threshold_time = threshold_time.replace(tzinfo=timezone.utc)
+
+        # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
+        stale_folders = {}
+        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
+
+            if root == path:
+                for dir_name in dirs:
+                    dir_path = os.path.join(root, dir_name)
+
+                    # Check all files in the directory
+                    latest_mod_time = self.get_latest_mod_time_for_directory(dir_path)
+
+                    if latest_mod_time < threshold_time:
+                        formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
+                        formatted_machinetime = (
+                            latest_mod_time.strftime("%Y-%m-%d %H:%M:%S")
+                            + latest_mod_time.strftime("%z")[:3]
+                            + ":"
+                            + latest_mod_time.strftime("%z")[3:]
+                        )
+                        days_since_modified = (current_time - latest_mod_time).days
+
+                        if not check_file_exist(dir_path, "archive_readme"):
+                            stale_folders[dir_name] = {
+                                "path": dir_path,
+                                "days_since_modified": days_since_modified,
+                                "last_modified_h": formatted_mtime,
+                                "last_modified_m": formatted_machinetime,
+                            }
+
+        return stale_folders
 
     def scan_run_state(
         self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
