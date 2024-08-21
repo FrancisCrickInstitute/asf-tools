@@ -376,7 +376,8 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
 @with_temporary_folder
 def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
     """
-    Test function with directories that have files affecting the modification time
+    Test function with directories that have files affecting the modification time. 
+    This test uses a temporary folder and mocks editing times.
     """
 
     # Set Up
@@ -425,7 +426,8 @@ def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
 @mock.patch("asf_tools.io.data_management.datetime")
 def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
     """
-    Test function with directories that have files affecting the modification time
+    Test function with real directories and return all dirs except those with an "archive_readme.txt" file
+    This test uses real folders and mocks editing times.
     """
 
     # Set Up
