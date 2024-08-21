@@ -315,10 +315,11 @@ class DataManagement:
 
                     if latest_mod_time < threshold_time:
                         formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
+                        formatted_machinetime = latest_mod_time.strftime('%Y-%m-%d %H:%M:%S') + latest_mod_time.strftime('%z')[:3] + ':' + latest_mod_time.strftime('%z')[3:]
                         days_since_modified = (current_time - latest_mod_time).days
 
                         if not check_file_exist(dir_path, "archive_readme"):
-                            stale_folders[dir_name] = {"path": dir_path, "days_since_modified": days_since_modified, "last_modified_h": formatted_mtime, "last_modified_m": latest_mod_time}
+                            stale_folders[dir_name] = {"path": dir_path, "days_since_modified": days_since_modified, "last_modified_h": formatted_mtime, "last_modified_m": formatted_machinetime}
 
         return stale_folders
 
