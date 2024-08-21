@@ -469,12 +469,11 @@ def test_list_old_files_nodirs(self, mock_datetime, mock_check_file_exist, mock_
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()  # time older than threshold
     mock_check_file_exist.side_effect = lambda path, flag: False
 
-    # Test
     dm = DataManagement()
-    old_data = dm.list_old_files("/test/path", 2)
 
-    # Assert
-    assert not old_data
+    # Test and Assert
+    with self.assertRaises(FileNotFoundError):
+        dm.list_old_files("/test/path", 2)
 
 
 @patch("asf_tools.slurm.utils.subprocess.run")

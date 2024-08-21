@@ -293,8 +293,8 @@ class DataManagement:
             - The method assumes that if any file within a directory is older than the specified threshold,
             the entire directory is considered for archiving.
         """
-        # if not os.path.exists(path):
-        #     raise FileNotFoundError(f"{path} does not exist.")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} does not exist.")
 
         # Get the current time and calculate the threshold time for archival
         current_time = datetime.now(timezone.utc)
