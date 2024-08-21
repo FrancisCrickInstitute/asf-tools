@@ -263,7 +263,7 @@ class DataManagement:
 
         return latest_mod_time
 
-    def list_old_files(self, path: str, months: int) -> dict:
+    def find_stale_directories(self, path: str, months: int) -> dict:
         """
         Identify directories within a specified path that contain files that have not been modified
         in the last `months` and are not already archived.
@@ -303,7 +303,7 @@ class DataManagement:
         threshold_time = threshold_time.replace(tzinfo=timezone.utc)
 
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
-        old_folders = {}
+        stale_folders = {}
         for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
 
             if root == path:
@@ -318,9 +318,9 @@ class DataManagement:
                         days_since_modified = (current_time - latest_mod_time).days
 
                         if not check_file_exist(dir_path, "archive_readme"):
-                            old_folders[dir_name] = {"path": dir_path, "days_since_modified": days_since_modified, "last_modified": formatted_mtime}
+                            stale_folders[dir_name] = {"path": dir_path, "days_since_modified": days_since_modified, "last_modified_h": formatted_mtime, "last_modified_m": latest_mod_time}
 
-        return old_folders
+        return stale_folders
 
     def scan_run_state(
         self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None

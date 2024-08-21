@@ -329,7 +329,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 @mock.patch("asf_tools.io.data_management.check_file_exist")
 @mock.patch("asf_tools.io.data_management.datetime")
 @with_temporary_folder
-def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk, tmp_path):
+def test_find_stale_directories_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk, tmp_path):
     """
     Test function when the with mocked, older paths
     """
@@ -355,7 +355,7 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
 
     # Test
     dm = DataManagement()
-    result = dm.list_old_files(tmp_path, 2)
+    result = dm.find_stale_directories(tmp_path, 2)
 
     # Assert the result
 
@@ -363,19 +363,21 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
         "dir1": {
             "path": dir1,
             "days_since_modified": 61,
-            "last_modified": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00"
         },
         "dir2": {
             "path": dir2,
             "days_since_modified": 61,
-            "last_modified": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00"
         },
     }
     self.assertEqual(result, expected_result)
 
 
 @with_temporary_folder
-def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
+def test_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
     """
     Test function with directories that have files affecting the modification time.
     This test uses a temporary folder and mocks editing times.
@@ -413,14 +415,15 @@ def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
 
         # Test
         dm = DataManagement()
-        result = dm.list_old_files(tmp_path, 2)
+        result = dm.find_stale_directories(tmp_path, 2)
 
         # Assert the result
         expected_result = {
             "dir1": {
                 "path": dir1,
                 "days_since_modified": 61,
-                "last_modified": "June 15, 2024, 00:00:00 UTC",
+                "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+                "last_modified_m": "2024-06-15 00:00:00+00:00"
             },
         }
         self.assertEqual(result, expected_result)
@@ -428,7 +431,7 @@ def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
 
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
+def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
     """
     Test function with real directories and return all dirs except those with an "archive_readme.txt" file
     This test uses real folders and mocks editing times.
@@ -442,18 +445,18 @@ def test_list_old_files_with_archived_dirs(self, mock_datetime, mock_getmtime): 
 
     # Test
     dm = DataManagement()
-    old_data = dm.list_old_files("tests/data/ont/runs", 2)
+    old_data = dm.find_stale_directories("tests/data/ont/runs", 2)
     print(old_data)
 
     # Assert
     expected_results = {
-        "run01": {"path": "tests/data/ont/runs/run01", "days_since_modified": 61, "last_modified": "June 15, 2024, 00:00:00 UTC"},
-        "run02": {"path": "tests/data/ont/runs/run02", "days_since_modified": 61, "last_modified": "June 15, 2024, 00:00:00 UTC"},
+        "run01": {"path": "tests/data/ont/runs/run01", "days_since_modified": 61, "last_modified_h": "June 15, 2024, 00:00:00 UTC", "last_modified_m": "2024-06-15 00:00:00+00:00"},
+        "run02": {"path": "tests/data/ont/runs/run02", "days_since_modified": 61, "last_modified_m": "June 15, 2024, 00:00:00 UTC", "last_modified_m": "2024-06-15 00:00:00+00:00"},
     }
     assert old_data == expected_results
 
 
-def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
+def test_find_stale_directories_noolddir(self):  # pylint: disable=unused-variable
     """
     Test function when the target path is newer than set time
     """
@@ -464,13 +467,13 @@ def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
 
     # Test
     # Return dirs that are older than 1000 months
-    old_data = dm.list_old_files(data_path, 1000)
+    old_data = dm.find_stale_directories(data_path, 1000)
 
     # Assert
     assert not old_data
 
 
-def test_list_old_files_nodirs(self):  # pylint: disable=unused-variable
+def test_find_stale_directories_nodirs(self):  # pylint: disable=unused-variable
     """
     Test function when the target path has no sub-directories
     """
@@ -481,7 +484,7 @@ def test_list_old_files_nodirs(self):  # pylint: disable=unused-variable
 
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
-        dm.list_old_files(data_path, 2)
+        dm.find_stale_directories(data_path, 2)
 
 
 @patch("asf_tools.slurm.utils.subprocess.run")
