@@ -373,10 +373,11 @@ def test_list_old_files_valid(self, mock_datetime, mock_check_file_exist, mock_g
     }
     self.assertEqual(result, expected_result)
 
+
 @with_temporary_folder
 def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
     """
-    Test function with directories that have files affecting the modification time. 
+    Test function with directories that have files affecting the modification time.
     This test uses a temporary folder and mocks editing times.
     """
 
@@ -385,14 +386,16 @@ def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
     dir1 = os.path.join(tmp_path, "dir1")
     os.makedirs(dir1)
     file1 = os.path.join(dir1, "file1.txt")
-    with open(file1, "w") as f:
+    with open(file1, "w", encoding="utf-8") as f:
         f.write("test file")
 
     # set up mock structure
-    with mock.patch("asf_tools.io.data_management.os.walk") as mock_walk, \
-        mock.patch("asf_tools.io.data_management.os.path.getmtime") as mock_getmtime, \
-        mock.patch("asf_tools.io.data_management.check_file_exist") as mock_check_file_exist, \
-        mock.patch("asf_tools.io.data_management.datetime") as mock_datetime:
+    with (
+        mock.patch("asf_tools.io.data_management.os.walk") as mock_walk,
+        mock.patch("asf_tools.io.data_management.os.path.getmtime") as mock_getmtime,
+        mock.patch("asf_tools.io.data_management.check_file_exist") as mock_check_file_exist,
+        mock.patch("asf_tools.io.data_management.datetime") as mock_datetime,
+    ):
 
         fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
         mock_datetime.now.return_value = fixed_current_time
@@ -421,6 +424,7 @@ def test_list_old_files_with_modified_files_in_dir(self, tmp_path):
             },
         }
         self.assertEqual(result, expected_result)
+
 
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
@@ -464,6 +468,7 @@ def test_list_old_files_noolddir(self):  # pylint: disable=unused-variable
 
     # Assert
     assert not old_data
+
 
 def test_list_old_files_nodirs(self):  # pylint: disable=unused-variable
     """
