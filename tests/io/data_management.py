@@ -364,13 +364,13 @@ def test_find_stale_directories_valid(self, mock_datetime, mock_check_file_exist
             "path": dir1,
             "days_since_modified": 61,
             "last_modified_h": "June 15, 2024, 00:00:00 UTC",
-            "last_modified_m": "2024-06-15 00:00:00+00:00"
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
         },
         "dir2": {
             "path": dir2,
             "days_since_modified": 61,
             "last_modified_h": "June 15, 2024, 00:00:00 UTC",
-            "last_modified_m": "2024-06-15 00:00:00+00:00"
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
         },
     }
     self.assertEqual(result, expected_result)
@@ -423,7 +423,7 @@ def test_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
                 "path": dir1,
                 "days_since_modified": 61,
                 "last_modified_h": "June 15, 2024, 00:00:00 UTC",
-                "last_modified_m": "2024-06-15 00:00:00+00:00"
+                "last_modified_m": "2024-06-15 00:00:00+00:00",
             },
         }
         self.assertEqual(result, expected_result)
@@ -450,8 +450,18 @@ def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_get
 
     # Assert
     expected_results = {
-        "run01": {"path": "tests/data/ont/runs/run01", "days_since_modified": 61, "last_modified_h": "June 15, 2024, 00:00:00 UTC", "last_modified_m": "2024-06-15 00:00:00+00:00"},
-        "run02": {"path": "tests/data/ont/runs/run02", "days_since_modified": 61, "last_modified_h": "June 15, 2024, 00:00:00 UTC", "last_modified_m": "2024-06-15 00:00:00+00:00"},
+        "run01": {
+            "path": "tests/data/ont/runs/run01",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
+        "run02": {
+            "path": "tests/data/ont/runs/run02",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
     }
     assert old_data == expected_results
 
