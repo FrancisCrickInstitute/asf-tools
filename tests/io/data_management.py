@@ -537,3 +537,10 @@ def test_pipeline_cleaning_valid(self):
     results = dm.pipeline_cleaning(data_path, 0.00001, "ont")
     print(results)
     raise ValueError
+
+    # will require:
+    # 1) mocking of folder creation time
+    # 2) check if work and results/dorado exist in test area, if not create them
+    # then check if final structure is as expected 
+    # ie. run01: no work, yes dorado
+    #     run02: no work, no dorado
