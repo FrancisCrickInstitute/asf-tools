@@ -419,3 +419,36 @@ class DataManagement:
                             }
 
         return stale_folders
+
+    def pipeline_cleaning(self, path: str, months: int, ont: str = None):
+        # this is run at the ont_run level, not within the dirs
+
+        # Detect folders older than N months
+        stale_folders = self.find_stale_directories(path, months)
+        # print(stale_folders)
+
+        # For each run folder in dict, detect and delete "work" dir
+        for key in stale_folders:
+            run_path = stale_folders[key]["path"]
+            if os.path.exists(os.path.join(run_path, "work")):
+                command = "" #rm -r work_folder
+
+            # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
+            if ont == "ont":
+                dorado_results = os.path.join(run_path, "results", "dorado")
+
+                # Find the samplesheet
+                for file in os.listdir(run_path):
+                    pattern = "samplesheet"
+                    if os.path.isfile(os.path.join(run_path, file)) and pattern in file:
+                        # Return the full path to the file
+                        samplesheet_path = os.path.join(run_path, file)
+
+                        # Remove dorado_results if the run has only 1 sample
+                        with open(samplesheet_path, 'r') as file:
+                            lines = file.readlines()
+                            num_samples = len(lines) - 1
+
+                            if num_samples == 1 and os.path.exists(dorado_results):
+                                command = "" # rm -r dorado_results
+        return ValueError
