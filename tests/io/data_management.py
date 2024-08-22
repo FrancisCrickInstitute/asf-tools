@@ -324,6 +324,37 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
     self.assertEqual(len(result), 0)
 
 
+@patch("asf_tools.slurm.utils.subprocess.run")
+def test_scan_run_state_valid(self, mock_run):
+    """
+    Test scan run state with a valid configuration
+    """
+
+    # Set up
+    dm = DataManagement()
+    raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
+    run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
+    target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+
+    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
+        mock_output = file.read()
+    mock_run.return_value = MagicMock(stdout=mock_output)
+
+    # Test
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
+
+    # Assert
+    target_dict = {
+        # 'run_01': {'status': 'delivered'},
+        "run_02": {"status": "ready_to_deliver"},
+        "run_03": {"status": "pipeline_running"},
+        "run_04": {"status": "pipeline_pending"},
+        "run_05": {"status": "sequencing_complete"},
+        "run_06": {"status": "sequencing_in_progress"},
+    }
+    self.assertEqual(data, target_dict)
+
+
 @mock.patch("asf_tools.io.data_management.os.walk")
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.check_file_exist")
@@ -497,32 +528,11 @@ def test_find_stale_directories_nodirs(self):  # pylint: disable=unused-variable
         dm.find_stale_directories(data_path, 2)
 
 
-@patch("asf_tools.slurm.utils.subprocess.run")
-def test_scan_run_state_valid(self, mock_run):
-    """
-    Test scan run state with a valid configuration
-    """
-
-    # Set up
+def test_pipeline_cleaning_valid(self):
+    # Set Up
     dm = DataManagement()
-    raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
-    run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
-    target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+    data_path = "tests/data/ont/runs"
 
-    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
-        mock_output = file.read()
-    mock_run.return_value = MagicMock(stdout=mock_output)
-
-    # Test
-    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
-
-    # Assert
-    target_dict = {
-        # 'run_01': {'status': 'delivered'},
-        "run_02": {"status": "ready_to_deliver"},
-        "run_03": {"status": "pipeline_running"},
-        "run_04": {"status": "pipeline_pending"},
-        "run_05": {"status": "sequencing_complete"},
-        "run_06": {"status": "sequencing_in_progress"},
-    }
-    self.assertEqual(data, target_dict)
+    # Test and Assert
+    results = dm.pipeline_cleaning(data_path, 0.01, "ont")
+    print(results)

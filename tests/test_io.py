@@ -31,6 +31,7 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
+        test_pipeline_cleaning_valid
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,
