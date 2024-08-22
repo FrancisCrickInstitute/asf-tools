@@ -534,5 +534,6 @@ def test_pipeline_cleaning_valid(self):
     data_path = "tests/data/ont/runs"
 
     # Test and Assert
-    results = dm.pipeline_cleaning(data_path, 0.01, "ont")
+    results = dm.pipeline_cleaning(data_path, 0.00001, "ont")
     print(results)
+    raise ValueError

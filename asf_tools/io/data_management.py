@@ -428,10 +428,11 @@ class DataManagement:
         # print(stale_folders)
 
         # For each run folder in dict, detect and delete "work" dir
-        for key in stale_folders:
+        for key in stale_folders:  # pylint: disable=C0206
             run_path = stale_folders[key]["path"]
-            if os.path.exists(os.path.join(run_path, "work")):
-                command = "" #rm -r work_folder
+            work_folder = os.path.join(run_path, "work")
+            if os.path.exists(work_folder):
+                command = "" # f"rm -r work_folder}"
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
             if ont == "ont":
@@ -443,12 +444,15 @@ class DataManagement:
                     if os.path.isfile(os.path.join(run_path, file)) and pattern in file:
                         # Return the full path to the file
                         samplesheet_path = os.path.join(run_path, file)
+                        # print(samplesheet_path)
 
                         # Remove dorado_results if the run has only 1 sample
                         with open(samplesheet_path, 'r') as file:
                             lines = file.readlines()
                             num_samples = len(lines) - 1
+                            print(num_samples)
 
                             if num_samples == 1 and os.path.exists(dorado_results):
-                                command = "" # rm -r dorado_results
-        return ValueError
+                                command = "" # f"rm -r {dorado_results}"
+
+                                return command 
