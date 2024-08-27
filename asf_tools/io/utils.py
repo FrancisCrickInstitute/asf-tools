@@ -124,20 +124,15 @@ def delete_all_items(path: str, mode: str = "files_in_dir"):
 
     if mode == "files_in_dir":
         if os.path.isdir(path):
-            # Iterate only through files at the top level of a directory
-            for entry in os.listdir(path):
-                entry_path = os.path.join(path, entry)
-                if os.path.isfile(entry_path):
-                    os.remove(entry_path)
+            for root, _, files in os.walk(path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    os.remove(file_path)
         else:
             raise ValueError(f"Expected a directory, but got a file: {path}")
 
     elif mode == "dir_tree":
         if os.path.isdir(path):
-            # Iterate only through all files within a dir and its subdirs
-            for root, _, files in os.walk(path):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    os.remove(file_path)
+            shutil.rmtree(path)
     else:
         raise ValueError(f"Invalid mode: {mode}. Choose from 'files_in_dir', 'dir_tree'.")

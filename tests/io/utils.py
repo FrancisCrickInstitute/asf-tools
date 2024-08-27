@@ -106,7 +106,7 @@ def test_delete_all_items_valid_mode_invalid(self):
     """Test an invalid mode"""
 
     # Setup
-    path1 = "tests/data/ont/runs/run01"
+    path1 = "tests/data/io"
     mode = "pattern"
 
     # Test and Assert
@@ -114,30 +114,11 @@ def test_delete_all_items_valid_mode_invalid(self):
         delete_all_items(path1, mode)
 
 def test_delete_all_items_valid_filemode(self):
-    """Test deletion of files on a top level"""
+    """Test deletion of files within dirs"""
 
     # Set up
     path = "tests/data/io"
     mode = "files_in_dir"
-
-    # create file structure
-    test_file = os.path.join(path, "dummy.txt")
-    if not os.path.exists(test_file):
-        with open(test_file, "w") as file:
-            pass
-    self.assertTrue(os.path.isfile(test_file))
-
-    # Test
-    delete_all_items(path, mode)
-
-    # Assert
-    self.assertFalse(os.path.isfile(test_file))
-
-def test_delete_all_items_valid_dirmode(self):
-    """Test deletion of files within dirs"""
-
-    path = "tests/data/ont/runs/run01"
-    mode = "dir_tree"
 
     # create dir and file structure
     test_file = os.path.join(path, "dummy.txt")
@@ -145,7 +126,8 @@ def test_delete_all_items_valid_dirmode(self):
         with open(test_file, "w") as file:
             pass
     subdir = os.path.join(path, "subdir")
-    os.makedirs(subdir)
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
     test_subdir_file = os.path.join(subdir, "dummy.txt")
     if not os.path.exists(test_subdir_file):
         with open(test_subdir_file, "w") as file:
@@ -155,6 +137,36 @@ def test_delete_all_items_valid_dirmode(self):
 
     # Test
     delete_all_items(path, mode)
+
+    # Assert
+    self.assertFalse(os.path.isfile(test_file))
+
+def test_delete_all_items_valid_dirmode(self):
+    """Test deletion of all items within specific dir"""
+
+    path = "tests/data/io/work"
+    mode = "dir_tree"
+
+    # create dir and file structure
+    work_dir = os.path.join(path, "work")
+    if not os.path.exists(work_dir):
+        os.makedirs(work_dir)
+    test_file = os.path.join(work_dir, "dummy.txt")
+    if not os.path.exists(test_file):
+        with open(test_file, "w") as file:
+            pass
+    subdir = os.path.join(work_dir, "subdir")
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+    test_subdir_file = os.path.join(subdir, "dummy.txt")
+    if not os.path.exists(test_subdir_file):
+        with open(test_subdir_file, "w") as file:
+            pass
+    self.assertTrue(os.path.isfile(test_file))
+    self.assertTrue(os.path.isfile(test_subdir_file))
+
+    # Test
+    delete_all_items(work_dir, mode)
 
     # Assert
     self.assertFalse(os.path.isfile(test_file))
