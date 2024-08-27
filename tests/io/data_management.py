@@ -565,7 +565,7 @@ def test_pipeline_cleaning_workdir_valid(self, mock_datetime, mock_getmtime):
 def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime):
     """
     Test function with directories that have a mock editing time.
-    Creates work directories and checks correct deletion of work dir.
+    Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
     """
     # Set Up
     dm = DataManagement()
@@ -582,7 +582,7 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     # create dorado dir structure
     file_path = "tests/data/ont/runs/run02"
     dorado_dir = os.path.join(file_path, "results", "dorado")
-    dorado_demux_dir = os.path.join(file_path, "results", "dorado", "demux")
+    dorado_demux_dir = os.path.join(dorado_dir, "demux")
     file_dorado_dir = os.path.join(dorado_dir, "dummy.txt")
     file_dorado_demux_dir = os.path.join(dorado_demux_dir, "dummy.txt")
     if not os.path.exists(dorado_demux_dir):
@@ -590,7 +590,7 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     if not os.path.exists(file_dorado_dir):
         with open(file_dorado_dir, "w") as file:
             pass
-    if not os.path.exists(file_dorado_dir):
+    if not os.path.exists(file_dorado_demux_dir):
         with open(file_dorado_demux_dir, "w") as file:
             pass
     # check files have been created correctly
@@ -609,11 +609,3 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     # Assert
     self.assertFalse(os.path.isfile(file_dorado_dir))
     self.assertFalse(os.path.isfile(file_dorado_demux_dir))
-
-
-
-    # will require:
-    # 2) check if work and results/dorado exist in test area, if not create them
-    # then check if final structure is as expected 
-    # ie. run01: no work, yes dorado
-    #     run02: no work, no dorado
