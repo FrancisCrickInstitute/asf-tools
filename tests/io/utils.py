@@ -117,40 +117,45 @@ def test_delete_all_items_valid_filemode(self):
     """Test deletion of files on a top level"""
 
     # Set up
-    path = "tests/data/ont/runs/run01"
+    path = "tests/data/io"
+    mode = "files_in_dir"
 
-    # mock os.path.isdir, os.walk, and os.remove
-    with patch('os.path.isdir', return_value=True) as mock_isdir, \
-         patch('os.walk', return_value=[(path, [], ["file1.txt", "file2.txt"])]) as mock_walk, \
-         patch('os.remove') as mock_remove:
+    # create file structure
+    test_file = os.path.join(path, "dummy.txt")
+    if not os.path.exists(test_file):
+        with open(test_file, "w") as file:
+            pass
+    self.assertTrue(os.path.isfile(test_file))
 
-        # Test
-        delete_all_items(path, "files_in_dir")
+    # Test
+    delete_all_items(path, mode)
 
-        # Assert
-        # check that os.path.isdir was called with the correct path
-        mock_isdir.assert_called_once_with(path)
-        # check that os.walk was called with the correct path
-        mock_walk.assert_called_once_with(path)
-        # check that os.remove was called for each file
-        mock_remove.assert_any_call(os.path.join(path, "file1.txt"))
-        mock_remove.assert_any_call(os.path.join(path, "file2.txt"))
+    # Assert
+    self.assertFalse(os.path.isfile(test_file))
 
-def test_delete_all_items_valid_dirmode(mock_os):
+def test_delete_all_items_valid_dirmode(self):
     """Test deletion of files within dirs"""
 
     path = "tests/data/ont/runs/run01"
     mode = "dir_tree"
 
-    # Use patch to mock os.path.isdir and shutil.rmtree
-    with patch('os.path.isdir', return_value=True) as mock_isdir, \
-         patch('shutil.rmtree') as mock_rmtree:
+    # create dir and file structure
+    test_file = os.path.join(path, "dummy.txt")
+    if not os.path.exists(test_file):
+        with open(test_file, "w") as file:
+            pass
+    subdir = os.path.join(path, "subdir")
+    os.makedirs(subdir)
+    test_subdir_file = os.path.join(subdir, "dummy.txt")
+    if not os.path.exists(test_subdir_file):
+        with open(test_subdir_file, "w") as file:
+            pass
+    self.assertTrue(os.path.isfile(test_file))
+    self.assertTrue(os.path.isfile(test_subdir_file))
 
-        # Test
-        delete_all_items(path, mode)
+    # Test
+    delete_all_items(path, mode)
 
-        # Assert
-        # check that os.path.isdir was called once with the correct path
-        mock_isdir.assert_called_once_with(path)
-        # check that shutil.rmtree was called once with the correct path
-        mock_rmtree.assert_called_once_with(path)
+    # Assert
+    self.assertFalse(os.path.isfile(test_file))
+    self.assertFalse(os.path.isfile(test_subdir_file))
