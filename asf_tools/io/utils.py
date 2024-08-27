@@ -106,6 +106,7 @@ def check_file_exist(path: str, pattern: str) -> bool:
                 return False
     return False
 
+
 def delete_all_items(path: str, mode: str = "files_in_dir"):
     """
     Deletes files or directories based on the specified mode.

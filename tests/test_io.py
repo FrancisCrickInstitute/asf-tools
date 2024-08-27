@@ -22,6 +22,8 @@ class TestIo(unittest.TestCase):
         test_find_stale_directories_valid,
         test_find_stale_directories_with_archived_dirs,
         test_find_stale_directories_with_modified_files_in_dir,
+        test_pipeline_cleaning_doradofiles_valid,
+        test_pipeline_cleaning_workdir_valid,
         test_scan_delivery_state_all_to_deliver,
         test_scan_delivery_state_none_to_deliver,
         test_scan_delivery_state_partial_to_deliver,
@@ -31,17 +33,15 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
-        test_pipeline_cleaning_workdir_valid,
-        test_pipeline_cleaning_doradofiles_valid
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,
         test_check_file_exist_isvalid,
         test_check_file_exist_pathnotexist,
+        test_delete_all_items_valid_dirmode,
+        test_delete_all_items_valid_filemode,
+        test_delete_all_items_valid_mode_invalid,
+        test_delete_all_items_valid_pathnotexist,
         test_list_directory,
         test_list_directory_symlink,
-        test_delete_all_items_valid_pathnotexist,
-        test_delete_all_items_valid_mode_invalid,
-        test_delete_all_items_valid_filemode,
-        test_delete_all_items_valid_dirmode
     )

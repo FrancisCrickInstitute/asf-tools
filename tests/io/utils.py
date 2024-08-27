@@ -3,11 +3,10 @@ Tests for io util functions
 """
 
 import os
-
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
-from asf_tools.io.utils import check_file_exist, list_directory_names, delete_all_items
+from asf_tools.io.utils import check_file_exist, delete_all_items, list_directory_names
 
 from ..utils import with_temporary_folder
 
@@ -91,6 +90,7 @@ def test_check_file_exist_pathnotexist(self):
     with self.assertRaises(FileNotFoundError):
         check_file_exist(path1, pattern)
 
+
 def test_delete_all_items_valid_pathnotexist(self):
     """Test a non existant path"""
 
@@ -102,6 +102,7 @@ def test_delete_all_items_valid_pathnotexist(self):
     with self.assertRaises(FileNotFoundError):
         delete_all_items(path1, pattern)
 
+
 def test_delete_all_items_valid_mode_invalid(self):
     """Test an invalid mode"""
 
@@ -112,6 +113,7 @@ def test_delete_all_items_valid_mode_invalid(self):
     # Test and Assert
     with self.assertRaises(ValueError):
         delete_all_items(path1, mode)
+
 
 def test_delete_all_items_valid_filemode(self):
     """Test deletion of files within dirs"""
@@ -140,6 +142,7 @@ def test_delete_all_items_valid_filemode(self):
 
     # Assert
     self.assertFalse(os.path.isfile(test_file))
+
 
 def test_delete_all_items_valid_dirmode(self):
     """Test deletion of all items within specific dir"""

@@ -560,6 +560,7 @@ def test_pipeline_cleaning_workdir_valid(self, mock_datetime, mock_getmtime):
         work_dir = os.path.join(item, "work")
         self.assertFalse(os.path.exists(work_dir))
 
+
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
 def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime):
@@ -578,24 +579,45 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
                 work_dir = os.path.join(root, dir, "work")
                 if not os.path.exists(work_dir):
                     os.makedirs(work_dir)
+                file_workdir = os.path.join(work_dir, "dummy.txt")
+                if not os.path.exists(file_workdir):
+                    os.makedirs(file_workdir)
 
-    # create dorado dir structure
-    file_path = "tests/data/ont/runs/run02"
-    dorado_dir = os.path.join(file_path, "results", "dorado")
-    dorado_demux_dir = os.path.join(dorado_dir, "demux")
-    file_dorado_dir = os.path.join(dorado_dir, "dummy.txt")
-    file_dorado_demux_dir = os.path.join(dorado_demux_dir, "dummy.txt")
-    if not os.path.exists(dorado_demux_dir):
-        os.makedirs(dorado_demux_dir)
-    if not os.path.exists(file_dorado_dir):
-        with open(file_dorado_dir, "w") as file:
+    # create dorado dir structure for multiple-sample run
+    file_path1 = "tests/data/ont/runs/run01"
+    dorado_dir1 = os.path.join(file_path1, "results", "dorado")
+    dorado_demux_dir1 = os.path.join(dorado_dir1, "demux")
+    file_dorado_dir1 = os.path.join(dorado_dir1, "dummy.txt")
+    file_dorado_demux_dir1 = os.path.join(dorado_demux_dir1, "dummy.txt")
+    if not os.path.exists(dorado_demux_dir1):
+        os.makedirs(dorado_demux_dir1)
+    if not os.path.exists(file_dorado_dir1):
+        with open(file_dorado_dir1, "w") as file:
             pass
-    if not os.path.exists(file_dorado_demux_dir):
-        with open(file_dorado_demux_dir, "w") as file:
+    if not os.path.exists(file_dorado_demux_dir1):
+        with open(file_dorado_demux_dir1, "w") as file:
             pass
     # check files have been created correctly
-    self.assertTrue(os.path.isfile(file_dorado_dir))
-    self.assertTrue(os.path.isfile(file_dorado_demux_dir))
+    self.assertTrue(os.path.isfile(file_dorado_dir1))
+    self.assertTrue(os.path.isfile(file_dorado_demux_dir1))
+
+    # create dorado dir structure for 1-sample run
+    file_path2 = "tests/data/ont/runs/run02"
+    dorado_dir2 = os.path.join(file_path2, "results", "dorado")
+    dorado_demux_dir2 = os.path.join(dorado_dir2, "demux")
+    file_dorado_dir2 = os.path.join(dorado_dir2, "dummy.txt")
+    file_dorado_demux_dir2 = os.path.join(dorado_demux_dir2, "dummy.txt")
+    if not os.path.exists(dorado_demux_dir2):
+        os.makedirs(dorado_demux_dir2)
+    if not os.path.exists(file_dorado_dir2):
+        with open(file_dorado_dir2, "w") as file:
+            pass
+    if not os.path.exists(file_dorado_demux_dir2):
+        with open(file_dorado_demux_dir2, "w") as file:
+            pass
+    # check files have been created correctly
+    self.assertTrue(os.path.isfile(file_dorado_dir2))
+    self.assertTrue(os.path.isfile(file_dorado_demux_dir2))
 
     # set up mock structure
     fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
@@ -607,5 +629,7 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     dm.pipeline_cleaning(data_path, 2, "ont")
 
     # Assert
-    self.assertFalse(os.path.isfile(file_dorado_dir))
-    self.assertFalse(os.path.isfile(file_dorado_demux_dir))
+    self.assertTrue(os.path.isfile(file_dorado_dir1))
+    self.assertTrue(os.path.isfile(file_dorado_demux_dir1))
+    self.assertFalse(os.path.isfile(file_dorado_dir2))
+    self.assertFalse(os.path.isfile(file_dorado_demux_dir2))

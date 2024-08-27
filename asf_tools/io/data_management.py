@@ -4,9 +4,9 @@ Helper functions for data management
 
 import logging
 import os
+import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
-import shutil
 
 from asf_tools.io.utils import check_file_exist, delete_all_items
 from asf_tools.slurm.utils import get_job_status
@@ -445,7 +445,7 @@ class DataManagement:
                         samplesheet_path = os.path.join(run_path, file)
 
                         # Remove dorado_results if the run has only 1 sample
-                        with open(samplesheet_path, 'r') as file:
+                        with open(samplesheet_path, "r") as file:
                             lines = file.readlines()
                             num_samples = len(lines) - 1
 
