@@ -439,7 +439,6 @@ class DataManagement:
             bool: Always returns `True` to indicate that the method completed its operation. This return value is used to
               confirm the method's execution rather than indicate specific conditions.
         """
-        # this is run at the ont_run level, not within the dirs
 
         # Detect folders older than N months
         stale_folders = self.find_stale_directories(path, months)
