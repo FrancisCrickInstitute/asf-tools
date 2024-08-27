@@ -420,7 +420,7 @@ class DataManagement:
 
         return stale_folders
 
-    def pipeline_cleaning(self, path: str, months: int, ont: str = None):
+    def clean_pipeline_output(self, path: str, months: int, ont: str = None):
         """
         Clean up directories and specific files in the pipeline based on their age and type.
 
@@ -464,9 +464,7 @@ class DataManagement:
                         # Remove dorado_results if the run has only 1 sample
                         with open(samplesheet_path, "r") as file:
                             lines = file.readlines()
-                            num_samples = len(lines) - 1
+                            num_samples = len(lines) - 1 # account for the header
 
                             if num_samples == 1 and os.path.exists(dorado_results):
                                 delete_all_items(dorado_results, "files_in_dir")
-
-        return True

@@ -530,20 +530,24 @@ def test_find_stale_directories_nodirs(self):
 
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_pipeline_cleaning_workdir_valid(self, mock_datetime, mock_getmtime):
+@with_temporary_folder
+def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
     """
     Test function with directories that have a mock editing time.
     Creates work directories and checks correct deletion of work dir.
     """
     # Set Up
     dm = DataManagement()
-    data_path = "tests/data/ont/runs"
-    for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
-        if root == data_path:
-            for directory in dirs:
-                work_dir = os.path.join(root, directory, "work")
-                if not os.path.exists(work_dir):
-                    os.makedirs(work_dir)
+
+    # create work dir structure
+    subdir1 = os.path.join(tmp_path, "dir1")
+    subdir2 = os.path.join(tmp_path, "dir2")
+    work_dir1 = os.path.join(subdir1, "work")
+    work_dir2 = os.path.join(subdir2, "work")
+    os.makedirs(subdir1)
+    os.makedirs(subdir2)
+    os.makedirs(work_dir1)
+    os.makedirs(work_dir2)
 
     # set up mock structure
     fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
@@ -552,18 +556,18 @@ def test_pipeline_cleaning_workdir_valid(self, mock_datetime, mock_getmtime):
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
     # Test
-    dm.pipeline_cleaning(data_path, 2, "ont")
+    dm.clean_pipeline_output(tmp_path, 2)
 
     # Assert
-    stale_dirs = dm.find_stale_directories(data_path, 2)
-    for item in stale_dirs:
-        work_dir = os.path.join(item, "work")
-        self.assertFalse(os.path.exists(work_dir))
+    self.assertTrue(os.path.exists(subdir1))
+    self.assertTrue(os.path.exists(subdir2))
+    self.assertFalse(os.path.exists(work_dir1))
+    self.assertFalse(os.path.exists(work_dir2))
 
 
 @mock.patch("asf_tools.io.data_management.os.path.getmtime")
 @mock.patch("asf_tools.io.data_management.datetime")
-def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime):
+def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmtime):
     """
     Test function with directories that have a mock editing time.
     Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
@@ -626,10 +630,12 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
     # Test
-    dm.pipeline_cleaning(data_path, 2, "ont")
+    dm.clean_pipeline_output(data_path, 2, "ont")
 
     # Assert
-    self.assertTrue(os.path.isfile(file_dorado_dir1))
-    self.assertTrue(os.path.isfile(file_dorado_demux_dir1))
-    self.assertFalse(os.path.isfile(file_dorado_dir2))
-    self.assertFalse(os.path.isfile(file_dorado_demux_dir2))
+    self.assertTrue(os.path.exists(dorado_dir1))
+    self.assertTrue(os.path.exists(dorado_dir2))
+    self.assertTrue(os.path.exists(file_dorado_demux_dir1))
+    self.assertTrue(os.path.exists(file_dorado_dir1))
+    self.assertFalse(os.path.exists(file_dorado_demux_dir2))
+    self.assertFalse(os.path.exists(file_dorado_dir2))
