@@ -7,6 +7,7 @@ import io
 import logging
 import os
 import re
+import shutil
 
 
 log = logging.getLogger(__name__)
@@ -104,3 +105,35 @@ def check_file_exist(path: str, pattern: str) -> bool:
             except re.error:
                 return False
     return False
+
+def delete_all_items(path: str, mode: str = "files_in_dir"):
+    """
+    Deletes files or directories based on the specified mode.
+
+    Parameters:
+    - path (str): The path to the file or directory to delete.
+    - mode (str): The deletion mode.
+    - "files_in_dir": Deletes all files within a directory but keeps the directory structure.
+    - "dir_tree": Deletes the entire directory and all its contents.
+
+    Raises:
+    - ValueError: If an invalid mode is provided or if the path does not exist.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Path does not exist: {path}")
+
+    if mode == "files_in_dir":
+        if os.path.isdir(path):
+            for root, _, files in os.walk(path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    os.remove(file_path)
+        else:
+            raise ValueError(f"Expected a directory, but got a file: {path}")
+
+    elif mode == "dir_tree":
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+
+    else:
+        raise ValueError(f"Invalid mode: {mode}. Choose from 'files_in_dir', 'dir_tree'.")
