@@ -112,6 +112,7 @@ def test_delete_all_items_valid_mode_invalid(self):
     with self.assertRaises(ValueError):
         delete_all_items(path1, mode)
 
+
 @with_temporary_folder
 def test_delete_all_items_valid_filemode(self, tmp_path):
     """Test deletion of files within dirs"""
@@ -138,6 +139,7 @@ def test_delete_all_items_valid_filemode(self, tmp_path):
 
     # Assert
     self.assertFalse(os.path.isfile(test_file))
+
 
 @with_temporary_folder
 def test_delete_all_items_valid_dirmode(self, tmp_path):

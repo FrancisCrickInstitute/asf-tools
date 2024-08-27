@@ -464,7 +464,7 @@ class DataManagement:
                         # Remove dorado_results if the run has only 1 sample
                         with open(samplesheet_path, "r") as file:
                             lines = file.readlines()
-                            num_samples = len(lines) - 1 # account for the header
+                            num_samples = len(lines) - 1  # account for the header
 
                             if num_samples == 1 and os.path.exists(dorado_results):
                                 delete_all_items(dorado_results, "files_in_dir")
