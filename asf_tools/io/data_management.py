@@ -4,7 +4,6 @@ Helper functions for data management
 
 import logging
 import os
-import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
 
@@ -422,6 +421,24 @@ class DataManagement:
         return stale_folders
 
     def pipeline_cleaning(self, path: str, months: int, ont: str = None):
+        """
+        Clean up directories and specific files in the pipeline based on their age and type.
+
+        This method performs a series of cleanup tasks for directories within the specified `path`:
+        1. Detects and handles stale directories that haven't been modified in the last number of `months`.
+        2. Deletes the "work" directory within each stale directory.
+        3. If the `ont` parameter is specified as "ont" and the directory contains only one sample,
+        it deletes the "results/dorado" directory within the stale directory.
+
+        Args:
+            path (str): The root directory path to start the search from.
+            months (int): The number of months to use as the threshold for identifying stale directories.
+            ont (str, optional): If set to "ont", additional cleanup is performed for directories with only one sample.
+
+        Returns:
+            bool: Always returns `True` to indicate that the method completed its operation. This return value is used to
+              confirm the method's execution rather than indicate specific conditions.
+        """
         # this is run at the ont_run level, not within the dirs
 
         # Detect folders older than N months
@@ -431,7 +448,8 @@ class DataManagement:
         for key in stale_folders:  # pylint: disable=C0206
             run_path = stale_folders[key]["path"]
             work_folder = os.path.join(run_path, "work")
-            delete_all_items(work_folder, "dir_tree")
+            if os.path.exists(work_folder):
+                delete_all_items(work_folder, "dir_tree")
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
             if ont == "ont":
@@ -452,4 +470,4 @@ class DataManagement:
                             if num_samples == 1 and os.path.exists(dorado_results):
                                 delete_all_items(dorado_results, "files_in_dir")
 
-                                return True
+        return True

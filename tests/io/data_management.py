@@ -514,7 +514,7 @@ def test_find_stale_directories_noolddir(self):  # pylint: disable=unused-variab
     assert not old_data
 
 
-def test_find_stale_directories_nodirs(self):  # pylint: disable=unused-variable
+def test_find_stale_directories_nodirs(self):
     """
     Test function when the target path has no sub-directories
     """
@@ -538,10 +538,10 @@ def test_pipeline_cleaning_workdir_valid(self, mock_datetime, mock_getmtime):
     # Set Up
     dm = DataManagement()
     data_path = "tests/data/ont/runs"
-    for root, dirs, files in os.walk(data_path):
+    for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
         if root == data_path:
-            for dir in dirs:
-                work_dir = os.path.join(root, dir, "work")
+            for directory in dirs:
+                work_dir = os.path.join(root, directory, "work")
                 if not os.path.exists(work_dir):
                     os.makedirs(work_dir)
 
@@ -573,10 +573,10 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
 
     # create work dir structure
     data_path = "tests/data/ont/runs"
-    for root, dirs, files in os.walk(data_path):
+    for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
         if root == data_path:
-            for dir in dirs:
-                work_dir = os.path.join(root, dir, "work")
+            for directory in dirs:
+                work_dir = os.path.join(root, directory, "work")
                 if not os.path.exists(work_dir):
                     os.makedirs(work_dir)
                 file_workdir = os.path.join(work_dir, "dummy.txt")
@@ -592,10 +592,10 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     if not os.path.exists(dorado_demux_dir1):
         os.makedirs(dorado_demux_dir1)
     if not os.path.exists(file_dorado_dir1):
-        with open(file_dorado_dir1, "w") as file:
+        with open(file_dorado_dir1, "w"):
             pass
     if not os.path.exists(file_dorado_demux_dir1):
-        with open(file_dorado_demux_dir1, "w") as file:
+        with open(file_dorado_demux_dir1, "w"):
             pass
     # check files have been created correctly
     self.assertTrue(os.path.isfile(file_dorado_dir1))
@@ -610,10 +610,10 @@ def test_pipeline_cleaning_doradofiles_valid(self, mock_datetime, mock_getmtime)
     if not os.path.exists(dorado_demux_dir2):
         os.makedirs(dorado_demux_dir2)
     if not os.path.exists(file_dorado_dir2):
-        with open(file_dorado_dir2, "w") as file:
+        with open(file_dorado_dir2, "w"):
             pass
     if not os.path.exists(file_dorado_demux_dir2):
-        with open(file_dorado_demux_dir2, "w") as file:
+        with open(file_dorado_demux_dir2, "w"):
             pass
     # check files have been created correctly
     self.assertTrue(os.path.isfile(file_dorado_dir2))

@@ -3,8 +3,6 @@ Tests for io util functions
 """
 
 import os
-from unittest import mock
-from unittest.mock import MagicMock, patch
 
 from asf_tools.io.utils import check_file_exist, delete_all_items, list_directory_names
 
@@ -125,14 +123,14 @@ def test_delete_all_items_valid_filemode(self):
     # create dir and file structure
     test_file = os.path.join(path, "dummy.txt")
     if not os.path.exists(test_file):
-        with open(test_file, "w") as file:
+        with open(test_file, "w"):
             pass
     subdir = os.path.join(path, "subdir")
     if not os.path.exists(subdir):
         os.makedirs(subdir)
     test_subdir_file = os.path.join(subdir, "dummy.txt")
     if not os.path.exists(test_subdir_file):
-        with open(test_subdir_file, "w") as file:
+        with open(test_subdir_file, "w"):
             pass
     self.assertTrue(os.path.isfile(test_file))
     self.assertTrue(os.path.isfile(test_subdir_file))
@@ -156,14 +154,14 @@ def test_delete_all_items_valid_dirmode(self):
         os.makedirs(work_dir)
     test_file = os.path.join(work_dir, "dummy.txt")
     if not os.path.exists(test_file):
-        with open(test_file, "w") as file:
+        with open(test_file, "w"):
             pass
     subdir = os.path.join(work_dir, "subdir")
     if not os.path.exists(subdir):
         os.makedirs(subdir)
     test_subdir_file = os.path.join(subdir, "dummy.txt")
     if not os.path.exists(test_subdir_file):
-        with open(test_subdir_file, "w") as file:
+        with open(test_subdir_file, "w"):
             pass
     self.assertTrue(os.path.isfile(test_file))
     self.assertTrue(os.path.isfile(test_subdir_file))
