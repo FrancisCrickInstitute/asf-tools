@@ -6,8 +6,9 @@ import logging
 import os
 import subprocess
 from datetime import datetime, timedelta, timezone
+import shutil
 
-from asf_tools.io.utils import check_file_exist
+from asf_tools.io.utils import check_file_exist, delete_all_items
 from asf_tools.slurm.utils import get_job_status
 
 
@@ -425,14 +426,12 @@ class DataManagement:
 
         # Detect folders older than N months
         stale_folders = self.find_stale_directories(path, months)
-        # print(stale_folders)
 
         # For each run folder in dict, detect and delete "work" dir
         for key in stale_folders:  # pylint: disable=C0206
             run_path = stale_folders[key]["path"]
             work_folder = os.path.join(run_path, "work")
-            if os.path.exists(work_folder):
-                command = "" # f"rm -r work_folder}"
+            delete_all_items(work_folder, "dir_tree")
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
             if ont == "ont":
@@ -444,15 +443,13 @@ class DataManagement:
                     if os.path.isfile(os.path.join(run_path, file)) and pattern in file:
                         # Return the full path to the file
                         samplesheet_path = os.path.join(run_path, file)
-                        # print(samplesheet_path)
 
                         # Remove dorado_results if the run has only 1 sample
                         with open(samplesheet_path, 'r') as file:
                             lines = file.readlines()
                             num_samples = len(lines) - 1
-                            print(num_samples)
 
                             if num_samples == 1 and os.path.exists(dorado_results):
-                                command = "" # f"rm -r {dorado_results}"
+                                delete_all_items(dorado_results, "files_in_dir")
 
-                                return command 
+                                return True
