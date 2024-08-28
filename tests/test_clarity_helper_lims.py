@@ -364,7 +364,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2840": {
                         "project_limsid": "TLG66",
@@ -375,7 +375,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2841": {
                         "barcode": "SXT 42 B06 (GTACGCAA)",
@@ -386,7 +386,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "Whole Exome",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2842": {
                         "project_limsid": "TLG66",
@@ -397,7 +397,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2843": {
                         "project_limsid": "TLG66",
@@ -408,7 +408,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2844": {
                         "project_limsid": "TLG66",
@@ -419,7 +419,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2845": {
                         "project_limsid": "TLG66",
@@ -430,7 +430,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2848": {
                         "project_limsid": "TLG66",
@@ -441,7 +441,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                     "TLG66A2849": {
                         "project_limsid": "TLG66",
@@ -452,7 +452,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
-                        "project_type": "WES"
+                        "project_type": "WES",
                     },
                 },
             )
