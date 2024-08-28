@@ -448,7 +448,7 @@ class DataManagement:
             run_path = stale_folders[key]["path"]
             work_folder = os.path.join(run_path, "work")
             if os.path.exists(work_folder):
-                delete_all_items(work_folder, "dir_tree")
+                delete_all_items(work_folder, DeleteMode.DIR_TREE)
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
             if ont == "ont":
@@ -467,4 +467,4 @@ class DataManagement:
                             num_samples = len(lines) - 1  # account for the header
 
                             if num_samples == 1 and os.path.exists(dorado_results):
-                                delete_all_items(dorado_results, "files_in_dir")
+                                delete_all_items(dorado_results, DeleteMode.FILES_IN_DIR)
