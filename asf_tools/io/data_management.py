@@ -7,7 +7,7 @@ import os
 import subprocess
 from datetime import datetime, timedelta, timezone
 
-from asf_tools.io.utils import check_file_exist, delete_all_items
+from asf_tools.io.utils import check_file_exist, delete_all_items, DeleteMode
 from asf_tools.slurm.utils import get_job_status
 
 

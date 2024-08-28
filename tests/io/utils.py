@@ -4,7 +4,7 @@ Tests for io util functions
 
 import os
 
-from asf_tools.io.utils import check_file_exist, delete_all_items, list_directory_names
+from asf_tools.io.utils import check_file_exist, delete_all_items, list_directory_names, DeleteMode
 
 from ..utils import with_temporary_folder
 
@@ -94,7 +94,7 @@ def test_delete_all_items_valid_pathnotexist(self):
 
     # Setup
     path1 = "path/not/valid"
-    pattern = "files_in_dir"
+    pattern = DeleteMode.FILES_IN_DIR
 
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
@@ -118,7 +118,7 @@ def test_delete_all_items_valid_filemode(self, tmp_path):
     """Test deletion of files within dirs"""
 
     # Set up
-    mode = "files_in_dir"
+    mode = DeleteMode.FILES_IN_DIR
 
     # create dir and file structure
     test_file = os.path.join(tmp_path, "dummy.txt")
@@ -146,7 +146,7 @@ def test_delete_all_items_valid_dirmode(self, tmp_path):
     """Test deletion of all items within specific dir"""
 
     # Set up
-    mode = "dir_tree"
+    mode = DeleteMode.DIR_TREE
 
     # create dir and file structure
     work_dir = os.path.join(tmp_path, "work")
