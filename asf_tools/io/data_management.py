@@ -50,7 +50,7 @@ class DataManagement:
         if not check_file_exist(run_dir, "sequencing_summary*"):
             return False
 
-        # read single integer from pod5_count.txt
+        # read single integer from pod5_count.txt
         with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
             pod5_expected_max = int(f.readline().strip())
             log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
@@ -60,14 +60,13 @@ class DataManagement:
         for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
             for file in files:
                 if file.endswith(".pod5"):
-                    match = re.search(r'_(\d+)\.pod5', file)
+                    match = re.search(r"_(\d+)\.pod5", file)
                     if match:
                         pod5_numbers.append(int(match.group(1)))
         pod5_max = max(pod5_numbers)
         log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
 
         return pod5_max == pod5_expected_max
-
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """

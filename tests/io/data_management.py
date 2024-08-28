@@ -75,6 +75,7 @@ def test_check_ont_sequencing_run_complete_false_archive(self):
     # Assert
     self.assertFalse(result)
 
+
 def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
     """
     Test function when the ONT sequencing run is not complete
