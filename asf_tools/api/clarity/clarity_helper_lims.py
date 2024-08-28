@@ -332,11 +332,14 @@ class ClarityHelperLims(ClarityLims):
         for sample in sample_metadata:
             sample_ext = self.get_samples(search_id=sample)
             project_limsid = sample_ext.project.limsid
-            reference_genome = sample_ext.udf_fields[4].value
-            data_analysis_type = sample_ext.udf_fields[7].value
+            project_info = self.get_projects(search_id=project_limsid)
+            project_type = project_info.udf_fields[17].value
+            reference_genome = project_info.udf_fields[8].value
+            data_analysis_type = project_info.udf_fields[20].value
 
             expanded_metadata[sample] = {
                 "project_limsid": project_limsid,
+                "project_type": project_type,
                 "reference_genome": reference_genome,
                 "data_analysis_type": data_analysis_type,
             }
