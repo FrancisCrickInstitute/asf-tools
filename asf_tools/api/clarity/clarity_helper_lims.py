@@ -122,9 +122,19 @@ class ClarityHelperLims(ClarityLims):
         sample_id = sample.id
         sample_name = sample.name
 
-        # Search for the project and get the name which is the ASF project id
+        # Extract project wide info
         project = self.get_projects(search_id=sample.project.id)
         project_name = project.name
+        project_limsid = project.id
+
+        project_type_list = [item.value for item in project.udf_fields if item.name == 'Project Type']
+        project_type = project_type_list[0] if project_type_list else None
+
+        reference_genome_list = [item.value for item in project.udf_fields if item.name == 'Reference Genome']
+        reference_genome = reference_genome_list[0] if reference_genome_list else None
+
+        data_analysis_type_list = [item.value for item in project.udf_fields if item.name == 'Data Analysis Pipeline']
+        data_analysis_type = data_analysis_type_list[0] if data_analysis_type_list else None
 
         # Get the submitter details
         user = self.expand_stub(project.researcher, expansion_type=Researcher)
@@ -140,9 +150,10 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_id] = {"sample_name": sample_name, "group": lab_name, "user": user_fullname, "project_id": project_name}
+        sample_info[sample_id] = {"sample_name": sample_name, "group": lab_name, "user": user_fullname, "project_id": project_name, "project_limsid": project_limsid, "project_type": project_type, "reference_genome": reference_genome, "data_analysis_type": data_analysis_type}
 
         return sample_info
+
 
     def collect_sample_info_from_runid(self, run_id: str) -> dict:
         """
@@ -254,7 +265,7 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
 
-    def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+    def collect_samplesheet_info(self, run_id: str) -> dict:
         """
         Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
 
@@ -319,13 +330,13 @@ class ClarityHelperLims(ClarityLims):
                 }
 
         Description:
-            - Collects general sample information using the `collect_ont_samplesheet_info` method.
+            - Collects general sample information using the `collect_samplesheet_info` method.
             - Extracts additional metadata for each sample using the `get_samples` method, including project name,
             reference genome, and data analysis type.
             - Merges the general and additional metadata into a single dictionary for each sample.
         """
         # Collect general sample info
-        sample_metadata = self.collect_ont_samplesheet_info(run_id)
+        sample_metadata = self.collect_samplesheet_info(run_id)
 
         # Extract additional sample info
         expanded_metadata = {}
