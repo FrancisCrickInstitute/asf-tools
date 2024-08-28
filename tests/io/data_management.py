@@ -44,7 +44,23 @@ def test_check_pipeline_run_complete_true(self):
     self.assertTrue(result)
 
 
-def test_check_ont_sequencing_run_complete_false(self):
+def test_check_ont_sequencing_run_complete_false_nocount(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run04"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_false_archive(self):
     """
     Test function when the ONT sequencing run is not complete
     """
@@ -59,8 +75,23 @@ def test_check_ont_sequencing_run_complete_false(self):
     # Assert
     self.assertFalse(result)
 
+def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
 
-def test_check_ont_sequencing_run_complete_true(self):
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run05"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_true_1(self):
     """
     Test function when the ONT sequencing run is complete
     """
@@ -68,6 +99,22 @@ def test_check_ont_sequencing_run_complete_true(self):
     # Set up
     dm = DataManagement()
     run_dir = "tests/data/ont/runs/run01"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertTrue(result)
+
+
+def test_check_ont_sequencing_run_complete_true_2(self):
+    """
+    Test function when the ONT sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run02"
 
     # Test
     result = dm.check_ont_sequencing_run_complete(run_dir)

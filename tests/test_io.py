@@ -9,8 +9,11 @@ class TestIo(unittest.TestCase):
     """Class for io tests"""
 
     from .io.data_management import (  # type: ignore[misc]  # pylint: disable=C0415
-        test_check_ont_sequencing_run_complete_false,
-        test_check_ont_sequencing_run_complete_true,
+        test_check_ont_sequencing_run_complete_false_nocount,
+        test_check_ont_sequencing_run_complete_false_archive,
+        test_check_ont_sequencing_run_complete_true_1,
+        test_check_ont_sequencing_run_complete_true_2,
+        test_check_ont_sequencing_run_complete_false_incomplete_transfer,
         test_check_pipeline_run_complete_false,
         test_check_pipeline_run_complete_true,
         test_deliver_to_targets_no_user,
