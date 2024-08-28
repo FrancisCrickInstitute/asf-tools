@@ -358,22 +358,24 @@ class TestClarityHelperLimsyWithFixtures:
                     "TLG66A2839": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 40 H05 (CTGAGCCA)",
                         "sample_name": "A_LTX265_NP_T1_FR1",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2840": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 41 A06 (AGCCATGC)",
                         "sample_name": "L_LTX877_MR_T1_FR4",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2841": {
                         "barcode": "SXT 42 B06 (GTACGCAA)",
@@ -383,67 +385,74 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
+                        "project_type": "WES"
                     },
                     "TLG66A2842": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 43 C06 (AGTACAAG)",
                         "sample_name": "A_LTX1310_MR_T1_FR3",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2843": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 44 D06 (ACATTGGC)",
                         "sample_name": "A_LTX1331_BR_T1_FR1",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2844": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 45 E06 (ATTGAGGA)",
                         "sample_name": "U_LTX1350_BR_T1_FR3",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2845": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "FFPE DNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 46 F06 (GTCGTAGA)",
                         "sample_name": "U_LTX1335_SU_FLN1",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2848": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "gDNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 03 C01 (AACGTGAT)",
                         "sample_name": "U_LTX1335_BS_GL",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                     "TLG66A2849": {
                         "project_limsid": "TLG66",
                         "reference_genome": "Homo sapiens",
-                        "data_analysis_type": "gDNA",
+                        "data_analysis_type": "Whole Exome",
                         "barcode": "SXT 04 D01 (CACTTCGA)",
                         "sample_name": "U_LTX1335_BP_LN1",
                         "group": "swantonc",
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
+                        "project_type": "WES"
                     },
                 },
             )
