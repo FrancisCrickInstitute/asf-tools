@@ -97,7 +97,7 @@ class ClarityHelperLims(ClarityLims):
         Retrieve detailed information for a given sample.
 
         This method fetches information related to a specified sample, including its
-        name, associated project, user, and lab group. If the sample is None, an appropriate
+        name, associated project, user, lab group, project type, reference genome used and data analysis type. If the sample is None, an appropriate
         exception is raised.
 
         Args:
@@ -109,6 +109,10 @@ class ClarityHelperLims(ClarityLims):
                 - group (str): The lab group associated with the sample.
                 - user (str): The user associated with the sample.
                 - project_id (str): The project ID associated with the sample.
+                - project_type (str or None): The project type associated with the sample.
+                - reference_genome (str or None): The reference genome associated with the sample.
+                - data_analysis_type (str or None): The data analysis pipeline associated with the sample.
+
 
         Raises:
             ValueError: If the provided sample is None.
@@ -127,13 +131,13 @@ class ClarityHelperLims(ClarityLims):
         project_name = project.name
         project_limsid = project.id
 
-        project_type_list = [item.value for item in project.udf_fields if item.name == 'Project Type']
+        project_type_list = [item.value for item in project.udf_fields if item.name == "Project Type"]
         project_type = project_type_list[0] if project_type_list else None
 
-        reference_genome_list = [item.value for item in project.udf_fields if item.name == 'Reference Genome']
+        reference_genome_list = [item.value for item in project.udf_fields if item.name == "Reference Genome"]
         reference_genome = reference_genome_list[0] if reference_genome_list else None
 
-        data_analysis_type_list = [item.value for item in project.udf_fields if item.name == 'Data Analysis Pipeline']
+        data_analysis_type_list = [item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"]
         data_analysis_type = data_analysis_type_list[0] if data_analysis_type_list else None
 
         # Get the submitter details
@@ -150,10 +154,18 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_id] = {"sample_name": sample_name, "group": lab_name, "user": user_fullname, "project_id": project_name, "project_limsid": project_limsid, "project_type": project_type, "reference_genome": reference_genome, "data_analysis_type": data_analysis_type}
+        sample_info[sample_id] = {
+            "sample_name": sample_name,
+            "group": lab_name,
+            "user": user_fullname,
+            "project_id": project_name,
+            "project_limsid": project_limsid,
+            "project_type": project_type,
+            "reference_genome": reference_genome,
+            "data_analysis_type": data_analysis_type,
+        }
 
         return sample_info
-
 
     def collect_sample_info_from_runid(self, run_id: str) -> dict:
         """
@@ -284,6 +296,9 @@ class ClarityHelperLims(ClarityLims):
                         "group": lab (str),
                         "user": user_fullname (str),
                         "project_id": project_id (str),
+                        "project_type": project_type (str or None),
+                        "reference_genome": reference_genome (str or None),
+                        "data_analysis_type": data_analysis_type (str or None),
                         "barcode": reagent_barcode (str)
                     },
                     ...
@@ -304,64 +319,6 @@ class ClarityHelperLims(ClarityLims):
                     merged_dict[key][sub_key] = sub_value
 
         return merged_dict
-
-    def collect_illumina_samplesheet_info(self, run_id: str) -> dict:
-        """
-        Collects basic sample information and extracts additional metadata for each sample associated with a given run ID, then merges the information
-        into a single dictionary.
-
-        Args:
-            run_id (str): The identifier for the current run.
-
-        Returns:
-            dict: A dictionary where each key is a sample name and the value is another dictionary containing both the
-                general and additional metadata for the sample. The structure of the returned dictionary is as follows:
-                {
-                    sample_name (str): {
-                        "group": lab (str),
-                        "user": user_fullname (str),
-                        "project_id": project_id (str),
-                        "barcode": reagent_barcode (str),
-                        "project_name": project_name (str),
-                        "reference_genome": reference_genome (str),
-                        "data_analysis_type": data_analysis_type (str)
-                    },
-                    ...
-                }
-
-        Description:
-            - Collects general sample information using the `collect_samplesheet_info` method.
-            - Extracts additional metadata for each sample using the `get_samples` method, including project name,
-            reference genome, and data analysis type.
-            - Merges the general and additional metadata into a single dictionary for each sample.
-        """
-        # Collect general sample info
-        sample_metadata = self.collect_samplesheet_info(run_id)
-
-        # Extract additional sample info
-        expanded_metadata = {}
-        for sample in sample_metadata:
-            sample_ext = self.get_samples(search_id=sample)
-            project_limsid = sample_ext.project.limsid
-            project_info = self.get_projects(search_id=project_limsid)
-            project_type = project_info.udf_fields[17].value
-            reference_genome = project_info.udf_fields[8].value
-            data_analysis_type = project_info.udf_fields[20].value
-
-            expanded_metadata[sample] = {
-                "project_limsid": project_limsid,
-                "project_type": project_type,
-                "reference_genome": reference_genome,
-                "data_analysis_type": data_analysis_type,
-            }
-
-        # Merge info all in one dictionary
-        for key, value in sample_metadata.items():
-            for sub_key, sub_value in value.items():
-                if key in expanded_metadata:
-                    expanded_metadata[key][sub_key] = sub_value
-
-        return expanded_metadata
 
 
 # currently index,index2 and Index_ID is all merged into "barcode"
