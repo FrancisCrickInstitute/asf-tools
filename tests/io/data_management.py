@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
-from asf_tools.io.data_management import DataManagement
+from asf_tools.io.data_management import CleanupMode, DataManagement
 
 from .utils import with_temporary_folder
 
@@ -630,7 +630,7 @@ def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmt
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
     # Test
-    dm.clean_pipeline_output(data_path, 2, "ont")
+    dm.clean_pipeline_output(data_path, 2, CleanupMode.ONT)
 
     # Assert
     self.assertTrue(os.path.exists(dorado_dir1))
@@ -664,4 +664,4 @@ def test_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime,
 
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
-        dm.clean_pipeline_output(tmp_path, 2, "ont")
+        dm.clean_pipeline_output(tmp_path, 2, CleanupMode.ONT)

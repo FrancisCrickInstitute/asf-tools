@@ -107,10 +107,13 @@ def check_file_exist(path: str, pattern: str) -> bool:
                 return False
     return False
 
+
 class DeleteMode(Enum):
     """Enum with mode options for delete_all_items"""
+
     FILES_IN_DIR = "files_in_dir"
     DIR_TREE = "dir_tree"
+
 
 def delete_all_items(path: str, mode: DeleteMode = DeleteMode.FILES_IN_DIR):
     """

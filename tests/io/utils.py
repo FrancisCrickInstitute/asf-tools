@@ -4,7 +4,7 @@ Tests for io util functions
 
 import os
 
-from asf_tools.io.utils import check_file_exist, delete_all_items, list_directory_names, DeleteMode
+from asf_tools.io.utils import DeleteMode, check_file_exist, delete_all_items, list_directory_names
 
 from ..utils import with_temporary_folder
 

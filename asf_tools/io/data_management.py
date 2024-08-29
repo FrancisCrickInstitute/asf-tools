@@ -6,13 +6,21 @@ import logging
 import os
 import subprocess
 from datetime import datetime, timedelta, timezone
+from enum import Enum
 
-from asf_tools.io.utils import check_file_exist, delete_all_items, DeleteMode
+from asf_tools.io.utils import DeleteMode, check_file_exist, delete_all_items
 from asf_tools.slurm.utils import get_job_status
 
 
 # Set up logging as the root logger
 log = logging.getLogger()
+
+
+class CleanupMode(Enum):
+    """Enum with mode options for clean_pipeline_output"""
+
+    GENERAL = "general"
+    ONT = "ont"
 
 
 class DataManagement:
@@ -420,7 +428,7 @@ class DataManagement:
 
         return stale_folders
 
-    def clean_pipeline_output(self, path: str, months: int, ont: str = None):
+    def clean_pipeline_output(self, path: str, months: int, ont: CleanupMode = CleanupMode.GENERAL):
         """
         Clean up directories and specific files in the pipeline based on their age and type.
 
@@ -433,11 +441,7 @@ class DataManagement:
         Args:
             path (str): The root directory path to start the search from.
             months (int): The number of months to use as the threshold for identifying stale directories.
-            ont (str, optional): If set to "ont", additional cleanup is performed for directories with only one sample.
-
-        Returns:
-            bool: Always returns `True` to indicate that the method completed its operation. This return value is used to
-              confirm the method's execution rather than indicate specific conditions.
+            ont (CleanupType, optional): If set to CleanupType.ONT, additional cleanup is performed for directories with only one sample.
         """
 
         # Detect folders older than N months
@@ -451,7 +455,7 @@ class DataManagement:
                 delete_all_items(work_folder, DeleteMode.DIR_TREE)
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
-            if ont == "ont":
+            if ont == CleanupMode.ONT:
                 dorado_results = os.path.join(run_path, "results", "dorado")
                 samplesheet_found = False
 

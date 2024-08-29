@@ -14,6 +14,7 @@ class TestIo(unittest.TestCase):
         test_check_pipeline_run_complete_false,
         test_check_pipeline_run_complete_true,
         test_clean_pipeline_output_doradofiles_valid,
+        test_clean_pipeline_output_nosamplesheet,
         test_clean_pipeline_output_workdir_valid,
         test_deliver_to_targets_no_user,
         test_deliver_to_targets_source_invalid,
@@ -33,7 +34,6 @@ class TestIo(unittest.TestCase):
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
-        test_clean_pipeline_output_nosamplesheet
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,
