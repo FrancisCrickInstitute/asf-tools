@@ -100,17 +100,16 @@ def test_delete_all_items_valid_pathnotexist(self):
     with self.assertRaises(FileNotFoundError):
         delete_all_items(path1, pattern)
 
-
-def test_delete_all_items_valid_mode_invalid(self):
+@with_temporary_folder
+def test_delete_all_items_valid_mode_invalid(self, tmp_path):
     """Test an invalid mode"""
 
     # Setup
-    path1 = "tests/data/io"
     mode = "pattern"
 
     # Test and Assert
     with self.assertRaises(ValueError):
-        delete_all_items(path1, mode)
+        delete_all_items(tmp_path, mode)
 
 
 @with_temporary_folder
