@@ -453,6 +453,7 @@ class DataManagement:
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
             if ont == "ont":
                 dorado_results = os.path.join(run_path, "results", "dorado")
+                samplesheet_found = False
 
                 # Find the samplesheet
                 for file in os.listdir(run_path):
@@ -460,6 +461,7 @@ class DataManagement:
                     if os.path.isfile(os.path.join(run_path, file)) and pattern in file:
                         # Return the full path to the file
                         samplesheet_path = os.path.join(run_path, file)
+                        samplesheet_found = True
 
                         # Remove dorado_results if the run has only 1 sample
                         with open(samplesheet_path, "r") as file:
@@ -468,3 +470,6 @@ class DataManagement:
 
                             if num_samples == 1 and os.path.exists(dorado_results):
                                 delete_all_items(dorado_results, DeleteMode.FILES_IN_DIR)
+                        break
+                if not samplesheet_found:
+                    raise FileNotFoundError(f"Samplesheet not found in {path}.")

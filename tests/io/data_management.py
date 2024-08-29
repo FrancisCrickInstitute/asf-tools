@@ -639,3 +639,29 @@ def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmt
     self.assertTrue(os.path.exists(file_dorado_dir1))
     self.assertFalse(os.path.exists(file_dorado_demux_dir2))
     self.assertFalse(os.path.exists(file_dorado_dir2))
+
+
+@mock.patch("asf_tools.io.data_management.os.path.getmtime")
+@mock.patch("asf_tools.io.data_management.datetime")
+@with_temporary_folder
+def test_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime, tmp_path):
+    """
+    Test function with directories that have a mock editing time.
+    Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
+    """
+    # Set Up
+    dm = DataManagement()
+
+    # create work dir structure
+    work_dir = os.path.join(tmp_path, "work")
+    os.makedirs(work_dir)
+
+    # set up mock structure
+    fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = fixed_current_time
+    mock_datetime.fromtimestamp = datetime.fromtimestamp
+    mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
+
+    # Test and Assert
+    with self.assertRaises(FileNotFoundError):
+        dm.clean_pipeline_output(tmp_path, 2, "ont")
