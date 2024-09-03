@@ -103,7 +103,7 @@ class TestClarityHelperLims(unittest.TestCase):
 
     def test_alternative_barcode(self):
 
-        barcode = self.api.alternative_barcode("22G2JFLT4")
+        barcode = self.api.get_sample_custom_barcode_from_runid("22G2JFLT4")
         print(barcode)
 
         raise ValueError
@@ -423,6 +423,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "WGS",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
+                        "barcode": "None",
                     }
                 },
             ),  # ONT, no barcode info
@@ -435,6 +436,11 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         merged_dict = api.collect_samplesheet_info(run_id)
+        # alt = api.collect_samplesheet_info("22G2JFLT4")
+        # alt = api.collect_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
+        # print(alt)
+        # raise ValueError 
+        print(merged_dict)
 
         # Assert
         assert merged_dict == expected_dict
