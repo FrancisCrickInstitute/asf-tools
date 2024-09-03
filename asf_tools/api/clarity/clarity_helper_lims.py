@@ -277,7 +277,7 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
 
-    def get_sample_custom_barcode_from_runid(self, run_id: str):
+    def get_sample_custom_barcode_from_runid(self, run_id: str) -> dict:
         """
         Retrieve a mapping of custom barcodes for all samples associated with a given run ID.
 
@@ -292,7 +292,7 @@ class ClarityHelperLims(ClarityLims):
         Returns:
             dict: A dictionary where each key is the sample name (str), and the value is a dictionary containing:
                 - "barcode": The custom barcode (str) associated with the sample.
-                
+
         Raises:
             ValueError: If the provided run_id is None or invalid.
             KeyError: If the run_id does not exist in the system.
@@ -307,7 +307,7 @@ class ClarityHelperLims(ClarityLims):
         for sample_id in sample_list:
             info = self.get_samples(search_id=sample_id.id)
             sample_name = info.id
-            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "None")
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
             sample_barcode[sample_name] = {"barcode": reagent_barcode}
 
         return sample_barcode

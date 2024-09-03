@@ -101,13 +101,6 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
 
-    def test_alternative_barcode(self):
-
-        barcode = self.api.get_sample_custom_barcode_from_runid("22G2JFLT4")
-        print(barcode)
-
-        raise ValueError
-
 
 class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
@@ -254,6 +247,33 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert barcode_dict == expected_dict
+
+    @pytest.mark.parametrize(
+        "run_id,expected_dict",
+        [
+            (
+                "22G2JFLT4",
+                {'SOA6876A276': {'barcode': '32307 AGL IP7_85 and IP5_435 (AGACCAAT-AACTCCGG)'}, 'SOA6876A277': {'barcode': '28501 AGL IP7_75 and IP5_469 (ACCAAGAT-ATTGGTCT)'}, 'SOA6876A278': {'barcode': '10824 AGL IP7_29 and IP5_456 (ACTCTTGG-AGCTCCAA)'}, 'SOA6876A279': {'barcode': '70456 AGL IP7_184 and IP5_568 (CGTTCGCT-AGCGAACG)'}, 'SOA6876A280': {'barcode': '55832 AGL IP7_146 and IP5_536 (CGTAGATC-CAATTGCA)'}, 'SOA6876A281': {'barcode': '61953 AGL IP7_162 and IP5_513 (TGGTCCTG-TAACGAAG)'}, 'SOA6876A282': {'barcode': '48877 AGL IP7_128 and IP5_493 (AGCAAGGC-GCCGTCCG)'}, 'SOA6876A283': {'barcode': '60014 AGL IP7_157 and IP5_494 (TGGTTGAC-TCTGACTG)'}, 'SOA6876A284': {'barcode': '20386 AGL IP7_54 and IP5_418 (TGCTCTTC-AGGTCGGA)'}, 'SOA6876A285': {'barcode': '15828 AGL IP7_42 and IP5_468 (ATAATGGT-AGGTAGTT)'}, 'SOA6876A286': {'barcode': '24256 AGL IP7_64 and IP5_448 (TCAGTTAA-TTAACTGA)'}, 'SOA6876A287': {'barcode': '22351 AGL IP7_59 and IP5_463 (CCGGCGAC-TTCTAATG)'}, 'SOA6876A288': {'barcode': '8463 AGL IP7_23 and IP5_399 (GGCTTGAA-TTGACTAT)'}, 'SOA6876A289': {'barcode': '3483 AGL IP7_10 and IP5_411 (GGCCTCCT-AATCGCAT)'}, 'SOA6876A290': {'barcode': '25369 AGL IP7_67 and IP5_409 (CTATTCAT-AAGAGCGC)'}, 'SOA6876A291': {'barcode': '32656 AGL IP7_86 and IP5_400 (TCTACTAC-GTTAGCCG)'}, 'SOA6876A292': {'barcode': '25038 AGL IP7_66 and IP5_462 (ACCTTATT-AGGCGTCG)'}, 'SOA6876A293': {'barcode': '4290 AGL IP7_12 and IP5_450 (ACTGCAAG-AATAAGGT)'}, 'SOA6876A294': {'barcode': '6234 AGL IP7_17 and IP5_474 (TCGTTCGA-CCGCTAAC)'}, 'SOA6876A295': {'barcode': '38188 AGL IP7_100 and IP5_556 (CGCAAGCT-GAGCCTCC)'}, 'SOA6876A296': {'barcode': '62326 AGL IP7_163 and IP5_502 (GTTCAATA-GGAGCCAA)'}, 'SOA6876A297': {'barcode': '72319 AGL IP7_189 and IP5_511 (CCTTCAGG-CGCCAGTT)'}, 'SOA6876A298': {'barcode': '49340 AGL IP7_129 and IP5_572 (CTTCGTTA-CTTGAGTT)'}, 'SOA6876A299': {'barcode': '44672 AGL IP7_117 and IP5_512 (CTGGATAA-GCCTTGCT)'}, 'SOA6876A300': {'barcode': '66624 AGL IP7_174 and IP5_576 (GATCTTCC-TTGCGGAC)'}, 'SOA6876A301': {'barcode': '57393 AGL IP7_150 and IP5_561 (AGGCAAGG-ATTAATCC)'}, 'SOA6876A302': {'barcode': '50791 AGL IP7_133 and IP5_487 (CGGAATCA-TGCTTCGC)'}, 'SOA6876A303': {'barcode': '47410 AGL IP7_124 and IP5_562 (TGACGAAC-AATGCAAT)'}, 'SOA6876A304': {'barcode': '6999 AGL IP7_19 and IP5_471 (TCCTCCGC-CTAGGACC)'}, 'SOA6876A305': {'barcode': '13844 AGL IP7_37 and IP5_404 (ACTCCGCG-GTCGCGAA)'}, 'SOA6876A306': {'barcode': '7688 AGL IP7_21 and IP5_392 (CTCTGATG-CAATGGAT)'}, 'SOA6876A307': {'barcode': '21130 AGL IP7_56 and IP5_394 (GCTCTGCT-AGGAGGCC)'}, 'SOA6876A308': {'barcode': '55479 AGL IP7_145 and IP5_567 (TCAGGCGA-GATAAGTA)'}, 'SOA6876A309': {'barcode': '54249 AGL IP7_142 and IP5_489 (ACTATATA-ACTTACGG)'}, 'SOA6876A310': {'barcode': '46568 AGL IP7_122 and IP5_488 (GAACCGTT-AATCCGTC)'}, 'SOA6876A311': {'barcode': '44266 AGL IP7_116 and IP5_490 (GGCAGCCG-AAGGTTAT)'}, 'SOA6876A312': {'barcode': '53531 AGL IP7_140 and IP5_539 (AGCGGCAA-AGCAGGAG)'}, 'SOA6876A313': {'barcode': '42791 AGL IP7_112 and IP5_551 (TGACTCAA-CGGAACTT)'}, 'SOA6876A314': {'barcode': '49644 AGL IP7_130 and IP5_492 (GCATGGCG-CGACGTTA)'}, 'SOA6876A315': {'barcode': '55078 AGL IP7_144 and IP5_550 (AAGTTGGA-CGACGGCT)'}, 'SOA6876A316': {'barcode': '25797 AGL IP7_68 and IP5_453 (CGACGTAG-TGAGATCA)'}, 'SOA6876A317': {'barcode': '8879 AGL IP7_24 and IP5_431 (TCCGTATA-ATGCTTCT)'}, 'SOA6876A318': {'barcode': '1950 AGL IP7_6 and IP5_414 (CCATATAG-CGGTTCCA)'}, 'SOA6876A319': {'barcode': '30776 AGL IP7_81 and IP5_440 (CTGCTCGT-AGCAGAGC)'}},
+            ), # custom barcode
+            (
+                "20240625_1734_2F_PAW20497_d0c3cbb5",
+                {
+                    "KAN6921A20": {'barcode': ''},
+                },
+            ), # regular barcode
+        ],
+    )
+    def test_get_sample_custom_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
+        """
+        Pass real run_id and test expected values in the dictionary output
+        """
+
+        # barcode = self.api.get_sample_custom_barcode_from_runid("22G2JFLT4")
+        barcode = api.get_sample_custom_barcode_from_runid(run_id)
+        print(barcode)
+
+        # Assert
+        assert barcode == expected_dict
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
@@ -423,7 +443,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "WGS",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
-                        "barcode": "None",
+                        "barcode": "",
                     }
                 },
             ),  # ONT, no barcode info
@@ -436,13 +456,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         merged_dict = api.collect_samplesheet_info(run_id)
-        # alt = api.collect_samplesheet_info("22G2JFLT4")
-        # alt = api.collect_samplesheet_info("20240625_1734_2F_PAW20497_d0c3cbb5")
-        # print(alt)
-        # raise ValueError 
         print(merged_dict)
 
         # Assert
         assert merged_dict == expected_dict
-
-
