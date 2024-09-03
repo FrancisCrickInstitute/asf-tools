@@ -101,6 +101,13 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
 
+    def test_alternative_barcode(self):
+
+        barcode = self.api.alternative_barcode("22G2JFLT4")
+        print(barcode)
+
+        raise ValueError
+
 
 class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
@@ -431,3 +438,5 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert merged_dict == expected_dict
+
+

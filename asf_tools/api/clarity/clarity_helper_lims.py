@@ -326,3 +326,30 @@ class ClarityHelperLims(ClarityLims):
 # Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
 # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
 # 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+
+    def alternative_barcode(self, container_id: str):
+
+
+        container_name = self.get_containers(name=container_id)
+        artifact_list = container_name.placements
+        sample_list = self.get_samples_from_artifacts(artifact_list)
+
+        sample_info = {}
+        for sample_id in sample_list:
+            info = self.get_sample_info(sample_id.id)
+            sample_info.update(info)
+
+        ######################
+        # extract barcodes
+
+        for sample_id in sample_list:
+            info = self.get_samples(search_id=sample_id.id)
+            sample_name = info.id
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), None)
+            # sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+            if sample_name in sample_info:
+                sample_info[sample_name]['barcode'] = reagent_barcode
+            else:
+                print("no")
+
+        print(sample_info)
