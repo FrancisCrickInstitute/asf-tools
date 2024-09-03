@@ -344,7 +344,10 @@ class ClarityHelperLims(ClarityLims):
         """
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
-        barcode_info = self.get_sample_barcode_from_runid(run_id)
+        try:
+            barcode_info = self.get_sample_barcode_from_runid(run_id)
+        except Exception:  # pylint: disable=broad-exception-caught
+            barcode_info = {}
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)

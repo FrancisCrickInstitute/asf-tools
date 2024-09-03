@@ -175,19 +175,20 @@ class TestClarityHelperLimsyWithFixtures:
                 },
             ),
             (
-                "SKO6875A940", 
+                "SKO6875A940",
                 {
                     "SKO6875A940": {
-                        'sample_name': 'L12120', 
-                        'group': 'skoglundp', 
-                        'user': 'pontus.skoglund', 
-                        'project_id': 'PM24043', 
-                        'project_limsid': 'SKO6875', 
-                        'project_type': 'Other', 
-                        'reference_genome': 'Other', 
-                        'data_analysis_type': 'None'}
-                }
-            )
+                        "sample_name": "L12120",
+                        "group": "skoglundp",
+                        "user": "pontus.skoglund",
+                        "project_id": "PM24043",
+                        "project_limsid": "SKO6875",
+                        "project_type": "Other",
+                        "reference_genome": "Other",
+                        "data_analysis_type": "None",
+                    }
+                },
+            ),
         ],
     )
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
@@ -212,7 +213,7 @@ class TestClarityHelperLimsyWithFixtures:
             ("HWNT7BBXY", 9),
             ("20240625_1734_2F_PAW20497_d0c3cbb5", 1),
             ("PAW45729_20240715_1306_20108e83", 48),
-            ("ASF_A05136-P27", 1)
+            ("ASF_A05136-P27", 1),
         ],
     )
     def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
@@ -319,9 +320,9 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "ASF_A05136-P27",
                 {
-                    'SKO6875A940': {'barcode': '13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)'},
+                    "SKO6875A940": {"barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)"},
                 },
-            ), # custom barcode
+            ),  # custom barcode
             (
                 "20240625_1734_2F_PAW20497_d0c3cbb5",
                 {
@@ -501,17 +502,18 @@ class TestClarityHelperLimsyWithFixtures:
                 "ASF_A05136-P27",
                 {
                     "SKO6875A940": {
-                        'sample_name': 'L12120',
-                        'group': 'skoglundp',
-                        'user': 'pontus.skoglund',
-                        'project_id': 'PM24043',
-                        'project_limsid': 'SKO6875',
-                        'project_type': 'Other',
-                        'reference_genome': 'Other',
-                        'data_analysis_type': 'None',
-                        "barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)"},
+                        "sample_name": "L12120",
+                        "group": "skoglundp",
+                        "user": "pontus.skoglund",
+                        "project_id": "PM24043",
+                        "project_limsid": "SKO6875",
+                        "project_type": "Other",
+                        "reference_genome": "Other",
+                        "data_analysis_type": "None",
+                        "barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)",
+                    },
                 },
-            ), # Illumina, custom barcode
+            ),  # Illumina, custom barcode
             (
                 "20240625_1734_2F_PAW20497_d0c3cbb5",
                 {
