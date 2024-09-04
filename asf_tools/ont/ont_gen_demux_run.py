@@ -128,7 +128,7 @@ class OntGenDemuxRun:
         if self.use_api is True:
             # Get samplesheet from API
             api = ClarityHelperLims()
-            sample_dict = api.collect_ont_samplesheet_info(run_name)
+            sample_dict = api.collect_samplesheet_info(run_name)
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
