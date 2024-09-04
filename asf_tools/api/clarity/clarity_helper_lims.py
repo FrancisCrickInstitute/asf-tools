@@ -277,6 +277,41 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
 
+    def get_sample_custom_barcode_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a mapping of custom barcodes for all samples associated with a given run ID.
+
+        This method first retrieves all artifacts associated with the specified run ID, then extracts
+        the list of samples from these artifacts. For each sample, it fetches detailed information and
+        extracts the custom barcode from a UDF field named "Index". The resulting mapping of sample names
+        to their barcodes is returned.
+
+        Args:
+            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+
+        Returns:
+            dict: A dictionary where each key is the sample name (str), and the value is a dictionary containing:
+                - "barcode": The custom barcode (str) associated with the sample.
+
+        Raises:
+            ValueError: If the provided run_id is None or invalid.
+            KeyError: If the run_id does not exist in the system.
+        """
+
+        # Obtain an artifacts list and then use it as input to obtain a sample list
+        artifacts_list = self.get_artifacts_from_runid(run_id)
+        sample_list = self.get_samples_from_artifacts(artifacts_list)
+
+        # Extract barcodes
+        sample_barcode = {}
+        for sample_id in sample_list:
+            info = self.get_samples(search_id=sample_id.id)
+            sample_name = info.id
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+            sample_barcode[sample_name] = {"barcode": reagent_barcode}
+
+        return sample_barcode
+
     def collect_samplesheet_info(self, run_id: str) -> dict:
         """
         Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
@@ -309,7 +344,13 @@ class ClarityHelperLims(ClarityLims):
         """
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
-        barcode_info = self.get_sample_barcode_from_runid(run_id)
+        try:
+            barcode_info = self.get_sample_barcode_from_runid(run_id)
+        except Exception:  # pylint: disable=broad-exception-caught
+            barcode_info = {}
+        # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
+        if not barcode_info:
+            barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
 
         # Merge dictionaries using sample names as keys
         merged_dict = sample_metadata
