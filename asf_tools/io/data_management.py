@@ -468,7 +468,7 @@ class DataManagement:
                         samplesheet_found = True
 
                         # Remove dorado_results if the run has only 1 sample
-                        with open(samplesheet_path, "r") as file:
+                        with open(samplesheet_path, "r", encoding="utf-8") as file:
                             lines = file.readlines()
                             num_samples = len(lines) - 1  # account for the header
 
