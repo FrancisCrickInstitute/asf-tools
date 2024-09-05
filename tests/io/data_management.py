@@ -77,6 +77,69 @@ def test_check_ont_sequencing_run_complete_true(self):
 
 
 @with_temporary_folder
+def test_check_illumina_sequencing_run_complete_false(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertFalse(result)
+
+
+@with_temporary_folder
+def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # create file structure, run not completed
+    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertFalse(result)
+
+
+@with_temporary_folder
+def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # create file structure, run completed
+    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+
+    xml_content = """<?xml version="1.0" encoding="utf-8"?>
+        <RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <RunStatus>RunCompleted</RunStatus>
+        </RunCompletionStatus>"""
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').write(xml_content)
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertTrue(result)
+
+
+@with_temporary_folder
 def test_symlink_to_target_isinvalid_target(self, tmp_path):
     """
     Check existence of target path
@@ -325,7 +388,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
 
 @patch("asf_tools.slurm.utils.subprocess.run")
-def test_scan_run_state_valid(self, mock_run):
+def test_scan_run_state_ont_valid(self, mock_run):
     """
     Test scan run state with a valid configuration
     """
@@ -335,13 +398,14 @@ def test_scan_run_state_valid(self, mock_run):
     raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
     run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
     target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+    mode = CleanupMode.ONT
 
     with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
         mock_output = file.read()
     mock_run.return_value = MagicMock(stdout=mock_output)
 
     # Test
-    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
 
     # Assert
     target_dict = {

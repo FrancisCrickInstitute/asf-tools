@@ -55,7 +55,7 @@ class TestCli(unittest.TestCase):
 
         self.assertTrue(result.exit_code == 2)
 
-    @mock.patch("asf_tools.ont.ont_gen_demux_run.OntGenDemuxRun", autospec=True)
+    @mock.patch("asf_tools.ont.ont_gen_demux_run.GenDemuxRun", autospec=True)
     def test_cli_command_ont_gen_demux_run(self, mock_obj):
         """Test ont gen demux run"""
 
