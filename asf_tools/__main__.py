@@ -144,6 +144,13 @@ def ont(ctx):
     help=r"Target directory to write runs",
 )
 @click.option(
+    "-m",
+    "--mode_type",
+    type=click.Choice([c.value for c in CleanupMode]),
+    required=True,
+    help=r"Mode options, ONT, Illumina or General",
+)
+@click.option(
     "-p",
     "--pipeline_dir",
     required=True,
@@ -198,6 +205,7 @@ def ont(ctx):
 def ont_gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
+                      mode_type,
                       pipeline_dir,
                       nextflow_cache,
                       nextflow_work,
@@ -217,6 +225,7 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
         function = GenDemuxRun(
             source_dir,
             target_dir,
+            mode_type,
             pipeline_dir,
             nextflow_cache,
             nextflow_work,
@@ -354,6 +363,12 @@ def deliver_to_targets(
     help="Target data delivery directory",
 )
 @click.option(
+    "--mode_type",
+    type=click.Choice([c.value for c in CleanupMode]),
+    required=True,
+    help="Mode options, ONT, Illumina or General",
+)
+@click.option(
     "--slurm_user",
     required=False,
     help="Slurm user to check job status",
@@ -373,6 +388,7 @@ def scan_run_state(
     raw_dir,
     run_dir,
     target_dir,
+    mode_type,
     slurm_user,
     job_prefix,
     slurm_file):
@@ -387,6 +403,7 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
+        mode_type,
         slurm_user,
         job_prefix,
         slurm_file,
