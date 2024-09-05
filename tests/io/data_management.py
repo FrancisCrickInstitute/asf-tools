@@ -77,6 +77,69 @@ def test_check_ont_sequencing_run_complete_true(self):
 
 
 @with_temporary_folder
+def test_check_illumina_sequencing_run_complete_false(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertFalse(result)
+
+
+@with_temporary_folder
+def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # create file structure, run not completed
+    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertFalse(result)
+
+
+@with_temporary_folder
+def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
+    """
+    Test function when the Illumina sequencing run is complete
+    """
+
+    # Set up
+    dm = DataManagement()
+
+    # create file structure, run completed
+    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+
+    xml_content = """<?xml version="1.0" encoding="utf-8"?>
+        <RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <RunStatus>RunCompleted</RunStatus>
+        </RunCompletionStatus>"""
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').write(xml_content)
+
+    # Test
+    result = dm.check_illumina_sequencing_run_complete(tmp_path)
+
+    # Assert
+    self.assertTrue(result)
+
+
+@with_temporary_folder
 def test_symlink_to_target_isinvalid_target(self, tmp_path):
     """
     Check existence of target path

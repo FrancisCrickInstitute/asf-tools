@@ -42,6 +42,16 @@ class DataManagement:
         completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
         return os.path.exists(completed_file)
 
+    def check_ont_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an ONT sequencing run is complete by checking for the presence of the `sequencing_summary`
+        file.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+        """
+        return check_file_exist(run_dir, "sequencing_summary*")
+
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
         Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
@@ -63,17 +73,7 @@ class DataManagement:
                 # Check if "RunCompleted" exists in the file content
                 if "RunCompleted" in contents:
                     return True
-                return False
-
-    def check_ont_sequencing_run_complete(self, run_dir: str):
-        """
-        Check if an ONT sequencing run is complete by checking for the presence of the `sequencing_summary`
-        file.
-
-        Args:
-        - run_dir (str): Path to the run directory.
-        """
-        return check_file_exist(run_dir, "sequencing_summary*")
+        return False
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
