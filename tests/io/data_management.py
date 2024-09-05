@@ -388,7 +388,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
 
 @patch("asf_tools.slurm.utils.subprocess.run")
-def test_scan_run_state_valid(self, mock_run):
+def test_scan_run_state_ont_valid(self, mock_run):
     """
     Test scan run state with a valid configuration
     """
@@ -398,13 +398,14 @@ def test_scan_run_state_valid(self, mock_run):
     raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
     run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
     target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+    mode = CleanupMode.ONT
 
     with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
         mock_output = file.read()
     mock_run.return_value = MagicMock(stdout=mock_output)
 
     # Test
-    data = dm.scan_run_state(raw_dir, run_dir, target_dir, "scan", "asf_nanopore_demux_")
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
 
     # Assert
     target_dict = {

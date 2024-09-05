@@ -260,7 +260,7 @@ class DataManagement:
         return deliverable_runs
 
     def scan_run_state(
-        self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+        self, raw_dir: str, run_dir: str, target_dir: str, mode: CleanupMode, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
     ) -> dict:
         """
         Scans and returns the current state of sequencing and pipeline runs.
@@ -273,6 +273,7 @@ class DataManagement:
             raw_dir (str): Directory containing raw sequencing data.
             run_dir (str): Directory containing pipeline run data.
             target_dir (str): Directory where delivery-ready data is stored.
+            mode (CleanupMode): Sequencing mode, either CleanupMode.ONT or CleanupMode.ILLUMINA.
             slurm_user (str): Username for checking SLURM job status.
             job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
 
@@ -303,7 +304,15 @@ class DataManagement:
             full_path = os.path.join(abs_raw_path, entry)
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
-                if self.check_ont_sequencing_run_complete(full_path):
+                # Check mode and set the appropriate check function
+                if mode == CleanupMode.ONT:
+                    check_function = self.check_ont_sequencing_run_complete(full_path)
+                elif mode == CleanupMode.ILLUMINA:
+                    check_function = self.check_illumina_sequencing_run_complete(full_path)
+                else:
+                    raise ValueError(f"Invalid mode: {mode}. Choose a valid CleanupMode.")
+
+                if check_function:
                     status = "sequencing_complete"
                 run_info[entry] = {"status": status}
         run_info = dict(sorted(run_info.items()))
