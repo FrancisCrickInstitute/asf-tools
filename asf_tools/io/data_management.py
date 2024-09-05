@@ -21,6 +21,7 @@ class CleanupMode(Enum):
 
     GENERAL = "general"
     ONT = "ont"
+    ILLUMINA = "illumina"
 
 
 class DataManagement:
@@ -40,6 +41,29 @@ class DataManagement:
         """
         completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
         return os.path.exists(completed_file)
+
+    def check_illumina_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_files = ["RTAComplete.txt", "RunCompletionStatus.xml", "CopyComplete.txt"]
+        file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+
+        if file_exists:
+            completed_file = os.path.join(run_dir, "RunCompletionStatus.xml")
+            with open(completed_file, "r", encoding="utf-8") as file:
+                contents = file.read()
+
+                # Check if "RunCompleted" exists in the file content
+                if "RunCompleted" in contents:
+                    return True
+                return False
 
     def check_ont_sequencing_run_complete(self, run_dir: str):
         """

@@ -19,7 +19,7 @@ PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IWG
 PERM666 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH
 
 
-class OntGenDemuxRun:
+class GenDemuxRun:
     """
     Generates a run folder for the demux pipeline and associated support files
     including a run script and default samplesheet
@@ -134,7 +134,9 @@ class OntGenDemuxRun:
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
                 file.write("sample_id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
-                    file.write(f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{value['barcode']}\n")
+                    file.write(
+                        f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{value['barcode']}\n"
+                    )
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)
