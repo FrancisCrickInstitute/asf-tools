@@ -41,6 +41,13 @@ class IlluminaUtils:
                 # Return error if xml is not formatted according to the xml schema
                 raise ExpatError(f"{runinfo_file_content} content is compromised or not xml format") from exc
 
+    def extract_illumina_runid_fromxml(self, runinfo_file) -> str:
+        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
+        container_name = runinfo_dict["Run"]["Flowcell"]
+        print(container_name)
+        return container_name
+
+
     def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
         Recursively searches for a target key in a nested dictionary.

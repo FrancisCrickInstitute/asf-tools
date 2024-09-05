@@ -199,6 +199,28 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert run_info == expected_dict
 
+    def test_extract_illumina_runid_fromxml(self):
+        # Set up
+        iu = IlluminaUtils()
+        xml_dict = {
+            "@Version": "6",
+            "Run": {
+                "@Id": "20240711_LH00442_0033_A22MKK5LT3",
+                "@Number": "33",
+                "Flowcell": "22MKK5LT3",
+                "Instrument": "LH00442",
+                "Date": "2024-07-11T18:44:29Z",
+                "Reads": {"Read": [{"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},
+            },
+        }
+
+        # Test
+        run_info = iu.filter_runinfo(xml_dict)
+        print(run_info)
+
+        # Assert
+        assert run_info == "22MKK5LT3"
+
     def test_merge_runinfo_dict_fromfile(self):
         """
         Pass a valid XML file and test expected values in the dictionary output
