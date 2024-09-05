@@ -30,7 +30,7 @@ class TestIo(unittest.TestCase):
         test_scan_delivery_state_partial_to_deliver,
         test_scan_delivery_state_source_invalid,
         test_scan_delivery_state_target_invalid,
-        test_scan_run_state_valid,
+        test_scan_run_state_ont_valid,
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
