@@ -7,7 +7,7 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.data_management import DataManagement
+from asf_tools.io.data_management import CleanupMode, DataManagement
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
 
@@ -29,6 +29,7 @@ class GenDemuxRun:
         self,
         source_dir,
         target_dir,
+        mode_type,
         pipeline_dir,
         nextflow_cache,
         nextflow_work,
@@ -41,6 +42,7 @@ class GenDemuxRun:
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
+        self.mode_type = mode_type
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
@@ -92,11 +94,11 @@ class GenDemuxRun:
 
         # Process runs
         for run_name in dir_diff:
-            self.process_run(run_name)
+            self.process_run(run_name, self.mode_type)
 
         return 0
 
-    def process_run(self, run_name: str):
+    def process_run(self, run_name: str, mode_type: CleanupMode):
         """
         Per run processing
         """
@@ -129,6 +131,16 @@ class GenDemuxRun:
             # Get samplesheet from API
             api = ClarityHelperLims()
             sample_dict = api.collect_samplesheet_info(run_name)
+
+            # Check mode and set the appropriate check function
+            if mode_type == CleanupMode.ONT:
+                sample_dict = api.collect_samplesheet_info(run_name)
+            elif mode_type == CleanupMode.ILLUMINA:
+                illumina_run_name = run_name # extract run name from RunInfo.xml
+                sample_dict = api.collect_samplesheet_info(illumina_run_name)
+            else:
+                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid CleanupMode.")
+
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
