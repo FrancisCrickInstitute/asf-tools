@@ -596,10 +596,10 @@ def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmt
     if not os.path.exists(dorado_demux_dir1):
         os.makedirs(dorado_demux_dir1)
     if not os.path.exists(file_dorado_dir1):
-        with open(file_dorado_dir1, "w"):
+        with open(file_dorado_dir1, "w", encoding="utf-8"):
             pass
     if not os.path.exists(file_dorado_demux_dir1):
-        with open(file_dorado_demux_dir1, "w"):
+        with open(file_dorado_demux_dir1, "w", encoding="utf-8"):
             pass
     # check files have been created correctly
     self.assertTrue(os.path.isfile(file_dorado_dir1))
@@ -614,10 +614,10 @@ def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmt
     if not os.path.exists(dorado_demux_dir2):
         os.makedirs(dorado_demux_dir2)
     if not os.path.exists(file_dorado_dir2):
-        with open(file_dorado_dir2, "w"):
+        with open(file_dorado_dir2, "w", encoding="utf-8"):
             pass
     if not os.path.exists(file_dorado_demux_dir2):
-        with open(file_dorado_demux_dir2, "w"):
+        with open(file_dorado_demux_dir2, "w", encoding="utf-8"):
             pass
     # check files have been created correctly
     self.assertTrue(os.path.isfile(file_dorado_dir2))

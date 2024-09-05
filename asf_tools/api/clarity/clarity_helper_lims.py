@@ -130,15 +130,9 @@ class ClarityHelperLims(ClarityLims):
         project = self.get_projects(search_id=sample.project.id)
         project_name = project.name
         project_limsid = project.id
-
-        project_type_list = [item.value for item in project.udf_fields if item.name == "Project Type"]
-        project_type = project_type_list[0] if project_type_list else None
-
-        reference_genome_list = [item.value for item in project.udf_fields if item.name == "Reference Genome"]
-        reference_genome = reference_genome_list[0] if reference_genome_list else None
-
-        data_analysis_type_list = [item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"]
-        data_analysis_type = data_analysis_type_list[0] if data_analysis_type_list else None
+        project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
+        reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
+        data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
 
         # Get the submitter details
         user = self.expand_stub(project.researcher, expansion_type=Researcher)

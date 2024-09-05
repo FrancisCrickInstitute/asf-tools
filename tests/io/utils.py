@@ -122,13 +122,13 @@ def test_delete_all_items_valid_filemode(self, tmp_path):
 
     # create dir and file structure
     test_file = os.path.join(tmp_path, "dummy.txt")
-    with open(test_file, "w"):
+    with open(test_file, "w", encoding="utf-8"):
         pass
 
     subdir = os.path.join(tmp_path, "subdir")
     os.makedirs(subdir)
     test_subdir_file = os.path.join(subdir, "dummy.txt")
-    with open(test_subdir_file, "w"):
+    with open(test_subdir_file, "w", encoding="utf-8"):
         pass
 
     self.assertTrue(os.path.isfile(test_file))
@@ -152,13 +152,13 @@ def test_delete_all_items_valid_dirmode(self, tmp_path):
     work_dir = os.path.join(tmp_path, "work")
     os.makedirs(work_dir)
     test_file = os.path.join(work_dir, "dummy.txt")
-    with open(test_file, "w"):
+    with open(test_file, "w", encoding="utf-8"):
         pass
 
     subdir = os.path.join(work_dir, "subdir")
     os.makedirs(subdir)
     test_subdir_file = os.path.join(subdir, "dummy.txt")
-    with open(test_subdir_file, "w"):
+    with open(test_subdir_file, "w", encoding="utf-8"):
         pass
 
     self.assertTrue(os.path.isfile(test_file))
