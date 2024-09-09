@@ -125,6 +125,32 @@ class IlluminaUtils:
 
         return container_name
 
+    def extract_illumina_runid_frompath(self, path: str, file_name: str) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) by searching for a specific XML file in a directory path.
+
+        This method traverses the directory structure starting from the given `path`, searching for a file 
+        with the specified `file_name`. Once found, it extracts the Illumina Run ID (Flowcell ID) by parsing 
+        the XML file.
+
+        Args:
+            path (str): The root directory to begin the search for the XML file.
+            file_name (str): The name of the XML file to look for in the directory structure.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the found XML file.
+
+        Raises:
+            FileNotFoundError: If the specified file is not found within the given path.
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        for dirpath, dirnames, filenames in os.walk(path):  # pylint: disable=unused-variable
+            if file_name in filenames:
+                xml_file = os.path.join(dirpath, file_name)
+                runid = self.extract_illumina_runid_fromxml(xml_file)
+                return runid
+
     def filter_runinfo(self, runinfo_dict: dict) -> dict:
         """
         Filters and restructures information from a RunInfo dictionary.
