@@ -9,6 +9,9 @@ class TestIo(unittest.TestCase):
     """Class for io tests"""
 
     from .io.data_management import (  # type: ignore[misc]  # pylint: disable=C0415
+        test_check_illumina_sequencing_run_complete_false,
+        test_check_illumina_sequencing_run_complete_fileincomplete,
+        test_check_illumina_sequencing_run_complete_true,
         test_check_ont_sequencing_run_complete_false,
         test_check_ont_sequencing_run_complete_true,
         test_check_pipeline_run_complete_false,
@@ -30,13 +33,11 @@ class TestIo(unittest.TestCase):
         test_scan_delivery_state_partial_to_deliver,
         test_scan_delivery_state_source_invalid,
         test_scan_delivery_state_target_invalid,
+        test_scan_run_state_illumina_valid,
         test_scan_run_state_ont_valid,
         test_symlink_to_target_isinvalid_target,
         test_symlink_to_target_isvalid_list,
         test_symlink_to_target_isvalid_str,
-        test_check_illumina_sequencing_run_complete_fileincomplete,
-        test_check_illumina_sequencing_run_complete_false,
-        test_check_illumina_sequencing_run_complete_true
     )
     from .io.utils import (  # type: ignore[misc]  # pylint: disable=C0415
         test_check_file_exist_invalid,

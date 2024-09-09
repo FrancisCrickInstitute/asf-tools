@@ -149,9 +149,7 @@ def test_ont_gen_demux_samplesheet_only(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = GenDemuxRun(
-        TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, samplesheet_only=True
-    )
+    test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, samplesheet_only=True)
 
     os.makedirs(os.path.join(tmp_path, "run01"))
 

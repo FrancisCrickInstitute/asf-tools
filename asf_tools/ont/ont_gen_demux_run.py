@@ -136,11 +136,10 @@ class GenDemuxRun:
             if mode_type == CleanupMode.ONT:
                 sample_dict = api.collect_samplesheet_info(run_name)
             elif mode_type == CleanupMode.ILLUMINA:
-                illumina_run_name = run_name # extract run name from RunInfo.xml
+                illumina_run_name = run_name  # extract run name from RunInfo.xml
                 sample_dict = api.collect_samplesheet_info(illumina_run_name)
             else:
                 raise ValueError(f"Invalid mode: {mode_type}. Choose a valid CleanupMode.")
-
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:

@@ -260,7 +260,14 @@ class DataManagement:
         return deliverable_runs
 
     def scan_run_state(
-        self, raw_dir: str, run_dir: str, target_dir: str, mode: CleanupMode, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+        self,
+        raw_dir: str,
+        run_dir: str,
+        target_dir: str,
+        mode: CleanupMode,
+        slurm_user: str = None,
+        job_name_suffix: str = None,
+        slurm_file: str = None,
     ) -> dict:
         """
         Scans and returns the current state of sequencing and pipeline runs.
