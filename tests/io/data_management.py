@@ -102,9 +102,9 @@ def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
     dm = DataManagement()
 
     # create file structure, run not completed
-    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
-    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').close()
-    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
 
     # Test
     result = dm.check_illumina_sequencing_run_complete(tmp_path)
@@ -123,14 +123,14 @@ def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
     dm = DataManagement()
 
     # create file structure, run completed
-    open(os.path.join(tmp_path, "RTAComplete.txt"), 'w', encoding='utf-8').close()
-    open(os.path.join(tmp_path, "CopyComplete.txt"), 'w', encoding='utf-8').close()
+    open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
+    open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
 
     xml_content = """<?xml version="1.0" encoding="utf-8"?>
         <RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
         <RunStatus>RunCompleted</RunStatus>
         </RunCompletionStatus>"""
-    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), 'w', encoding='utf-8').write(xml_content)
+    open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)
 
     # Test
     result = dm.check_illumina_sequencing_run_complete(tmp_path)
@@ -406,6 +406,7 @@ def test_scan_run_state_ont_valid(self, mock_run):
 
     # Test
     data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
+    print(data)
 
     # Assert
     target_dict = {
@@ -415,6 +416,37 @@ def test_scan_run_state_ont_valid(self, mock_run):
         "run_04": {"status": "pipeline_pending"},
         "run_05": {"status": "sequencing_complete"},
         "run_06": {"status": "sequencing_in_progress"},
+    }
+    self.assertEqual(data, target_dict)
+
+
+@patch("asf_tools.slurm.utils.subprocess.run")
+def test_scan_run_state_illumina_valid(self, mock_run):
+    """
+    Test scan run state with a valid configuration
+    """
+
+    # Set up
+    dm = DataManagement()
+    raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
+    run_dir = "tests/data/illumina/end_to_end_example/illumina_run"
+    target_dir = "tests/data/illumina/end_to_end_example/illumina_delivery"
+    mode = CleanupMode.ILLUMINA
+
+    with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
+        mock_output = file.read()
+    mock_run.return_value = MagicMock(stdout=mock_output)
+
+    # Test
+    data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_illumina_demux_")
+    print(data)
+
+    # Assert
+    target_dict = {
+        # "run_01": {"status": "delivered"},
+        "run_02": {"status": "pipeline_running"},
+        "run_03": {"status": "sequencing_in_progress"},
+        "run_04": {"status": "ready_to_deliver"},
     }
     self.assertEqual(data, target_dict)
 
