@@ -18,6 +18,7 @@ from rich.table import Table
 from rich.text import Text
 
 import asf_tools
+from asf_tools.io.data_management import DataTypeMode
 
 
 # Set up logging as the root logger
@@ -146,7 +147,7 @@ def ont(ctx):
 @click.option(
     "-m",
     "--mode_type",
-    type=click.Choice([c.value for c in CleanupMode]),
+    type=click.Choice([c.value for c in DataTypeMode]),
     required=True,
     help=r"Mode options, ONT, Illumina or General",
 )
@@ -364,7 +365,7 @@ def deliver_to_targets(
 )
 @click.option(
     "--mode_type",
-    type=click.Choice([c.value for c in CleanupMode]),
+    type=click.Choice([c.value for c in DataTypeMode]),
     required=True,
     help="Mode options, ONT, Illumina or General",
 )

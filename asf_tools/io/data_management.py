@@ -16,7 +16,7 @@ from asf_tools.slurm.utils import get_job_status
 log = logging.getLogger()
 
 
-class CleanupMode(Enum):
+class DataTypeMode(Enum):
     """Enum with mode options for clean_pipeline_output"""
 
     GENERAL = "general"
@@ -264,7 +264,7 @@ class DataManagement:
         raw_dir: str,
         run_dir: str,
         target_dir: str,
-        mode: CleanupMode,
+        mode: DataTypeMode,
         slurm_user: str = None,
         job_name_suffix: str = None,
         slurm_file: str = None,
@@ -280,7 +280,7 @@ class DataManagement:
             raw_dir (str): Directory containing raw sequencing data.
             run_dir (str): Directory containing pipeline run data.
             target_dir (str): Directory where delivery-ready data is stored.
-            mode (CleanupMode): Sequencing mode, either CleanupMode.ONT or CleanupMode.ILLUMINA.
+            mode (DataTypeMode): Sequencing mode, either DataTypeMode.ONT or DataTypeMode.ILLUMINA.
             slurm_user (str): Username for checking SLURM job status.
             job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
 
@@ -312,12 +312,12 @@ class DataManagement:
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
                 # Check mode and set the appropriate check function
-                if mode == CleanupMode.ONT:
+                if mode == DataTypeMode.ONT:
                     check_function = self.check_ont_sequencing_run_complete(full_path)
-                elif mode == CleanupMode.ILLUMINA:
+                elif mode == DataTypeMode.ILLUMINA:
                     check_function = self.check_illumina_sequencing_run_complete(full_path)
                 else:
-                    raise ValueError(f"Invalid mode: {mode}. Choose a valid CleanupMode.")
+                    raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
 
                 if check_function:
                     status = "sequencing_complete"
@@ -468,7 +468,7 @@ class DataManagement:
 
         return stale_folders
 
-    def clean_pipeline_output(self, path: str, months: int, ont: CleanupMode = CleanupMode.GENERAL):
+    def clean_pipeline_output(self, path: str, months: int, ont: DataTypeMode = DataTypeMode.GENERAL):
         """
         Clean up directories and specific files in the pipeline based on their age and type.
 
@@ -495,7 +495,7 @@ class DataManagement:
                 delete_all_items(work_folder, DeleteMode.DIR_TREE)
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
-            if ont == CleanupMode.ONT:
+            if ont == DataTypeMode.ONT:
                 dorado_results = os.path.join(run_path, "results", "dorado")
                 samplesheet_found = False
 
