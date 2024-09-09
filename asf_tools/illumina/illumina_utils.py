@@ -41,13 +41,6 @@ class IlluminaUtils:
                 # Return error if xml is not formatted according to the xml schema
                 raise ExpatError(f"{runinfo_file_content} content is compromised or not xml format") from exc
 
-    def extract_illumina_runid_fromxml(self, runinfo_file) -> str:
-        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
-        container_name = runinfo_dict["Run"]["Flowcell"]
-        print(container_name)
-        return container_name
-
-
     def find_key_recursively(self, dic: dict, target_key: str) -> list:
         """
         Recursively searches for a target key in a nested dictionary.
@@ -109,6 +102,28 @@ class IlluminaUtils:
             raise TypeError(f"{item_name} not found in the XML structure.")
 
         return item
+
+    def extract_illumina_runid_fromxml(self, runinfo_file) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) from an XML RunInfo file.
+
+        This method converts the given XML RunInfo file into a dictionary, then extracts the
+        Flowcell ID (run ID) by locating the matching item within the dictionary.
+
+        Args:
+            runinfo_file (str): The path to the XML RunInfo file from which to extract the Run ID.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the XML file.
+
+        Raises:
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
+        container_name = self.extract_matching_item_from_dict(runinfo_dict, "Flowcell")
+
+        return container_name
 
     def filter_runinfo(self, runinfo_dict: dict) -> dict:
         """
