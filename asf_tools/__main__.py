@@ -203,7 +203,7 @@ def ont(ctx):
     default=None,
     help="Set the version of Nextflow to use in the sbatch header",
 )
-def ont_gen_demux_run(ctx,  # pylint: disable=W0613
+def gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
                       mode_type,

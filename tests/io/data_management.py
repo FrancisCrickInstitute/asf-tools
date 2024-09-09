@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
-from asf_tools.io.data_management import CleanupMode, DataManagement
+from asf_tools.io.data_management import DataTypeMode, DataManagement
 
 from .utils import with_temporary_folder
 
@@ -398,7 +398,7 @@ def test_scan_run_state_ont_valid(self, mock_run):
     raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
     run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
     target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
-    mode = CleanupMode.ONT
+    mode = DataTypeMode.ONT
 
     with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
         mock_output = file.read()
@@ -431,7 +431,7 @@ def test_scan_run_state_illumina_valid(self, mock_run):
     raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
     run_dir = "tests/data/illumina/end_to_end_example/illumina_run"
     target_dir = "tests/data/illumina/end_to_end_example/illumina_delivery"
-    mode = CleanupMode.ILLUMINA
+    mode = DataTypeMode.ILLUMINA
 
     with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
         mock_output = file.read()
@@ -726,7 +726,7 @@ def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmt
     mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
     # Test
-    dm.clean_pipeline_output(data_path, 2, CleanupMode.ONT)
+    dm.clean_pipeline_output(data_path, 2, DataTypeMode.ONT)
 
     # Assert
     self.assertTrue(os.path.exists(dorado_dir1))
@@ -760,4 +760,4 @@ def test_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime,
 
     # Test and Assert
     with self.assertRaises(FileNotFoundError):
-        dm.clean_pipeline_output(tmp_path, 2, CleanupMode.ONT)
+        dm.clean_pipeline_output(tmp_path, 2, DataTypeMode.ONT)

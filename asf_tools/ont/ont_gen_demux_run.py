@@ -7,9 +7,10 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.data_management import CleanupMode, DataManagement
+from asf_tools.io.data_management import DataTypeMode, DataManagement
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
+from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 
 log = logging.getLogger(__name__)
@@ -98,7 +99,7 @@ class GenDemuxRun:
 
         return 0
 
-    def process_run(self, run_name: str, mode_type: CleanupMode):
+    def process_run(self, run_name: str, mode_type: DataTypeMode):
         """
         Per run processing
         """
@@ -133,13 +134,16 @@ class GenDemuxRun:
             sample_dict = api.collect_samplesheet_info(run_name)
 
             # Check mode and set the appropriate check function
-            if mode_type == CleanupMode.ONT:
+            if mode_type == DataTypeMode.ONT:
                 sample_dict = api.collect_samplesheet_info(run_name)
-            elif mode_type == CleanupMode.ILLUMINA:
-                illumina_run_name = run_name  # extract run name from RunInfo.xml
+            elif mode_type == DataTypeMode.ILLUMINA:
+                # extract illumina RunId/flowcell name, then run check function
+                iu = IlluminaUtils()
+                run_dir = os.path.join(self.source_dir, run_name)
+                illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
                 sample_dict = api.collect_samplesheet_info(illumina_run_name)
             else:
-                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid CleanupMode.")
+                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid DataTypeMode.")
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
@@ -194,3 +198,4 @@ nextflow run {self.pipeline_dir} \\
   --dorado_bc_parse_pos 9
 """
         return bash_script
+ 

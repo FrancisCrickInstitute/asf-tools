@@ -227,7 +227,7 @@ class DataManagement:
             if os.path.isdir(full_path):
                 if self.check_pipeline_run_complete(full_path):
                     log.debug(f"Found completed run: {entry}")
-                    complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
+                    complete_pipeline_runs.append(full_path)
         complete_pipeline_runs.sort()
 
         # scan target directory for symlinked folders in the grouped directory

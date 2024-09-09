@@ -9,6 +9,7 @@ from unittest import mock
 from click.testing import CliRunner
 
 import asf_tools.__main__
+from asf_tools.io.data_management import DataTypeMode
 
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
@@ -63,6 +64,7 @@ class TestCli(unittest.TestCase):
         params = {
             "source_dir": TEST_ONT_RUN_SOURCE_PATH,
             "target_dir": ".",
+            "mode_type": DataTypeMode.ONT,
             "pipeline_dir": TEST_ONT_PIPELINE_PATH,
             "nextflow_cache": "/.nextflow/",
             "container_cache": "/sing/",
@@ -79,6 +81,7 @@ class TestCli(unittest.TestCase):
         mock_obj.assert_called_once_with(
             params["source_dir"],
             params["target_dir"],
+            params["mode_type"],
             params["pipeline_dir"],
             params["nextflow_cache"],
             params["nextflow_work"],
