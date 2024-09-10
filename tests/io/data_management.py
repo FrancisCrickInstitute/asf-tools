@@ -447,6 +447,8 @@ def test_scan_run_state_illumina_valid(self, mock_run):
         "run_02": {"status": "pipeline_running"},
         "run_03": {"status": "sequencing_in_progress"},
         "run_04": {"status": "ready_to_deliver"},
+        "run_05": {"status": "sequencing_complete"},
+        "run_06": {"status": "pipeline_pending"}
     }
     self.assertEqual(data, target_dict)
 

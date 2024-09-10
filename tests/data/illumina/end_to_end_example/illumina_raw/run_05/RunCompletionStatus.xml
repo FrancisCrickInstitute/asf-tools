@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns
+:xsd="http://www.w3.org/2001/XMLSchema">
+  <RunStartTime>2024-09-03T18:07:27.8787053+01:00</RunStartTime>
+  <RunEndTime>2024-09-04T20:32:46.7903314+01:00</RunEndTime>
+  <PreRunChecksDuration>00:23:43.2138438</PreRunChecksDuration>
+  <PostRunWashDuration>02:48:50.2689830</PostRunWashDuration>
+  <PostRunProtocolDuration>00:02:58.0472734</PostRunProtocolDuration>
+  <TotalRunTime>1.02:25:18.9116261</TotalRunTime>
+  <CompletedReads>
+    <Read ReadName="Read1" Cycles="181" />
+    <Read ReadName="Index1" Cycles="8" />
+    <Read ReadName="Index2" Cycles="8" />
+    <Read ReadName="Read2" Cycles="121" />
+  </CompletedReads>
+  <RunStatus>RunCompleted</RunStatus>
+</RunCompletionStatus>
