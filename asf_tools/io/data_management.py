@@ -353,9 +353,9 @@ class DataManagement:
         for run_id, info in run_info.items():
             if info["status"] == "pipeline_complete":
                 if run_id in deliverable_runs:
-                    info["status"]["status"] = "ready_to_deliver"
+                    run_info[run_id]["status"] = "ready_to_deliver"
                 else:
-                    info["status"]["status"] = "delivered"
+                    run_info[run_id]["status"] = "delivered"
 
         # Remove delivered items
         run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
