@@ -7,10 +7,10 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.data_management import DataTypeMode, DataManagement
+from asf_tools.illumina.illumina_utils import IlluminaUtils
+from asf_tools.io.data_management import DataManagement, DataTypeMode
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
-from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 
 log = logging.getLogger(__name__)
@@ -198,4 +198,3 @@ nextflow run {self.pipeline_dir} \\
   --dorado_bc_parse_pos 9
 """
         return bash_script
- 

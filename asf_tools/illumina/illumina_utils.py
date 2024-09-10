@@ -129,8 +129,8 @@ class IlluminaUtils:
         """
         Extract the Illumina Run ID (Flowcell ID) by searching for a specific XML file in a directory path.
 
-        This method traverses the directory structure starting from the given `path`, searching for a file 
-        with the specified `file_name`. Once found, it extracts the Illumina Run ID (Flowcell ID) by parsing 
+        This method traverses the directory structure starting from the given `path`, searching for a file
+        with the specified `file_name`. Once found, it extracts the Illumina Run ID (Flowcell ID) by parsing
         the XML file.
 
         Args:

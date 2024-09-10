@@ -5,8 +5,8 @@ Tests for ont gen demux run
 import os
 import stat
 
-from asf_tools.ont.ont_gen_demux_run import GenDemuxRun
 from asf_tools.io.data_management import DataTypeMode
+from asf_tools.ont.ont_gen_demux_run import GenDemuxRun
 
 from ..utils import with_temporary_folder
 
@@ -43,7 +43,9 @@ def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, contains="run02")
+    test = GenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, contains="run02"
+    )
 
     # Test
     test.run()
@@ -150,7 +152,18 @@ def test_ont_gen_demux_samplesheet_only(self, tmp_path):
     """ONT Gen demux run tests"""
 
     # Setup
-    test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, samplesheet_only=True)
+    test = GenDemuxRun(
+        TEST_ONT_RUN_SOURCE_PATH,
+        tmp_path,
+        DataTypeMode.ONT,
+        TEST_ONT_PIPELINE_PATH,
+        ".nextflow",
+        "sing",
+        "work",
+        "runs",
+        False,
+        samplesheet_only=True,
+    )
 
     os.makedirs(os.path.join(tmp_path, "run01"))
 
