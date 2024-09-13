@@ -115,12 +115,12 @@ def asf_tools_cli(ctx, verbose, hide_progress, log_file):
     }
 
 
-# asf-tools ont subcommands
+# asf-tools pipeline subcommands
 @asf_tools_cli.group()
 @click.pass_context
-def ont(ctx):
+def pipeline(ctx):
     """
-    Commands to manage ONT data
+    Commands to manage Pipeline execution
     """
     # ensure that ctx.obj exists and is a dict (in case `cli()` is called
     # by means other than the `if` block below)
@@ -128,7 +128,7 @@ def ont(ctx):
 
 
 # asf-tools ont gen-demux-run
-@ont.command("gen-demux-run")
+@pipeline.command("gen-demux-run")
 @click.pass_context
 @click.option(
     "-s",
@@ -146,10 +146,10 @@ def ont(ctx):
 )
 @click.option(
     "-m",
-    "--mode_type",
+    "--mode",
     type=click.Choice([c.value for c in DataTypeMode]),
     required=True,
-    help=r"Mode options, ONT, Illumina or General",
+    help=r"Mode options ONT, Illumina or General",
 )
 @click.option(
     "-p",
@@ -220,13 +220,13 @@ def gen_demux_run(ctx,  # pylint: disable=W0613
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.ont.ont_gen_demux_run import GenDemuxRun  # pylint: disable=C0415
+    from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
 
     try:
         function = GenDemuxRun(
             source_dir,
             target_dir,
-            mode_type,
+            DataTypeMode(mode_type),
             pipeline_dir,
             nextflow_cache,
             nextflow_work,
@@ -245,7 +245,7 @@ def gen_demux_run(ctx,  # pylint: disable=W0613
         sys.exit(1)
 
 # asf-tools ont deliver-to-targets
-@ont.command("deliver-to-targets")
+@pipeline.command("deliver-to-targets")
 @click.pass_context
 @click.option(
     "-s",
@@ -343,7 +343,7 @@ def deliver_to_targets(
                     )
 
 # asf-tools ont scan-run-state
-@ont.command("scan-run-state")
+@pipeline.command("scan-run-state")
 @click.pass_context
 @click.option(
     "--raw_dir",
@@ -364,10 +364,10 @@ def deliver_to_targets(
     help="Target data delivery directory",
 )
 @click.option(
-    "--mode_type",
+    "--mode",
     type=click.Choice([c.value for c in DataTypeMode]),
     required=True,
-    help="Mode options, ONT, Illumina or General",
+    help="Mode options, ONT or Illumina",
 )
 @click.option(
     "--slurm_user",
@@ -389,7 +389,7 @@ def scan_run_state(
     raw_dir,
     run_dir,
     target_dir,
-    mode_type,
+    mode,
     slurm_user,
     job_prefix,
     slurm_file):
@@ -404,7 +404,7 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
-        mode_type,
+        DataTypeMode(mode),
         slurm_user,
         job_prefix,
         slurm_file,
