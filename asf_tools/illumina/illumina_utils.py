@@ -299,6 +299,3 @@ class IlluminaUtils:
         merged_result = self.merge_dicts(filtered_dict, reads_dict, "run_id")
 
         return merged_result
-
-
-# my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
