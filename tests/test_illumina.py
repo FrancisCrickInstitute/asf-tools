@@ -2,7 +2,9 @@
 Tests covering the data_transfer module
 """
 
+import csv
 import os
+import tempfile
 import unittest
 from datetime import datetime
 from xml.parsers.expat import ExpatError
@@ -252,6 +254,15 @@ class TestIlluminaUtils(unittest.TestCase):
 class TestIlluminaUtilsWithFixtures:
     """Class for IlluminaUtils tests with fixtures"""
 
+    @pytest.fixture(scope="function", autouse=True)
+    def temporary_folder(self):
+        """
+        Function-level fixture that creates a temporary folder for each test.
+        """
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            self.tmp_path = tmpdirname  # Attach to the test instance
+            yield
+
     @pytest.mark.parametrize(
         "file,expected_dict",
         [
@@ -434,88 +445,93 @@ class TestIlluminaUtilsWithFixtures:
                 {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
                 {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
                 {
-                    "sample1": {"sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
-                    "sample2": {"sample_ID": "sample2", "sample_name": "test_sample_2", "index": "A002"},
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
                 },
             )
         ],
     )
-    def test_dict_to_basic_samplesheet_valid(self, header_dict, settings_dict, samples_dict, tmp_path):
+    def test_dict_to_basic_csv_valid(self, header_dict, settings_dict, samples_dict):
         """
         Check that the csv file is created and contains the correct data
         """
         # Set up
         iu = IlluminaUtils()
-        output_file_name = os.path.join(tmp_path, "test_samplesheet.csv")
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_samplesheet(header_dict, settings_dict, samples_dict, output_file_name)
+        iu.dict_to_basic_csv(header_dict, settings_dict, samples_dict, output_file_name)
 
         # Assert
-        assert os.path.exists(output_file_name)
+        output_file_csv = output_file_name + ".csv"
+        assert os.path.exists(output_file_csv)
 
-        with open(output_file_name, "r", encoding="UTF-8") as f:
-            content = f.read()
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
 
-            # Check header content
-            assert "[Header]" in content
-            assert "IEMFileVersion,4" in content
-            assert "Date,2024-09-12" in content
-            assert "Workflow,GenerateFASTQ" in content
+            # Check the header
+            assert content[0] == ["[Header]"]
+            assert ["IEMFileVersion", "4"] in content
+            assert ["Date", "2024-09-12"] in content
+            assert ["Workflow", "GenerateFASTQ"] in content
 
-            # Check settings content
-            assert "[Settings]" in content
-            assert "Read1Cycles,151" in content
-            assert "Adapter,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA" in content
+            # Check the settings
+            assert ["[Settings]"] in content
+            assert ["Read1Cycles", "151"] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
 
-            # Check sample data
-            assert "[Data]" in content
-            assert "sample_ID,sample_name,index" in content
-            assert "sample1,test_sample_1,A001" in content
-            assert "sample2,test_sample_2,A002" in content
+            # Check the sample data
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
 
     @pytest.mark.parametrize(
-            "header_dict,settings_dict",
-            [
-                (
-                    {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
-                    {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
-                )
-            ],
-        )
-    def test_dict_to_basic_samplesheet_no_samples(self, tmp_path, header_dict, settings_dict):
+        "header_dict,settings_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+            )
+        ],
+    )
+    def test_dict_to_basic_csv_no_samples(self, header_dict, settings_dict):
         """
         Test behavior with an empty samples_dict
         """
         # Set up
         iu = IlluminaUtils()
         empty_samples_dict = {}
-        output_file_name = os.path.join(tmp_path, "test_samplesheet.csv")
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_samplesheet(header_dict, settings_dict, empty_samples_dict, output_file_name)
+        iu.dict_to_basic_csv(header_dict, settings_dict, empty_samples_dict, output_file_name)
 
         # Assert
-        with open(output_file_name, "r", encoding="UTF-8") as f:
-            content = f.read()
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
 
             # Ensure the header and settings sections are present
-            assert "[Header]" in content
-            assert "[Settings]" in content
+            assert content[0] == ["[Header]"]
+            assert ["[Settings]"] in content
             # Ensure that [Data] section is present but empty
-            assert "[Data]" in content
-            assert "sample_ID" not in content
+            assert ["[Data]"] not in content
+            assert ["Sample_ID"] not in content
 
     @pytest.mark.parametrize(
-            "header_dict,settings_dict",
-            [
-                (
-                    {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
-                    {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
-                )
-            ],
-        )
-    def test_dict_to_basic_samplesheet_partial_sample_info(self, tmp_path, header_dict, settings_dict):
+        "header_dict,settings_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+            )
+        ],
+    )
+    def test_dict_to_basic_csv_partial_sample_info(self, header_dict, settings_dict):
         """
         Test with samples missing some fields
         """
@@ -523,20 +539,23 @@ class TestIlluminaUtilsWithFixtures:
         iu = IlluminaUtils()
 
         incomplete_samples_dict = {
-            "sample1": {"sample_ID": "sample1", "index": "A001"},  # missing sample_name
-            "sample2": {"sample_ID": "sample2", "sample_name": "test_sample_2"},  # missing index
+            "sample1": {"Sample_ID": "sample1", "index": "A001"},  # missing sample_name
+            "sample2": {"Sample_ID": "sample2", "sample_name": "test_sample_2"},  # missing index
         }
-        output_file_name = os.path.join(tmp_path, "test_samplesheet.csv")
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_samplesheet(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
+        iu.dict_to_basic_csv(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
 
         # Assert
-        with open(output_file_name, "r", encoding="UTF-8") as f:
-            content = f.read()
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
 
             # Ensure the missing fields are replaced with empty strings
-            assert "[Data]" in content
-            assert "sample_ID,sample_name,index" in content
-            assert "sample1,,A001" in content # missing sample_name is empty
-            assert "sample2,test_sample_2," in content # missing index is empty
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", ""]
+            assert content[-1] == ["sample2", "", "test_sample_2"]

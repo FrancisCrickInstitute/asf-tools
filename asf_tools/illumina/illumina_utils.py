@@ -302,15 +302,15 @@ class IlluminaUtils:
 
     # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
 
-    def dict_to_basic_samplesheet(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
+    def dict_to_basic_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
         output_file = output_file_name + ".csv"
         # Open the output file
-        with open(output_file, "w", encoding="UTF-8") as f:
+        with open(output_file, "w", encoding="ASCII") as f:
             # Write the Header section
             f.write("[Header]\n")
             for key, value in header_dict.items():
                 f.write(f"{key},{value}\n")
-            print(header_dict)
+            # print(header_dict)
 
             # Write the Settings section
             f.write("\n[Settings]\n")
@@ -319,7 +319,6 @@ class IlluminaUtils:
 
             # Write the Sample section
             if samples_dict:
-                print(samples_dict)
                 f.write("\n[Data]\n")
                 # Collect all unique column headers from samples_dict
                 headers = set()
@@ -336,6 +335,6 @@ class IlluminaUtils:
 
     # assumes sample_dict is set up this way:
     # samples_dict = {
-    # 'sample1': {'sample_ID': 'sample1', 'sample_name': 'test_sample_1', 'index': 'A001'},
-    # 'sample2': {'sample_ID': 'sample2', 'sample_name': 'test_sample_2', 'index': 'A002'}
+    # 'sample1': {'Sample_ID': 'sample1', 'sample_name': 'test_sample_1', 'index': 'A001'},
+    # 'sample2': {'Sample_ID': 'sample2', 'sample_name': 'test_sample_2', 'index': 'A002'}
     # }
