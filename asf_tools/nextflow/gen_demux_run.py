@@ -30,7 +30,7 @@ class GenDemuxRun:
         self,
         source_dir,
         target_dir,
-        mode_type,
+        mode,
         pipeline_dir,
         nextflow_cache,
         nextflow_work,
@@ -43,7 +43,7 @@ class GenDemuxRun:
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
-        self.mode_type = mode_type
+        self.mode = mode
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
@@ -95,11 +95,11 @@ class GenDemuxRun:
 
         # Process runs
         for run_name in dir_diff:
-            self.process_run(run_name, self.mode_type)
+            self.process_run(run_name, self.mode)
 
         return 0
 
-    def process_run(self, run_name: str, mode_type: DataTypeMode):
+    def process_run(self, run_name: str, mode: DataTypeMode):
         """
         Per run processing
         """
@@ -134,16 +134,16 @@ class GenDemuxRun:
             sample_dict = api.collect_samplesheet_info(run_name)
 
             # Check mode and set the appropriate check function
-            if mode_type == DataTypeMode.ONT:
+            if mode == DataTypeMode.ONT:
                 sample_dict = api.collect_samplesheet_info(run_name)
-            elif mode_type == DataTypeMode.ILLUMINA:
+            elif mode == DataTypeMode.ILLUMINA:
                 # extract illumina RunId/flowcell name, then run check function
                 iu = IlluminaUtils()
                 run_dir = os.path.join(self.source_dir, run_name)
                 illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
                 sample_dict = api.collect_samplesheet_info(illumina_run_name)
             else:
-                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid DataTypeMode.")
+                raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:

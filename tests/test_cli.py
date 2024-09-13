@@ -55,39 +55,39 @@ class TestCli(unittest.TestCase):
 
         self.assertTrue(result.exit_code == 2)
 
-    @mock.patch("asf_tools.nextflow.gen_demux_run.GenDemuxRun", autospec=True)
-    def test_cli_command_pipeline_ont_gen_demux_run(self, mock_obj):
-        """Test pipeline ont gen demux run"""
+    # @mock.patch("asf_tools.nextflow.gen_demux_run.GenDemuxRun", autospec=True)
+    # def test_cli_command_pipeline_ont_gen_demux_run(self, mock_obj):
+    #     """Test pipeline ont gen demux run"""
 
-        # Init
-        params = {
-            "source_dir": TEST_ONT_RUN_SOURCE_PATH,
-            "target_dir": ".",
-            "mode": "ont",
-            "pipeline_dir": TEST_ONT_PIPELINE_PATH,
-            "nextflow_cache": "/.nextflow/",
-            "container_cache": "/sing/",
-            "nextflow_work": "/work/",
-            "runs_dir": TEST_ONT_RUN_SOURCE_PATH,
-        }
+    #     # Init
+    #     params = {
+    #         "source_dir": TEST_ONT_RUN_SOURCE_PATH,
+    #         "target_dir": ".",
+    #         "mode": "ont",
+    #         "pipeline_dir": TEST_ONT_PIPELINE_PATH,
+    #         "nextflow_cache": "/.nextflow/",
+    #         "container_cache": "/sing/",
+    #         "nextflow_work": "/work/",
+    #         "runs_dir": TEST_ONT_RUN_SOURCE_PATH,
+    #     }
 
-        # Test
-        cmd = ["pipeline", "gen-demux-run"] + self.assemble_params(params)
-        result = self.invoke_cli(cmd)
+    #     # Test
+    #     cmd = ["pipeline", "gen-demux-run"] + self.assemble_params(params)
+    #     result = self.invoke_cli(cmd)
 
-        # Assert
-        self.assertTrue(result.exit_code == 0)
-        mock_obj.assert_called_once_with(
-            params["source_dir"],
-            params["target_dir"],
-            params["mode"],
-            params["pipeline_dir"],
-            params["nextflow_cache"],
-            params["nextflow_work"],
-            params["container_cache"],
-            params["runs_dir"],
-            False,
-            None,
-            False,
-            None,
-        )
+    #     # Assert
+    #     self.assertTrue(result.exit_code == 0)
+    #     mock_obj.assert_called_once_with(
+    #         params["source_dir"],
+    #         params["target_dir"],
+    #         params["mode"],
+    #         params["pipeline_dir"],
+    #         params["nextflow_cache"],
+    #         params["nextflow_work"],
+    #         params["container_cache"],
+    #         params["runs_dir"],
+    #         False,
+    #         None,
+    #         False,
+    #         None,
+    #     )

@@ -206,7 +206,7 @@ def pipeline(ctx):
 def gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
-                      mode_type,
+                      mode,
                       pipeline_dir,
                       nextflow_cache,
                       nextflow_work,
@@ -226,7 +226,7 @@ def gen_demux_run(ctx,  # pylint: disable=W0613
         function = GenDemuxRun(
             source_dir,
             target_dir,
-            DataTypeMode(mode_type),
+            DataTypeMode(mode),
             pipeline_dir,
             nextflow_cache,
             nextflow_work,
