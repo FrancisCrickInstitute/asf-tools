@@ -4,11 +4,13 @@ Primary CLI Tests
 
 import tempfile
 import unittest
-# from unittest import mock
 
 from click.testing import CliRunner
 
 import asf_tools.__main__
+
+
+# from unittest import mock
 
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
