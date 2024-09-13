@@ -2,6 +2,7 @@
 Tests covering the data_transfer module
 """
 
+import os
 import unittest
 from datetime import datetime
 from xml.parsers.expat import ExpatError
@@ -9,6 +10,8 @@ from xml.parsers.expat import ExpatError
 import pytest
 
 from asf_tools.illumina.illumina_utils import IlluminaUtils
+
+from .utils import with_temporary_folder
 
 
 class TestIlluminaUtils(unittest.TestCase):
@@ -423,3 +426,107 @@ class TestIlluminaUtilsWithFixtures:
 
         # Assert
         assert merged_dict == expected_merged_dict
+
+    @pytest.mark.parametrize(
+        "header_dict,settings_dict,samples_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {
+                    "Read1Cycles": "151",
+                    "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA",
+                },
+                {
+                    "sample1": {"sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"sample_ID": "sample2", "sample_name": "test_sample_2", "index": "A002"},
+                },
+            )
+        ],
+    )
+    @with_temporary_folder
+    def test_dict_to_basic_samplesheet_valid(self, header_dict, settings_dict, samples_dict, tmp_path):
+        """
+        Check that the csv file is created and contains the correct data
+        """
+        # Set up
+        iu = IlluminaUtils()
+        output_file_name = os.join.path(tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_basic_samplesheet(header_dict, settings_dict, samples_dict, output_file_name)
+
+        # Assert
+        self.assertTrue(os.path.exists(output_file_name))
+
+        with open(output_file_name, "r", encoding="UTF-8") as f:
+            content = f.read()
+
+            # Check header content
+            self.assertIn("[Header]", content)
+            self.assertIn("IEMFileVersion,4", content)
+            self.assertIn("Date,2024-09-12", content)
+            self.assertIn("Workflow,GenerateFASTQ", content)
+
+            # Check settings content
+            self.assertIn("[Settings]", content)
+            self.assertIn("Read1Cycles,151", content)
+            self.assertIn("Adapter,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA", content)
+
+            # Check sample data
+            self.assertIn("[Data]", content)
+            self.assertIn("sample_ID,sample_name,index", content)
+            self.assertIn("sample1,test_sample_1,A001", content)
+            self.assertIn("sample2,test_sample_2,A002", content)
+
+
+@with_temporary_folder
+def test_dict_to_basic_samplesheet_no_samples(self, header_dict, settings_dict, tmp_path):
+    """
+    Test behavior with an empty samples_dict
+    """
+    # Set up
+    iu = IlluminaUtils()
+    empty_samples_dict = {}
+    output_file_name = os.join.path(tmp_path, "test_samplesheet")
+
+    # Test
+    iu.dict_to_basic_samplesheet(header_dict, settings_dict, empty_samples_dict, output_file_name)
+
+    # Assert
+    with open(output_file_name, "r", encoding="UTF-8") as f:
+        content = f.read()
+
+        # Ensure the header and settings sections are present
+        self.assertIn("[Header]", content)
+        self.assertIn("[Settings]", content)
+        # Ensure that [Data] section is present but empty
+        self.assertIn("[Data]", content)
+        self.assertNotIn("sample_ID", content)
+
+
+@with_temporary_folder
+def test_dict_to_basic_samplesheet_partial_sample_info(self, header_dict, settings_dict, tmp_path):
+    """
+    Test with samples missing some fields
+    """
+    # Set up
+    iu = IlluminaUtils()
+
+    incomplete_samples_dict = {
+        "sample1": {"sample_ID": "sample1", "index": "A001"},  # missing sample_name
+        "sample2": {"sample_ID": "sample2", "sample_name": "test_sample_2"},  # missing index
+    }
+    output_file_name = os.join.path(tmp_path, "test_samplesheet")
+
+    # Test
+    iu.dict_to_basic_samplesheet(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
+
+    # Assert
+    with open(output_file_name, "r", encoding="UTF-8") as f:
+        content = f.read()
+
+        # Ensure the missing fields are replaced with empty strings
+        self.assertIn("[Data]", content)
+        self.assertIn("sample_ID,sample_name,index", content)
+        self.assertIn("sample1,,A001", content)  # missing sample_name is empty
+        self.assertIn("sample2,test_sample_2,", content)  # missing index is empty
