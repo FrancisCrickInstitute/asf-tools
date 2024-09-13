@@ -310,6 +310,7 @@ class IlluminaUtils:
             f.write("[Header]\n")
             for key, value in header_dict.items():
                 f.write(f"{key},{value}\n")
+            print(header_dict)
 
             # Write the Settings section
             f.write("\n[Settings]\n")
@@ -318,6 +319,7 @@ class IlluminaUtils:
 
             # Write the Sample section
             if samples_dict:
+                print(samples_dict)
                 f.write("\n[Data]\n")
                 # Collect all unique column headers from samples_dict
                 headers = set()

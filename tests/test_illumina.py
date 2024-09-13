@@ -440,7 +440,6 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    @with_temporary_folder
     def test_dict_to_basic_samplesheet_valid(self, header_dict, settings_dict, samples_dict, tmp_path):
         """
         Check that the csv file is created and contains the correct data
@@ -484,7 +483,6 @@ class TestIlluminaUtilsWithFixtures:
                 )
             ],
         )
-    @with_temporary_folder
     def test_dict_to_basic_samplesheet_no_samples(self, tmp_path, header_dict, settings_dict):
         """
         Test behavior with an empty samples_dict
@@ -517,7 +515,6 @@ class TestIlluminaUtilsWithFixtures:
                 )
             ],
         )
-    @with_temporary_folder
     def test_dict_to_basic_samplesheet_partial_sample_info(self, tmp_path, header_dict, settings_dict):
         """
         Test with samples missing some fields
