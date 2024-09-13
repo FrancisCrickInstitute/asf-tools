@@ -126,7 +126,7 @@ class GenDemuxRun:
         if self.use_api is False:
             # Write default samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
@@ -147,7 +147,7 @@ class GenDemuxRun:
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
                     file.write(
                         f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{value['barcode']}\n"
@@ -195,6 +195,6 @@ nextflow run {self.pipeline_dir} \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
-  --dorado_bc_parse_pos 9
+  --dorado_bc_parse_pos 2
 """
         return bash_script
