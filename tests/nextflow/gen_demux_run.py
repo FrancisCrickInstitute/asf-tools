@@ -177,7 +177,7 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
             "project_limsid": "no_lims_proj",
             "project_type": "no_type",
             "reference_genome": "no_ref",
-            "data_analysis_type": "no_analysis",
+            "data_analysis_type": None,
             "barcode": None  # Unclassified
         }
     }
@@ -193,7 +193,7 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
 
     expected_content = (
         "id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n"
-        "sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n"
+        "sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,,unclassified\n"
     )
 
     # Assertion
@@ -212,7 +212,7 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
             "project_id": "no_proj",
             "project_limsid": "no_lims_proj",
             "project_type": "no_type",
-            "reference_genome": "no_ref",
+            "reference_genome": None,
             "data_analysis_type": "no_analysis",
             "barcode": "barcode01"  # Barcoded
         },
@@ -223,7 +223,7 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
             "project_id": "no_proj",
             "project_limsid": "no_lims_proj",
             "project_type": "no_type",
-            "reference_genome": "no_ref",
+            "reference_genome": None,
             "data_analysis_type": "no_analysis",
             "barcode": "barcode02"  # Barcoded
         }
@@ -240,8 +240,8 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
 
     expected_content = (
         "id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n"
-        "sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,barcode01\n"
-        "sample_02,sample_02,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,barcode02\n"
+        "sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,,no_analysis,barcode01\n"
+        "sample_02,sample_02,asf,no_name,no_proj,no_lims_proj,no_type,,no_analysis,barcode02\n"
     )
 
     # Assertion

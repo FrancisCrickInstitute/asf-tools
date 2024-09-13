@@ -149,11 +149,13 @@ class GenDemuxRun:
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
                 file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
+                    # Convert all None values to "None" for CSV
+                    clean_dict = {key: ("" if value is None else value) for key, value in value.items()}
                     barcode = "unclassified"
-                    if "barcode" in value and value["barcode"] is not None:
-                        barcode = value["barcode"]
+                    if "barcode" in value and clean_dict["barcode"] != "":
+                        barcode = clean_dict["barcode"]
                     file.write(
-                        f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{barcode}\n"
+                        f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
                     )
 
         # Set 666 for the samplesheet
