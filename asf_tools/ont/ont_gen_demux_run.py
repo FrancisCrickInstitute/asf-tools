@@ -7,7 +7,8 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.data_management import DataManagement
+from asf_tools.illumina.illumina_utils import IlluminaUtils
+from asf_tools.io.data_management import DataManagement, DataTypeMode
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
 
@@ -19,7 +20,7 @@ PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IWG
 PERM666 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH
 
 
-class OntGenDemuxRun:
+class GenDemuxRun:
     """
     Generates a run folder for the demux pipeline and associated support files
     including a run script and default samplesheet
@@ -29,6 +30,7 @@ class OntGenDemuxRun:
         self,
         source_dir,
         target_dir,
+        mode_type,
         pipeline_dir,
         nextflow_cache,
         nextflow_work,
@@ -41,6 +43,7 @@ class OntGenDemuxRun:
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
+        self.mode_type = mode_type
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
@@ -92,11 +95,11 @@ class OntGenDemuxRun:
 
         # Process runs
         for run_name in dir_diff:
-            self.process_run(run_name)
+            self.process_run(run_name, self.mode_type)
 
         return 0
 
-    def process_run(self, run_name: str):
+    def process_run(self, run_name: str, mode_type: DataTypeMode):
         """
         Per run processing
         """
@@ -123,21 +126,35 @@ class OntGenDemuxRun:
         if self.use_api is False:
             # Write default samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,barcode\n")
-                file.write("sample_01,sample_01,asf,no_name,no_proj,unclassified\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
             api = ClarityHelperLims()
-            sample_dict = api.collect_ont_samplesheet_info(run_name)
+            sample_dict = api.collect_samplesheet_info(run_name)
+
+            # Check mode and set the appropriate check function
+            if mode_type == DataTypeMode.ONT:
+                sample_dict = api.collect_samplesheet_info(run_name)
+            elif mode_type == DataTypeMode.ILLUMINA:
+                # extract illumina RunId/flowcell name, then run check function
+                iu = IlluminaUtils()
+                run_dir = os.path.join(self.source_dir, run_name)
+                illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
+                sample_dict = api.collect_samplesheet_info(illumina_run_name)
+            else:
+                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid DataTypeMode.")
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,barcode\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
                     barcode = "unclassified"
                     if "barcode" in value:
                         barcode = value["barcode"]
-                    file.write(f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{barcode}\n")
+                    file.write(
+                        f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{barcode}\n"
+                    )
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)
@@ -181,6 +198,6 @@ nextflow run {self.pipeline_dir} \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
-  --dorado_bc_parse_pos 9
+  --dorado_bc_parse_pos 2
 """
         return bash_script

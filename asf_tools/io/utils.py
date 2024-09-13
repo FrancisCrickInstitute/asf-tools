@@ -7,6 +7,8 @@ import io
 import logging
 import os
 import re
+import shutil
+from enum import Enum
 
 
 log = logging.getLogger(__name__)
@@ -104,3 +106,43 @@ def check_file_exist(path: str, pattern: str) -> bool:
             except re.error:
                 return False
     return False
+
+
+class DeleteMode(Enum):
+    """Enum with mode options for delete_all_items"""
+
+    FILES_IN_DIR = "files_in_dir"
+    DIR_TREE = "dir_tree"
+
+
+def delete_all_items(path: str, mode: DeleteMode = DeleteMode.FILES_IN_DIR):
+    """
+    Deletes files or directories based on the specified mode.
+
+    Parameters:
+    - path (str): The path to the file or directory to delete.
+    - mode (DeleteMode): The deletion mode.
+        - DeleteMode.FILES_IN_DIR: Deletes all files within a directory but keeps the directory structure.
+        - DeleteMode.DIR_TREE: Deletes the entire directory and all its contents.
+
+    Raises:
+    - ValueError: If an invalid mode is provided or if the path does not exist.
+    - FileNotFoundError: If the provided path does not exist.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Path does not exist: {path}")
+
+    if mode == DeleteMode.FILES_IN_DIR:
+        if os.path.isdir(path):
+            for root, _, files in os.walk(path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    os.remove(file_path)
+        else:
+            raise ValueError(f"Expected a directory, but got a file: {path}")
+
+    elif mode == DeleteMode.DIR_TREE:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    else:
+        raise ValueError(f"Invalid mode: {mode}. Choose from {', '.join([m.value for m in DeleteMode])}.")

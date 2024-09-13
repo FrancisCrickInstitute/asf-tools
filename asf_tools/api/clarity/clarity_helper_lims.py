@@ -97,7 +97,7 @@ class ClarityHelperLims(ClarityLims):
         Retrieve detailed information for a given sample.
 
         This method fetches information related to a specified sample, including its
-        name, associated project, user, and lab group. If the sample is None, an appropriate
+        name, associated project, user, lab group, project type, reference genome used and data analysis type. If the sample is None, an appropriate
         exception is raised.
 
         Args:
@@ -109,6 +109,10 @@ class ClarityHelperLims(ClarityLims):
                 - group (str): The lab group associated with the sample.
                 - user (str): The user associated with the sample.
                 - project_id (str): The project ID associated with the sample.
+                - project_type (str or None): The project type associated with the sample.
+                - reference_genome (str or None): The reference genome associated with the sample.
+                - data_analysis_type (str or None): The data analysis pipeline associated with the sample.
+
 
         Raises:
             ValueError: If the provided sample is None.
@@ -122,9 +126,13 @@ class ClarityHelperLims(ClarityLims):
         sample_id = sample.id
         sample_name = sample.name
 
-        # Search for the project and get the name which is the ASF project id
+        # Extract project wide info
         project = self.get_projects(search_id=sample.project.id)
         project_name = project.name
+        project_limsid = project.id
+        project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
+        reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
+        data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
 
         # Get the submitter details
         user = self.expand_stub(project.researcher, expansion_type=Researcher)
@@ -140,7 +148,16 @@ class ClarityHelperLims(ClarityLims):
 
         # Store obtained information in a dictionary
         sample_info = {}
-        sample_info[sample_id] = {"sample_name": sample_name, "group": lab_name, "user": user_fullname, "project_id": project_name}
+        sample_info[sample_id] = {
+            "sample_name": sample_name,
+            "group": lab_name,
+            "user": user_fullname,
+            "project_id": project_name,
+            "project_limsid": project_limsid,
+            "project_type": project_type,
+            "reference_genome": reference_genome,
+            "data_analysis_type": data_analysis_type,
+        }
 
         return sample_info
 
@@ -212,7 +229,7 @@ class ClarityHelperLims(ClarityLims):
         # Extract parent_process information from each artifact
         artifacts_list = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         initial_parent_process_list = []
-        initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list)
+        initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list if artifact.parent_process is not None)
         initial_process = self.expand_stubs(initial_parent_process_list, expansion_type=Process)
 
         if initial_process is None:
@@ -254,7 +271,42 @@ class ClarityHelperLims(ClarityLims):
 
         return sample_barcode_match
 
-    def collect_ont_samplesheet_info(self, run_id: str) -> dict:
+    def get_sample_custom_barcode_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a mapping of custom barcodes for all samples associated with a given run ID.
+
+        This method first retrieves all artifacts associated with the specified run ID, then extracts
+        the list of samples from these artifacts. For each sample, it fetches detailed information and
+        extracts the custom barcode from a UDF field named "Index". The resulting mapping of sample names
+        to their barcodes is returned.
+
+        Args:
+            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+
+        Returns:
+            dict: A dictionary where each key is the sample name (str), and the value is a dictionary containing:
+                - "barcode": The custom barcode (str) associated with the sample.
+
+        Raises:
+            ValueError: If the provided run_id is None or invalid.
+            KeyError: If the run_id does not exist in the system.
+        """
+
+        # Obtain an artifacts list and then use it as input to obtain a sample list
+        artifacts_list = self.get_artifacts_from_runid(run_id)
+        sample_list = self.get_samples_from_artifacts(artifacts_list)
+
+        # Extract barcodes
+        sample_barcode = {}
+        for sample_id in sample_list:
+            info = self.get_samples(search_id=sample_id.id)
+            sample_name = info.id
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+            sample_barcode[sample_name] = {"barcode": reagent_barcode}
+
+        return sample_barcode
+
+    def collect_samplesheet_info(self, run_id: str) -> dict:
         """
         Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
 
@@ -273,6 +325,9 @@ class ClarityHelperLims(ClarityLims):
                         "group": lab (str),
                         "user": user_fullname (str),
                         "project_id": project_id (str),
+                        "project_type": project_type (str or None),
+                        "reference_genome": reference_genome (str or None),
+                        "data_analysis_type": data_analysis_type (str or None),
                         "barcode": reagent_barcode (str)
                     },
                     ...
@@ -284,6 +339,9 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
+        # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
+        if not barcode_info:
+            barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
 
         # Merge dictionaries using sample names as keys
         merged_dict = sample_metadata
@@ -293,61 +351,6 @@ class ClarityHelperLims(ClarityLims):
                     merged_dict[key][sub_key] = sub_value
 
         return merged_dict
-
-    def collect_illumina_samplesheet_info(self, run_id: str) -> dict:
-        """
-        Collects basic sample information and extracts additional metadata for each sample associated with a given run ID, then merges the information
-        into a single dictionary.
-
-        Args:
-            run_id (str): The identifier for the current run.
-
-        Returns:
-            dict: A dictionary where each key is a sample name and the value is another dictionary containing both the
-                general and additional metadata for the sample. The structure of the returned dictionary is as follows:
-                {
-                    sample_name (str): {
-                        "group": lab (str),
-                        "user": user_fullname (str),
-                        "project_id": project_id (str),
-                        "barcode": reagent_barcode (str),
-                        "project_name": project_name (str),
-                        "reference_genome": reference_genome (str),
-                        "data_analysis_type": data_analysis_type (str)
-                    },
-                    ...
-                }
-
-        Description:
-            - Collects general sample information using the `collect_ont_samplesheet_info` method.
-            - Extracts additional metadata for each sample using the `get_samples` method, including project name,
-            reference genome, and data analysis type.
-            - Merges the general and additional metadata into a single dictionary for each sample.
-        """
-        # Collect general sample info
-        sample_metadata = self.collect_ont_samplesheet_info(run_id)
-
-        # Extract additional sample info
-        expanded_metadata = {}
-        for sample in sample_metadata:
-            sample_ext = self.get_samples(search_id=sample)
-            project_limsid = sample_ext.project.limsid
-            reference_genome = sample_ext.udf_fields[4].value
-            data_analysis_type = sample_ext.udf_fields[7].value
-
-            expanded_metadata[sample] = {
-                "project_limsid": project_limsid,
-                "reference_genome": reference_genome,
-                "data_analysis_type": data_analysis_type,
-            }
-
-        # Merge info all in one dictionary
-        for key, value in sample_metadata.items():
-            for sub_key, sub_value in value.items():
-                if key in expanded_metadata:
-                    expanded_metadata[key][sub_key] = sub_value
-
-        return expanded_metadata
 
 
 # currently index,index2 and Index_ID is all merged into "barcode"

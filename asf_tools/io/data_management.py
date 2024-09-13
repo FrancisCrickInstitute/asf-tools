@@ -5,13 +5,23 @@ Helper functions for data management
 import logging
 import os
 import subprocess
+from datetime import datetime, timedelta, timezone
+from enum import Enum
 
-from asf_tools.io.utils import check_file_exist
+from asf_tools.io.utils import DeleteMode, check_file_exist, delete_all_items
 from asf_tools.slurm.utils import get_job_status
 
 
 # Set up logging as the root logger
 log = logging.getLogger()
+
+
+class DataTypeMode(Enum):
+    """Enum with mode options for clean_pipeline_output"""
+
+    GENERAL = "general"
+    ONT = "ont"
+    ILLUMINA = "illumina"
 
 
 class DataManagement:
@@ -41,6 +51,29 @@ class DataManagement:
         - run_dir (str): Path to the run directory.
         """
         return check_file_exist(run_dir, "sequencing_summary*")
+
+    def check_illumina_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_files = ["RTAComplete.txt", "RunCompletionStatus.xml", "CopyComplete.txt"]
+        file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+
+        if file_exists:
+            completed_file = os.path.join(run_dir, "RunCompletionStatus.xml")
+            with open(completed_file, "r", encoding="utf-8") as file:
+                contents = file.read()
+
+                # Check if "RunCompleted" exists in the file content
+                if "RunCompleted" in contents:
+                    return True
+        return False
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
@@ -152,7 +185,7 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def scan_delivery_state(self, source_dir: str, target_dir: str):
+    def scan_delivery_state(self, source_dir: str, target_dir: str) -> dict:
         """
         Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
@@ -194,7 +227,7 @@ class DataManagement:
             if os.path.isdir(full_path):
                 if self.check_pipeline_run_complete(full_path):
                     log.debug(f"Found completed run: {entry}")
-                    complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
+                    complete_pipeline_runs.append(full_path)
         complete_pipeline_runs.sort()
 
         # scan target directory for symlinked folders in the grouped directory
@@ -227,7 +260,14 @@ class DataManagement:
         return deliverable_runs
 
     def scan_run_state(
-        self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+        self,
+        raw_dir: str,
+        run_dir: str,
+        target_dir: str,
+        mode: DataTypeMode,
+        slurm_user: str = None,
+        job_name_suffix: str = None,
+        slurm_file: str = None,
     ) -> dict:
         """
         Scans and returns the current state of sequencing and pipeline runs.
@@ -240,6 +280,7 @@ class DataManagement:
             raw_dir (str): Directory containing raw sequencing data.
             run_dir (str): Directory containing pipeline run data.
             target_dir (str): Directory where delivery-ready data is stored.
+            mode (DataTypeMode): Sequencing mode, either DataTypeMode.ONT or DataTypeMode.ILLUMINA.
             slurm_user (str): Username for checking SLURM job status.
             job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
 
@@ -270,7 +311,15 @@ class DataManagement:
             full_path = os.path.join(abs_raw_path, entry)
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
-                if self.check_ont_sequencing_run_complete(full_path):
+                # Check mode and set the appropriate check function
+                if mode == DataTypeMode.ONT:
+                    check_function = self.check_ont_sequencing_run_complete(full_path)
+                elif mode == DataTypeMode.ILLUMINA:
+                    check_function = self.check_illumina_sequencing_run_complete(full_path)
+                else:
+                    raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
+
+                if check_function:
                     status = "sequencing_complete"
                 run_info[entry] = {"status": status}
         run_info = dict(sorted(run_info.items()))
@@ -312,3 +361,159 @@ class DataManagement:
         run_info = {run_id: info for run_id, info in run_info.items() if info["status"] != "delivered"}
 
         return run_info
+
+    def get_latest_mod_time_for_directory(self, root_path):
+        """
+        Recursively determine the latest modification time within a directory, including all its subdirectories and files.
+
+        This method traverses the directory tree starting from the given `root_path` and checks the modification times of
+        all files and subdirectories. It returns the most recent modification time found.
+
+        Args:
+            root_path (str): The path to the root directory from which to start the search.
+
+        Returns:
+            datetime: A timezone-aware `datetime` object representing the latest modification time of any file or directory
+                    within the given `root_path`. If the directory is empty, it returns the modification time of the directory itself.
+        """
+        latest_mod_time = datetime.fromtimestamp(0, tz=timezone.utc)
+
+        # Get the list of all entries in the root_path
+        for entry in os.listdir(root_path):
+            entry_path = os.path.join(root_path, entry)
+
+            if os.path.isdir(entry_path):
+                # Recursively check subdirectories
+                mod_time = self.get_latest_mod_time_for_directory(entry_path)
+            elif os.path.isfile(entry_path):
+                # Get the modification time of the file
+                mod_time = datetime.fromtimestamp(os.path.getmtime(entry_path), tz=timezone.utc)
+            else:
+                continue
+            latest_mod_time = max(latest_mod_time, mod_time)
+
+        # Get the root folder's last modification time
+        dir_mod_time = datetime.fromtimestamp(os.path.getmtime(root_path), tz=timezone.utc)
+        latest_mod_time = max(latest_mod_time, dir_mod_time)
+
+        return latest_mod_time
+
+    def find_stale_directories(self, path: str, months: int) -> dict:
+        """
+        Identify directories within a specified path that contain files that have not been modified
+        in the last `months` and are not already archived.
+
+        This method traverses the directory tree starting from the given `path` and collects directories
+        where the most recently modified file within each directory has not been modified for at least
+        `months`. It excludes directories that have already been marked as archived.
+
+        Args:
+            path (str): The root directory path to start the search from.
+            months (int): The number of months to use as the threshold for determining which directories
+                        are considered old. Directories where the latest file modification time is
+                        older than `months` will be included.
+
+        Returns:
+            dict: A dictionary where each key is the name of a directory that meets the criteria
+                (containing files older than `months` and not already archived). The value is a
+                dictionary containing:
+                    - "path": The full path to the directory.
+                    - "days_since_modified": The number of days since the latest file in the directory was last modified.
+                    - "last_modified": A string representing the latest modification time of any file in the directory
+                    in the format "Month Day, Year, HH:MM:SS UTC".
+
+        Notes:
+            - The threshold for old directories is calculated based on an average month length
+            of 30.44 days.
+            - The method assumes that if any file within a directory is older than the specified threshold,
+            the entire directory is considered for archiving.
+        """
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"{path} does not exist.")
+
+        # Get the current time and calculate the threshold time for archival
+        current_time = datetime.now(timezone.utc)
+        threshold_time = current_time - timedelta(days=months * 30.44)
+        current_time = current_time.replace(tzinfo=timezone.utc)
+        threshold_time = threshold_time.replace(tzinfo=timezone.utc)
+
+        # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
+        stale_folders = {}
+        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
+
+            if root == path:
+                for dir_name in dirs:
+                    dir_path = os.path.join(root, dir_name)
+
+                    # Check all files in the directory
+                    latest_mod_time = self.get_latest_mod_time_for_directory(dir_path)
+
+                    if latest_mod_time < threshold_time:
+                        formatted_mtime = latest_mod_time.strftime("%B %d, %Y, %H:%M:%S UTC")
+                        formatted_machinetime = (
+                            latest_mod_time.strftime("%Y-%m-%d %H:%M:%S")
+                            + latest_mod_time.strftime("%z")[:3]
+                            + ":"
+                            + latest_mod_time.strftime("%z")[3:]
+                        )
+                        days_since_modified = (current_time - latest_mod_time).days
+
+                        if not check_file_exist(dir_path, "archive_readme"):
+                            stale_folders[dir_name] = {
+                                "path": dir_path,
+                                "days_since_modified": days_since_modified,
+                                "last_modified_h": formatted_mtime,
+                                "last_modified_m": formatted_machinetime,
+                            }
+
+        return stale_folders
+
+    def clean_pipeline_output(self, path: str, months: int, ont: DataTypeMode = DataTypeMode.GENERAL):
+        """
+        Clean up directories and specific files in the pipeline based on their age and type.
+
+        This method performs a series of cleanup tasks for directories within the specified `path`:
+        1. Detects and handles stale directories that haven't been modified in the last number of `months`.
+        2. Deletes the "work" directory within each stale directory.
+        3. If the `ont` parameter is specified as "ont" and the directory contains only one sample,
+        it deletes the "results/dorado" directory within the stale directory.
+
+        Args:
+            path (str): The root directory path to start the search from.
+            months (int): The number of months to use as the threshold for identifying stale directories.
+            ont (CleanupType, optional): If set to CleanupType.ONT, additional cleanup is performed for directories with only one sample.
+        """
+
+        # Detect folders older than N months
+        stale_folders = self.find_stale_directories(path, months)
+
+        # For each run folder in dict, detect and delete "work" dir
+        for key in stale_folders:  # pylint: disable=C0206
+            run_path = stale_folders[key]["path"]
+            work_folder = os.path.join(run_path, "work")
+            if os.path.exists(work_folder):
+                delete_all_items(work_folder, DeleteMode.DIR_TREE)
+
+            # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
+            if ont == DataTypeMode.ONT:
+                dorado_results = os.path.join(run_path, "results", "dorado")
+                samplesheet_found = False
+
+                # Find the samplesheet
+                for file in os.listdir(run_path):
+                    pattern = "samplesheet"
+                    if os.path.isfile(os.path.join(run_path, file)) and pattern in file:
+                        # Return the full path to the file
+                        samplesheet_path = os.path.join(run_path, file)
+                        samplesheet_found = True
+
+                        # Remove dorado_results if the run has only 1 sample
+                        with open(samplesheet_path, "r", encoding="utf-8") as file:
+                            lines = file.readlines()
+                            num_samples = len(lines) - 1  # account for the header
+
+                            if num_samples == 1 and os.path.exists(dorado_results):
+                                delete_all_items(dorado_results, DeleteMode.FILES_IN_DIR)
+                        break
+                if not samplesheet_found:
+                    raise FileNotFoundError(f"Samplesheet not found in {path}.")
