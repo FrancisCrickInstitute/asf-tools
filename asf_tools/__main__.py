@@ -18,6 +18,7 @@ from rich.table import Table
 from rich.text import Text
 
 import asf_tools
+from asf_tools.io.data_management import DataTypeMode
 
 
 # Set up logging as the root logger
@@ -144,6 +145,13 @@ def ont(ctx):
     help=r"Target directory to write runs",
 )
 @click.option(
+    "-m",
+    "--mode_type",
+    type=click.Choice([c.value for c in DataTypeMode]),
+    required=True,
+    help=r"Mode options, ONT, Illumina or General",
+)
+@click.option(
     "-p",
     "--pipeline_dir",
     required=True,
@@ -195,9 +203,10 @@ def ont(ctx):
     default=None,
     help="Set the version of Nextflow to use in the sbatch header",
 )
-def ont_gen_demux_run(ctx,  # pylint: disable=W0613
+def gen_demux_run(ctx,  # pylint: disable=W0613
                       source_dir,
                       target_dir,
+                      mode_type,
                       pipeline_dir,
                       nextflow_cache,
                       nextflow_work,
@@ -211,12 +220,13 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun  # pylint: disable=C0415
+    from asf_tools.ont.ont_gen_demux_run import GenDemuxRun  # pylint: disable=C0415
 
     try:
-        function = OntGenDemuxRun(
+        function = GenDemuxRun(
             source_dir,
             target_dir,
+            mode_type,
             pipeline_dir,
             nextflow_cache,
             nextflow_work,
@@ -354,6 +364,12 @@ def deliver_to_targets(
     help="Target data delivery directory",
 )
 @click.option(
+    "--mode_type",
+    type=click.Choice([c.value for c in DataTypeMode]),
+    required=True,
+    help="Mode options, ONT, Illumina or General",
+)
+@click.option(
     "--slurm_user",
     required=False,
     help="Slurm user to check job status",
@@ -373,6 +389,7 @@ def scan_run_state(
     raw_dir,
     run_dir,
     target_dir,
+    mode_type,
     slurm_user,
     job_prefix,
     slurm_file):
@@ -387,6 +404,7 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
+        mode_type,
         slurm_user,
         job_prefix,
         slurm_file,

@@ -103,6 +103,54 @@ class IlluminaUtils:
 
         return item
 
+    def extract_illumina_runid_fromxml(self, runinfo_file) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) from an XML RunInfo file.
+
+        This method converts the given XML RunInfo file into a dictionary, then extracts the
+        Flowcell ID (run ID) by locating the matching item within the dictionary.
+
+        Args:
+            runinfo_file (str): The path to the XML RunInfo file from which to extract the Run ID.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the XML file.
+
+        Raises:
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
+        container_name = self.extract_matching_item_from_dict(runinfo_dict, "Flowcell")
+
+        return container_name
+
+    def extract_illumina_runid_frompath(self, path: str, file_name: str) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) by searching for a specific XML file in a directory path.
+
+        This method traverses the directory structure starting from the given `path`, searching for a file
+        with the specified `file_name`. Once found, it extracts the Illumina Run ID (Flowcell ID) by parsing
+        the XML file.
+
+        Args:
+            path (str): The root directory to begin the search for the XML file.
+            file_name (str): The name of the XML file to look for in the directory structure.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the found XML file.
+
+        Raises:
+            FileNotFoundError: If the specified file is not found within the given path.
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        for dirpath, dirnames, filenames in os.walk(path):  # pylint: disable=unused-variable
+            if file_name in filenames:
+                xml_file = os.path.join(dirpath, file_name)
+                runid = self.extract_illumina_runid_fromxml(xml_file)
+                return runid
+
     def filter_runinfo(self, runinfo_dict: dict) -> dict:
         """
         Filters and restructures information from a RunInfo dictionary.

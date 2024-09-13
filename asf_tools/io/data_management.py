@@ -16,11 +16,12 @@ from asf_tools.slurm.utils import get_job_status
 log = logging.getLogger()
 
 
-class CleanupMode(Enum):
+class DataTypeMode(Enum):
     """Enum with mode options for clean_pipeline_output"""
 
     GENERAL = "general"
     ONT = "ont"
+    ILLUMINA = "illumina"
 
 
 class DataManagement:
@@ -50,6 +51,29 @@ class DataManagement:
         - run_dir (str): Path to the run directory.
         """
         return check_file_exist(run_dir, "sequencing_summary*")
+
+    def check_illumina_sequencing_run_complete(self, run_dir: str):
+        """
+        Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
+
+        Args:
+        - run_dir (str): Path to the run directory.
+
+        Returns:
+        - bool: True if the run directory is complete, False otherwise.
+        """
+        completed_files = ["RTAComplete.txt", "RunCompletionStatus.xml", "CopyComplete.txt"]
+        file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+
+        if file_exists:
+            completed_file = os.path.join(run_dir, "RunCompletionStatus.xml")
+            with open(completed_file, "r", encoding="utf-8") as file:
+                contents = file.read()
+
+                # Check if "RunCompleted" exists in the file content
+                if "RunCompleted" in contents:
+                    return True
+        return False
 
     def symlink_to_target(self, data_path: str, symlink_data_path):
         """
@@ -203,7 +227,7 @@ class DataManagement:
             if os.path.isdir(full_path):
                 if self.check_pipeline_run_complete(full_path):
                     log.debug(f"Found completed run: {entry}")
-                    complete_pipeline_runs.append(os.path.join(abs_source_path, entry))
+                    complete_pipeline_runs.append(full_path)
         complete_pipeline_runs.sort()
 
         # scan target directory for symlinked folders in the grouped directory
@@ -236,7 +260,14 @@ class DataManagement:
         return deliverable_runs
 
     def scan_run_state(
-        self, raw_dir: str, run_dir: str, target_dir: str, slurm_user: str = None, job_name_suffix: str = None, slurm_file: str = None
+        self,
+        raw_dir: str,
+        run_dir: str,
+        target_dir: str,
+        mode: DataTypeMode,
+        slurm_user: str = None,
+        job_name_suffix: str = None,
+        slurm_file: str = None,
     ) -> dict:
         """
         Scans and returns the current state of sequencing and pipeline runs.
@@ -249,6 +280,7 @@ class DataManagement:
             raw_dir (str): Directory containing raw sequencing data.
             run_dir (str): Directory containing pipeline run data.
             target_dir (str): Directory where delivery-ready data is stored.
+            mode (DataTypeMode): Sequencing mode, either DataTypeMode.ONT or DataTypeMode.ILLUMINA.
             slurm_user (str): Username for checking SLURM job status.
             job_name_suffix (Optional[str]): Optional suffix to append to job names when checking SLURM status.
 
@@ -279,7 +311,15 @@ class DataManagement:
             full_path = os.path.join(abs_raw_path, entry)
             if os.path.isdir(full_path):
                 status = "sequencing_in_progress"
-                if self.check_ont_sequencing_run_complete(full_path):
+                # Check mode and set the appropriate check function
+                if mode == DataTypeMode.ONT:
+                    check_function = self.check_ont_sequencing_run_complete(full_path)
+                elif mode == DataTypeMode.ILLUMINA:
+                    check_function = self.check_illumina_sequencing_run_complete(full_path)
+                else:
+                    raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
+
+                if check_function:
                     status = "sequencing_complete"
                 run_info[entry] = {"status": status}
         run_info = dict(sorted(run_info.items()))
@@ -428,7 +468,7 @@ class DataManagement:
 
         return stale_folders
 
-    def clean_pipeline_output(self, path: str, months: int, ont: CleanupMode = CleanupMode.GENERAL):
+    def clean_pipeline_output(self, path: str, months: int, ont: DataTypeMode = DataTypeMode.GENERAL):
         """
         Clean up directories and specific files in the pipeline based on their age and type.
 
@@ -455,7 +495,7 @@ class DataManagement:
                 delete_all_items(work_folder, DeleteMode.DIR_TREE)
 
             # If the run is ONT and only has 1 sample, delete the run_path/results/dorado folder
-            if ont == CleanupMode.ONT:
+            if ont == DataTypeMode.ONT:
                 dorado_results = os.path.join(run_path, "results", "dorado")
                 samplesheet_found = False
 

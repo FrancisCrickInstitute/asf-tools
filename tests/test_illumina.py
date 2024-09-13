@@ -199,6 +199,22 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert run_info == expected_dict
 
+    def test_extract_illumina_runid_fromxml(self):
+        """
+        Pass a valid XML file and test expected RunID values from the dictionary output
+        """
+        # Set up
+        iu = IlluminaUtils()
+        file = "./tests/data/illumina/RunInfo.xml"
+        flowcell_runid = "22MKK5LT3"
+
+        # Test
+        run_info = iu.extract_illumina_runid_fromxml(file)
+        print(run_info)
+
+        # Assert
+        assert run_info == flowcell_runid
+
     def test_merge_runinfo_dict_fromfile(self):
         """
         Pass a valid XML file and test expected values in the dictionary output
