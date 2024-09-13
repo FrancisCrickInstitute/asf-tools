@@ -13,8 +13,6 @@ import asf_tools.__main__
 # from unittest import mock
 
 
-
-
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 TEST_DELIVERY_SOURCE_PATH = "tests/data/ont/live_runs/pipeline_output"
