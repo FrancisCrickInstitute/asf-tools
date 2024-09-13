@@ -1,6 +1,7 @@
 """
 Tests for ont gen demux run
 """
+
 # pylint: disable=missing-function-docstring
 
 import os
@@ -164,7 +165,7 @@ def test_ont_gen_demux_samplesheet_only(self, tmp_path):
     self.assertTrue(os.path.exists(samplesheet_path_01))
 
 
-@patch('asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info')
+@patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
 @with_temporary_folder
 def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_info, tmp_path):
     # Setup
@@ -178,7 +179,7 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
             "project_type": "no_type",
             "reference_genome": "no_ref",
             "data_analysis_type": None,
-            "barcode": None  # Unclassified
+            "barcode": None,  # Unclassified
         }
     }
 
@@ -187,8 +188,8 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
     test.run()
 
     # Setup Assertion
-    samplesheet_path = os.path.join(tmp_path, 'run01', 'samplesheet.csv')
-    with open(samplesheet_path, 'r', encoding="UTF-8") as f:
+    samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
+    with open(samplesheet_path, "r", encoding="UTF-8") as f:
         content = f.read()
 
     expected_content = (
@@ -200,7 +201,7 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
     self.assertEqual(content, expected_content)
 
 
-@patch('asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info')
+@patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
 @with_temporary_folder
 def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_info, tmp_path):
     # Setup
@@ -214,7 +215,7 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
             "project_type": "no_type",
             "reference_genome": None,
             "data_analysis_type": "no_analysis",
-            "barcode": "barcode01"  # Barcoded
+            "barcode": "barcode01",  # Barcoded
         },
         "sample_02": {
             "sample_name": "sample_02",
@@ -225,8 +226,8 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
             "project_type": "no_type",
             "reference_genome": None,
             "data_analysis_type": "no_analysis",
-            "barcode": "barcode02"  # Barcoded
-        }
+            "barcode": "barcode02",  # Barcoded
+        },
     }
 
     # Test
@@ -234,8 +235,8 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
     test.run()
 
     # Setup Assertion
-    samplesheet_path = os.path.join(tmp_path, 'run01', 'samplesheet.csv')
-    with open(samplesheet_path, 'r', encoding="UTF-8") as f:
+    samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
+    with open(samplesheet_path, "r", encoding="UTF-8") as f:
         content = f.read()
 
     expected_content = (
