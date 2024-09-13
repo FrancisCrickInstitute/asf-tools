@@ -150,7 +150,7 @@ class GenDemuxRun:
                 file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
                     barcode = "unclassified"
-                    if "barcode" in value:
+                    if "barcode" in value and value["barcode"] is not None:
                         barcode = value["barcode"]
                     file.write(
                         f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{barcode}\n"
