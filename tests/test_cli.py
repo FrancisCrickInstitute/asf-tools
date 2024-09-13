@@ -4,7 +4,7 @@ Primary CLI Tests
 
 import tempfile
 import unittest
-from unittest import mock
+# from unittest import mock
 
 from click.testing import CliRunner
 
