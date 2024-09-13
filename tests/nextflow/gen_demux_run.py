@@ -6,7 +6,7 @@ import os
 import stat
 
 from asf_tools.io.data_management import DataTypeMode
-from asf_tools.ont.ont_gen_demux_run import GenDemuxRun
+from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 
 from ..utils import with_temporary_folder
 
