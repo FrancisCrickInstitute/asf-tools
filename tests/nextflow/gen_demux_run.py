@@ -262,7 +262,7 @@ def test_create_sbatch_without_parse_pos(self):
         container_cache="/path/to/container_cache",
         runs_dir="/path/to/runs",
         use_api=False,
-        nextflow_version="20.10.0"
+        nextflow_version="20.10.0",
     )
 
     run_name = "test_run"
@@ -297,6 +297,7 @@ nextflow run /path/to/pipeline \\
     result = instance.create_ont_sbatch_text(run_name, parse_pos)
     self.assertEqual(result.strip(), expected_output.strip())
 
+
 def test_create_sbatch_with_parse_pos(self):
     # Create an instance of the class with required attributes
     instance = GenDemuxRun(
@@ -309,7 +310,7 @@ def test_create_sbatch_with_parse_pos(self):
         container_cache="/path/to/container_cache",
         runs_dir="/path/to/runs",
         use_api=False,
-        nextflow_version="20.10.0"
+        nextflow_version="20.10.0",
     )
 
     run_name = "test_run"

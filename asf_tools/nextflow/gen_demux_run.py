@@ -211,7 +211,7 @@ nextflow run {self.pipeline_dir} \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
   --dorado_model sup"""
-        # Add parse pos if it is not -1
+        # Add parse pos if it is not -1
         if parse_pos != -1:
             bash_script += f" \\\n  --dorado_bc_parse_pos {parse_pos}\n"
         else:
