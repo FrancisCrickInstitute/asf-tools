@@ -300,7 +300,7 @@ class IlluminaUtils:
 
         return merged_result
 
-    def dict_to_basic_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
+    def dict_to_illumina_v2_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
         """
         Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
 

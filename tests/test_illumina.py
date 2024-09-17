@@ -450,7 +450,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_basic_csv_valid(self, header_dict, settings_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_valid(self, header_dict, settings_dict, samples_dict):
         """
         Check that the csv file is created and contains the correct data
         """
@@ -459,7 +459,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_csv(header_dict, settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -498,7 +498,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_basic_csv_no_header(self, settings_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_no_header(self, settings_dict, samples_dict):
         """
         Test behavior with an empty header_dict
         """
@@ -508,7 +508,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_csv(empty_header_dict, settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(empty_header_dict, settings_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -538,7 +538,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_basic_csv_no_settings(self, header_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_no_settings(self, header_dict, samples_dict):
         """
         Test behavior with an empty settings_dict
         """
@@ -548,7 +548,47 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure the samples and settings sections are present
+            assert ["[Header]"] in content
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
+            # Ensure that [Settings] section is empty
+            assert ["[Settings]"] not in content
+
+    @pytest.mark.parametrize(
+        "header_dict,samples_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
+                },
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_no_settings(self, header_dict, samples_dict):
+        """
+        Test behavior with an empty settings_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        empty_settings_dict = {}
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -575,7 +615,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_basic_csv_no_samples(self, header_dict, settings_dict):
+    def test_dict_to_illumina_v2_csv_no_samples(self, header_dict, settings_dict):
         """
         Test behavior with an empty samples_dict
         """
@@ -585,7 +625,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_csv(header_dict, settings_dict, empty_samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, empty_samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -610,7 +650,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_basic_csv_partial_sample_info(self, header_dict, settings_dict):
+    def test_dict_to_illumina_v2_csv_partial_sample_info(self, header_dict, settings_dict):
         """
         Test with samples missing some fields
         """
@@ -624,7 +664,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_basic_csv(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
