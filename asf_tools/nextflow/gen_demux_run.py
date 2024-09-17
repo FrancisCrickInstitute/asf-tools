@@ -105,26 +105,19 @@ class GenDemuxRun:
         """
 
         log.info(f"Processing: {run_name}")
+        sample_count = 0
 
         # Create folder
         folder_path = os.path.join(self.target_dir, run_name)
         if self.samplesheet_only is False and not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        # Generate and write sbatch script
-        if self.samplesheet_only is False:
-            sbatch_script = self.create_sbatch_text(run_name)
-            sbatch_script_path = os.path.join(folder_path, "run_script.sh")
-            with open(sbatch_script_path, "w", encoding="UTF-8") as file:
-                file.write(sbatch_script)
-            # Set 777 for the run script
-            os.chmod(sbatch_script_path, PERM777)
-
         # Samplesheet path
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
 
         if self.use_api is False:
             # Write default samplesheet
+            sample_count = 1
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
                 file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
@@ -157,11 +150,28 @@ class GenDemuxRun:
                     file.write(
                         f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
                     )
+                    sample_count += 1
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)
 
-    def create_sbatch_text(self, run_name) -> str:
+        # Generate and write sbatch script
+        if self.samplesheet_only is False:
+            # Detect muliplexed samples
+            bc_parse_pos = -1
+            if sample_count > 1:
+                bc_parse_pos = 2
+
+            # Create sbatch script
+            sbatch_script = self.create_ont_sbatch_text(run_name, bc_parse_pos)
+            sbatch_script_path = os.path.join(folder_path, "run_script.sh")
+            with open(sbatch_script_path, "w", encoding="UTF-8") as file:
+                file.write(sbatch_script)
+
+            # Set 777 for the run script
+            os.chmod(sbatch_script_path, PERM777)
+
+    def create_ont_sbatch_text(self, run_name: str, parse_pos: int = -1) -> str:
         """Creates an sbatch script from a template and returns the text
 
         Returns:
@@ -200,6 +210,11 @@ nextflow run {self.pipeline_dir} \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
-  --dorado_bc_parse_pos 2
-"""
+  --dorado_model sup"""
+        # Add parse pos if it is not -1
+        if parse_pos != -1:
+            bash_script += f" \\\n  --dorado_bc_parse_pos {parse_pos}\n"
+        else:
+            bash_script += "\n"
+
         return bash_script
