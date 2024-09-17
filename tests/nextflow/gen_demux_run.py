@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from asf_tools.io.data_management import DataTypeMode
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
+from asf_tools.nextflow.utils import create_sbatch_header
 
 from ..utils import with_temporary_folder
 
@@ -247,3 +248,99 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
 
     # Assertion
     self.assertEqual(content, expected_content)
+
+
+def test_create_sbatch_without_parse_pos(self):
+    # Create an instance of the class with required attributes
+    instance = GenDemuxRun(
+        source_dir="/path/to/source",
+        target_dir="/path/to/target",
+        mode="ONT",
+        pipeline_dir="/path/to/pipeline",
+        nextflow_cache="/path/to/cache",
+        nextflow_work="/path/to/work",
+        container_cache="/path/to/container_cache",
+        runs_dir="/path/to/runs",
+        use_api=False,
+        nextflow_version="20.10.0"
+    )
+
+    run_name = "test_run"
+    parse_pos = -1  # No parse position
+
+    # Expected output without parse_pos
+    expected_output = f"""#!/bin/sh
+
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_{run_name}
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=168:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+#SBATCH --res=asf
+
+{create_sbatch_header("20.10.0")}
+
+export NXF_HOME="/path/to/cache"
+export NXF_WORK="/path/to/work"
+export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
+
+nextflow run /path/to/pipeline \\
+  -resume \\
+  -profile crick,nemo \\
+  --monochrome_logs \\
+  --samplesheet ./samplesheet.csv \\
+  --run_dir {os.path.join('/path/to/runs', run_name)} \\
+  --dorado_model sup
+"""
+    result = instance.create_ont_sbatch_text(run_name, parse_pos)
+    self.assertEqual(result.strip(), expected_output.strip())
+
+def test_create_sbatch_with_parse_pos(self):
+    # Create an instance of the class with required attributes
+    instance = GenDemuxRun(
+        source_dir="/path/to/source",
+        target_dir="/path/to/target",
+        mode="ONT",
+        pipeline_dir="/path/to/pipeline",
+        nextflow_cache="/path/to/cache",
+        nextflow_work="/path/to/work",
+        container_cache="/path/to/container_cache",
+        runs_dir="/path/to/runs",
+        use_api=False,
+        nextflow_version="20.10.0"
+    )
+
+    run_name = "test_run"
+    parse_pos = 2  # Parse position is set
+
+    # Expected output with parse_pos
+    expected_output = f"""#!/bin/sh
+
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_{run_name}
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=168:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+#SBATCH --res=asf
+
+{create_sbatch_header("20.10.0")}
+
+export NXF_HOME="/path/to/cache"
+export NXF_WORK="/path/to/work"
+export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
+
+nextflow run /path/to/pipeline \\
+  -resume \\
+  -profile crick,nemo \\
+  --monochrome_logs \\
+  --samplesheet ./samplesheet.csv \\
+  --run_dir {os.path.join('/path/to/runs', run_name)} \\
+  --dorado_model sup \\
+  --dorado_bc_parse_pos {parse_pos}
+"""
+    result = instance.create_ont_sbatch_text(run_name, parse_pos)
+    self.assertEqual(result.strip(), expected_output.strip())
