@@ -567,46 +567,6 @@ class TestIlluminaUtilsWithFixtures:
             assert ["[Settings]"] not in content
 
     @pytest.mark.parametrize(
-        "header_dict,samples_dict",
-        [
-            (
-                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
-                {
-                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
-                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
-                },
-            )
-        ],
-    )
-    def test_dict_to_illumina_v2_csv_no_settings(self, header_dict, samples_dict):
-        """
-        Test behavior with an empty settings_dict
-        """
-        # Set up
-        iu = IlluminaUtils()
-        empty_settings_dict = {}
-        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
-
-        # Test
-        iu.dict_to_illumina_v2_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
-
-        # Assert
-        output_file_csv = output_file_name + ".csv"
-        with open(output_file_csv, "r", encoding="ASCII") as f:
-            reader = csv.reader(f)
-            content = list(reader)
-            print(content)
-
-            # Ensure the samples and settings sections are present
-            assert ["[Header]"] in content
-            assert ["[Data]"] in content
-            assert content[-3] == ["Sample_ID", "index", "sample_name"]
-            assert content[-2] == ["sample1", "A001", "test_sample_1"]
-            assert content[-1] == ["sample2", "A002", "test_sample_2"]
-            # Ensure that [Settings] section is empty
-            assert ["[Settings]"] not in content
-
-    @pytest.mark.parametrize(
         "header_dict,settings_dict",
         [
             (
