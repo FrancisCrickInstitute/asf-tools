@@ -258,7 +258,8 @@ class TestIlluminaUtilsWithFixtures:
         Function-level fixture that creates a temporary folder for each test.
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
-            self.tmp_path = tmpdirname  # Attach to the test instance
+            # Attach to the test instance
+            self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
             yield
 
     @pytest.mark.parametrize(
