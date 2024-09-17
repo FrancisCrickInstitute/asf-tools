@@ -30,7 +30,7 @@ class GenDemuxRun:
         self,
         source_dir,
         target_dir,
-        mode_type,
+        mode,
         pipeline_dir,
         nextflow_cache,
         nextflow_work,
@@ -43,7 +43,7 @@ class GenDemuxRun:
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir
-        self.mode_type = mode_type
+        self.mode = mode
         self.pipeline_dir = pipeline_dir
         self.nextflow_cache = nextflow_cache
         self.nextflow_work = nextflow_work
@@ -95,11 +95,11 @@ class GenDemuxRun:
 
         # Process runs
         for run_name in dir_diff:
-            self.process_run(run_name, self.mode_type)
+            self.process_run(run_name, self.mode)
 
         return 0
 
-    def process_run(self, run_name: str, mode_type: DataTypeMode):
+    def process_run(self, run_name: str, mode: DataTypeMode):
         """
         Per run processing
         """
@@ -126,7 +126,7 @@ class GenDemuxRun:
         if self.use_api is False:
             # Write default samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
@@ -134,23 +134,28 @@ class GenDemuxRun:
             sample_dict = api.collect_samplesheet_info(run_name)
 
             # Check mode and set the appropriate check function
-            if mode_type == DataTypeMode.ONT:
+            if mode == DataTypeMode.ONT:
                 sample_dict = api.collect_samplesheet_info(run_name)
-            elif mode_type == DataTypeMode.ILLUMINA:
+            elif mode == DataTypeMode.ILLUMINA:
                 # extract illumina RunId/flowcell name, then run check function
                 iu = IlluminaUtils()
                 run_dir = os.path.join(self.source_dir, run_name)
                 illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
                 sample_dict = api.collect_samplesheet_info(illumina_run_name)
             else:
-                raise ValueError(f"Invalid mode: {mode_type}. Choose a valid DataTypeMode.")
+                raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
 
             # Write samplesheet
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("sample_id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
                 for key, value in sample_dict.items():
+                    # Convert all None values to "" for CSV
+                    clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
+                    barcode = "unclassified"
+                    if "barcode" in value and clean_dict["barcode"] != "":
+                        barcode = clean_dict["barcode"]
                     file.write(
-                        f"{key},{value['sample_name']},{value['group']},{value['user']},{value['project_id']},{value['project_limsid']},{value['project_type']},{value['reference_genome']},{value['data_analysis_type']},{value['barcode']}\n"
+                        f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
                     )
 
         # Set 666 for the samplesheet
@@ -195,6 +200,6 @@ nextflow run {self.pipeline_dir} \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
-  --dorado_bc_parse_pos 9
+  --dorado_bc_parse_pos 2
 """
         return bash_script

@@ -300,7 +300,6 @@ class IlluminaUtils:
 
         return merged_result
 
-    # my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
 
     def dict_to_basic_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
         """
