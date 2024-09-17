@@ -299,3 +299,54 @@ class IlluminaUtils:
         merged_result = self.merge_dicts(filtered_dict, reads_dict, "run_id")
 
         return merged_result
+
+    def dict_to_illumina_v2_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
+        """
+        Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
+
+        This method takes three dictionaries (`header_dict`, `settings_dict`, and `samples_dict`), and writes
+        their contents into a CSV file. The output CSV file is structured with sections for headers, settings,
+        and sample data, where each dictionary corresponds to a different section in the file.
+
+        Args:
+            header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
+            settings_dict (dict): A dictionary containing configuration or settings data.
+            samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
+            output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
+
+        Returns:
+            None: The method writes data to a CSV file and does not return anything.
+
+        Raises:
+            IOError: If there is an error writing to the file.
+        """
+        output_file = output_file_name + ".csv"
+        # Open the output file
+        with open(output_file, "w", encoding="ASCII") as f:
+            # Write the Header section
+            if header_dict:
+                f.write("[Header]\n")
+                for key, value in header_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Write the Settings section
+            if settings_dict:
+                f.write("\n[Settings]\n")
+                for key, value in settings_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Write the Sample section
+            if samples_dict:
+                f.write("\n[Data]\n")
+                # Collect all unique column headers from samples_dict
+                headers = set()
+                for sample_info in samples_dict.values():
+                    headers.update(sample_info.keys())
+
+                # Write the column headers to the file
+                headers = sorted(headers)
+                f.write(",".join(headers) + "\n")
+
+                # Write each sample's data
+                for sample_id, sample_info in samples_dict.items():  # pylint: disable=unused-variable
+                    f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
