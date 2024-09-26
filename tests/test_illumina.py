@@ -768,6 +768,48 @@ class TestIlluminaUtilsWithFixtures:
             assert ["[BCLConvert_Settings]"] in content
 
     @pytest.mark.parametrize(
+        "bcl_settings_dict,bcl_data_dict",
+        [
+            (
+                {"SoftwareVersion": "x.y.z", "AdapterBehavior": "trim"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "index2": "B001", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "index2": ""},
+                },
+            )
+        ],
+    )
+    def test_convert_to_bcl_compliant_partial_data(self, bcl_settings_dict, bcl_data_dict):
+        """
+        Test behavior with an empty settings_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        input_file = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        with open(input_file, "w", encoding="ASCII"):
+            pass
+        output_file_name = os.path.join(self.tmp_path, "output_file")
+
+        # Test
+        iu.convert_to_bcl_compliant(input_file, output_file_name, bcl_settings_dict, bcl_data_dict)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure that both headers exist, as expected
+            assert ["[BCLConvert_Data]"] in content
+            assert ["[BCLConvert_Settings]"] in content
+
+            # Check the data
+            assert content[-3] == ["Sample_ID", "index", "index2"]
+            assert content[-2] == ["sample1", "A001", "B001"]
+            assert content[-1] == ["sample2", "A002", ""]
+
+    @pytest.mark.parametrize(
         "header_dict,reads_dict,samples_dict,bcl_settings_dict,bcl_data_dict",
         [
             (
