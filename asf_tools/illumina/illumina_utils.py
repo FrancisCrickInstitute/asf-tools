@@ -300,17 +300,17 @@ class IlluminaUtils:
 
         return merged_result
 
-    def dict_to_illumina_v2_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
+    def dict_to_illumina_v2_csv(self, header_dict: dict, reads_dict: dict, samples_dict: dict, output_file_name: str):
         """
         Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
 
-        This method takes three dictionaries (`header_dict`, `settings_dict`, and `samples_dict`), and writes
+        This method takes three dictionaries (`header_dict`, `reads_dict`, and `samples_dict`), and writes
         their contents into a CSV file. The output CSV file is structured with sections for headers, settings,
         and sample data, where each dictionary corresponds to a different section in the file.
 
         Args:
             header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
-            settings_dict (dict): A dictionary containing configuration or settings data.
+            reads_dict (dict): A dictionary containing reads data.
             samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
             output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
 
@@ -329,10 +329,10 @@ class IlluminaUtils:
                 for key, value in header_dict.items():
                     f.write(f"{key},{value}\n")
 
-            # Write the Settings section
-            if settings_dict:
-                f.write("\n[Settings]\n")
-                for key, value in settings_dict.items():
+            # Write the Reads section
+            if reads_dict:
+                f.write("\n[Reads]\n")
+                for key, value in reads_dict.items():
                     f.write(f"{key},{value}\n")
 
             # Write the Sample section
@@ -350,3 +350,76 @@ class IlluminaUtils:
                 # Write each sample's data
                 for sample_id, sample_info in samples_dict.items():  # pylint: disable=unused-variable
                     f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+
+    def convert_to_bcl_compliant(self, input_csv_file, output_file_name: str, bcl_settings_dict: dict, bcl_data_dict: dict):
+        """
+        Convert a given samplesheet CSV to a BCL Convert v2-compliant samplesheet,
+        adding [BCLConvert_Settings] and [BCLConvert_Data] sections at the bottom from provided dictionaries.
+
+        Args:
+            input_csv_file (str): The path to the input CSV file.
+            output_file_name (str): The base name of the output CSV file to be generated (without the ".csv" extension).
+            bcl_settings_dict (dict): A dictionary containing BCL settings to be included in the output.
+            bcl_data_dict (dict): A dictionary containing BCL data to be included in the output.
+
+        Returns:
+            None: The method writes a BCL Convert v2-compliant samplesheet CSV file.
+        """
+        output_file = output_file_name + ".csv"
+
+        if not os.path.isfile(input_csv_file):
+            raise FileNotFoundError(f"'{input_csv_file}' does not exist.")
+
+        # Open the input CSV and the final output file
+        with open(input_csv_file, "r", encoding="ASCII") as infile, open(output_file, "w", encoding="ASCII") as outfile:
+            # Step 1: Copy existing content from the input CSV
+            for line in infile:
+                outfile.write(line)
+
+            # Add the [BCLConvert_Settings] section at the bottom
+            if bcl_settings_dict:
+                outfile.write("\n[BCLConvert_Settings]\n")
+                for key, value in bcl_settings_dict.items():
+                    outfile.write(f"{key},{value}\n")
+
+            # Add the [BCLConvert_Data] section after the settings at the bottom
+            if bcl_data_dict:
+                outfile.write("\n[BCLConvert_Data]\n")
+                # Collect all unique column headers from samples_dict
+                headers = set()
+                for sample_info in bcl_data_dict.values():
+                    headers.update(sample_info.keys())
+
+                # Write the column headers to the file
+                headers = sorted(headers)
+                outfile.write(",".join(headers) + "\n")
+
+                # Write each sample's data
+                for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
+                    outfile.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+
+    def create_bcl_v2_sample_sheet(
+        self, output_file_name: str, header_dict: dict, reads_dict: dict, samples_dict: dict, bcl_settings_dict: dict, bcl_data_dict: dict
+    ):
+        """
+        Create a BCL Convert v2-compliant sample sheet from provided dictionaries.
+
+        Args:
+            output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
+            header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
+            reads_dict (dict): A dictionary containing reads data.
+            samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
+            bcl_settings_dict (dict): A dictionary containing BCL settings data.
+            bcl_data_dict (dict): A dictionary containing BCL data.
+
+        Returns:
+            None: The method writes data to a CSV file.
+        """
+
+        # Step 1: Generate initial CSV using dict_to_illumina_v2_csv
+        illumina_file_name = output_file_name + "_illumina"  # General Illumina samplesheet
+        self.dict_to_illumina_v2_csv(header_dict, reads_dict, samples_dict, illumina_file_name)
+
+        # Step 2: Convert the temporary CSV to BCL compliant format
+        bclconvert_file_name = output_file_name + "_bclconvert"
+        self.convert_to_bcl_compliant(illumina_file_name + ".csv", bclconvert_file_name, bcl_settings_dict, bcl_data_dict)

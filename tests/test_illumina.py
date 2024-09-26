@@ -248,6 +248,22 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert filtered_info == expected_dict
 
+    def test_convert_to_bcl_compliant_filenotexist(self):
+        """
+        Pass a file that does not exist
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        invalid_path = "file_does_not_exist"
+        output_file_name = "file"
+        bcl_settings_dict = {"settings": "fake_settings"}
+        bcl_data_dict = {"data": "fake_data"}
+
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            iu.convert_to_bcl_compliant(invalid_path, output_file_name, bcl_settings_dict, bcl_data_dict)
+
 
 class TestIlluminaUtilsWithFixtures:
     """Class for IlluminaUtils tests with fixtures"""
@@ -438,7 +454,7 @@ class TestIlluminaUtilsWithFixtures:
         assert merged_dict == expected_merged_dict
 
     @pytest.mark.parametrize(
-        "header_dict,settings_dict,samples_dict",
+        "header_dict,reads_dict,samples_dict",
         [
             (
                 {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
@@ -450,7 +466,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_illumina_v2_csv_valid(self, header_dict, settings_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_valid(self, header_dict, reads_dict, samples_dict):
         """
         Check that the csv file is created and contains the correct data
         """
@@ -459,7 +475,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, reads_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -475,8 +491,8 @@ class TestIlluminaUtilsWithFixtures:
             assert ["Date", "2024-09-12"] in content
             assert ["Workflow", "GenerateFASTQ"] in content
 
-            # Check the settings
-            assert ["[Settings]"] in content
+            # Check the reads
+            assert ["[Reads]"] in content
             assert ["Read1Cycles", "151"] in content
             assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
 
@@ -487,7 +503,7 @@ class TestIlluminaUtilsWithFixtures:
             assert content[-1] == ["sample2", "A002", "test_sample_2"]
 
     @pytest.mark.parametrize(
-        "settings_dict,samples_dict",
+        "reads_dict,samples_dict",
         [
             (
                 {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
@@ -498,7 +514,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_illumina_v2_csv_no_header(self, settings_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_no_header(self, reads_dict, samples_dict):
         """
         Test behavior with an empty header_dict
         """
@@ -508,7 +524,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_illumina_v2_csv(empty_header_dict, settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(empty_header_dict, reads_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -517,8 +533,8 @@ class TestIlluminaUtilsWithFixtures:
             content = list(reader)
             print(content)
 
-            # Ensure the samples and settings sections are present
-            assert ["[Settings]"] in content
+            # Ensure the samples and reads sections are present
+            assert ["[Reads]"] in content
             assert ["[Data]"] in content
             assert content[-3] == ["Sample_ID", "index", "sample_name"]
             assert content[-2] == ["sample1", "A001", "test_sample_1"]
@@ -538,17 +554,17 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_illumina_v2_csv_no_settings(self, header_dict, samples_dict):
+    def test_dict_to_illumina_v2_csv_no_reads(self, header_dict, samples_dict):
         """
-        Test behavior with an empty settings_dict
+        Test behavior with an empty reads_dict
         """
         # Set up
         iu = IlluminaUtils()
-        empty_settings_dict = {}
+        empty_reads_dict = {}
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_illumina_v2_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, empty_reads_dict, samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -557,17 +573,17 @@ class TestIlluminaUtilsWithFixtures:
             content = list(reader)
             print(content)
 
-            # Ensure the samples and settings sections are present
+            # Ensure the samples and reads sections are present
             assert ["[Header]"] in content
             assert ["[Data]"] in content
             assert content[-3] == ["Sample_ID", "index", "sample_name"]
             assert content[-2] == ["sample1", "A001", "test_sample_1"]
             assert content[-1] == ["sample2", "A002", "test_sample_2"]
-            # Ensure that [Settings] section is empty
-            assert ["[Settings]"] not in content
+            # Ensure that [Reads] section is empty
+            assert ["[Reads]"] not in content
 
     @pytest.mark.parametrize(
-        "header_dict,settings_dict",
+        "header_dict,reads_dict",
         [
             (
                 {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
@@ -575,7 +591,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_illumina_v2_csv_no_samples(self, header_dict, settings_dict):
+    def test_dict_to_illumina_v2_csv_no_samples(self, header_dict, reads_dict):
         """
         Test behavior with an empty samples_dict
         """
@@ -585,7 +601,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, empty_samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, reads_dict, empty_samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -594,15 +610,15 @@ class TestIlluminaUtilsWithFixtures:
             content = list(reader)
             print(content)
 
-            # Ensure the header and settings sections are present
+            # Ensure the header and reads sections are present
             assert content[0] == ["[Header]"]
-            assert ["[Settings]"] in content
+            assert ["[Reads]"] in content
             # Ensure that [Data] section is empty
             assert ["[Data]"] not in content
             assert ["Sample_ID"] not in content
 
     @pytest.mark.parametrize(
-        "header_dict,settings_dict",
+        "header_dict,reads_dict",
         [
             (
                 {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
@@ -610,7 +626,7 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_dict_to_illumina_v2_csv_partial_sample_info(self, header_dict, settings_dict):
+    def test_dict_to_illumina_v2_csv_partial_sample_info(self, header_dict, reads_dict):
         """
         Test with samples missing some fields
         """
@@ -624,7 +640,7 @@ class TestIlluminaUtilsWithFixtures:
         output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
 
         # Test
-        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
+        iu.dict_to_illumina_v2_csv(header_dict, reads_dict, incomplete_samples_dict, output_file_name)
 
         # Assert
         output_file_csv = output_file_name + ".csv"
@@ -638,3 +654,196 @@ class TestIlluminaUtilsWithFixtures:
             assert content[-3] == ["Sample_ID", "index", "sample_name"]
             assert content[-2] == ["sample1", "A001", ""]
             assert content[-1] == ["sample2", "", "test_sample_2"]
+
+    @pytest.mark.parametrize(
+        "bcl_settings_dict,bcl_data_dict",
+        [
+            (
+                {"SoftwareVersion": "x.y.z", "AdapterBehavior": "trim"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "index2": "B001", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "index2": "B002"},
+                },
+            )
+        ],
+    )
+    def test_convert_to_bcl_compliant_valid(self, bcl_settings_dict, bcl_data_dict):
+        """
+        Check that the csv file is created and contains the correct data
+        """
+        # Set up
+        iu = IlluminaUtils()
+        input_file = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        with open(input_file, "w", encoding="ASCII"):
+            pass
+        output_file_name = os.path.join(self.tmp_path, "output_file")
+
+        # Test
+        iu.convert_to_bcl_compliant(input_file, output_file_name, bcl_settings_dict, bcl_data_dict)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        assert os.path.exists(output_file_csv)
+
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+
+            # Check the settings
+            assert ["[BCLConvert_Settings]"] in content
+            assert ["SoftwareVersion", "x.y.z"] in content
+            assert ["AdapterBehavior", "trim"] in content
+
+            # Check the data
+            assert ["[BCLConvert_Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "index2"]
+            assert content[-2] == ["sample1", "A001", "B001"]
+            assert content[-1] == ["sample2", "A002", "B002"]
+
+    @pytest.mark.parametrize(
+        "bcl_data_dict",
+        [
+            {
+                "sample1": {"Sample_ID": "sample1", "index2": "B001", "index": "A001"},
+                "sample2": {"Sample_ID": "sample2", "index": "A002", "index2": "B002"},
+            },
+        ],
+    )
+    def test_convert_to_bcl_compliant_no_settings(self, bcl_data_dict):
+        """
+        Test behavior with an empty settings_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        input_file = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        with open(input_file, "w", encoding="ASCII"):
+            pass
+        output_file_name = os.path.join(self.tmp_path, "output_file")
+        empty_settings_dict = {}
+
+        # Test
+        iu.convert_to_bcl_compliant(input_file, output_file_name, empty_settings_dict, bcl_data_dict)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure that [BCLConvert_Settings] section is empty
+            assert ["[BCLConvert_Data]"] in content
+            assert ["[BCLConvert_Settings]"] not in content
+
+    @pytest.mark.parametrize(
+        "bcl_settings_dict",
+        [
+            {"SoftwareVersion": "x.y.z", "AdapterBehavior": "trim"},
+        ],
+    )
+    def test_convert_to_bcl_compliant_no_data(self, bcl_settings_dict):
+        """
+        Test behavior with an empty data_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        input_file = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        with open(input_file, "w", encoding="ASCII"):
+            pass
+        output_file_name = os.path.join(self.tmp_path, "output_file")
+        empty_data_dict = {}
+
+        # Test
+        iu.convert_to_bcl_compliant(input_file, output_file_name, bcl_settings_dict, empty_data_dict)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure that [BCLConvert_Data] section is empty
+            assert ["[BCLConvert_Data]"] not in content
+            assert ["[BCLConvert_Settings]"] in content
+
+    @pytest.mark.parametrize(
+        "header_dict,reads_dict,samples_dict,bcl_settings_dict,bcl_data_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
+                },
+                {"SoftwareVersion": "x.y.z", "AdapterBehavior": "trim"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "index2": "B001", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "index2": "B002"},
+                },
+            )
+        ],
+    )
+    def test_create_bcl_v2_sample_sheet_valid(self, header_dict, reads_dict, samples_dict, bcl_settings_dict, bcl_data_dict):
+        """
+        Check that the csv file is created and contains the correct data
+        """
+        # Set up
+        iu = IlluminaUtils()
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.create_bcl_v2_sample_sheet(output_file_name, header_dict, reads_dict, samples_dict, bcl_settings_dict, bcl_data_dict)
+
+        # Assert
+        # Check the illumina file
+        output_illumina_file_csv = output_file_name + "_illumina.csv"
+        with open(output_illumina_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Check the header
+            assert content[0] == ["[Header]"]
+            assert ["IEMFileVersion", "4"] in content
+            assert ["Date", "2024-09-12"] in content
+            assert ["Workflow", "GenerateFASTQ"] in content
+
+            # Check the reads
+            assert ["[Reads]"] in content
+            assert ["Read1Cycles", "151"] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+
+            # Check the sample data
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
+
+            # Check the bcl info are not included
+            assert ["[BCLConvert_Settings]"] not in content
+            assert ["[BCLConvert_Data]"] not in content
+
+        # Check the bcl_convert file
+        output_bcl_file_csv = output_file_name + "_bclconvert.csv"
+        with open(output_bcl_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Check the illumina info is incorporated
+            assert content[0] == ["[Header]"]
+            assert ["[Reads]"] in content
+            assert ["[Data]"] in content
+
+            # Check the bcl settings
+            assert ["[BCLConvert_Settings]"] in content
+            assert ["SoftwareVersion", "x.y.z"] in content
+            assert ["AdapterBehavior", "trim"] in content
+
+            # Check the bcl data
+            assert ["[BCLConvert_Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "index2"]
+            assert content[-2] == ["sample1", "A001", "B001"]
+            assert content[-1] == ["sample2", "A002", "B002"]
