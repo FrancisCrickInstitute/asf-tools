@@ -175,6 +175,7 @@ class IlluminaUtils:
         # Extract info from the dictionary as required
         run_id = self.extract_matching_item_from_dict(runinfo_dict, "@Id")
         instrument = self.extract_matching_item_from_dict(runinfo_dict, "Instrument")
+        lane = self.extract_matching_item_from_dict(runinfo_dict, "@LaneCount")
 
         # Determine the machine type used based on the initial letters of the string value in instrumet
         machine_mapping = {"^M": "MiSeq", "^K": "HiSeq 4000", "^D": "HiSeq 2500", "^N": "NextSeq", "^A": "NovaSeq", "^LH": "NovaSeqX"}
@@ -189,7 +190,7 @@ class IlluminaUtils:
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        runinfo_dict = {"current_date": current_datetime, "run_id": run_id, "instrument": instrument, "machine": machine}
+        runinfo_dict = {"current_date": current_datetime, "run_id": run_id, "instrument": instrument, "machine": machine, "lane": lane}
         return runinfo_dict
 
     def filter_readinfo(self, runinfo_dict: dict) -> dict:

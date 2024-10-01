@@ -125,8 +125,11 @@ class TestIlluminaUtils(unittest.TestCase):
                 "Instrument": "instrument_not_valid",
                 "Date": "2024-07-11T18:44:29Z",
                 "Reads": {"Read": [{"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},
-            },
-        }
+                "FlowcellLayout": {
+                    "@LaneCount": "8",
+                    },
+                },
+            }
 
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -193,6 +196,7 @@ class TestIlluminaUtils(unittest.TestCase):
             "run_id": "20240711_LH00442_0033_A22MKK5LT3",
             "instrument": "LH00442",
             "machine": "NovaSeqX",
+            "lane": "8",
         }
 
         # Test
