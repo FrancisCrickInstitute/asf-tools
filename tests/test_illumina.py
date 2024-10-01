@@ -127,9 +127,9 @@ class TestIlluminaUtils(unittest.TestCase):
                 "Reads": {"Read": [{"@Number": "1", "@NumCycles": "151", "@IsIndexedRead": "N", "@IsReverseComplement": "N"}]},
                 "FlowcellLayout": {
                     "@LaneCount": "8",
-                    },
                 },
-            }
+            },
+        }
 
         # Test and Assert
         with self.assertRaises(ValueError):
@@ -243,6 +243,7 @@ class TestIlluminaUtils(unittest.TestCase):
             "current_date": current_datetime,
             "instrument": "LH00442",
             "machine": "NovaSeqX",
+            "lane": "8",
         }
 
         # Test
@@ -893,3 +894,99 @@ class TestIlluminaUtilsWithFixtures:
             assert content[-3] == ["Sample_ID", "index", "index2"]
             assert content[-2] == ["sample1", "A001", "B001"]
             assert content[-1] == ["sample2", "A002", "B002"]
+
+    @pytest.mark.parametrize(
+        "header_dict,reads_dict,bcl_settings_dict,bcl_data_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+                {"SoftwareVersion": "x.y.z", "AdapterBehavior": "trim"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "index2": "B001", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "index2": "B002"},
+                },
+            )
+        ],
+    )
+    def test_generate_bcl_samplesheet_valid(self, header_dict, reads_dict, bcl_settings_dict, bcl_data_dict):
+        """
+        Check that the csv file is created and contains the correct data
+        """
+        # Set up
+        iu = IlluminaUtils()
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
+
+        # Assert
+        output_file = output_file_name + ".csv"
+        with open(output_file, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Check the header
+            assert content[0] == ["[Header]"]
+            assert ["IEMFileVersion", "4"] in content
+            assert ["Date", "2024-09-12"] in content
+            assert ["Workflow", "GenerateFASTQ"] in content
+
+            # Check the reads
+            assert ["[Reads]"] in content
+            assert ["Read1Cycles", "151"] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+
+            # Check the bcl settings
+            assert ["[BCLConvert_Settings]"] in content
+            assert ["SoftwareVersion", "x.y.z"] in content
+            assert ["AdapterBehavior", "trim"] in content
+
+            # Check the bcl data
+            assert ["[BCLConvert_Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "index2"]
+            assert content[-2] == ["sample1", "A001", "B001"]
+            assert content[-1] == ["sample2", "A002", "B002"]
+
+    @pytest.mark.parametrize(
+        "header_dict,reads_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+            )
+        ],
+    )
+    def test_generate_bcl_samplesheet_nobclvalues(self, header_dict, reads_dict):
+        """
+        Check that the csv file does not contain empty or None BCL dictionary values 
+        """
+        # Set up
+        iu = IlluminaUtils()
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+        bcl_settings_dict = {}
+
+        # Test
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict=bcl_settings_dict, output_file_name=output_file_name)
+
+        # Assert
+        output_file = output_file_name + ".csv"
+        with open(output_file, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+
+            # Check the header
+            assert content[0] == ["[Header]"]
+            assert ["IEMFileVersion", "4"] in content
+            assert ["Date", "2024-09-12"] in content
+            assert ["Workflow", "GenerateFASTQ"] in content
+
+            # Check the reads
+            assert ["[Reads]"] in content
+            assert ["Read1Cycles", "151"] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+
+            # Check BCL info is not included
+            assert ["[BCLConvert_Settings]"] not in content
+            assert ["[BCLConvert_Data]"] not in content

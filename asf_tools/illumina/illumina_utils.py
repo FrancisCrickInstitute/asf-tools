@@ -424,3 +424,66 @@ class IlluminaUtils:
         # Step 2: Convert the temporary CSV to BCL compliant format
         bclconvert_file_name = output_file_name + "_bclconvert"
         self.convert_to_bcl_compliant(illumina_file_name + ".csv", bclconvert_file_name, bcl_settings_dict, bcl_data_dict)
+
+    def generate_bcl_samplesheet(
+        self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_name: str = "samplesheet"
+    ):
+        """
+        Generates a BCL sample sheet in CSV format, including sections for header, reads, BCLConvert settings, and BCLConvert data.
+
+        Args:
+            header_dict (dict): Dictionary containing the header information. Keys represent the field names, and values represent the field values.
+            reads_dict (dict): Dictionary containing read information. Keys represent the read number or other identifiers, and values represent read lengths or other associated data.
+            bcl_settings_dict (dict, optional): Dictionary for the BCLConvert settings section. Keys represent setting names, and values represent setting values. Defaults to None.
+            bcl_data_dict (dict, optional): Dictionary containing the BCLConvert data for samples. Each value should be a dictionary representing a sample with keys as the field names (columns) and values as the data. Defaults to None.
+            output_file_name (str, optional): Name of the output CSV file without extension. Defaults to "samplesheet".
+
+        Returns:
+            None: This function writes the output directly to a CSV file and does not return any value.
+
+        Example:
+            header_dict = {"FileFormatVersion": "2", "InvestigatorName": "John Doe"}
+            reads_dict = {"Read1Cycles": "151", "Read2Cycles": "151"}
+            bcl_settings_dict = {"BarcodeMismatchesIndex1": "1", "BarcodeMismatchesIndex2": "1"}
+            bcl_data_dict = {
+                "Sample1": {"Sample_ID": "Sample1", "Sample_Name": "Control", "Index": "AAGTCC"},
+                "Sample2": {"Sample_ID": "Sample2", "Sample_Name": "Test", "Index": "CGTAAG"},
+            }
+            generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, "output_samplesheet")
+        """
+        output_file = output_file_name + ".csv"
+        # Open the output file
+        with open(output_file, "w", encoding="ASCII") as f:
+            # Write the Header section
+            if header_dict:
+                f.write("[Header]\n")
+                for key, value in header_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Write the Reads section
+            if reads_dict:
+                f.write("\n[Reads]\n")
+                for key, value in reads_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Add the [BCLConvert_Settings] section at the bottom
+            if bcl_settings_dict:
+                f.write("\n[BCLConvert_Settings]\n")
+                for key, value in bcl_settings_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Add the [BCLConvert_Data] section after the settings at the bottom
+            if bcl_data_dict:
+                f.write("\n[BCLConvert_Data]\n")
+                # Collect all unique column headers from samples_dict
+                headers = set()
+                for sample_info in bcl_data_dict.values():
+                    headers.update(sample_info.keys())
+
+                # Write the column headers to the file
+                headers = sorted(headers)
+                f.write(",".join(headers) + "\n")
+
+                # Write each sample's data
+                for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
+                    f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
