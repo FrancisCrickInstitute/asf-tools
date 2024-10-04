@@ -36,9 +36,8 @@ The `reformat_samplesheet` function ensures that the provided sample sheet is pr
   - Check for index length consistency across lanes and for index length discrepancies within lanes
  - Write results (“pass” or “fail”) into a text file.
 
-## 3. **Creating false samplesheet (`create_falseSS`)**
-
-The `create_falseSS` function is used to identify and remove problematic samples, particularly those with mismatched indexing configurations, across lanes. It generates a "false" sample sheet that only contains valid samples, with problematic ones logged separately. This step is only run is the process `check_samplesheet` returns a `fail.txt` file.
+## 3. **Creating false samplesheet (`make_fake_SS`)**
+The `create_falseSS.py` script is used to identify and remove problematic samples, particularly those with mismatched indexing configurations, across lanes. It generates a "false" sample sheet that only contains valid samples, with problematic ones logged separately. This step is only run is the process `check_samplesheet` returns a `fail.txt` file.
 
 ### Key Steps:
 1. **Lane structure validation:**
@@ -62,3 +61,25 @@ The `create_falseSS` function is used to identify and remove problematic samples
 5. **Generating output:**
    - The remaining valid samples are saved into a new file, `fake_samplesheet.csv`.
    - A list of problematic sample indices is saved into `problem_samples_list.txt`.
+
+## 4. **Separation of Bulk, 10X and problematic samples processing**
+At this stage in the pipeline, the processing of bulk, 10X, and problematic samples diverges into distinct paths:
+
+- **Bulk Samples**: These samples are directed to the `bcl2fastq_default` process.
+  
+- **Problematic Samples**: Samples identified as problematic (i.e., those listed in `fake_samplesheet.csv` that return a `fail` during the `check_samplesheet` step) are processed through the following steps:
+  - `bcl2fastq_problem_SS`
+  - `parse_jsonfile`
+  - `recheck_samplesheet`
+  
+- **10X Samples**: These samples proceed to the following processes:
+  - `cellRangerMkFastQ`
+  - `cellRangerMoveFqs`
+  - `cellRangerCount`
+
+The samplesheets of Bulk and 10X samples aren't edited any further.
+
+## 5. **Further sample processing (`bcl2fastq_problem_SS`, `parse_jsonfile`, `recheck_samplesheet`)**
+- The `false_samplesheet.csv` file, which contains only samples that passed all checks at the `make_fake_SS` step, is processed through a bcl2fastq command to generate FASTQ files. The resulting `.json` output file from this bcl2fastq run is used to identify unknown barcodes.
+- The `parse_json.py` script extracts these unknown barcodes and scans the sample sheet for problematic samples whose indices match the unknown barcodes. If a match is found, the index will be replaced with the value of the unknown barcode and generate a new, updated samplesheet. This enables the pipeline to better handle scenarios where a single index is used in a dual-indexed lane.
+- Lastly, the new sample sheet undergoes a final check to ensure consistency with the original sheet, specifically verifying that fields like "Sample_ID" and "Lane" match. Additionally, it confirms that index values have been updated correctly. If any index fields return a “NAN” or “None” value, this process will generate a `fail.txt` file. The generation of a `pass.txt` file would enable the previously problematic samples to move forward in the pipeline, ie. to proceed to the `bcl2fastq_default` process.
