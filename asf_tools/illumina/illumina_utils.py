@@ -2,9 +2,15 @@ import os
 import re
 from datetime import datetime
 from xml.parsers.expat import ExpatError
+from enum import Enum
+import csv
+from bs4 import BeautifulSoup
 
 import xmltodict
 
+class IndexMode(Enum):
+    SINGLE_INDEX = "single_index"
+    DUAL_INDEX = "dual_index"
 
 class IlluminaUtils:
     """Class for extracting read run information from the RunInfo.xml file"""
@@ -487,3 +493,122 @@ class IlluminaUtils:
                 # Write each sample's data
                 for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
                     f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+
+
+    def extract_top_unknown_barcode_from_html(self, html_file) -> str:
+        """
+        Extract the 'sequence' value with the highest 'count' under "Top Unknown Barcodes" from the HTML file.
+
+        Args:
+            html_file (file-like object): The HTML file containing the "Top Unknown Barcodes" table.
+
+        Returns:
+            str: The top unknown barcode sequence with the highest count.
+        """
+        if not os.path.isfile(html_file):
+            raise FileNotFoundError(f"{html_file} does not exist or is not a file.")
+
+        soup = BeautifulSoup(html_file, 'html.parser')
+
+        validate_html_format = soup.find('html')
+        if validate_html_format is None:
+            raise ValueError("Input file is not HTML.")
+
+        # Locate the "Top Unknown Barcodes" table or section
+        top_barcodes_table = soup.find(text="Top Unknown Barcodes")
+        if not top_barcodes_table:
+            raise ValueError("Could not find 'Top Unknown Barcodes' in the HTML file")
+
+        # Find the associated table or section containing the sequence and count
+        table = top_barcodes_table.find_next("table")
+        if not table:
+            raise ValueError("Could not find a table after 'Top Unknown Barcodes'")
+
+        # Parse the table for rows of barcode sequences and counts
+        rows = table.find_all("tr")
+        max_count = 0
+        top_sequence = None
+        for row in rows[1:]:  # Skip header row
+            columns = row.find_all("td")
+            sequence = columns[0].text.strip()
+            count = int(columns[1].text.strip())
+            if count > max_count:
+                max_count = count
+                top_sequence = sequence
+
+        if not top_sequence:
+            raise ValueError("Could not find a valid sequence in the table")
+
+        return top_sequence
+
+    def process_sample_sheet(self, mode: IndexMode, html_file=None, input_samplesheet=None, output_samplesheet_name: str = None, 
+                            header_dict=None, reads_dict=None, samples_dict=None, bcl_settings_dict=None, bcl_data_dict=None):
+        """
+        Process the input sample sheet based on the mode (either IndexMode.SINGLE_INDEX or IndexMode.DUAL_INDEX).
+
+        Args:
+            mode (IndexMode): Either IndexMode.SINGLE_INDEX or IndexMode.DUAL_INDEX.
+            html_file (file-like object, optional): The HTML file to scan for the top unknown barcode (only used in dual_index mode).
+            input_samplesheet (file-like object, optional): The CSV file representing the input sample sheet (only for dual_index mode).
+            output_samplesheet_name (str, optional): The output CSV file name to be generated. For dual_index mode, if not provided, 
+                                                    it will append '_dual_index.csv' to the input filename.
+            header_dict (dict, optional): Required in SINGLE_INDEX mode. A dictionary containing header information for the BCL v2 sample sheet.
+            reads_dict (dict, optional): Required in SINGLE_INDEX mode. A dictionary containing reads information for the BCL v2 sample sheet.
+            samples_dict (dict, optional): Required in SINGLE_INDEX mode. A dictionary containing sample data for the BCL v2 sample sheet.
+            bcl_settings_dict (dict, optional): Required in SINGLE_INDEX mode. A dictionary containing settings for the BCL v2 sample sheet.
+            bcl_data_dict (dict, optional): Required in SINGLE_INDEX mode. A dictionary containing BCL data for the BCL v2 sample sheet.
+
+        Returns:
+            None: Writes to the output sample sheet CSV file.
+        """
+        # Mode: SINGLE_INDEX
+        if mode == IndexMode.SINGLE_INDEX:
+            if not header_dict or not reads_dict or not samples_dict or not bcl_settings_dict or not bcl_data_dict:
+                raise ValueError("All required dictionaries must be provided for single index mode")
+
+            # Use create_bcl_v2_sample_sheet to create the BCL v2 sample sheet
+            if output_samplesheet_name is None:
+                output_samplesheet_name = "illumina_samplesheet_single_index.csv"  # Default output name
+
+            # Call the method to create the sample sheet
+            self.create_bcl_v2_sample_sheet(header_dict, reads_dict, samples_dict, bcl_settings_dict, bcl_data_dict, output_samplesheet_name)
+
+        # Mode: DUAL_INDEX
+        elif mode == IndexMode.DUAL_INDEX:
+            # Check thee input required are present and in file format
+            if not html_file or not input_samplesheet:
+                raise ValueError("An input sample sheet and HTML file must be provided in dual index mode.")
+
+            if not os.path.isfile(input_samplesheet):
+                raise FileNotFoundError(f"{input_samplesheet} does not exist or is not a file.")
+
+            # Extract top barcode from the HTML file
+            top_sequence = self.extract_top_unknown_barcode_from_html(html_file)
+
+            # Set default output file name if not provided
+            if output_samplesheet_name is None:
+                # Use the input file name and append "_dual_index.csv"
+                input_filename = os.path.basename(input_samplesheet.name)
+                file_root, file_ext = os.path.splitext(input_filename)
+                output_samplesheet_name = f"{file_root}_dual_index.csv"
+
+            # Read and modify the sample sheet
+            updated_rows = []
+            reader = csv.DictReader(input_samplesheet)
+            fieldnames = reader.fieldnames
+
+            if "index2" not in fieldnames:
+                fieldnames.append("index2")  # Add the 'index2' column if not present
+
+            for row in reader:
+                row['index2'] = top_sequence  # Assign top barcode sequence to 'index2'
+                updated_rows.append(row)
+
+            # Write the updated sample sheet to a new file
+            with open(output_samplesheet_name, "w", newline="") as output_csv:
+                writer = csv.DictWriter(output_csv, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(updated_rows)
+
+        else:
+            raise ValueError("Mode must be either Mode.SINGLE_INDEX or Mode.DUAL_INDEX.")

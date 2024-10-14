@@ -3,6 +3,7 @@
 ## Modes
 - __DataTypeMode__ is in `io/data_management.py`. Useful when selecting between GENERAL, ONT or ILLUMINA mode.
 - __DeleteMode__ is in `io/utils.py`. Useful for the `delete_all_items` function. Can be used to either select all files in a directory, or the directory tree.
+- __IndexMode__ is in `illumina/illumina_utils.py`. Useful for the process_sample_sheet function.
 
 ## Run ID
 - __ONT__: can be extracted from the folder name
