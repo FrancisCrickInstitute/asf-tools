@@ -11,7 +11,7 @@ The `reformat_samplesheet` function ensures that the provided sample sheet is pr
    - The expected input should follow an Illumina samplesheet format, which includes several subsections, such as: [Header], [Data] and any other software specific settings. Although V1 and V2 differ in the content of each subsection, the overall structure should remain the same for both. More information can be found [here]( https://help.connected.illumina.com/run-set-up/overview/sample-sheet-structure).
    - The sample sheet is read and filtered to only process information contained within the [Data] section of the Illumina pipeline, therefore temporarily ignoring other metadata.
 -  Critical columns such as `Lane`, `Sample_ID`, `index`, `index2`, `Sample_Project`, `ReferenceGenome`, and `DataAnalysisType` are verified to be present.
-   - Samples without valid index information (both `index` and `index2` must be strings) are identified and removed.
+   - Samples without valid index information (both `index` and `index2` must be strings) are identified and removed from the main processing.
 2. **iCLIP Lane collapsing:**
    - iCLIP samples are grouped by lane. If multiple iCLIP samples exist within the same lane, they are collapsed into one, preserving the minimum and maximum sample numbers for that lane.
    - The `Sample_ID` and `User_Sample_Name` are updated accordingly, with the `index` and `index2` values reset to empty for the merged sample.
@@ -25,7 +25,7 @@ The `reformat_samplesheet` function ensures that the provided sample sheet is pr
 4. **Generating output:**
    - The main reformatted sample sheet, `ReformattedSampleSheet.csv`, is generated.
    - Additional files (`tenX_samplesheet.tenx.csv`, `tenX_samplesheet.ATACtenx.csv`, etc.) are created for 10X data, ensuring compatibility with CellRanger.
-   - Empty rows or problematic rows are removed, ensuring that only valid samples proceed to sequencing.
+   - Empty rows or problematic rows are removed, ensuring that only valid samples proceed to sequencing. All these samples are stored into a separate samplesheet. 
 -  A text file (`true.bcl2fastq.txt` or `false.bcl2fastq.txt`) is created to signal whether `bcl2fastq` is needed.
 ## 2. **Check samplesheet (`check_samplesheet`)**
 1. **Identifying indexing type:**
@@ -37,7 +37,7 @@ The `reformat_samplesheet` function ensures that the provided sample sheet is pr
  - Write results (“pass” or “fail”) into a text file.
 
 ## 3. **Creating false samplesheet (`make_fake_SS`)**
-The `create_falseSS.py` script is used to identify and remove problematic samples, particularly those with mismatched indexing configurations, across lanes. It generates a "false" sample sheet that only contains valid samples, with problematic ones logged separately. This step is only run is the process `check_samplesheet` returns a `fail.txt` file.
+The `create_falseSS.py` script is used to identify and remove problematic samples, particularly those with mismatched indexing configurations, across lanes. It generates a "false" samplesheet that only contains valid samples, with problematic ones logged separately. This step is only run if the process `check_samplesheet` returns a `fail.txt` file.
 
 ### Key Steps:
 1. **Lane structure validation:**
