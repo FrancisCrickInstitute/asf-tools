@@ -127,15 +127,26 @@ class ClarityHelperLims(ClarityLims):
         sample_name = sample.name
 
         # Extract project wide info
-        project = self.get_projects(search_id=sample.project.id)
-        project_name = project.name
-        project_limsid = project.id
-        project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
-        reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
-        data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+        sample_project = sample.project
+        if sample_project:
+            project = self.get_projects(search_id=sample.project.id)
+            project_name = project.name
+            project_limsid = project.id
+            project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
+            reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
+            data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+        else:
+            project_name = None
+            project_limsid = None
+            project_type = None
+            reference_genome = None
+            data_analysis_type = None
 
         # Get the submitter details
-        user = self.expand_stub(project.researcher, expansion_type=Researcher)
+        if sample_project:
+            user = self.get_researchers(search_id=project.researcher.id)
+        else:
+            user = self.get_researchers(search_id=sample.submitter.id)
 
         # these get the submitter, not the scientist, info
         user_firstname = user.first_name

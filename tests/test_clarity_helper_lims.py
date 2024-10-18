@@ -207,6 +207,41 @@ class TestClarityHelperLimsyWithFixtures:
         assert get_info == expected_dict
 
     @pytest.mark.parametrize(
+        "sample_id,expected_dict",
+        [
+            (
+                "201C-2076956",
+                {
+                    "201C-2076956": {
+                        "sample_name": "No_Template_Control",
+                        "group": "sequencing",
+                        "user": "ashley.fowler",
+                        "project_id": None,
+                        "project_limsid": None,
+                        "project_type": None,
+                        "reference_genome": None,
+                        "data_analysis_type": None,
+                    }
+                },
+            ),
+        ],
+    )
+    def test_clarity_helper_get_sample_info_project_notexists(self, api, sample_id, expected_dict):
+        """
+        Pass real sample IDs and test expected values in the dictionary output
+        """
+
+        # Set up
+        sample = api.get_samples(search_id=sample_id)
+
+        # Test
+        get_info = api.get_sample_info(sample.id)
+        print(get_info)
+
+        # Assert
+        assert get_info == expected_dict
+
+    @pytest.mark.parametrize(
         "runid,expected_sample_quantity",
         [
             ("20240417_1729_1C_PAW45723_05bb74c5", 4),
