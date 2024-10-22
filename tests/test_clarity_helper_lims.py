@@ -4,6 +4,7 @@ Clarity helper API Tests
 
 import os
 import unittest
+import warnings
 
 import pytest
 from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
@@ -92,6 +93,46 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.get_sample_barcode_from_runid(None)
 
+    def test_clarity_helper_reformat_barcode_to_index_novalid_barcodes(self):
+        """
+        Pass None and an empty barcode to method
+        """
+
+        # Setup
+        sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
+
+        # Assert
+        with warnings.catch_warnings(record=True) as warn:
+            warnings.simplefilter("always")  # Catch all warnings
+            self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
+            self.assertEqual(len(warn), 1)  # Check that a warning was raised
+            self.assertIs(warn[-1].category, UserWarning)  # Check that it's a Warning
+
+    def test_clarity_helper_reformat_barcode_to_index_isvalid(self):
+        """
+        Pass all different variations of barcode values within the sample info dict
+        """
+
+        # Setup
+        sample_info = {
+            "sample1": {"barcode": None},
+            "sample2": {"barcode": "First Kit (GeneX-YGeneY)"},
+            "sample3": {"project": "Project Info", "barcode": "Second Kit (CTTGTGCT-ACATACAC)"},
+            "sample4": {"barcode": "Random Kit (SingleIndex)"},
+            "sample5": {"info": "No barcode in dict"},
+        }
+        expected = {
+            "sample2": {"index": "GeneX", "index2": "YGeneY"},
+            "sample3": {"index": "CTTGTGCT", "index2": "ACATACAC"},
+            "sample4": {"index": "SingleIndex", "index2": ""},
+        }
+
+        # Test
+        result = self.api.reformat_barcode_to_index(sample_info)
+
+        # Assert
+        self.assertEqual(result, expected)
+
     def test_clarity_helper_collect_samplesheet_info_isnone(self):
         """
         Pass None to method
@@ -100,6 +141,31 @@ class TestClarityHelperLims(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
+
+    # def test_clarity_helper_collect_samplesheet_info_isvalid1(self):
+    #     """
+    #     Pass real run_id and test expected values in the dictionary output
+    #     """
+
+    #     merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
+    # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
+    # Test
+    # with open("bcl_samplesheet_22NWWMLT3.csv", "w",  encoding="UTF-8") as file:
+    #     file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+    #     for key, value in merged_dict.items():
+    #         # Convert all None values to "" for CSV
+    #         clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
+    #         barcode = "unclassified"
+    #         if "barcode" in value and clean_dict["barcode"] != "":
+    #             barcode = clean_dict["barcode"]
+    #         file.write(
+    #             f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
+    #         )
+    # print(merged_dict)
+
+    # Assert
+    # raise ValueError
+    # assert merged_dict == ["no"]
 
 
 class TestClarityHelperLimsyWithFixtures:

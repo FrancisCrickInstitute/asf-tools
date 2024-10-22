@@ -2,14 +2,12 @@
 Clarity API Child class with helper functions
 """
 
-import logging
 import queue
+import re
+import warnings
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sample
-
-
-log = logging.getLogger(__name__)
 
 
 class ClarityHelperLims(ClarityLims):
@@ -316,6 +314,72 @@ class ClarityHelperLims(ClarityLims):
             sample_barcode[sample_name] = {"barcode": reagent_barcode}
 
         return sample_barcode
+
+    def reformat_barcode_to_index(self, barcode_dict: dict) -> dict:
+        """
+        Extract a mapping of indices from sample barcodes.
+
+        This function processes a dictionary of samples and extracts the index
+        values from the barcode information located within parentheses. For each
+        sample, it retrieves the barcode and determines the index and index2 values
+        based on a regex pattern: letters followed by any character, then more letters.
+        If no match is found, 'index' will be set to the entire section inside the
+        parentheses, and 'index2' will be an empty string. If no valid barcodes are found,
+        a warning is logged.
+
+        Args:
+            sample_info (dict): A dictionary where each key is a sample ID
+                (str), and the value is another dictionary containing sample metadata,
+                including a 'barcode' key.
+
+        Returns:
+            dict: A dictionary where each key is a sample ID (str), and the value
+                is another dictionary containing:
+                    - "index": The extracted index value (str) from the barcode.
+                    - "index2": The extracted index2 value (str), or an empty string
+                    if no dash was found.
+
+        Raises:
+            UserWarning: If no valid barcode values are found in the provided samples.
+        """
+        extracted_info = {}
+        has_valid_barcodes = False  # Track whether we find any valid barcodes
+
+        # Define the regex pattern
+        pattern = r"([a-zA-Z]+)([^\w\s]+)([a-zA-Z]+)"
+
+        for sample_id, sample_data in barcode_dict.items():
+            # Get the barcode string
+            barcode = sample_data.get("barcode", "")
+
+            if barcode is None:
+                # Treat None as a blank string
+                barcode = ""
+
+            # Extract the sequence inside the parentheses
+            if "(" in barcode and ")" in barcode:
+                barcode_section = barcode.split("(")[-1].split(")")[0]
+
+                # Search for the regex pattern
+                match = re.search(pattern, barcode_section)
+
+                # Check if a match was found (ie. Split the section at the dash "-")
+                if match:
+                    index, separator, index2 = match.groups()
+                else:
+                    # If no match, assign the whole section to index and keep index2 empty
+                    index, index2 = barcode_section, ""
+
+                # Assign the extracted values to a new dictionary
+                extracted_info[sample_id] = {"index": index, "index2": index2}
+
+                has_valid_barcodes = True  # Mark that we found a valid barcode
+
+        # Check if no barcodes were processed and raise a warning
+        if not has_valid_barcodes:
+            warnings.warn("No valid barcode values found in the provided samples.", UserWarning)
+
+        return extracted_info
 
     def collect_samplesheet_info(self, run_id: str) -> dict:
         """
