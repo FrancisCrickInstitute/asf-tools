@@ -6,6 +6,7 @@ import unittest
 
 from asf_tools.nextflow.utils import NEXTFLOW_VERSION, SINGULARITY_VERSION, create_sbatch_header
 
+
 class TestNextflowUtils(unittest.TestCase):
     """Class for testing nextflow utils"""
 
@@ -18,7 +19,6 @@ class TestNextflowUtils(unittest.TestCase):
         # Assert
         self.assertTrue(f"ml Nextflow/{NEXTFLOW_VERSION}" in header_str)
         self.assertTrue(f"ml Singularity/{SINGULARITY_VERSION}" in header_str)
-
 
     def test_create_sbatch_header_withversion(self):
         """Test create sbatch header with version"""

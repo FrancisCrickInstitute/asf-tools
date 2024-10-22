@@ -19,6 +19,7 @@ TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_LIVE_RUN_SOURCE_PATH = "tests/data/ont/live_runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
+
 class TestGenDemuxRun(unittest.TestCase):
     """Class for testing the gen_demux_run tools"""
 
@@ -41,7 +42,6 @@ class TestGenDemuxRun(unittest.TestCase):
         self.assertFalse(os.path.exists(run_dir_3))
         self.assertFalse(os.path.exists(run_dir_4))
 
-
     @with_temporary_folder
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
@@ -58,7 +58,6 @@ class TestGenDemuxRun(unittest.TestCase):
 
         self.assertFalse(os.path.exists(run_dir_1))
         self.assertTrue(os.path.exists(run_dir_2))
-
 
     @with_temporary_folder
     def test_ont_gen_demux_run_sbatch_file(self, tmp_path):
@@ -83,7 +82,6 @@ class TestGenDemuxRun(unittest.TestCase):
         self.assertTrue('export NXF_SINGULARITY_CACHEDIR="sing"' in script_txt)
         self.assertTrue(f'--run_dir {os.path.join("runs", "run01")}' in script_txt)
 
-
     @with_temporary_folder
     def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
         # Setup
@@ -103,7 +101,6 @@ class TestGenDemuxRun(unittest.TestCase):
         print(script_txt)
         self.assertTrue("unclassified" in script_txt)
 
-
     @with_temporary_folder
     def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         # Setup
@@ -119,7 +116,6 @@ class TestGenDemuxRun(unittest.TestCase):
         executable = bool(file_permissions & os.X_OK)
 
         self.assertTrue(executable)
-
 
     @with_temporary_folder
     def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
@@ -139,7 +135,6 @@ class TestGenDemuxRun(unittest.TestCase):
 
         print(script_txt)
         self.assertFalse("NXF_HOME" in script_txt)
-
 
     @with_temporary_folder
     def test_ont_gen_demux_samplesheet_only(self, tmp_path):
@@ -166,7 +161,6 @@ class TestGenDemuxRun(unittest.TestCase):
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
 
         self.assertTrue(os.path.exists(samplesheet_path_01))
-
 
     @patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
     @with_temporary_folder
@@ -202,7 +196,6 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Assertion
         self.assertEqual(content, expected_content)
-
 
     @patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
     @with_temporary_folder

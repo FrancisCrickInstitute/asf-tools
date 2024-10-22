@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from asf_tools.slurm.utils import get_job_status
 
+
 class TestSlurmUtils(unittest.TestCase):
     """Class for testing Slurm utils"""
 
@@ -22,7 +23,6 @@ class TestSlurmUtils(unittest.TestCase):
 
         self.assertEqual(status, None)
 
-
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_get_job_status_report_running(self, mock_run):
         """
@@ -39,7 +39,6 @@ class TestSlurmUtils(unittest.TestCase):
 
         self.assertEqual(status, "running")
 
-
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_get_job_status_report_queued(self, mock_run):
         """
@@ -55,7 +54,6 @@ class TestSlurmUtils(unittest.TestCase):
         status = get_job_status("asf_nanopore_demux_20240717_1730_1A_PAW36768_7b0e525", "svc-asf-seq")
 
         self.assertEqual(status, "queued")
-
 
     def test_get_job_status_report_from_file(self):
         """
