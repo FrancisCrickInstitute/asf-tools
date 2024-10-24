@@ -3,8 +3,9 @@
 Set app version
 """
 
-from importlib.metadata import version
+from importlib.metadata import version, PackageNotFoundError
 
-
-# Set version from package information
-__version__ = version("asf-tools")
+try:
+    __version__ = version("asf-tools")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
