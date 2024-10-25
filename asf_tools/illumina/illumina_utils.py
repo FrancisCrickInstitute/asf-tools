@@ -8,6 +8,8 @@ from xml.parsers.expat import ExpatError
 import xmltodict
 from bs4 import BeautifulSoup
 
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
+
 
 class IndexMode(Enum):
     SINGLE_INDEX = "single_index"
@@ -309,129 +311,184 @@ class IlluminaUtils:
 
         return merged_result
 
-    def dict_to_illumina_v2_csv(self, header_dict: dict, reads_dict: dict, samples_dict: dict, output_file_name: str):
+    def generate_overridecycle_string(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int) -> str:
         """
-        Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
+        Generates an override cycle string based on specified index and read lengths.
 
-        This method takes three dictionaries (`header_dict`, `reads_dict`, and `samples_dict`), and writes
-        their contents into a CSV file. The output CSV file is structured with sections for headers, settings,
-        and sample data, where each dictionary corresponds to a different section in the file.
+        This method constructs a formatted override cycle string for sequencing, using 
+        provided lengths for the sequencing run's index and read. The output string 
+        follows a set format that includes the read length, index string length, and 
+        the difference between the specified index length and the actual length of the 
+        provided index string.
 
         Args:
-            header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
-            reads_dict (dict): A dictionary containing reads data.
-            samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
-            output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
+            index_str (str): The sequencing index string for which length will be calculated.
+            runinfo_index_len (int): The expected index length for the sequencing run.
+            runinfo_read_len (int): The total read length specified in the sequencing run.
 
         Returns:
-            None: The method writes data to a CSV file and does not return anything.
+            str: A formatted string representing sequencing cycles in the format 
+                "Y{runinfo_read_len};I{index_length}N{n_value};I{index_length}N{n_value};Y{runinfo_read_len},"
+                where `index_length` is the length of `index_str`, and `n_value` is the 
+                difference between `runinfo_index_len` and `index_length`.
 
         Raises:
-            IOError: If there is an error writing to the file.
+            TypeError: If `index_str` is not a string, `runinfo_index_len` or `runinfo_read_len` are 
+                not integers, or if `index_str` is empty or None.
+            ValueError: If `runinfo_index_len` or `runinfo_read_len` are negative, or if 
+                the calculated difference (`n_value`) is negative.
         """
-        output_file = output_file_name + ".csv"
-        # Open the output file
-        with open(output_file, "w", encoding="ASCII") as f:
-            # Write the Header section
-            if header_dict:
-                f.write("[Header]\n")
-                for key, value in header_dict.items():
-                    f.write(f"{key},{value}\n")
+        # Check that input_string is a string
+        if not isinstance(index_str, str):
+            raise TypeError("The index value must be a string.")
 
-            # Write the Reads section
-            if reads_dict:
-                f.write("\n[Reads]\n")
-                for key, value in reads_dict.items():
-                    f.write(f"{key},{value}\n")
+        # Check that input_integer and y_value are integers
+        if not isinstance(runinfo_index_len, int):
+            raise TypeError("The runinfo index length must be an integer.")
+        if not isinstance(runinfo_read_len, int):
+            raise TypeError("The runinfo read length must be an integer.")
 
-            # Write the Sample section
-            if samples_dict:
-                f.write("\n[Data]\n")
-                # Collect all unique column headers from samples_dict
-                headers = set()
-                for sample_info in samples_dict.values():
-                    headers.update(sample_info.keys())
+        if index_str == "" or index_str is None:
+            raise TypeError("The index value cannot be empty or None.")
 
-                # Write the column headers to the file
-                headers = sorted(headers)
-                f.write(",".join(headers) + "\n")
+        # Check for a non-negative input_integer and y_value
+        if runinfo_index_len < 0:
+            raise TypeError(f"The {runinfo_index_len} input must be non-negative.")
+        if runinfo_read_len < 0:
+            raise TypeError(f"The {runinfo_read_len} value must be non-negative.")
 
-                # Write each sample's data
-                for sample_id, sample_info in samples_dict.items():  # pylint: disable=unused-variable
-                    f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+        # Calculate the difference: input_integer - str_length
+        str_length = len(index_str)
+        n_value = runinfo_index_len - str_length
 
-    def convert_to_bcl_compliant(self, input_csv_file, output_file_name: str, bcl_settings_dict: dict, bcl_data_dict: dict):
-        """
-        Convert a given samplesheet CSV to a BCL Convert v2-compliant samplesheet,
-        adding [BCLConvert_Settings] and [BCLConvert_Data] sections at the bottom from provided dictionaries.
+        # Format the overridecycle string
+        overridecycle_string = f"Y{runinfo_read_len};I{str_length}N{n_value};I{str_length}N{n_value};Y{runinfo_read_len},"
 
-        Args:
-            input_csv_file (str): The path to the input CSV file.
-            output_file_name (str): The base name of the output CSV file to be generated (without the ".csv" extension).
-            bcl_settings_dict (dict): A dictionary containing BCL settings to be included in the output.
-            bcl_data_dict (dict): A dictionary containing BCL data to be included in the output.
+        return overridecycle_string
 
-        Returns:
-            None: The method writes a BCL Convert v2-compliant samplesheet CSV file.
-        """
-        output_file = output_file_name + ".csv"
+    # def dict_to_illumina_v2_csv(self, header_dict: dict, reads_dict: dict, samples_dict: dict, output_file_name: str):
+    #     """
+    #     Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
 
-        if not os.path.isfile(input_csv_file):
-            raise FileNotFoundError(f"'{input_csv_file}' does not exist.")
+    #     This method takes three dictionaries (`header_dict`, `reads_dict`, and `samples_dict`), and writes
+    #     their contents into a CSV file. The output CSV file is structured with sections for headers, settings,
+    #     and sample data, where each dictionary corresponds to a different section in the file.
 
-        # Open the input CSV and the final output file
-        with open(input_csv_file, "r", encoding="ASCII") as infile, open(output_file, "w", encoding="ASCII") as outfile:
-            # Step 1: Copy existing content from the input CSV
-            for line in infile:
-                outfile.write(line)
+    #     Args:
+    #         header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
+    #         reads_dict (dict): A dictionary containing reads data.
+    #         samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
+    #         output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
 
-            # Add the [BCLConvert_Settings] section at the bottom
-            if bcl_settings_dict:
-                outfile.write("\n[BCLConvert_Settings]\n")
-                for key, value in bcl_settings_dict.items():
-                    outfile.write(f"{key},{value}\n")
+    #     Returns:
+    #         None: The method writes data to a CSV file and does not return anything.
 
-            # Add the [BCLConvert_Data] section after the settings at the bottom
-            if bcl_data_dict:
-                outfile.write("\n[BCLConvert_Data]\n")
-                # Collect all unique column headers from samples_dict
-                headers = set()
-                for sample_info in bcl_data_dict.values():
-                    headers.update(sample_info.keys())
+    #     Raises:
+    #         IOError: If there is an error writing to the file.
+    #     """
+    #     output_file = output_file_name + ".csv"
+    #     # Open the output file
+    #     with open(output_file, "w", encoding="ASCII") as f:
+    #         # Write the Header section
+    #         if header_dict:
+    #             f.write("[Header]\n")
+    #             for key, value in header_dict.items():
+    #                 f.write(f"{key},{value}\n")
 
-                # Write the column headers to the file
-                headers = sorted(headers)
-                outfile.write(",".join(headers) + "\n")
+    #         # Write the Reads section
+    #         if reads_dict:
+    #             f.write("\n[Reads]\n")
+    #             for key, value in reads_dict.items():
+    #                 f.write(f"{key},{value}\n")
 
-                # Write each sample's data
-                for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
-                    outfile.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+    #         # Write the Sample section
+    #         if samples_dict:
+    #             f.write("\n[Data]\n")
+    #             # Collect all unique column headers from samples_dict
+    #             headers = set()
+    #             for sample_info in samples_dict.values():
+    #                 headers.update(sample_info.keys())
 
-    def create_bcl_v2_sample_sheet(
-        self, output_file_name: str, header_dict: dict, reads_dict: dict, samples_dict: dict, bcl_settings_dict: dict, bcl_data_dict: dict
-    ):
-        """
-        Create a BCL Convert v2-compliant sample sheet from provided dictionaries.
+    #             # Write the column headers to the file
+    #             headers = sorted(headers)
+    #             f.write(",".join(headers) + "\n")
 
-        Args:
-            output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
-            header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
-            reads_dict (dict): A dictionary containing reads data.
-            samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
-            bcl_settings_dict (dict): A dictionary containing BCL settings data.
-            bcl_data_dict (dict): A dictionary containing BCL data.
+    #             # Write each sample's data
+    #             for sample_id, sample_info in samples_dict.items():  # pylint: disable=unused-variable
+    #                 f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
 
-        Returns:
-            None: The method writes data to a CSV file.
-        """
+    # def convert_to_bcl_compliant(self, input_csv_file, output_file_name: str, bcl_settings_dict: dict, bcl_data_dict: dict):
+    #     """
+    #     Convert a given samplesheet CSV to a BCL Convert v2-compliant samplesheet,
+    #     adding [BCLConvert_Settings] and [BCLConvert_Data] sections at the bottom from provided dictionaries.
 
-        # Step 1: Generate initial CSV using dict_to_illumina_v2_csv
-        illumina_file_name = output_file_name + "_illumina"  # General Illumina samplesheet
-        self.dict_to_illumina_v2_csv(header_dict, reads_dict, samples_dict, illumina_file_name)
+    #     Args:
+    #         input_csv_file (str): The path to the input CSV file.
+    #         output_file_name (str): The base name of the output CSV file to be generated (without the ".csv" extension).
+    #         bcl_settings_dict (dict): A dictionary containing BCL settings to be included in the output.
+    #         bcl_data_dict (dict): A dictionary containing BCL data to be included in the output.
 
-        # Step 2: Convert the temporary CSV to BCL compliant format
-        bclconvert_file_name = output_file_name + "_bclconvert"
-        self.convert_to_bcl_compliant(illumina_file_name + ".csv", bclconvert_file_name, bcl_settings_dict, bcl_data_dict)
+    #     Returns:
+    #         None: The method writes a BCL Convert v2-compliant samplesheet CSV file.
+    #     """
+    #     output_file = output_file_name + ".csv"
+
+    #     if not os.path.isfile(input_csv_file):
+    #         raise FileNotFoundError(f"'{input_csv_file}' does not exist.")
+
+    #     # Open the input CSV and the final output file
+    #     with open(input_csv_file, "r", encoding="ASCII") as infile, open(output_file, "w", encoding="ASCII") as outfile:
+    #         # Step 1: Copy existing content from the input CSV
+    #         for line in infile:
+    #             outfile.write(line)
+
+    #         # Add the [BCLConvert_Settings] section at the bottom
+    #         if bcl_settings_dict:
+    #             outfile.write("\n[BCLConvert_Settings]\n")
+    #             for key, value in bcl_settings_dict.items():
+    #                 outfile.write(f"{key},{value}\n")
+
+    #         # Add the [BCLConvert_Data] section after the settings at the bottom
+    #         if bcl_data_dict:
+    #             outfile.write("\n[BCLConvert_Data]\n")
+    #             # Collect all unique column headers from samples_dict
+    #             headers = set()
+    #             for sample_info in bcl_data_dict.values():
+    #                 headers.update(sample_info.keys())
+
+    #             # Write the column headers to the file
+    #             headers = sorted(headers)
+    #             outfile.write(",".join(headers) + "\n")
+
+    #             # Write each sample's data
+    #             for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
+    #                 outfile.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+
+    # def create_bcl_v2_sample_sheet(
+    #     self, output_file_name: str, header_dict: dict, reads_dict: dict, samples_dict: dict, bcl_settings_dict: dict, bcl_data_dict: dict
+    # ):
+    #     """
+    #     Create a BCL Convert v2-compliant sample sheet from provided dictionaries.
+
+    #     Args:
+    #         output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
+    #         header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
+    #         reads_dict (dict): A dictionary containing reads data.
+    #         samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
+    #         bcl_settings_dict (dict): A dictionary containing BCL settings data.
+    #         bcl_data_dict (dict): A dictionary containing BCL data.
+
+    #     Returns:
+    #         None: The method writes data to a CSV file.
+    #     """
+
+    #     # Step 1: Generate initial CSV using dict_to_illumina_v2_csv
+    #     illumina_file_name = output_file_name + "_illumina"  # General Illumina samplesheet
+    #     self.dict_to_illumina_v2_csv(header_dict, reads_dict, samples_dict, illumina_file_name)
+
+    #     # Step 2: Convert the temporary CSV to BCL compliant format
+    #     bclconvert_file_name = output_file_name + "_bclconvert"
+    #     self.convert_to_bcl_compliant(illumina_file_name + ".csv", bclconvert_file_name, bcl_settings_dict, bcl_data_dict)
 
     def generate_bcl_samplesheet(
         self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_name: str = "samplesheet"
@@ -495,6 +552,20 @@ class IlluminaUtils:
                 # Write each sample's data
                 for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
                     f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
+
+    def generate_bcl_samplesheet_from_runid_xml(self, runid: str, xml_file, output_file_name: str = "samplesheet"):
+
+        # Collect sample info
+        cl = ClarityHelperLims()
+        sample_info = cl.collect_samplesheet_info(runid)
+        bcl_data_dict = cl.reformat_barcode_to_index(sample_info)
+
+        # Extract relevant info from the xml file
+        xml_info = self.merge_runinfo_dict_fromfile(xml_file)
+        print(xml_info)
+
+        # last step
+        # self.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
 
     # def extract_top_unknown_barcode_from_html(self, html_file) -> str:
     #     """

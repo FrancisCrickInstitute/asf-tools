@@ -31,6 +31,8 @@ Has minimal filtering/processing of the output.
 __Run ID__ can be extracted in 2 ways, depending on the input:
 - _RunInfo.xml_ file -> `extract_illumina_runid_fromxml` function in `illumina/illumina_utils.py`
 - _path_ to the raw data -> `extract_illumina_runid_frompath` function, also in `illumina/illumina_utils.py`
+__BCL Convert__ related functionalities
+- _`generate_overridecycle_string`_ -> function in `illumina/illumina_utils.py`, useful when index length is smaller than specified in the RunInfo.xml file. Assumes that: index_length < runinfo_specified_length.
 
 # Running pipelines
 - __main.py__ <br>
