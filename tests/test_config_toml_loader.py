@@ -5,10 +5,13 @@ Tests for the toml_loader module.
 # pylint: disable=missing-function-docstring,missing-class-docstring
 
 import os
-import toml
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
+
+import toml
+
 from asf_tools.config.toml_loader import load_toml_file
+
 
 class TestTomlLoader(unittest.TestCase):
 
