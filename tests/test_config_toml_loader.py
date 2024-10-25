@@ -24,7 +24,7 @@ class TestTomlLoader(unittest.TestCase):
     def test_load_toml_file_with_file_name(self):
         mock_data = {"key": "value"}
         home_dir = os.path.expanduser("~")
-        file_path = os.path.join(home_dir, "crick.toml")
+        # file_path = os.path.join(home_dir, "crick.toml")
         with patch("builtins.open", mock_open(read_data=toml.dumps(mock_data))):
             with patch("os.path.expanduser", return_value=home_dir):
                 result = load_toml_file()
