@@ -31,5 +31,5 @@ def load_toml_file(file_path: str = None, file_name="crick.toml") -> dict:
         resolved_path = os.path.join(home_dir, file_name)
 
     # load the toml file
-    with open(file_path, "r", encoding="UTF-8") as file:
+    with open(resolved_path, "r", encoding="UTF-8") as file:
         return toml.load(file)
