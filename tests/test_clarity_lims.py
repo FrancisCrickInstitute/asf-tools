@@ -37,6 +37,15 @@ class TestClarity(unittest.TestCase):
     def setUp(self):
         self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
+    def test_clarity_missing_credentials(self):
+        """
+        Test missing credentials
+        """
+
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            ClarityLimsMock(credentials_path="fake_file.toml")
+
     def test_clarity_api_load_credentials_valid(self):
         """
         Test credentials load properly from toml

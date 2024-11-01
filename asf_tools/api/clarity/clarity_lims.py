@@ -66,6 +66,10 @@ class ClarityLims:
             home_dir = os.path.expanduser("~")
             resolved_cred_path = os.path.join(home_dir, ".clarityrc")
 
+        # Raise error if credentials file is not found
+        if not os.path.exists(resolved_cred_path):
+            raise FileNotFoundError(f"{resolved_cred_path} not found.")
+
         # Try to load credentials from home folder
         if os.path.exists(resolved_cred_path):
             logging.debug(f"Loading credentials from {resolved_cred_path}")
