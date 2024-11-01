@@ -59,6 +59,47 @@ class ClarityHelperLims(ClarityLims):
         run_artifacts = run_containers.placements
         return run_artifacts
 
+    def get_lane_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a dictionary mapping artifact URIs to lane information for a given run ID.
+
+        This method checks if the specified run ID exists within the Clarity system
+        and retrieves the associated artifact placements. Each placement entry's lane
+        information is extracted from the 'value' field: if a colon (:) is present, only
+        the part before the colon is kept; otherwise, the full value is returned as-is.
+
+        Args:
+            run_id (str): The unique identifier for the run whose artifact placements
+                        are to be retrieved.
+
+        Returns:
+            dict: A dictionary where each key is an artifact URI, and the value is
+                another dictionary with a 'lane' key, containing either the lane ID
+                or the full value if no colon is present.
+
+        Raises:
+            ValueError: If the provided run_id is None or empty.
+            KeyError: If the specified run_id does not exist in the Clarity system.
+        """
+        if run_id is None:
+            raise ValueError("run_id is None")
+
+        # Check that the run ID exists in clarity
+        run_containers = self.get_containers(name=run_id)
+        if run_containers is None:
+            raise KeyError("run_id does not exist")
+
+        # placement_list = run_containers.placements
+        # lane_artifacts = {}
+        # # Extract lane value and assign it to the corresponding artifact
+        # for entry in placement_list:
+        #     lane = entry.value.split(":")[0]
+        #     lane_artifacts[entry.uri] = { "lane" : lane}
+        lane_artifacts = {
+            entry.uri: {"lane": entry.value.split(":")[0] if ":" in entry.value else entry.value} for entry in run_containers.placements
+        }
+        return lane_artifacts
+
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
         """
         Retrieve a list of unique samples from a given list of artifacts.
@@ -110,7 +151,6 @@ class ClarityHelperLims(ClarityLims):
                 - project_type (str or None): The project type associated with the sample.
                 - reference_genome (str or None): The reference genome associated with the sample.
                 - data_analysis_type (str or None): The data analysis pipeline associated with the sample.
-
 
         Raises:
             ValueError: If the provided sample is None.

@@ -311,32 +311,31 @@ class IlluminaUtils:
 
         return merged_result
 
-    def generate_overridecycle_string(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int) -> str:
+    def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
-        Generates an override cycle string based on specified index and read lengths.
+        Calculates and validates override cycle values based on index length and read length.
 
-        This method constructs a formatted override cycle string for sequencing, using 
-        provided lengths for the sequencing run's index and read. The output string 
-        follows a set format that includes the read length, index string length, and 
-        the difference between the specified index length and the actual length of the 
-        provided index string.
+        This method verifies the types and values of the input parameters, ensuring they meet expected
+        conditions, and then calculates key values needed for sequencing override cycles. Specifically, it 
+        computes the length of the provided index string, the difference between the expected index length 
+        and the actual length, and returns these along with the read length. 
 
         Args:
-            index_str (str): The sequencing index string for which length will be calculated.
+            index_str (str): The sequencing index string whose length is calculated.
             runinfo_index_len (int): The expected index length for the sequencing run.
             runinfo_read_len (int): The total read length specified in the sequencing run.
 
         Returns:
-            str: A formatted string representing sequencing cycles in the format 
-                "Y{runinfo_read_len};I{index_length}N{n_value};I{index_length}N{n_value};Y{runinfo_read_len},"
-                where `index_length` is the length of `index_str`, and `n_value` is the 
-                difference between `runinfo_index_len` and `index_length`.
+            tuple: A tuple containing:
+                - str_length (int): The length of the `index_str`.
+                - diff_value (int): The difference between `runinfo_index_len` and `str_length`.
+                - runinfo_read_len (int): The provided read length for the sequencing run.
 
         Raises:
-            TypeError: If `index_str` is not a string, `runinfo_index_len` or `runinfo_read_len` are 
-                not integers, or if `index_str` is empty or None.
-            ValueError: If `runinfo_index_len` or `runinfo_read_len` are negative, or if 
-                the calculated difference (`n_value`) is negative.
+            TypeError: If `index_str` is not a string, or if `runinfo_index_len` and `runinfo_read_len`
+                are not integers.
+            ValueError: If `index_str` is empty or None, if `runinfo_index_len` or `runinfo_read_len` 
+                are negative, or if `diff_value` (i.e., `runinfo_index_len - len(index_str)`) is negative.
         """
         # Check that input_string is a string
         if not isinstance(index_str, str):
@@ -359,10 +358,52 @@ class IlluminaUtils:
 
         # Calculate the difference: input_integer - str_length
         str_length = len(index_str)
-        n_value = runinfo_index_len - str_length
+        diff_value = runinfo_index_len - str_length
 
-        # Format the overridecycle string
-        overridecycle_string = f"Y{runinfo_read_len};I{str_length}N{n_value};I{str_length}N{n_value};Y{runinfo_read_len},"
+        if diff_value < 0:
+            raise ValueError(f"Expected index length {runinfo_index_len} should be longer than index length {str_length}.")
+
+        return str_length, diff_value, runinfo_read_len
+
+    def generate_overridecycle_string(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int, index2_str: str = None, runinfo_index2_len: int = None, runinfo_read2_len: int = None) -> str:
+        """
+        Constructs a formatted override cycle string based on specified index and read lengths.
+
+        This method calculates override cycle values for sequencing by calling `calculate_overridecycle_values`
+        for one or two sets of provided index strings and lengths, and formats them into a single sequencing 
+        override cycle string.
+
+        Args:
+            index_str (str): The primary sequencing index string to measure for length and compute a difference value.
+            runinfo_index_len (int): Expected length for the primary index string.
+            runinfo_read_len (int): The total read length for the primary index.
+            index2_str (str, optional): A secondary sequencing index string. Default is None.
+            runinfo_index2_len (int, optional): Expected length for the secondary index string. Default is None.
+            runinfo_read2_len (int, optional): The total read length for the secondary index. Default is None.
+
+        Returns:
+            str: A formatted override cycle string for sequencing. If both sets of inputs are provided:
+                "Y{runinfo_read_len};N{runinfo_index_len_diff}I{index_str_len};I{index_str2_len}N{runinfo_index2_len_diff};Y{runinfo_read2_len}".
+                If only the first set is provided: "N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}".
+
+        Raises:
+            ValueError: If only a partial set of secondary parameters is provided, or if the primary or secondary 
+                input lengths and read lengths are invalid, raising errors as managed by `calculate_overridecycle_values`.
+        """
+        # Compute values for the first set of inputs
+        index_str_len, runinfo_index_len_diff, runinfo_read_len = self.calculate_overridecycle_values(index_str, runinfo_index_len, runinfo_read_len)
+        overridecycle_string = ""
+
+        # Check if a second set of parameters is provided
+        # if index_str2 and runinfo_index_len2 and runinfo_read_len2:
+        if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
+            # Compute values for the second set of inputs
+            index_str2_len, runinfo_index2_len_diff, runinfo_read2_len = self.calculate_overridecycle_values(index2_str, runinfo_index2_len, runinfo_read2_len)
+            # Return the full output format with both sets
+            overridecycle_string = f"Y{runinfo_read_len};N{runinfo_index_len_diff}I{index_str_len};I{index_str2_len}N{runinfo_index2_len_diff};Y{runinfo_read2_len}"
+        elif index2_str is None and runinfo_index2_len is None and runinfo_read2_len is None:
+            # Return the simplified format if only one string is provided
+            overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
 
         return overridecycle_string
 
