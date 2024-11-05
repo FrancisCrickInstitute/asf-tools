@@ -256,7 +256,7 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert filtered_info == expected_dict
 
-    def test_generate_overridecycle_string_indexnone(self):
+    def test_calculate_overridecycle_values_indexnone(self):
         """
         Pass empty target string to method
         """
@@ -266,11 +266,11 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("", 10, 8)
+            iu.calculate_overridecycle_values("", 10, 8)
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string(None, 10, 8)
+            iu.calculate_overridecycle_values(None, 10, 8)
 
-    def test_generate_overridecycle_string_integernone(self):
+    def test_calculate_overridecycle_values_integernone(self):
         """
         Pass empty integer value to method
         """
@@ -280,13 +280,13 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("Value", None, 8)
+            iu.calculate_overridecycle_values("Value", None, 8)
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("Value", 10, None)
+            iu.calculate_overridecycle_values("Value", 10, None)
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("Value", 10)
+            iu.calculate_overridecycle_values("Value", 10)
 
-    def test_generate_overridecycle_string_negativeinteger(self):
+    def test_calculate_overridecycle_values_negativeinteger(self):
         """
         Pass a negative integer to method
         """
@@ -296,19 +296,46 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("Value", 10, -8)
+            iu.calculate_overridecycle_values("Value", 10, -8)
 
         with self.assertRaises(TypeError):
-            iu.generate_overridecycle_string("Value", -10, 8)
+            iu.calculate_overridecycle_values("Value", -10, 8)
 
-    def test_generate_overridecycle_string_isvalid(self):
+    def test_calculate_overridecycle_values_negativedifference(self):
+        """
+        Pass a negative integer to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.calculate_overridecycle_values("Value", 1, 8)
+
+    def test_generate_overridecycle_string_dualindex_isvalid(self):
         """
         Pass valid inputs to method
         """
 
         # Set up
         iu = IlluminaUtils()
-        expected = "Y151;I8N2;I8N2;Y151,"
+        expected = "Y151;I8N2;I8N2;Y151"
+
+        # Test
+        result = iu.generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcc", 10, 151)
+
+        # Assert
+        assert result == expected
+
+    def test_generate_overridecycle_string_singleindex_isvalid(self):
+        """
+        Pass valid inputs to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        expected = "N10Y151;I8;N10Y151"
 
         # Test
         result = iu.generate_overridecycle_string("AATTCCGG", 10, 151)
