@@ -176,6 +176,7 @@ class ClarityLims:
         """
         # Try to call api
         try:
+            log.debug(f"GET: {uri}")
             response = self.request_session.get(
                 uri, params=params, auth=(self.username, self.password), headers={"accept": "application/xml"}, timeout=self.API_TIMEOUT
             )
