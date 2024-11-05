@@ -311,6 +311,103 @@ class IlluminaUtils:
 
         return merged_result
 
+    def reformat_barcode(self, samplesheet_dict: dict) -> dict:
+        """
+        Extracts and formats barcode sequences from a sample dictionary.
+
+        This function processes an input dictionary of samples by extracting the barcode sequences from
+        the "barcode" field of each sample. If a barcode contains a hyphen ("-"), the sequence is split
+        into two strings. The resulting dictionary maps each sample key to a dictionary of
+        index-barcode pairs, with single barcodes stored under 'index' and split barcodes under 'index' and 'index2'.
+
+        Args:
+            samples_dict (dict): Dictionary containing sample data with a "barcode" field in each sample.
+
+        Returns:
+            dict: A dictionary where each key is a sample identifier and the value is a dictionary with:
+                - "index": First part of the barcode string
+                - "index2" (optional): Second part of the barcode string if a hyphen is present.
+
+        Example:
+            Input:
+                {
+                    "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
+                    "Sample2": {"barcode": "BC02 (GTTCTT-CTGTGGGGAATACGAGT)"}
+                }
+
+            Output:
+                {
+                    "Sample1": {"index": "AAGAAAGTTGTCGGTGTCTTTGTG"},
+                    "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAATACGAGT"}
+                }
+        """
+        # Initialize an empty dictionary to store the samples and their reformatted barcodes
+        sample_index_dict = {}
+
+        for sample, details in samplesheet_dict.items():
+            barcode_info = details["barcode"]
+            # Extract the barcode sequence within parentheses
+            barcode_sequence = barcode_info.split("(")[1].split(")")[0]
+
+            if "-" in barcode_sequence:
+                # Split barcode into two parts if hyphen is present
+                index1, index2 = barcode_sequence.split("-")
+                sample_index_dict[sample] = {"index": index1, "index2": index2}
+            else:
+                # If no hyphen, keep as a single index
+                sample_index_dict[sample] = {"index": barcode_sequence}
+
+        return sample_index_dict
+
+    def split_samples_by_index_length(self, sample_index_dict: dict) -> list:
+        """
+        Splits samples from a dictionary into groups based on the length of 'index' and 'index2'.
+
+        This function takes a dictionary where each key is a sample ID and each value is another
+        dictionary containing 'index' and optionally 'index2'. It determines the length of each
+        'index' and 'index2' (if present), and groups the samples based on these lengths.
+
+        Args:
+            data (dict): Dictionary where keys are sample IDs and values are dictionaries
+                        containing 'index' and optionally 'index2' keys.
+
+        Returns:
+            list of dict: A list of dictionaries, each containing:
+                        - 'index_length': tuple representing (index_length, index2_length),
+                        - 'samples': list of sample IDs with that index length combination.
+
+        Raises:
+            KeyError: If 'index' is missing from any sample's data.
+        """
+        # Initialize a an empty dictionary to store samples by (index_length, index2_length) group
+        result_dict = {}
+
+        for sample_id, indices in sample_index_dict.items():
+            # Ensure 'index' value is present
+            if 'index' not in indices:
+                raise KeyError(f"Index value for '{sample_id}' is missing.")
+
+            # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
+            index_length = len(indices['index'])
+            index2_length = len(indices.get('index2', ""))
+
+            # Create a tuple representing the (index_length, index2_length)
+            length_tuple = (index_length, index2_length)
+
+            # Add the sample ID to the appropriate group in the result dictionary
+            if length_tuple not in result_dict:
+                result_dict[length_tuple] = []
+            result_dict[length_tuple].append(sample_id)
+
+        # Convert the result_dict to the required list of dictionaries format
+        result = [
+            {'index_length': length_tuple, 'samples': sample_ids}
+            for length_tuple, sample_ids in result_dict.items()
+        ]
+
+        return result
+
+
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
         Calculates and validates override cycle values based on index length and read length.
@@ -395,12 +492,12 @@ class IlluminaUtils:
         overridecycle_string = ""
 
         # Check if a second set of parameters is provided
-        # if index_str2 and runinfo_index_len2 and runinfo_read_len2:
-        if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
+        if index2_str and runinfo_index2_len and runinfo_read2_len:
+        # if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
             # Compute values for the second set of inputs
             index_str2_len, runinfo_index2_len_diff, runinfo_read2_len = self.calculate_overridecycle_values(index2_str, runinfo_index2_len, runinfo_read2_len)
             # Return the full output format with both sets
-            overridecycle_string = f"Y{runinfo_read_len};N{runinfo_index_len_diff}I{index_str_len};I{index_str2_len}N{runinfo_index2_len_diff};Y{runinfo_read2_len}"
+            overridecycle_string = f"Y{runinfo_read_len};I{index_str2_len}N{runinfo_index2_len_diff};I{index_str_len}N{runinfo_index_len_diff};Y{runinfo_read2_len}"
         elif index2_str is None and runinfo_index2_len is None and runinfo_read2_len is None:
             # Return the simplified format if only one string is provided
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
