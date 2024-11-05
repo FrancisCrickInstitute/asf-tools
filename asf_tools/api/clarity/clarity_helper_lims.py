@@ -119,7 +119,7 @@ class ClarityHelperLims(ClarityLims):
 
         """
         if sample is None:
-            raise ValueError("sample is None")
+            return None
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
@@ -207,7 +207,10 @@ class ClarityHelperLims(ClarityLims):
         sample_info = {}
         for sample_id in sample_list:
             info = self.get_sample_info(sample_id.id)
-            sample_info.update(info)
+            if info is None:
+                pass
+            else:
+                sample_info.update(info)
         return sample_info
 
     def get_sample_barcode_from_runid(self, run_id: str) -> dict:

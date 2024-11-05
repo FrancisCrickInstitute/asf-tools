@@ -79,9 +79,11 @@ class TestClarityHelperLims(unittest.TestCase):
         Pass None to method
         """
 
-        # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_sample_info(None)
+        # Test
+        results = self.api.get_sample_info(None)
+
+        # Assert
+        assert results is None
 
     def test_clarity_helper_get_sample_barcode_from_runid_isnone(self):
         """
