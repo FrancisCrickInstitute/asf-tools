@@ -171,7 +171,7 @@ class TestClarityWithFixtures:
             ("researchers.xml", "res:researchers", "researcher", ResearcherStub, 82),
         ],
     )
-    def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
+    def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
         """
@@ -203,7 +203,7 @@ class TestClarityWithFixtures:
             ("queue_step.xml", "que:queue", QueueStep, "60"),
         ],
     )
-    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
+    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
         """

@@ -215,7 +215,7 @@ def gen_demux_run(ctx,  # pylint: disable=W0613
                       use_api,
                       contains,
                       samplesheet_only,
-                      nextflow_version):
+                      nextflow_version):  # pylint: disable=too-many-positional-arguments
     """
     Create run directory for the ONT demux pipeline
     """
@@ -281,7 +281,7 @@ def deliver_to_targets(
     source_dir,
     target_dir,
     host_delivery_folder,
-    interactive,):
+    interactive,):  # pylint: disable=too-many-positional-arguments
     """
     Symlinks demux outputs to the user directory
     """
