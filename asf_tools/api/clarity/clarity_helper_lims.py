@@ -6,7 +6,7 @@ import logging
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sample
+from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
 
 log = logging.getLogger(__name__)
