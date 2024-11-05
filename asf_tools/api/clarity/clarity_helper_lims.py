@@ -89,15 +89,15 @@ class ClarityHelperLims(ClarityLims):
         if run_containers is None:
             raise KeyError("run_id does not exist")
 
-        # placement_list = run_containers.placements
-        # lane_artifacts = {}
-        # # Extract lane value and assign it to the corresponding artifact
-        # for entry in placement_list:
-        #     lane = entry.value.split(":")[0]
-        #     lane_artifacts[entry.uri] = { "lane" : lane}
-        lane_artifacts = {
-            entry.uri: {"lane": entry.value.split(":")[0] if ":" in entry.value else entry.value} for entry in run_containers.placements
-        }
+        placement_list = run_containers.placements
+        lane_artifacts = {}
+        # Extract lane value and assign it to the corresponding artifact
+        for entry in placement_list:
+            lane = entry.value.split(":")[0]
+            lane_artifacts[entry.uri] = { "lane" : lane}
+        # lane_artifacts = {
+        #     entry.uri: {"lane": entry.value.split(":")[0] if ":" in entry.value else entry.value} for entry in run_containers.placements
+        # }
         return lane_artifacts
 
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
@@ -124,8 +124,14 @@ class ClarityHelperLims(ClarityLims):
         sample_list = []
         values = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         for value_item in values:
+            # print(value_item)
             run_samples = value_item.samples
-            sample_list.extend(run_samples)
+            if value_item.location:
+                lane = value_item.location.value.split(":")[0]
+                sample_list.extend(run_samples)
+                sample_list.extend(lane)
+            else:
+                sample_list.extend(run_samples)
 
         # Make the entries in sample_list unique
         unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())

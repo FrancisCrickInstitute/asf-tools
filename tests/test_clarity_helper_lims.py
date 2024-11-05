@@ -2,6 +2,7 @@
 Clarity helper API Tests
 """
 
+import csv
 import os
 import unittest
 import warnings
@@ -53,6 +54,42 @@ class TestClarityHelperLims(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(KeyError):
             self.api.get_artifacts_from_runid(runid)
+
+    def test_clarity_helper_get_lane_from_runid_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.get_lane_from_runid(None)
+
+        # results = self.api.get_lane_from_runid("HWNT7BBXY")
+        # print(results)
+    
+    def test_clarity_helper_get_lane_from_runid_isinvalid(self):
+        """
+        Pass an invalid run_id to method
+        """
+
+        # Test and Assert
+        with self.assertRaises(KeyError):
+            self.api.get_lane_from_runid("Fake_runid")
+
+    def test_clarity_helper_get_lane_from_runid_isvalid(self):
+        """
+        Pass None to method
+        """
+
+        # Setup
+        expected = {'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229': {'lane': '1'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230': {'lane': '2'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231': {'lane': '3'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232': {'lane': '4'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233': {'lane': '5'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234': {'lane': '6'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235': {'lane': '7'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236': {'lane': '8'}}
+
+        # Test
+        results = self.api.get_lane_from_runid("HWNT7BBXY")
+        # print(results)
+
+        # Assert
+        assert results == expected
 
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
         """
@@ -147,25 +184,26 @@ class TestClarityHelperLims(unittest.TestCase):
     #     Pass real run_id and test expected values in the dictionary output
     #     """
 
-    #     merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
-    # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
-    # Test
-    # with open("bcl_samplesheet_22NWWMLT3.csv", "w",  encoding="UTF-8") as file:
-    #     file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
-    #     for key, value in merged_dict.items():
-    #         # Convert all None values to "" for CSV
-    #         clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
-    #         barcode = "unclassified"
-    #         if "barcode" in value and clean_dict["barcode"] != "":
-    #             barcode = clean_dict["barcode"]
-    #         file.write(
-    #             f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
-    #         )
-    # print(merged_dict)
+        # # merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
+        # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
+        # updated_dict = self.api.reformat_barcode_to_index(merged_dict)
+        # # Test
+        # csv_file = "bcl_samplesheet_22NWYFLT3.csv"
 
-    # Assert
-    # raise ValueError
-    # assert merged_dict == ["no"]
+        # # Open a file for writing
+        # with open(csv_file, mode="w", newline="") as file:
+        #     writer = csv.writer(file)
+
+        #     # Write the header
+        #     writer.writerow(["Sample_ID", "index", "index2"])
+
+        #     # Write the rows
+        #     for sample_id, indexes in updated_dict.items():
+        #         writer.writerow([sample_id, indexes["index"], indexes["index2"]])
+        # Assert
+
+        # results = self.api.get_artifacts_from_runid("20240417_1729_1C_PAW45723_05bb74c5")
+        # raise ValueError
 
 
 class TestClarityHelperLimsyWithFixtures:
@@ -203,9 +241,11 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         get_samples = api.get_samples_from_artifacts(artifact)
+        print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
+        raise ValueError
 
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
