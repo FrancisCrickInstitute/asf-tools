@@ -7,6 +7,7 @@ import io
 import os
 import tempfile
 import unittest
+import warnings
 from datetime import datetime
 from unittest import mock
 from unittest.mock import MagicMock, mock_open, patch
@@ -225,6 +226,54 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert run_info == flowcell_runid
 
+    def test_extract_illumina_runid_frompath(self):
+        """
+        Pass a valid XML file and test expected RunID values from the dictionary output
+        """
+        # Set up
+        iu = IlluminaUtils()
+        path = "./tests/data/illumina/"
+        file = "RunInfo.xml"
+        flowcell_runid = "22MKK5LT3"
+
+        # Test
+        run_info = iu.extract_illumina_runid_frompath(path, file)
+        print(run_info)
+
+        # Assert
+        assert run_info == flowcell_runid
+
+    def test_extract_cycle_fromxml(self):
+        """
+        Pass a valid XML file and test expected NumCycle values from the dictionary output
+        """
+        # Set up
+        iu = IlluminaUtils()
+        file = "./tests/data/illumina/RunInfo.xml"
+        cycle_length = ['151', '10', '10', '151']
+
+        # Test
+        run_info = iu.extract_cycle_fromxml(file)
+
+        # Assert
+        assert run_info == cycle_length
+
+    def test_extract_cycle_frompath(self):
+        """
+        Pass a valid XML file and test expected RunID values from the dictionary output
+        """
+        # Set up
+        iu = IlluminaUtils()
+        path = "./tests/data/illumina/"
+        file = "RunInfo.xml"
+        cycle_length = ['151', '10', '10', '151']
+
+        # Test
+        run_info = iu.extract_cycle_frompath(path, file)
+
+        # Assert
+        assert run_info == cycle_length
+
     def test_merge_runinfo_dict_fromfile(self):
         """
         Pass a valid XML file and test expected values in the dictionary output
@@ -255,6 +304,105 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Assert
         assert filtered_info == expected_dict
+
+    def test_reformat_barcode_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            iu.reformat_barcode(None)
+
+    def test_reformat_barcode_isinvalid(self):
+        """
+        Pass a dict without a "barcode" value to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {"value1": "invalid", "value2": "dictionary"}
+
+        # Test
+        results = iu.reformat_barcode(test_dict)
+
+        # Assert
+        assert results is None
+
+    def test_reformat_barcode_isvalid(self):
+        """
+        Pass a valid dict to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "BC02 (GTTCTT-CTGTGGGGAAT)"}}
+        expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}}
+
+        # Test
+        results = iu.reformat_barcode(test_dict)
+
+        # Assert
+        assert results == expected_output
+
+    def test_split_samples_by_index_length_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            iu.split_samples_by_index_length(None)
+
+    def test_split_samples_by_index_length_isinvalid(self):
+        """
+        Pass a dict without a "barcode" value to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {"value1": "invalid", "value2": "dictionary"}
+
+        # Test
+        results = iu.split_samples_by_index_length(test_dict)
+
+        # Assert
+        assert results == []
+
+        with warnings.catch_warnings(record=True) as warning_list:
+            warnings.simplefilter("always")  # Ensure all warnings are caught
+            iu.split_samples_by_index_length(test_dict)
+        self.assertEqual(len(warning_list), 2)
+
+        # Check each warning message
+        self.assertEqual(str(warning_list[0].message), "Index value for 'value1' not found.")
+        self.assertEqual(str(warning_list[1].message), "Index value for 'value2' not found.")
+
+    def test_split_samples_by_index_length_isvalid(self):
+        """
+        Pass a valid dict to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {
+            "Sample1": {"index": "AAGATAGTGA"},
+            "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGAAT"},
+            "Sample3": {"index": "ATTATT", "index2": "ATGTGGCCTT"},
+        }
+        expected_output = [{"index_length": (10, 0), "samples": ["Sample1"]}, {"index_length": (6, 10), "samples": ["Sample2", "Sample3"]}]
+
+        # Test
+        results = iu.split_samples_by_index_length(test_dict)
+
+        # Assert
+        assert results == expected_output
 
     def test_calculate_overridecycle_values_indexnone(self):
         """

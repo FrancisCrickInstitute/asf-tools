@@ -1,6 +1,6 @@
-import csv
 import os
 import re
+import warnings
 from datetime import datetime
 from enum import Enum
 from xml.parsers.expat import ExpatError
@@ -161,6 +161,54 @@ class IlluminaUtils:
                 runid = self.extract_illumina_runid_fromxml(xml_file)
                 return runid
 
+    def extract_cycle_fromxml(self, runinfo_file) -> str:
+        """
+        Extract the Illumina Cycle length (NumCycles) from an XML RunInfo file.
+
+        This method converts the given XML RunInfo file into a dictionary, then extracts the
+        NumCycles by locating the matching item within the dictionary.
+
+        Args:
+            runinfo_file (str): The path to the XML RunInfo file from which to extract the Run ID.
+
+        Returns:
+            str: The extracted NumCycles from the XML file.
+
+        Raises:
+            ValueError: If the runinfo_file is invalid or does not contain a NumCycles value.
+            TypeError: If the item is not found in the list.
+        """
+        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
+        container_name = self.find_key_recursively(runinfo_dict, "@NumCycles")
+
+        return container_name
+
+    def extract_cycle_frompath(self, path: str, file_name: str) -> str:
+        """
+        Extract the NumCycles value by searching for a specific XML file in a directory path.
+
+        This method traverses the directory structure starting from the given `path`, searching for a file
+        with the specified `file_name`. Once found, it extracts the NumCycles value by parsing
+        the XML file.
+
+        Args:
+            path (str): The root directory to begin the search for the XML file.
+            file_name (str): The name of the XML file to look for in the directory structure.
+
+        Returns:
+            str: The extracted NumCycles from the found XML file.
+
+        Raises:
+            FileNotFoundError: If the specified file is not found within the given path.
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        for dirpath, dirnames, filenames in os.walk(path):  # pylint: disable=unused-variable
+            if file_name in filenames:
+                xml_file = os.path.join(dirpath, file_name)
+                runid = self.extract_cycle_fromxml(xml_file)
+                return runid
+
     def filter_runinfo(self, runinfo_dict: dict) -> dict:
         """
         Filters and restructures information from a RunInfo dictionary.
@@ -315,18 +363,24 @@ class IlluminaUtils:
         """
         Extracts and formats barcode sequences from a sample dictionary.
 
-        This function processes an input dictionary of samples by extracting the barcode sequences from
-        the "barcode" field of each sample. If a barcode contains a hyphen ("-"), the sequence is split
-        into two strings. The resulting dictionary maps each sample key to a dictionary of
-        index-barcode pairs, with single barcodes stored under 'index' and split barcodes under 'index' and 'index2'.
+        This function takes a dictionary of samples, where each sample has associated details including a
+        "barcode" field. It validates the input as a dictionary, then processes each sample's barcode by
+        extracting the sequence within parentheses. If a hyphen ("-") is present in the barcode sequence, it
+        splits the sequence into two parts and stores each part in a separate field.
 
         Args:
-            samples_dict (dict): Dictionary containing sample data with a "barcode" field in each sample.
+            samplesheet_dict (dict): A dictionary containing sample data, where each sample entry may include
+                a "barcode" field.
 
         Returns:
-            dict: A dictionary where each key is a sample identifier and the value is a dictionary with:
-                - "index": First part of the barcode string
-                - "index2" (optional): Second part of the barcode string if a hyphen is present.
+            dict: A dictionary where each key is a sample identifier, and the value is a dictionary containing:
+                - "index" (str): The extracted barcode sequence or the first part of the sequence if a hyphen is present.
+                - "index2" (str, optional): The second part of the barcode sequence if a hyphen is present.
+
+            None: If any sample entry is missing the "barcode" key, returns None.
+
+        Raises:
+            TypeError: If the input `samplesheet_dict` is not a dictionary.
 
         Example:
             Input:
@@ -341,21 +395,28 @@ class IlluminaUtils:
                     "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAATACGAGT"}
                 }
         """
+        # Check that input_string is a string
+        if not isinstance(samplesheet_dict, dict):
+            raise TypeError("The input value must be a dictionary.")
+
         # Initialize an empty dictionary to store the samples and their reformatted barcodes
         sample_index_dict = {}
 
         for sample, details in samplesheet_dict.items():
-            barcode_info = details["barcode"]
-            # Extract the barcode sequence within parentheses
-            barcode_sequence = barcode_info.split("(")[1].split(")")[0]
+            if "barcode" in details:
+                barcode_info = details["barcode"]
+                # Extract the barcode sequence within parentheses
+                barcode_sequence = barcode_info.split("(")[1].split(")")[0]
 
-            if "-" in barcode_sequence:
-                # Split barcode into two parts if hyphen is present
-                index1, index2 = barcode_sequence.split("-")
-                sample_index_dict[sample] = {"index": index1, "index2": index2}
+                if "-" in barcode_sequence:
+                    # Split barcode into two parts if hyphen is present
+                    index1, index2 = barcode_sequence.split("-")
+                    sample_index_dict[sample] = {"index": index1, "index2": index2}
+                else:
+                    # If no hyphen, keep as a single index
+                    sample_index_dict[sample] = {"index": barcode_sequence}
             else:
-                # If no hyphen, keep as a single index
-                sample_index_dict[sample] = {"index": barcode_sequence}
+                return None
 
         return sample_index_dict
 
@@ -379,43 +440,45 @@ class IlluminaUtils:
         Raises:
             KeyError: If 'index' is missing from any sample's data.
         """
+        # Check that input_string is a string
+        if not isinstance(sample_index_dict, dict):
+            raise TypeError("The input value must be a dictionary.")
+
         # Initialize a an empty dictionary to store samples by (index_length, index2_length) group
         result_dict = {}
+        result = []
 
         for sample_id, indices in sample_index_dict.items():
             # Ensure 'index' value is present
-            if 'index' not in indices:
-                raise KeyError(f"Index value for '{sample_id}' is missing.")
+            if "index" not in indices:
+                warnings.warn(f"Index value for '{sample_id}' not found.", UserWarning)
 
-            # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
-            index_length = len(indices['index'])
-            index2_length = len(indices.get('index2', ""))
+            else:
+                # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
+                index_length = len(indices["index"])
+                index2_length = len(indices.get("index2", ""))
 
-            # Create a tuple representing the (index_length, index2_length)
-            length_tuple = (index_length, index2_length)
+                # Create a tuple representing the (index_length, index2_length)
+                length_tuple = (index_length, index2_length)
 
-            # Add the sample ID to the appropriate group in the result dictionary
-            if length_tuple not in result_dict:
-                result_dict[length_tuple] = []
-            result_dict[length_tuple].append(sample_id)
+                # Add the sample ID to the appropriate group in the result dictionary
+                if length_tuple not in result_dict:
+                    result_dict[length_tuple] = []
+                result_dict[length_tuple].append(sample_id)
 
         # Convert the result_dict to the required list of dictionaries format
-        result = [
-            {'index_length': length_tuple, 'samples': sample_ids}
-            for length_tuple, sample_ids in result_dict.items()
-        ]
+        result = [{"index_length": length_tuple, "samples": sample_ids} for length_tuple, sample_ids in result_dict.items()]
 
         return result
-
 
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
         Calculates and validates override cycle values based on index length and read length.
 
         This method verifies the types and values of the input parameters, ensuring they meet expected
-        conditions, and then calculates key values needed for sequencing override cycles. Specifically, it 
-        computes the length of the provided index string, the difference between the expected index length 
-        and the actual length, and returns these along with the read length. 
+        conditions, and then calculates key values needed for sequencing override cycles. Specifically, it
+        computes the length of the provided index string, the difference between the expected index length
+        and the actual length, and returns these along with the read length.
 
         Args:
             index_str (str): The sequencing index string whose length is calculated.
@@ -431,7 +494,7 @@ class IlluminaUtils:
         Raises:
             TypeError: If `index_str` is not a string, or if `runinfo_index_len` and `runinfo_read_len`
                 are not integers.
-            ValueError: If `index_str` is empty or None, if `runinfo_index_len` or `runinfo_read_len` 
+            ValueError: If `index_str` is empty or None, if `runinfo_index_len` or `runinfo_read_len`
                 are negative, or if `diff_value` (i.e., `runinfo_index_len - len(index_str)`) is negative.
         """
         # Check that input_string is a string
@@ -462,12 +525,20 @@ class IlluminaUtils:
 
         return str_length, diff_value, runinfo_read_len
 
-    def generate_overridecycle_string(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int, index2_str: str = None, runinfo_index2_len: int = None, runinfo_read2_len: int = None) -> str:
+    def generate_overridecycle_string(
+        self,
+        index_str: str,
+        runinfo_index_len: int,
+        runinfo_read_len: int,
+        index2_str: str = None,
+        runinfo_index2_len: int = None,
+        runinfo_read2_len: int = None,
+    ) -> str:
         """
         Constructs a formatted override cycle string based on specified index and read lengths.
 
         This method calculates override cycle values for sequencing by calling `calculate_overridecycle_values`
-        for one or two sets of provided index strings and lengths, and formats them into a single sequencing 
+        for one or two sets of provided index strings and lengths, and formats them into a single sequencing
         override cycle string.
 
         Args:
@@ -484,7 +555,7 @@ class IlluminaUtils:
                 If only the first set is provided: "N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}".
 
         Raises:
-            ValueError: If only a partial set of secondary parameters is provided, or if the primary or secondary 
+            ValueError: If only a partial set of secondary parameters is provided, or if the primary or secondary
                 input lengths and read lengths are invalid, raising errors as managed by `calculate_overridecycle_values`.
         """
         # Compute values for the first set of inputs
@@ -493,11 +564,15 @@ class IlluminaUtils:
 
         # Check if a second set of parameters is provided
         if index2_str and runinfo_index2_len and runinfo_read2_len:
-        # if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
+            # if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
             # Compute values for the second set of inputs
-            index_str2_len, runinfo_index2_len_diff, runinfo_read2_len = self.calculate_overridecycle_values(index2_str, runinfo_index2_len, runinfo_read2_len)
+            index_str2_len, runinfo_index2_len_diff, runinfo_read2_len = self.calculate_overridecycle_values(
+                index2_str, runinfo_index2_len, runinfo_read2_len
+            )
             # Return the full output format with both sets
-            overridecycle_string = f"Y{runinfo_read_len};I{index_str2_len}N{runinfo_index2_len_diff};I{index_str_len}N{runinfo_index_len_diff};Y{runinfo_read2_len}"
+            overridecycle_string = (
+                f"Y{runinfo_read_len};I{index_str2_len}N{runinfo_index2_len_diff};I{index_str_len}N{runinfo_index_len_diff};Y{runinfo_read2_len}"
+            )
         elif index2_str is None and runinfo_index2_len is None and runinfo_read2_len is None:
             # Return the simplified format if only one string is provided
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
