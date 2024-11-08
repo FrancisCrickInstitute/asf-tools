@@ -250,7 +250,7 @@ class TestIlluminaUtils(unittest.TestCase):
         # Set up
         iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
-        cycle_length = ['151', '10', '10', '151']
+        cycle_length = ["151", "10", "10", "151"]
 
         # Test
         run_info = iu.extract_cycle_fromxml(file)
@@ -266,7 +266,7 @@ class TestIlluminaUtils(unittest.TestCase):
         iu = IlluminaUtils()
         path = "./tests/data/illumina/"
         file = "RunInfo.xml"
-        cycle_length = ['151', '10', '10', '151']
+        cycle_length = ["151", "10", "10", "151"]
 
         # Test
         run_info = iu.extract_cycle_frompath(path, file)
