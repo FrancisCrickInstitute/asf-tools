@@ -579,6 +579,59 @@ class IlluminaUtils:
 
         return overridecycle_string
 
+    def extract_file_content(self, file_path, section_name):
+        """
+        Extracts content from a text or config file for a given section name,
+        and stores the content into a dictionary where the key-value pairs are
+        separated by the first '=' symbol.
+
+        Args:
+            file_path (str): The path to the text or config file.
+            section_name (str): The section name to extract (e.g., "Header", "BCL_Settings").
+
+        Returns:
+            dict: A dictionary containing the content from the specified section.
+
+        Raises:
+            ValueError: If the specified section is not found in the file.
+        """
+        section_dict = {}
+
+        # Check if the file exists
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"Error: The file {file_path} was not found.")
+
+        # Open the file and read lines
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+
+            # Flag to track if we are inside the target section
+            in_target_section = False
+
+            for line in lines:
+                line = line.strip()
+
+                # Check if the line is a section header (e.g., [Header])
+                if line.startswith("[") and line[1:-1] == section_name:
+                    in_target_section = True
+                    continue  # Skip the section header line
+
+                # Check for the start of another section
+                if line.startswith("[") and in_target_section:
+                    break  # Exit loop when another section is encountered
+
+                # Collect key-value pairs in the target section
+                if in_target_section and line:
+                    if "=" in line:
+                        key, value = line.split("=", 1)
+                        section_dict[key.strip()] = value.strip()
+
+            # Ensure the section was found
+            if not section_dict:
+                warnings.warn(f"{section_name} not found in the file.", UserWarning)
+
+        return section_dict
+
     # def dict_to_illumina_v2_csv(self, header_dict: dict, reads_dict: dict, samples_dict: dict, output_file_name: str):
     #     """
     #     Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
