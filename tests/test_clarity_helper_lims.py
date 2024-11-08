@@ -64,9 +64,6 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.get_lane_from_runid(None)
 
-        # results = self.api.get_lane_from_runid("HWNT7BBXY")
-        # print(results)
-    
     def test_clarity_helper_get_lane_from_runid_isinvalid(self):
         """
         Pass an invalid run_id to method
@@ -82,14 +79,37 @@ class TestClarityHelperLims(unittest.TestCase):
         """
 
         # Setup
-        expected = {'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229': {'lane': '1'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230': {'lane': '2'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231': {'lane': '3'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232': {'lane': '4'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233': {'lane': '5'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234': {'lane': '6'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235': {'lane': '7'}, 'https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236': {'lane': '8'}}
+        expected = {
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229": {"lane": "1"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230": {"lane": "2"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231": {"lane": "3"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232": {"lane": "4"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233": {"lane": "5"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234": {"lane": "6"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235": {"lane": "7"},
+            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236": {
+                "lane": "8",
+                "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],
+            },
+        }
 
         # Test
         results = self.api.get_lane_from_runid("HWNT7BBXY")
-        # print(results)
+        print(results)
 
         # Assert
-        assert results == expected
+        # assert results == expected
+        raise ValueError
 
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
         """
@@ -184,26 +204,26 @@ class TestClarityHelperLims(unittest.TestCase):
     #     Pass real run_id and test expected values in the dictionary output
     #     """
 
-        # # merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
-        # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
-        # updated_dict = self.api.reformat_barcode_to_index(merged_dict)
-        # # Test
-        # csv_file = "bcl_samplesheet_22NWYFLT3.csv"
+    # # merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
+    # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
+    # updated_dict = self.api.reformat_barcode_to_index(merged_dict)
+    # # Test
+    # csv_file = "bcl_samplesheet_22NWYFLT3.csv"
 
-        # # Open a file for writing
-        # with open(csv_file, mode="w", newline="") as file:
-        #     writer = csv.writer(file)
+    # # Open a file for writing
+    # with open(csv_file, mode="w", newline="") as file:
+    #     writer = csv.writer(file)
 
-        #     # Write the header
-        #     writer.writerow(["Sample_ID", "index", "index2"])
+    #     # Write the header
+    #     writer.writerow(["Sample_ID", "index", "index2"])
 
-        #     # Write the rows
-        #     for sample_id, indexes in updated_dict.items():
-        #         writer.writerow([sample_id, indexes["index"], indexes["index2"]])
-        # Assert
+    #     # Write the rows
+    #     for sample_id, indexes in updated_dict.items():
+    #         writer.writerow([sample_id, indexes["index"], indexes["index2"]])
+    # Assert
 
-        # results = self.api.get_artifacts_from_runid("20240417_1729_1C_PAW45723_05bb74c5")
-        # raise ValueError
+    # results = self.api.get_artifacts_from_runid("20240417_1729_1C_PAW45723_05bb74c5")
+    # raise ValueError
 
 
 class TestClarityHelperLimsyWithFixtures:
