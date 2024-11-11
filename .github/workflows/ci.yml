@@ -73,7 +73,7 @@ jobs:
         run: npm install -g editorconfig-checker
 
       - name: Run EditorConfig Checker
-        run: editorconfig-checker --exclude=**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,**/venv/**,**/.tox/**,**/.git/**,**/.github/**,**/.vscode/**,**/.idea/**,**/__pycache__/**,**/*.egg-info/**,**/*.egg/**,**/*.pyc,**/*.pyo,**/*.pyd,**/*.pyi,**/*.pyw,**/*.pyz,**/*.pyw
+        run: editorconfig-checker --exclude '.git/.*'
 
   prettier:
     name: Prettier
