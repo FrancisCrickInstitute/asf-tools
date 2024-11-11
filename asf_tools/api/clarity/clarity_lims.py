@@ -4,7 +4,6 @@ Clarity Lims API Class
 
 import logging
 import os
-import warnings
 from typing import Dict, Optional
 from xml.etree import ElementTree
 
@@ -69,7 +68,7 @@ class ClarityLims:
 
         # Raise error if credentials file is not found
         if not os.path.exists(resolved_cred_path):
-            warnings.warn(f"{resolved_cred_path} not found.", UserWarning)
+            log.warning(f"{resolved_cred_path} not found.", UserWarning)
 
         # Try to load credentials from home folder
         if os.path.exists(resolved_cred_path):
