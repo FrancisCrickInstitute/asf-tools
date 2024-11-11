@@ -3,7 +3,7 @@
 Set app version
 """
 
-from importlib.metadata import PackageNotFoundError, version
+from importlib.metadata import version
 
 
 # Set version from package information
