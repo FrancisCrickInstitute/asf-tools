@@ -68,7 +68,7 @@ jobs:
         run: npm install -g editorconfig-checker
 
       - name: Run EditorConfig Checker
-        run: editorconfig-checker -exclude '.git/*' .
+        run: editorconfig-checker -exclude '.git/*'
 
   prettier:
     name: Prettier
