@@ -64,11 +64,16 @@ jobs:
       - name: Check out source code
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install dependencies
         run: npm install -g editorconfig-checker
 
       - name: Run EditorConfig Checker
-        run: editorconfig-checker
+        run: editorconfig-checker --exclude=**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,**/venv/**,**/.tox/**,**/.git/**,**/.github/**,**/.vscode/**,**/.idea/**,**/__pycache__/**,**/*.egg-info/**,**/*.egg/**,**/*.pyc,**/*.pyo,**/*.pyd,**/*.pyi,**/*.pyw,**/*.pyz,**/*.pyw
 
   prettier:
     name: Prettier
