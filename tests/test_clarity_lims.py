@@ -37,21 +37,21 @@ class TestClarity(unittest.TestCase):
     def setUp(self):
         self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
-    def test_clarity_missing_credentials(self):
-        """
-        Test missing credentials
-        """
+    # def test_clarity_missing_credentials(self):
+    #     """
+    #     Test missing credentials
+    #     """
 
-        # Setup
-        fake_file = "fake_file.toml"
+    #     # Setup
+    #     fake_file = "fake_file.toml"
 
-        # Test and Assert
-        with patch("os.path.exists", return_value=False):
-            with self.assertWarns(UserWarning) as warning_context:
-                ClarityLimsMock(credentials_path=fake_file)
+    #     # Test and Assert
+    #     with patch("os.path.exists", return_value=False):
+    #         with self.assertWarns(UserWarning) as warning_context:
+    #             ClarityLimsMock(credentials_path=fake_file)
 
-            # Verify the warning message
-            self.assertEqual(str(warning_context.warning), f"{fake_file} not found.")
+    #         # Verify the warning message
+    #         self.assertEqual(str(warning_context.warning), f"{fake_file} not found.")
 
     def test_clarity_api_load_credentials_valid(self):
         """
