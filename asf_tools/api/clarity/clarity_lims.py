@@ -68,11 +68,11 @@ class ClarityLims:
 
         # Raise error if credentials file is not found
         if not os.path.exists(resolved_cred_path):
-            log.warning(f"{resolved_cred_path} not found.", UserWarning)
+            log.warning(f"{resolved_cred_path} not found.")
 
         # Try to load credentials from home folder
         if os.path.exists(resolved_cred_path):
-            logging.debug(f"Loading credentials from {resolved_cred_path}")
+            log.debug(f"Loading credentials from {resolved_cred_path}")
             credentials = self.load_credentials(resolved_cred_path)
             self.baseuri = credentials["clarity"]["baseuri"]
             self.username = credentials["clarity"]["username"]
