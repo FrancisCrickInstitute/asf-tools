@@ -37,6 +37,22 @@ class TestClarity(unittest.TestCase):
     def setUp(self):
         self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
+    # def test_clarity_missing_credentials(self):
+    #     """
+    #     Test missing credentials
+    #     """
+
+    #     # Setup
+    #     fake_file = "fake_file.toml"
+
+    #     # Test and Assert
+    #     with patch("os.path.exists", return_value=False):
+    #         with self.assertWarns(UserWarning) as warning_context:
+    #             ClarityLimsMock(credentials_path=fake_file)
+
+    #         # Verify the warning message
+    #         self.assertEqual(str(warning_context.warning), f"{fake_file} not found.")
+
     def test_clarity_api_load_credentials_valid(self):
         """
         Test credentials load properly from toml
@@ -162,7 +178,9 @@ class TestClarityWithFixtures:
             ("researchers.xml", "res:researchers", "researcher", ResearcherStub, 82),
         ],
     )
-    def test_clarity_api_get_single_page_instances(self, api, xml_path, outer_key, inner_key, type_name, expected_num):
+    def test_clarity_api_get_single_page_instances(
+        self, api, xml_path, outer_key, inner_key, type_name, expected_num
+    ):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
         """
@@ -194,7 +212,7 @@ class TestClarityWithFixtures:
             ("queue_step.xml", "que:queue", QueueStep, "60"),
         ],
     )
-    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):
+    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
         """
