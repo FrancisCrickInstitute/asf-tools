@@ -2,6 +2,9 @@
 Tests covering the data_transfer module
 """
 
+import csv
+import os
+import tempfile
 import unittest
 from datetime import datetime
 from xml.parsers.expat import ExpatError
@@ -249,6 +252,16 @@ class TestIlluminaUtils(unittest.TestCase):
 class TestIlluminaUtilsWithFixtures:
     """Class for IlluminaUtils tests with fixtures"""
 
+    @pytest.fixture(scope="function", autouse=True)
+    def temporary_folder(self):
+        """
+        Function-level fixture that creates a temporary folder for each test.
+        """
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            # Attach to the test instance
+            self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
+            yield
+
     @pytest.mark.parametrize(
         "file,expected_dict",
         [
@@ -423,3 +436,205 @@ class TestIlluminaUtilsWithFixtures:
 
         # Assert
         assert merged_dict == expected_merged_dict
+
+    @pytest.mark.parametrize(
+        "header_dict,settings_dict,samples_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
+                },
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_valid(self, header_dict, settings_dict, samples_dict):
+        """
+        Check that the csv file is created and contains the correct data
+        """
+        # Set up
+        iu = IlluminaUtils()
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        assert os.path.exists(output_file_csv)
+
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+
+            # Check the header
+            assert content[0] == ["[Header]"]
+            assert ["IEMFileVersion", "4"] in content
+            assert ["Date", "2024-09-12"] in content
+            assert ["Workflow", "GenerateFASTQ"] in content
+
+            # Check the settings
+            assert ["[Settings]"] in content
+            assert ["Read1Cycles", "151"] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+
+            # Check the sample data
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
+
+    @pytest.mark.parametrize(
+        "settings_dict,samples_dict",
+        [
+            (
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
+                },
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_no_header(self, settings_dict, samples_dict):
+        """
+        Test behavior with an empty header_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        empty_header_dict = {}
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(empty_header_dict, settings_dict, samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure the samples and settings sections are present
+            assert ["[Settings]"] in content
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
+            # Ensure that [Header] section is empty
+            assert ["[Header]"] not in content
+
+    @pytest.mark.parametrize(
+        "header_dict,samples_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {
+                    "sample1": {"Sample_ID": "sample1", "sample_name": "test_sample_1", "index": "A001"},
+                    "sample2": {"Sample_ID": "sample2", "index": "A002", "sample_name": "test_sample_2"},
+                },
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_no_settings(self, header_dict, samples_dict):
+        """
+        Test behavior with an empty settings_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        empty_settings_dict = {}
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(header_dict, empty_settings_dict, samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure the samples and settings sections are present
+            assert ["[Header]"] in content
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", "test_sample_1"]
+            assert content[-1] == ["sample2", "A002", "test_sample_2"]
+            # Ensure that [Settings] section is empty
+            assert ["[Settings]"] not in content
+
+    @pytest.mark.parametrize(
+        "header_dict,settings_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_no_samples(self, header_dict, settings_dict):
+        """
+        Test behavior with an empty samples_dict
+        """
+        # Set up
+        iu = IlluminaUtils()
+        empty_samples_dict = {}
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, empty_samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure the header and settings sections are present
+            assert content[0] == ["[Header]"]
+            assert ["[Settings]"] in content
+            # Ensure that [Data] section is empty
+            assert ["[Data]"] not in content
+            assert ["Sample_ID"] not in content
+
+    @pytest.mark.parametrize(
+        "header_dict,settings_dict",
+        [
+            (
+                {"IEMFileVersion": "4", "Date": "2024-09-12", "Workflow": "GenerateFASTQ"},
+                {"Read1Cycles": "151", "Adapter": "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"},
+            )
+        ],
+    )
+    def test_dict_to_illumina_v2_csv_partial_sample_info(self, header_dict, settings_dict):
+        """
+        Test with samples missing some fields
+        """
+        # Set up
+        iu = IlluminaUtils()
+
+        incomplete_samples_dict = {
+            "sample1": {"Sample_ID": "sample1", "index": "A001"},  # missing sample_name
+            "sample2": {"Sample_ID": "sample2", "sample_name": "test_sample_2"},  # missing index
+        }
+        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+
+        # Test
+        iu.dict_to_illumina_v2_csv(header_dict, settings_dict, incomplete_samples_dict, output_file_name)
+
+        # Assert
+        output_file_csv = output_file_name + ".csv"
+        with open(output_file_csv, "r", encoding="ASCII") as f:
+            reader = csv.reader(f)
+            content = list(reader)
+            print(content)
+
+            # Ensure the missing fields are replaced with empty strings
+            assert ["[Data]"] in content
+            assert content[-3] == ["Sample_ID", "index", "sample_name"]
+            assert content[-2] == ["sample1", "A001", ""]
+            assert content[-1] == ["sample2", "", "test_sample_2"]
