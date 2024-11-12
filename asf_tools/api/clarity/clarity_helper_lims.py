@@ -94,29 +94,20 @@ class ClarityHelperLims(ClarityLims):
         # Extract lane value, its corresponding samples and assign them to the corresponding artifact
         for entry in placement_list:
             lane = entry.value.split(":")[0]
-            # lane_artifacts[entry.uri] = {"lane": lane}
-            lane_artifacts[entry.uri] = {"lane": lane, "samples": []}
-            # if entry.uri not in lane_artifacts:
-            # lane_artifacts[entry.uri] = {"lane": lane, "samples": []}
+            name = run_id + "_" + str(lane)
+            lane_artifacts[name] = {"artifact_uri": entry.uri, "lane": lane, "samples": []}
 
             # Extract sample limsid for each artifact
-        print(lane_artifacts)
-        for entry in placement_list:
-            artifact_stub = self.expand_stub(entry, expansion_type=Artifact)
-            samples = artifact_stub.samples
-            sample_stub = self.expand_stubs(samples, expansion_type=Sample)
+            artifact = self.expand_stub(entry, expansion_type=Artifact)
+            sample_stubs = artifact.samples
+            samples = self.expand_stubs(sample_stubs, expansion_type=Sample)
 
             sample_list = []
-            for entry in sample_stub:
+            for entry in samples:
                 ids = entry.id
                 sample_list.append(ids if ids else None)
-            # print(sample_list)
 
-            # if entry.uri not in lane_artifacts:
-            # lane_artifacts[entry.uri] = {"samples": sample_list}
-            if "samples" in lane_artifacts[entry.uri]:
-                lane_artifacts[entry.uri]["samples"].extend(sample_list)
-        # print(lane_artifacts)
+            lane_artifacts[name]["samples"] = sample_list
         return lane_artifacts
 
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
@@ -143,28 +134,15 @@ class ClarityHelperLims(ClarityLims):
         sample_list = []
         values = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         for value_item in values:
-            # print(value_item)
             run_samples = value_item.samples
             if not isinstance(run_samples, list):
                 raise TypeError("run_samples should be a list of sample objects")
 
-            # Determine lane if location is present
-            lane = value_item.location.value.split(":")[0] if value_item.location else None
-
-            # Append each sample with its associated lane to the sample_list
-            for sample in run_samples:
-                if hasattr(sample, "limsid"):
-                    sample_entry = {
-                        "sample": sample,  # Sample object
-                        # 'lane': lane        # Associated lane (or None if not available)
-                    }
-                    sample_list.append(sample_entry)
-                else:
-                    warnings.warn(f"{sample} wrong", UserWarning)
-                    # raise AttributeError("Sample object missing 'lims_id' attribute")
+            # Append each sample to the sample_list
+            sample_list.extend(run_samples)
 
         # Make the entries in sample_list unique
-        unique_sample_list = list({entry["sample"].lims_id: entry for entry in sample_list}.values())
+        unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
 
         return unique_sample_list
 

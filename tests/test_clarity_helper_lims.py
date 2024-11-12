@@ -80,14 +80,84 @@ class TestClarityHelperLims(unittest.TestCase):
 
         # Setup
         expected = {
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229": {"lane": "1"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230": {"lane": "2"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231": {"lane": "3"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232": {"lane": "4"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233": {"lane": "5"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234": {"lane": "6"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235": {"lane": "7"},
-            "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236": {
+            "HWNT7BBXY_1": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229","lane": "1", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_2": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230","lane": "2", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_3": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231","lane": "3", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_4": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232","lane": "4", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_5": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233","lane": "5","samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_6": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234","lane": "6", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_7": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235","lane": "7", "samples": [
+                    "TLG66A2839",
+                    "TLG66A2840",
+                    "TLG66A2841",
+                    "TLG66A2842",
+                    "TLG66A2843",
+                    "TLG66A2844",
+                    "TLG66A2845",
+                    "TLG66A2848",
+                    "TLG66A2849",
+                ],},
+            "HWNT7BBXY_8": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236",
                 "lane": "8",
                 "samples": [
                     "TLG66A2839",
@@ -108,8 +178,7 @@ class TestClarityHelperLims(unittest.TestCase):
         print(results)
 
         # Assert
-        # assert results == expected
-        raise ValueError
+        assert results == expected
 
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
         """
@@ -265,7 +334,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
-        raise ValueError
+        # raise ValueError
 
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
