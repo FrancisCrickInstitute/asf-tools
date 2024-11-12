@@ -6,7 +6,7 @@ import logging
 import queue
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
-from asf_tools.api.clarity.models import Artifact, Lab, Process, Researcher, Sample
+from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
 
 log = logging.getLogger(__name__)
@@ -119,7 +119,7 @@ class ClarityHelperLims(ClarityLims):
 
         """
         if sample is None:
-            raise ValueError("sample is None")
+            return None
 
         # Expand sample stub and get name which is the ASF sample id
         sample = self.get_samples(search_id=sample)
@@ -127,15 +127,26 @@ class ClarityHelperLims(ClarityLims):
         sample_name = sample.name
 
         # Extract project wide info
-        project = self.get_projects(search_id=sample.project.id)
-        project_name = project.name
-        project_limsid = project.id
-        project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
-        reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
-        data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+        sample_project = sample.project
+        if sample_project:
+            project = self.get_projects(search_id=sample.project.id)
+            project_name = project.name
+            project_limsid = project.id
+            project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
+            reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
+            data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+        else:
+            project_name = None
+            project_limsid = None
+            project_type = None
+            reference_genome = None
+            data_analysis_type = None
 
         # Get the submitter details
-        user = self.expand_stub(project.researcher, expansion_type=Researcher)
+        if sample_project:
+            user = self.get_researchers(search_id=project.researcher.id)
+        else:
+            user = self.get_researchers(search_id=sample.submitter.id)
 
         # these get the submitter, not the scientist, info
         user_firstname = user.first_name
@@ -196,7 +207,10 @@ class ClarityHelperLims(ClarityLims):
         sample_info = {}
         for sample_id in sample_list:
             info = self.get_sample_info(sample_id.id)
-            sample_info.update(info)
+            if info is None:
+                pass
+            else:
+                sample_info.update(info)
         return sample_info
 
     def get_sample_barcode_from_runid(self, run_id: str) -> dict:
