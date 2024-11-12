@@ -115,45 +115,48 @@ class GenDemuxRun:
         # Samplesheet path
         samplesheet_path = os.path.join(folder_path, "samplesheet.csv")
 
-        if self.use_api is False:
-            # Write default samplesheet
-            sample_count = 1
-            with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
-                file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
-        if self.use_api is True:
-            # Get samplesheet from API
-            api = ClarityHelperLims()
-            sample_dict = api.collect_samplesheet_info(run_name)
+        try:
+            if self.use_api is False:
+                # Write default samplesheet
+                sample_count = 1
+                with open(samplesheet_path, "w", encoding="UTF-8") as file:
+                    file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                    file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
+            if self.use_api is True:
+                # Get samplesheet from API
+                api = ClarityHelperLims()
 
-            # Check mode and set the appropriate check function
-            if mode == DataTypeMode.ONT:
-                sample_dict = api.collect_samplesheet_info(run_name)
-            elif mode == DataTypeMode.ILLUMINA:
-                # extract illumina RunId/flowcell name, then run check function
-                iu = IlluminaUtils()
-                run_dir = os.path.join(self.source_dir, run_name)
-                illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
-                sample_dict = api.collect_samplesheet_info(illumina_run_name)
-            else:
-                raise ValueError(f"Invalid mode: {mode}. Choose a valid DataTypeMode.")
+                # Check mode and set the appropriate check function
+                if mode == DataTypeMode.ONT:
+                    sample_dict = api.collect_samplesheet_info(run_name)
+                elif mode == DataTypeMode.ILLUMINA:
+                    # extract illumina RunId/flowcell name, then run check function
+                    iu = IlluminaUtils()
+                    run_dir = os.path.join(self.source_dir, run_name)
+                    illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
+                    sample_dict = api.collect_samplesheet_info(illumina_run_name)
+                else:
+                    sample_dict = api.collect_samplesheet_info(run_name)
+                    log.warning(f"Mode selected: {mode}. General samplesheet created.")
 
-            # Write samplesheet
-            with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
-                for key, value in sample_dict.items():
-                    # Convert all None values to "" for CSV
-                    clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
-                    barcode = "unclassified"
-                    if "barcode" in value and clean_dict["barcode"] != "":
-                        barcode = clean_dict["barcode"]
-                    file.write(
-                        f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
-                    )
-                    sample_count += 1
+                # Write samplesheet
+                with open(samplesheet_path, "w", encoding="UTF-8") as file:
+                    file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+                    for key, value in sample_dict.items():
+                        # Convert all None values to "" for CSV
+                        clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
+                        barcode = "unclassified"
+                        if "barcode" in value and clean_dict["barcode"] != "":
+                            barcode = clean_dict["barcode"]
+                        file.write(
+                            f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
+                        )
+                        sample_count += 1
 
-        # Set 666 for the samplesheet
-        os.chmod(samplesheet_path, PERM666)
+            # Set 666 for the samplesheet
+            os.chmod(samplesheet_path, PERM666)
+        except ValueError as e:
+            log.warning(f"Error generating samplesheet for {run_name}: {e}")
 
         # Generate and write sbatch script
         if self.samplesheet_only is False:

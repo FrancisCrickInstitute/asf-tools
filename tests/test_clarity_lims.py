@@ -4,7 +4,7 @@ Clarity API Tests
 
 import os
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 import requests
