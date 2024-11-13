@@ -420,7 +420,7 @@ class IlluminaUtils:
 
         return sample_index_dict
 
-    def split_samples_by_index_length(self, sample_index_dict: dict) -> list:
+    def group_samples_by_index_length(self, sample_index_dict: dict) -> list:
         """
         Splits samples from a dictionary into groups based on the length of 'index' and 'index2'.
 
@@ -470,6 +470,49 @@ class IlluminaUtils:
         result = [{"index_length": length_tuple, "samples": sample_ids} for length_tuple, sample_ids in result_dict.items()]
 
         return result
+
+    def group_samples_by_dictkey(self, samples_dict, group_key):
+        """
+        Groups sample identifiers by a specified key in the sample data.
+
+        This function takes a dictionary of samples and organizes sample identifiers
+        based on the values of a specified key in each sample's data. Each key value
+        becomes a group in the resulting dictionary, where the group key maps to a list
+        of sample identifiers that share that value.
+
+        Args:
+            samples_dict (dict): A dictionary of samples, where each key is a sample identifier
+                and each value is a dictionary containing sample data.
+            group_key (str): The key within each sample's data used to group the sample identifiers.
+
+        Returns:
+            dict: A dictionary with unique values of `group_key` as keys and lists of sample identifiers
+                as values, representing groups of samples. Returns `None` if `group_key` is missing
+                in any sample data or if any group key is not found in `grouped_samples`.
+
+        Raises:
+            ValueError: If `samples_dict` is not a dictionary.
+        """
+        if not isinstance(samples_dict, dict):
+            raise ValueError("The provided argument is not a dictionary.")
+
+        grouped_samples = {}
+
+        for sample_id, sample_data in samples_dict.items():
+            # Check that key is within the sample's dict
+            if group_key not in sample_data:
+                pass
+            else:
+                # Use the specified key for grouping
+                key_value = sample_data[group_key]
+
+                if key_value not in grouped_samples:
+                    grouped_samples[key_value] = []
+
+                # Save sample IDs in a list
+                grouped_samples[key_value].append(sample_id)
+
+        return grouped_samples
 
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
@@ -578,59 +621,6 @@ class IlluminaUtils:
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
 
         return overridecycle_string
-
-    def extract_file_content(self, file_path, section_name):
-        """
-        Extracts content from a text or config file for a given section name,
-        and stores the content into a dictionary where the key-value pairs are
-        separated by the first '=' symbol.
-
-        Args:
-            file_path (str): The path to the text or config file.
-            section_name (str): The section name to extract (e.g., "Header", "BCL_Settings").
-
-        Returns:
-            dict: A dictionary containing the content from the specified section.
-
-        Raises:
-            ValueError: If the specified section is not found in the file.
-        """
-        section_dict = {}
-
-        # Check if the file exists
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError(f"Error: The file {file_path} was not found.")
-
-        # Open the file and read lines
-        with open(file_path, "r") as file:
-            lines = file.readlines()
-
-            # Flag to track if we are inside the target section
-            in_target_section = False
-
-            for line in lines:
-                line = line.strip()
-
-                # Check if the line is a section header (e.g., [Header])
-                if line.startswith("[") and line[1:-1] == section_name:
-                    in_target_section = True
-                    continue  # Skip the section header line
-
-                # Check for the start of another section
-                if line.startswith("[") and in_target_section:
-                    break  # Exit loop when another section is encountered
-
-                # Collect key-value pairs in the target section
-                if in_target_section and line:
-                    if "=" in line:
-                        key, value = line.split("=", 1)
-                        section_dict[key.strip()] = value.strip()
-
-            # Ensure the section was found
-            if not section_dict:
-                warnings.warn(f"{section_name} not found in the file.", UserWarning)
-
-        return section_dict
 
     # def dict_to_illumina_v2_csv(self, header_dict: dict, reads_dict: dict, samples_dict: dict, output_file_name: str):
     #     """

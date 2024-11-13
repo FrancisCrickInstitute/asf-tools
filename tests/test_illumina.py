@@ -348,7 +348,7 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert results == expected_output
 
-    def test_split_samples_by_index_length_isnone(self):
+    def test_group_samples_by_index_length_isnone(self):
         """
         Pass None to method
         """
@@ -358,9 +358,9 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.split_samples_by_index_length(None)
+            iu.group_samples_by_index_length(None)
 
-    def test_split_samples_by_index_length_isinvalid(self):
+    def test_group_samples_by_index_length_isinvalid(self):
         """
         Pass a dict without a "barcode" value to method
         """
@@ -370,21 +370,21 @@ class TestIlluminaUtils(unittest.TestCase):
         test_dict = {"value1": "invalid", "value2": "dictionary"}
 
         # Test
-        results = iu.split_samples_by_index_length(test_dict)
+        results = iu.group_samples_by_index_length(test_dict)
 
         # Assert
         assert results == []
 
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")  # Ensure all warnings are caught
-            iu.split_samples_by_index_length(test_dict)
+            iu.group_samples_by_index_length(test_dict)
         self.assertEqual(len(warning_list), 2)
 
         # Check each warning message
         self.assertEqual(str(warning_list[0].message), "Index value for 'value1' not found.")
         self.assertEqual(str(warning_list[1].message), "Index value for 'value2' not found.")
 
-    def test_split_samples_by_index_length_isvalid(self):
+    def test_group_samples_by_index_length_isvalid(self):
         """
         Pass a valid dict to method
         """
@@ -399,10 +399,75 @@ class TestIlluminaUtils(unittest.TestCase):
         expected_output = [{"index_length": (10, 0), "samples": ["Sample1"]}, {"index_length": (6, 10), "samples": ["Sample2", "Sample3"]}]
 
         # Test
-        results = iu.split_samples_by_index_length(test_dict)
+        results = iu.group_samples_by_index_length(test_dict)
 
         # Assert
         assert results == expected_output
+
+    def test_group_samples_by_dictkey_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            iu.group_samples_by_dictkey(None)
+
+    def test_group_samples_by_dictkey_isinvalid(self):
+        """
+        Pass an invalid input to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        not_a_dict = ["list", "not", "dictionary"]
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.group_samples_by_dictkey(not_a_dict, "key")
+
+    def test_group_samples_by_dictkey_missingkey(self):
+        """
+        Pass an a key not present in the input dict
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        valid_dict = {"sample": {"key1": "value1", "key2": "value2"}}
+        expected = {}
+
+        # Test
+        result = iu.group_samples_by_dictkey(valid_dict, "missing_key")
+
+        # Assert
+        assert result == expected
+
+    def test_group_samples_by_dictkey_isvalid(self):
+        """
+        Pass an a valid input dict and key
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        valid_dict1 = {"sample": {"key1": "matching_value"}, "sample2": {"key1": "matching_value"}, "sample3": {"key1": "different_value"}}
+        valid_dict2 = {
+            "sample3": {"key1": "value", "key2": "matching_value"},
+            "sample4": {"key1": "value", "key2": "matching_value"},
+            "sample5": {"different_key": "value"},
+        }
+        expected1 = {"matching_value": ["sample", "sample2"], "different_value": ["sample3"]}
+        expected2 = {"matching_value": ["sample3", "sample4"]}
+
+        # Test
+        result1 = iu.group_samples_by_dictkey(valid_dict1, "key1")
+        result2 = iu.group_samples_by_dictkey(valid_dict2, "key2")
+
+        # Assert
+        assert result1 == expected1
+        assert result2 == expected2
 
     def test_calculate_overridecycle_values_indexnone(self):
         """
