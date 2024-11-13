@@ -469,16 +469,43 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
+        lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
 
-        # Merge dictionaries using sample names as keys
-        merged_dict = sample_metadata
-        for key, value in barcode_info.items():
-            for sub_key, sub_value in value.items():
-                if key in merged_dict:
-                    merged_dict[key][sub_key] = sub_value
+        # # Merge dictionaries using sample names as keys
+        # merged_dict = sample_metadata
+        # for key, value in barcode_info.items():
+        #     for sub_key, sub_value in value.items():
+        #         if key in merged_dict:
+        #             merged_dict[key][sub_key] = sub_value
+
+        # Initialize an empty dictionary for the final merged output
+        merged_dict = {}
+
+        # Loop through each sample in sample_metadata
+        for sample_id, sample_data in sample_metadata.items():
+            # Start with the sample data as a base
+            merged_dict[sample_id] = sample_data.copy()
+
+            # Add barcode information if available
+            if sample_id in barcode_info:
+                merged_dict[sample_id].update(barcode_info[sample_id])
+
+            # Initialize an empty list to store lane numbers
+            merged_dict[sample_id]["lanes"] = []
+
+        # Loop through lanes in lane_info to add lane numbers
+        for lane_id, lane_data in lane_info.items():
+            lane_number = lane_data["lane"]
+
+            # Add each sample's lane number to the "lanes" list
+            for sample_id in lane_data["samples"]:
+                if sample_id in merged_dict:
+                    # Append the lane number if it hasn't been added already
+                    if lane_number not in merged_dict[sample_id]["lanes"]:
+                        merged_dict[sample_id]["lanes"].append(lane_number)
 
         return merged_dict
 

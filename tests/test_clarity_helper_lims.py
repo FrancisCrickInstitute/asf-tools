@@ -73,113 +73,6 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.api.get_lane_from_runid("Fake_runid")
 
-    def test_clarity_helper_get_lane_from_runid_isvalid(self):
-        """
-        Pass None to method
-        """
-
-        # Setup
-        expected = {
-            "HWNT7BBXY_1": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229","lane": "1", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_2": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230","lane": "2", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_3": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231","lane": "3", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_4": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232","lane": "4", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_5": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233","lane": "5","samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_6": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234","lane": "6", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_7": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235","lane": "7", "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],},
-            "HWNT7BBXY_8": {"artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236",
-                "lane": "8",
-                "samples": [
-                    "TLG66A2839",
-                    "TLG66A2840",
-                    "TLG66A2841",
-                    "TLG66A2842",
-                    "TLG66A2843",
-                    "TLG66A2844",
-                    "TLG66A2845",
-                    "TLG66A2848",
-                    "TLG66A2849",
-                ],
-            },
-        }
-
-        # Test
-        results = self.api.get_lane_from_runid("HWNT7BBXY")
-        print(results)
-
-        # Assert
-        assert results == expected
-
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
         """
         Pass None to method
@@ -318,6 +211,158 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert len(artifacts) == expected
+
+    @pytest.mark.parametrize(
+        "run_id,expected",
+        [
+            (
+                "HWNT7BBXY",
+                {
+                    "HWNT7BBXY_1": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229",
+                        "lane": "1",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_2": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230",
+                        "lane": "2",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_3": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231",
+                        "lane": "3",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_4": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232",
+                        "lane": "4",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_5": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233",
+                        "lane": "5",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_6": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234",
+                        "lane": "6",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_7": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235",
+                        "lane": "7",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_8": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236",
+                        "lane": "8",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                },
+            ),
+            (
+                "ASF_A05136-P27",
+                {
+                    "ASF_A05136-P27_1": {
+                        "samples": ["SKO6875A940"],
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/SKO6875A940PA1",
+                        "lane": "1",
+                    },
+                },
+            ),
+        ],
+    )
+    def test_clarity_helper_get_lane_from_runid_isvalid(self, api, run_id, expected):
+        """
+        Pass None to method
+        """
+
+        # Test
+        results = api.get_lane_from_runid(run_id)
+        print(results)
+
+        # Assert
+        assert results == expected
 
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [("B_04-0004-S6_DT", 1), ("462-24_MPX-seq", 4)])  # Illumina  # ONT
     def test_clarity_helper_get_samples_from_artifacts_isvalid(self, api, run_id, expected_sample_quantity):
@@ -588,6 +633,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "lanes": ["1"],
                     },
                     "VIV6902A2": {
                         "barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)",
@@ -599,6 +645,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "lanes": ["1"],
                     },
                     "VIV6902A3": {
                         "barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)",
@@ -610,6 +657,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "lanes": ["1"],
                     },
                     "VIV6902A4": {
                         "barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)",
@@ -621,6 +669,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "lanes": ["1"],
                     },
                 },
             ),  # ONT
@@ -637,6 +686,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 40 H05 (CTGAGCCA)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2840": {
                         "project_limsid": "TLG66",
@@ -648,6 +698,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 41 A06 (AGCCATGC)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2841": {
                         "sample_name": "L_LTX877_MR_T1_FR5",
@@ -659,6 +710,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "data_analysis_type": "Whole Exome",
                         "project_type": "WES",
                         "barcode": "SXT 42 B06 (GTACGCAA)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2842": {
                         "project_limsid": "TLG66",
@@ -670,6 +722,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 43 C06 (AGTACAAG)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2843": {
                         "project_limsid": "TLG66",
@@ -681,6 +734,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 44 D06 (ACATTGGC)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2844": {
                         "project_limsid": "TLG66",
@@ -692,6 +746,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 45 E06 (ATTGAGGA)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2845": {
                         "project_limsid": "TLG66",
@@ -703,6 +758,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 46 F06 (GTCGTAGA)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2848": {
                         "project_limsid": "TLG66",
@@ -714,6 +770,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 03 C01 (AACGTGAT)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2849": {
                         "project_limsid": "TLG66",
@@ -725,6 +782,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "SXT 04 D01 (CACTTCGA)",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                 },
             ),  # Illumina
@@ -741,6 +799,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
                         "barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)",
+                        "lanes": ["1"],
                     },
                 },
             ),  # Illumina, custom barcode
@@ -757,6 +816,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
                         "barcode": "",
+                        "lanes": ["1"],
                     }
                 },
             ),  # ONT, no barcode info
