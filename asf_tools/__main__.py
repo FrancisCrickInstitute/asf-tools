@@ -203,7 +203,7 @@ def pipeline(ctx):
     default=None,
     help="Set the version of Nextflow to use in the sbatch header",
 )
-def gen_demux_run(ctx,  # pylint: disable=W0613
+def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-arguments
                       source_dir,
                       target_dir,
                       mode,
@@ -284,7 +284,7 @@ def deliver_to_targets(
     interactive,):
     """
     Symlinks demux outputs to the user directory
-    """
+    """  # pylint: disable=too-many-positional-arguments
     from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
     dm = DataManagement()
@@ -384,7 +384,7 @@ def deliver_to_targets(
     required=False,
     help="Slurm job output file",
 )
-def scan_run_state(
+def scan_run_state(  # pylint: disable=too-many-positional-arguments
     ctx,  # pylint: disable=W0613
     raw_dir,
     run_dir,
