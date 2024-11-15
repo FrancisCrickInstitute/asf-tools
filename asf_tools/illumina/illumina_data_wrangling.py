@@ -122,20 +122,17 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
     # Subdivide samples into different workflows based on project type
     # Can be: DLP+, 10X ATAC, 10X, or Bulk/non-10X
     for project_type, samples in split_samples_by_projecttype.items():
+        # Filter samples based on project type
         filtered_samples = {}
         for sample in samples:
             filtered_samples[sample] = sample_and_index_dict[sample]
+
         if "DLP" in project_type:
             # Workflow not determined yet
             pass
-        elif "10X" in project_type:
-            # All samples are expected to be dual index.
-            # Match samples to their barcode values
-            # filtered_10x_samples = {}
-            # for sample in samples:
-            #     filtered_10x_samples[sample] = sample_and_index_dict[sample]
-            # Generate samplesheet
-            samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "10X" + "_"
+        elif "Single Cell" in project_type:
+            # All samples are expected to be dual index and one index length
+            samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "singlecell" + "_"
             iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
         else:
             # This should include Bulk data and all other project types
@@ -146,17 +143,17 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
             # Extract the Cycle length
             cycle_length = iu.extract_cycle_fromxml(runinfo_file)
 
-            for entry in split_samples_by_indexlength:
+            for index_length_sample_list in split_samples_by_indexlength:
                 # Create a dictionary with a subset of samples and their index values based on their index length
                 filtered_samples = {}
-                for sample in entry["samples"]:
+                for sample in index_length_sample_list["samples"]:
                     filtered_samples[sample] = sample_and_index_dict[sample]
 
                 # Check if Index length and Cycle length match
-                if (entry["index_length"][0] == cycle_length[1] and entry["index_length"][1] == 0) or (
-                    entry["index_length"][0] == cycle_length[1] and entry["index_length"][1] == cycle_length[1]
+                if (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
+                    index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
                 ):
-                    samplesheet_name = "samplesheet" + "_" + project_type + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
+                    samplesheet_name = "samplesheet" + "_" + project_type + str(index_length_sample_list["index_length"][0]) + "_" + str(index_length_sample_list["index_length"][1])
                 else:
                     # Generate the OverrideCycle string
                     # Extracting an index string values
