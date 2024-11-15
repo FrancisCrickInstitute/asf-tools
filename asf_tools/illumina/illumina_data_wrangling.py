@@ -1,3 +1,4 @@
+import json
 import os
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
@@ -33,7 +34,7 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 # samples_all_info = cl.collect_samplesheet_info(run_id) # dict of dicts with extensive sample info
 # reformatted_barcode_dict = iu.reformat_barcode(samples_all_info) # dict with only sample+index,index2
-# split_samples_by_indexlength = iu.split_samples_by_index_length(reformatted_barcode_dict)
+# split_samples_by_indexlength = iu.group_samples_by_index_length(reformatted_barcode_dict)
 # # each dict within the split_samples_by_indexlength list has a collection of sample ids split according to both its index and index2 values
 
 # # create subsetted dict with sample,index,index2 THEN
@@ -62,7 +63,14 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 # generate_overridecycle_string(reads_dict[read], reads_dict[num_cycles], reads_dict[num_cycles])
 
 
-def generate_illumina_demux_samplesheets(runinfo_file, bcl_config):
+################################################################################################
+
+# def generate_bcl_config():
+
+################################################################################################
+
+
+def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
 
@@ -95,46 +103,84 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config):
     cl = ClarityHelperLims()
 
     # Obtain sample information and format it as required by `BCLConvert_Data`
-    run_id = iu.extract_illumina_runid_fromxml(runinfo_file)
-    samples_all_info = cl.collect_samplesheet_info(run_id)
+    flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
+    samples_all_info = cl.collect_samplesheet_info(flowcell_id)
     reformatted_barcode_dict = iu.reformat_barcode(samples_all_info)
 
-    # Group samples based on Index length
-    split_samples_by_indexlength = iu.split_samples_by_index_length(reformatted_barcode_dict)
+    # If no BCL Config file is provided, generate a basic config file with relevant information
+    if not bcl_config:
+        xml_filtered = iu.filter_runinfo(runinfo_file)
+        machine_type = xml_filtered["machine"]
+        bcl_config = "bcl_config" + "_" + flowcell_id + ".json"
+        iu.generate_bclconfig(bcl_config, machine_type, flowcell_id)
 
-    # Extract the Cycle length
-    cycle_length = iu.extract_cycle_fromxml(runinfo_file)
-    # Collect other BCL relevant information
-    header_dict = iu.extract_file_content(bcl_config, "Header")
-    bcl_settings_dict = iu.extract_file_content(bcl_config, "BCLConvert_Settings")
+    # Extract info from the BCL Config file
+    with open(bcl_config, "r") as file:
+        config_json = json.load(file)
+
+    header_dict = config_json["Header"]
+    bcl_settings_dict = config_json["BCLConvert_Settings"]
+    # header_dict = iu.extract_file_content(bcl_config, "Header")
+    # bcl_settings_dict = iu.extract_file_content(bcl_config, "BCLConvert_Settings")
     xml_content_dict = iu.runinfo_xml_to_dict(runinfo_file)
     reads_dict = iu.filter_readinfo(xml_content_dict)
 
-    for entry in split_samples_by_indexlength:
-        # Create a dictionary with a subset of samples and their index values based on their index length
-        filtered_samples = {}
-        for sample in entry["samples"]:
-            if sample in reformatted_barcode_dict:
-                filtered_samples[sample] = reformatted_barcode_dict[sample]
+    # Split samples by project type
+    split_samples_by_projecttype = iu.group_samples_by_dictkey(samples_all_info, "project_type")
 
-        # Check if Index length and Cycle length match
-        if (entry[index_length[0]] == cycle_length[1] and index_length[1] == 0) or (
-            index_length[0] == cycle_length[1] and index_length[1] == cycle_length[1]
-        ):
-            samplesheet_name = "samplesheet" + "_" + str(entry[index_length[0]]) + "_" + str(entry[index_length[1]])
-            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
-
+    # Subdivide samples into different workflows based on project type
+    # Can be: DLP+, 10X ATAC 10X, or Bulk/non-10X
+    for project_type, samples in split_samples_by_projecttype.items():
+        if "DLP" in project_type:
+            # Workflow not determined yet
+            pass
+        elif "10x" in project_type:
+            # All samples are expected to be dual index.
+            # Match samples to their barcode values
+            filtered_10x_samples = {}
+            for sample in samples:
+                if sample in reformatted_barcode_dict:
+                    filtered_10x_samples[sample] = reformatted_barcode_dict[sample]
+            # Generate samplesheet
+            samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "10X" + "_"
+            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_10x_samples, samplesheet_name)
         else:
-            # Extracting an index string values
-            index_string = next(iter(filtered_samples.values()))["index"]
-            first_sample = next(iter(filtered_samples.values()))
-            index2_string = first_sample.get("index2")
-            if index2_string:
-                override_string = iu.generate_overridecycle_string(
-                    index_string, cycle_length[1], cycle_length[0], index2_string, cycle_length[2], cycle_length[3]
-                )
-            else:
-                override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
+            # This should include Bulk data and all other project types
+
+            # Group samples based on Index length
+            split_samples_by_indexlength = iu.group_samples_by_index_length(reformatted_barcode_dict)
+
+            # Extract the Cycle length
+            cycle_length = iu.extract_cycle_fromxml(runinfo_file)
+
+            for entry in split_samples_by_indexlength:
+                # Create a dictionary with a subset of samples and their index values based on their index length
+                filtered_samples = {}
+                for sample in entry["samples"]:
+                    if sample in reformatted_barcode_dict:
+                        filtered_samples[sample] = reformatted_barcode_dict[sample]
+
+                # Check if Index length and Cycle length match
+                if (entry[index_length[0]] == cycle_length[1] and index_length[1] == 0) or (
+                    index_length[0] == cycle_length[1] and index_length[1] == cycle_length[1]
+                ):
+                    samplesheet_name = "samplesheet" + "_" + str(entry[index_length[0]]) + "_" + str(entry[index_length[1]])
+                else:
+                    # Generate the OverrideCycle string
+                    # Extracting an index string values
+                    index_string = next(iter(filtered_samples.values()))["index"]
+                    first_sample = next(iter(filtered_samples.values()))
+                    index2_string = first_sample.get("index2")
+                    if index2_string:
+                        override_string = iu.generate_overridecycle_string(
+                            index_string, cycle_length[1], cycle_length[0], index2_string, cycle_length[2], cycle_length[3]
+                        )
+                    else:
+                        override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
+                    bcl_settings_dict["OverrideCycles"] = override_string
+
+                # Generate samplesheet with the updated settings
+                iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
 
 
 if __name__ == "__main__":
