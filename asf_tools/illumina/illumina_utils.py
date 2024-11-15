@@ -623,7 +623,7 @@ class IlluminaUtils:
 
         return overridecycle_string
 
-    def generate_bclconfig(self, file_path: str, machine: str, flowcell: str, header_parameters=None, bclconvert_parameters=None):
+    def generate_bclconfig(self, machine: str, flowcell: str, header_parameters=None, bclconvert_parameters=None):
         """
         Creates a BCL configuration file in JSON format with a Header and BCLConvert_Settings sections.
 
@@ -633,7 +633,6 @@ class IlluminaUtils:
         instead of the hardcoded defaults.
 
         Args:
-            file_path (str): The path to save the JSON configuration file.
             machine (str): The platform (machine) value, dynamically provided.
             flowcell (str): The run name (flowcell) value, dynamically provided.
             header_parameters (dict, optional): A dictionary of additional header settings to override or add to the 'Header' section.
@@ -654,15 +653,10 @@ class IlluminaUtils:
                 }
             }
 
-        Raises:
-            ValueError: If `file_path` is not a string.
-
         Notes:
             - If `header_parameters` or `bclconvert_parameters` are provided, the function will merge those extra settings into the corresponding sections.
             - If a key already exists in the section, it will be overwritten by the provided value.
         """
-        if not isinstance(file_path, str):
-            raise ValueError(f"{file_path} not valid.")
 
         # Default values for core configuration keys
         header_defaults = {"FileFormatVersion": 2, "InstrumentPlatform": machine, "RunName": flowcell}
@@ -675,9 +669,7 @@ class IlluminaUtils:
             "BCLConvert_Settings": {**bclconvert_defaults, **(bclconvert_parameters or {})},
         }
 
-        # Write the final configuration data to the specified file
-        with open(file_path, "w") as json_file:
-            json.dump(config_data, json_file, indent=4)
+        return config_data
 
     # Usage example:
     # Assuming you have functions `filter_runinfo` and `extract_illumina_runid_fromxml` to get `machine` and `flowcell`

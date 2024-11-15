@@ -25,16 +25,6 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 ################
 
-# # to extract cycle info use
-# # filter_readinfo(self, runinfo_dict)
-
-# original_dict = iu.runinfo_xml_to_dict(runinfo_file) # runinfo_file is the runinfo.xml
-# reads_dict = iu.filter_readinfo(original_dict)
-
-
-# samples_all_info = cl.collect_samplesheet_info(run_id) # dict of dicts with extensive sample info
-# reformatted_barcode_dict = iu.reformat_barcode(samples_all_info) # dict with only sample+index,index2
-# split_samples_by_indexlength = iu.group_samples_by_index_length(reformatted_barcode_dict)
 # # each dict within the split_samples_by_indexlength list has a collection of sample ids split according to both its index and index2 values
 
 # # create subsetted dict with sample,index,index2 THEN
@@ -49,8 +39,8 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 #     filtered_samples = {}
 #     if (index_length[0] == num_cycles and index_length[1] == 0) or (index_length[0] == num_cycles and index_length[1] == num_cycles):
 #         for sample in entry["samples"]:
-#             if sample in reformatted_barcode_dict:
-#                     filtered_samples[sample] = reformatted_barcode_dict[sample]
+#             if sample in sample_and_index_dict:
+#                     filtered_samples[sample] = sample_and_index_dict[sample]
 
 # # eventually, collect all the dicts and run generate_bcl_samplesheet
 
@@ -70,7 +60,7 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 ################################################################################################
 
 
-def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
+def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
 
@@ -93,9 +83,9 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
     4) extract information from `samples_all_info` and format it as required by the `BCLConvert_Data` section of the final samplesheets, this includes:
         - filter `samples_all_info` to only keep the "sample_name" and "barcode" information
         - reformat "barcode" value and assign to "index" (also to "index2" where approriate)
-        then save it in `reformatted_barcode_dict`
+        then save it in `sample_and_index_dict`
     5) evaluate Index length for each sample and group them based on the index length value. the groups and associated samples are saved in the `split_samples_by_indexlength` list
-    6) create a subset of `reformatted_barcode_dict` for each group listed in `split_samples_by_indexlength`
+    6) create a subset of `sample_and_index_dict` for each group listed in `split_samples_by_indexlength`
     7) if the Cycle length does not match the Index length, calculate the new OverrideCycle value
     """
     # Initialise classes
@@ -105,23 +95,24 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
     samples_all_info = cl.collect_samplesheet_info(flowcell_id)
-    reformatted_barcode_dict = iu.reformat_barcode(samples_all_info)
+    sample_and_index_dict = iu.reformat_barcode(samples_all_info) # Convert barcode value from "BC (ATGC)" to "ATGC"
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
-    if not bcl_config:
+    if not bcl_config_path:
         xml_filtered = iu.filter_runinfo(runinfo_file)
         machine_type = xml_filtered["machine"]
-        bcl_config = "bcl_config" + "_" + flowcell_id + ".json"
-        iu.generate_bclconfig(bcl_config, machine_type, flowcell_id)
+        config_json = iu.generate_bclconfig(machine_type, flowcell_id)
+
+        bcl_config_path_gen = "bcl_config" + "_" + flowcell_id + ".json"
+        with open(bcl_config_path_gen, "w") as file:
+            json.dump(config_json, bcl_config_path_gen, indent=4)
 
     # Extract info from the BCL Config file
-    with open(bcl_config, "r") as file:
+    with open(bcl_config_path, "r") as file:
         config_json = json.load(file)
 
     header_dict = config_json["Header"]
     bcl_settings_dict = config_json["BCLConvert_Settings"]
-    # header_dict = iu.extract_file_content(bcl_config, "Header")
-    # bcl_settings_dict = iu.extract_file_content(bcl_config, "BCLConvert_Settings")
     xml_content_dict = iu.runinfo_xml_to_dict(runinfo_file)
     reads_dict = iu.filter_readinfo(xml_content_dict)
 
@@ -129,26 +120,28 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
     split_samples_by_projecttype = iu.group_samples_by_dictkey(samples_all_info, "project_type")
 
     # Subdivide samples into different workflows based on project type
-    # Can be: DLP+, 10X ATAC 10X, or Bulk/non-10X
+    # Can be: DLP+, 10X ATAC, 10X, or Bulk/non-10X
     for project_type, samples in split_samples_by_projecttype.items():
+        filtered_samples = {}
+        for sample in samples:
+            filtered_samples[sample] = sample_and_index_dict[sample]
         if "DLP" in project_type:
             # Workflow not determined yet
             pass
-        elif "10x" in project_type:
+        elif "10X" in project_type:
             # All samples are expected to be dual index.
             # Match samples to their barcode values
-            filtered_10x_samples = {}
-            for sample in samples:
-                if sample in reformatted_barcode_dict:
-                    filtered_10x_samples[sample] = reformatted_barcode_dict[sample]
+            # filtered_10x_samples = {}
+            # for sample in samples:
+            #     filtered_10x_samples[sample] = sample_and_index_dict[sample]
             # Generate samplesheet
             samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "10X" + "_"
-            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_10x_samples, samplesheet_name)
+            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
         else:
             # This should include Bulk data and all other project types
 
             # Group samples based on Index length
-            split_samples_by_indexlength = iu.group_samples_by_index_length(reformatted_barcode_dict)
+            split_samples_by_indexlength = iu.group_samples_by_index_length(sample_and_index_dict)
 
             # Extract the Cycle length
             cycle_length = iu.extract_cycle_fromxml(runinfo_file)
@@ -157,14 +150,13 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config=None):
                 # Create a dictionary with a subset of samples and their index values based on their index length
                 filtered_samples = {}
                 for sample in entry["samples"]:
-                    if sample in reformatted_barcode_dict:
-                        filtered_samples[sample] = reformatted_barcode_dict[sample]
+                    filtered_samples[sample] = sample_and_index_dict[sample]
 
                 # Check if Index length and Cycle length match
-                if (entry[index_length[0]] == cycle_length[1] and index_length[1] == 0) or (
-                    index_length[0] == cycle_length[1] and index_length[1] == cycle_length[1]
+                if (entry["index_length"][0] == cycle_length[1] and entry["index_length"][1] == 0) or (
+                    entry["index_length"][0] == cycle_length[1] and entry["index_length"][1] == cycle_length[1]
                 ):
-                    samplesheet_name = "samplesheet" + "_" + str(entry[index_length[0]]) + "_" + str(entry[index_length[1]])
+                    samplesheet_name = "samplesheet" + "_" + project_type + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
                 else:
                     # Generate the OverrideCycle string
                     # Extracting an index string values
