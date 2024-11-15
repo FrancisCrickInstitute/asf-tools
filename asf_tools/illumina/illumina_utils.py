@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import warnings
@@ -471,7 +472,7 @@ class IlluminaUtils:
 
         return result
 
-    def group_samples_by_dictkey(self, samples_dict, group_key):
+    def group_samples_by_dictkey(self, samples_dict: dict, group_key: str) -> dict:
         """
         Groups sample identifiers by a specified key in the sample data.
 
@@ -621,6 +622,70 @@ class IlluminaUtils:
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
 
         return overridecycle_string
+
+    def generate_bclconfig(self, file_path: str, machine: str, flowcell: str, header_parameters=None, bclconvert_parameters=None):
+        """
+        Creates a BCL configuration file in JSON format with a Header and BCLConvert_Settings sections.
+
+        This function generates a JSON configuration file with default Header and BCLConvert_Settings values. If
+        optional parameters (`header_parameters` or `bclconvert_parameters`) contain any of the primary keys (`FileFormatVersion`,
+        `InstrumentPlatform`, `RunName`, `SoftwareVersion`, or `FastqCompressionFormat`), those values will be used
+        instead of the hardcoded defaults.
+
+        Args:
+            file_path (str): The path to save the JSON configuration file.
+            machine (str): The platform (machine) value, dynamically provided.
+            flowcell (str): The run name (flowcell) value, dynamically provided.
+            header_parameters (dict, optional): A dictionary of additional header settings to override or add to the 'Header' section.
+            bclconvert_parameters (dict, optional): A dictionary of additional BCLConvert_Settings to override or add to the 'BCLConvert_Settings' section.
+
+        Structure of the generated JSON:
+            {
+                "Header": {
+                    "FileFormatVersion": 2,
+                    "InstrumentPlatform": <machine>,
+                    "RunName": <flowcell>,
+                    ... (additional Header settings if provided)
+                },
+                "BCLConvert_Settings": {
+                    "SoftwareVersion": "4.2.7",
+                    "FastqCompressionFormat": "gzip",
+                    ... (additional BCLConvert_Settings if provided)
+                }
+            }
+
+        Raises:
+            ValueError: If `file_path` is not a string.
+
+        Notes:
+            - If `header_parameters` or `bclconvert_parameters` are provided, the function will merge those extra settings into the corresponding sections.
+            - If a key already exists in the section, it will be overwritten by the provided value.
+        """
+        if not isinstance(file_path, str):
+            raise ValueError(f"{file_path} not valid.")
+
+        # Default values for core configuration keys
+        header_defaults = {"FileFormatVersion": 2, "InstrumentPlatform": machine, "RunName": flowcell}
+
+        bclconvert_defaults = {"SoftwareVersion": "4.2.7", "FastqCompressionFormat": "gzip"}
+
+        # Initialize configuration data with defaults or provided values
+        config_data = {
+            "Header": {**header_defaults, **(header_parameters or {})},
+            "BCLConvert_Settings": {**bclconvert_defaults, **(bclconvert_parameters or {})},
+        }
+
+        # Write the final configuration data to the specified file
+        with open(file_path, "w") as json_file:
+            json.dump(config_data, json_file, indent=4)
+
+    # Usage example:
+    # Assuming you have functions `filter_runinfo` and `extract_illumina_runid_fromxml` to get `machine` and `flowcell`
+    # machine = filter_runinfo(xml_file)
+    # flowcell = extract_illumina_runid_fromxml(xml_file)
+    # header_extra = {"InstrumentType": "NextSeq"}
+    # bclconvert_extra = {"ReadStructure": "151T8T151"}
+    # create_bclconfig('bcl_config.json', machine, flowcell, header_extra=header_extra, bclconvert_extra=bclconvert_extra)
 
     def generate_bcl_samplesheet(
         self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_name: str = "samplesheet"

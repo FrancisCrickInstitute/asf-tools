@@ -4,6 +4,7 @@ Tests covering the data_transfer module
 
 import csv
 import io
+import json
 import os
 import tempfile
 import unittest
@@ -556,47 +557,66 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert result == expected
 
-    # def test_convert_to_bcl_compliant_filenotexist(self):
-    #     """
-    #     Pass a file that does not exist
-    #     """
+    def test_generate_bclconfig_invalidpath(self):
+        """
+        Pass an invalid input as file path to method
+        """
 
-    #     # Set up
-    #     iu = IlluminaUtils()
-    #     invalid_path = "file_does_not_exist"
-    #     output_file_name = "file"
-    #     bcl_settings_dict = {"settings": "fake_settings"}
-    #     bcl_data_dict = {"data": "fake_data"}
+        # Set up
+        iu = IlluminaUtils()
+        fake_list = ["values"]
 
-    #     # Test and Assert
-    #     with self.assertRaises(FileNotFoundError):
-    #         iu.convert_to_bcl_compliant(invalid_path, output_file_name, bcl_settings_dict, bcl_data_dict)
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.generate_bclconfig(fake_list, "machine", "flowcell")
 
-    #         # def test_extract_top_unknown_barcode_from_html_filenotexist(self):
-    #         #     """
-    #         #     Pass a file that does not exist
-    #         #     """
+    @patch("builtins.open", new_callable=mock_open)
+    def test_generate_bclconfig_isvalid(self, mock_file):
+        """
+        Test with only required parameters, no extra fields
+        """
 
-    #         #     # Set up
-    #         #     iu = IlluminaUtils()
-    #         #     invalid_path = "file_does_not_exist"
+        # Set up
+        iu = IlluminaUtils()
 
-    #         #     # Test and Assert
-    #         #     with self.assertRaises(FileNotFoundError):
-    #         iu.extract_top_unknown_barcode_from_html(invalid_path)
+        # Test
+        iu.generate_bclconfig("mock_path.json", "NovaseqX", "Flowcell123")
 
-    # def test_extract_top_unknown_barcode_from_html_fileinvalid(self):
-    #     """
-    #     Pass a file that is not html
-    #     """
+        # Assert
+        # Load the data written to the mock file
+        mock_file().write.assert_called()
+        written_data = "".join(call.args[0] for call in mock_file().write.call_args_list)
+        data = json.loads(written_data)
 
-    #     # Set up
-    #     iu = IlluminaUtils()
-    #     invalid_input = "./tests/data/illumina/dummy.txt"
+        # Check the default values
+        self.assertEqual(data["Header"]["FileFormatVersion"], 2)
+        self.assertEqual(data["Header"]["InstrumentPlatform"], "NovaseqX")
+        self.assertEqual(data["Header"]["RunName"], "Flowcell123")
+        self.assertEqual(data["BCLConvert_Settings"]["SoftwareVersion"], "4.2.7")
+        self.assertEqual(data["BCLConvert_Settings"]["FastqCompressionFormat"], "gzip")
 
-    #     # Test and Assert
-    #     with self.assertRaises(ValueError):
-    #         iu.extract_top_unknown_barcode_from_html(invalid_input)
+    @patch("builtins.open", new_callable=mock_open)
+    def test_generate_bclconfig_override_and_additional_fields(self, mock_file):
+        """
+        # Test with both overrides and additional fields
+        """
+        # Set up
+        iu = IlluminaUtils()
+        header_extra = {"FileFormatVersion": 3, "ExtraHeaderField": "TestHeaderValue"}
+        bclconvert_extra = {"SoftwareVersion": "4.3.0", "ExtraBCLConvertField": "TestBCLValue"}
+
+        # Test
+        iu.generate_bclconfig("mock_path.json", "NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
+
+        # Load the data written to the mock file
+        written_data = "".join(call.args[0] for call in mock_file().write.call_args_list)
+        data = json.loads(written_data)
+
+        # Check overridden and additional fields
+        self.assertEqual(data["Header"]["FileFormatVersion"], 3)  # overridden
+        self.assertEqual(data["Header"]["ExtraHeaderField"], "TestHeaderValue")  # additional
+        self.assertEqual(data["BCLConvert_Settings"]["SoftwareVersion"], "4.3.0")  # overridden
+        self.assertEqual(data["BCLConvert_Settings"]["ExtraBCLConvertField"], "TestBCLValue")  # additional
 
 
 class TestIlluminaUtilsWithFixtures:
