@@ -1,5 +1,6 @@
 import json
 import os
+import unittest
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import IlluminaUtils
@@ -69,13 +70,15 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
     if not bcl_config_path:
-        xml_filtered = iu.filter_runinfo(runinfo_file)
+        xml_to_dict = iu.runinfo_xml_to_dict(runinfo_file)
+        xml_filtered = iu.filter_runinfo(xml_to_dict)
         machine_type = xml_filtered["machine"]
         config_json = iu.generate_bclconfig(machine_type, flowcell_id)
 
-        bcl_config_path_gen = "bcl_config" + "_" + flowcell_id + ".json"
-        with open(bcl_config_path_gen, "w") as file:
-            json.dump(config_json, bcl_config_path_gen, indent=4)
+        bcl_config_path = "bcl_config" + "_" + flowcell_id + ".json"
+        if not os.path.exists(bcl_config_path):
+            with open(bcl_config_path, "w") as file:
+                json.dump(config_json, file, indent=4)
 
     # Extract info from the BCL Config file
     with open(bcl_config_path, "r") as file:
@@ -95,7 +98,7 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
     single_cell_samples = {}
     other_samples = {}
 
-    ## Identify the project type and add to the appropriate dictionary 
+    ## Identify the project type and add to the appropriate dictionary
     for project_type, samples in split_samples_by_projecttype.items():
         # Filter samples based on project type
         filtered_samples = {}
@@ -103,12 +106,11 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
             filtered_samples[sample] = sample_and_index_dict[sample]
 
         if "DLP" in project_type:
-            # Workflow not determined yet
-            pass
+            # Add samples to DLP group
+            dlp_samples.update(filtered_samples)
         elif "Single Cell" in project_type:
-            # All samples are expected to be dual index and one index length
-            samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "singlecell" + "_"
-            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+            # Add samples to Single Cell group
+            single_cell_samples.update(filtered_samples)
         else:
             # Add samples to Other group (e.g., Bulk or undefined types)
             other_samples.update(filtered_samples)
@@ -120,25 +122,26 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
 
     # This should include 10X/single cell data
     if single_cell_samples:
-        samplesheet_name = f"{flowcell_id}_samplesheet_10X_"
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+        # All samples are expected to be dual index and one index length
+        samplesheet_name = f"{flowcell_id}_samplesheet_singlecell_"
 
-            for index_length_sample_list in split_samples_by_indexlength:
-                # Create a dictionary with a subset of samples and their index values based on their index length
-                filtered_samples = {}
-                for sample in index_length_sample_list["samples"]:
-                    filtered_samples[sample] = sample_and_index_dict[sample]
+    if other_samples:
+        split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
+        for index_length_sample_list in split_samples_by_indexlength:
+            # Create a dictionary with a subset of samples and their index values based on their index length
+            filtered_samples = {}
+            for sample in index_length_sample_list["samples"]:
+                filtered_samples[sample] = sample_and_index_dict[sample]
 
-                # Check if Index length and Cycle length match
-                if (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
-                    index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
-                ):
-                    samplesheet_name = "samplesheet" + "_" + project_type + str(index_length_sample_list["index_length"][0]) + "_" + str(index_length_sample_list["index_length"][1])
-                else:
-                    override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
+            # Check if Index length and Cycle length match
+            if not (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
+                index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
+            ):
+                override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
+                print(override_string)
                 bcl_settings_dict["OverrideCycles"] = override_string
 
-            samplesheet_name = flowcell_id + "samplesheet" + "_" + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
+        # samplesheet_name = flowcell_id + "samplesheet_" + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
 
-            # Generate samplesheet with the updated settings
-            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+    # # Generate samplesheet with the updated settings
+    # iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
