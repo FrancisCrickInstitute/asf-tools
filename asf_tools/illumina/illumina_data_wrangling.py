@@ -23,36 +23,6 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 # 4) create the bcl dicts for the samplesheet
 
-################
-
-# # each dict within the split_samples_by_indexlength list has a collection of sample ids split according to both its index and index2 values
-
-# # create subsetted dict with sample,index,index2 THEN
-# # add step to check if index length==length in runinfo
-# # if FALSE (ie. index different), run generate_overridecycle_string
-
-
-# cycle_length = iu.extract_cycle_fromxml(runinfo_file)
-
-# # All subsequent steps are run for each entry in split_samples_by_indexlength until a samplesheet has been created for all of them
-# for entry in split_samples_by_indexlength:
-#     filtered_samples = {}
-#     if (index_length[0] == num_cycles and index_length[1] == 0) or (index_length[0] == num_cycles and index_length[1] == num_cycles):
-#         for sample in entry["samples"]:
-#             if sample in sample_and_index_dict:
-#                     filtered_samples[sample] = sample_and_index_dict[sample]
-
-# # eventually, collect all the dicts and run generate_bcl_samplesheet
-
-# samplesheet_v1 = generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name: str = "samplesheet")
-# if os.path.exist("samplesheet.csv"):
-
-# # split_by_index_length = self.
-
-
-# generate_overridecycle_string(reads_dict[read], reads_dict[num_cycles], reads_dict[num_cycles])
-
-
 ################################################################################################
 
 # def generate_bcl_config():
@@ -121,6 +91,11 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
 
     # Subdivide samples into different workflows based on project type
     # Can be: DLP+, 10X ATAC, 10X, or Bulk/non-10X
+    dlp_samples = {}
+    single_cell_samples = {}
+    other_samples = {}
+
+    ## Identify the project type and add to the appropriate dictionary 
     for project_type, samples in split_samples_by_projecttype.items():
         # Filter samples based on project type
         filtered_samples = {}
@@ -135,13 +110,18 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
             samplesheet_name = flowcell_id + "_" + "samplesheet" + "_" + "singlecell" + "_"
             iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
         else:
-            # This should include Bulk data and all other project types
+            # Add samples to Other group (e.g., Bulk or undefined types)
+            other_samples.update(filtered_samples)
 
-            # Group samples based on Index length
-            split_samples_by_indexlength = iu.group_samples_by_index_length(sample_and_index_dict)
+    # Initiate processing only if samples are present for each workflow
+    if dlp_samples:
+        # Workflow not determined yet
+        pass
 
-            # Extract the Cycle length
-            cycle_length = iu.extract_cycle_fromxml(runinfo_file)
+    # This should include 10X/single cell data
+    if single_cell_samples:
+        samplesheet_name = f"{flowcell_id}_samplesheet_10X_"
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
 
             for index_length_sample_list in split_samples_by_indexlength:
                 # Create a dictionary with a subset of samples and their index values based on their index length
@@ -155,22 +135,10 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
                 ):
                     samplesheet_name = "samplesheet" + "_" + project_type + str(index_length_sample_list["index_length"][0]) + "_" + str(index_length_sample_list["index_length"][1])
                 else:
-                    # Generate the OverrideCycle string
-                    # Extracting an index string values
-                    index_string = next(iter(filtered_samples.values()))["index"]
-                    first_sample = next(iter(filtered_samples.values()))
-                    index2_string = first_sample.get("index2")
-                    if index2_string:
-                        override_string = iu.generate_overridecycle_string(
-                            index_string, cycle_length[1], cycle_length[0], index2_string, cycle_length[2], cycle_length[3]
-                        )
-                    else:
-                        override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
-                    bcl_settings_dict["OverrideCycles"] = override_string
+                    override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
+                bcl_settings_dict["OverrideCycles"] = override_string
 
-                # Generate samplesheet with the updated settings
-                iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+            samplesheet_name = flowcell_id + "samplesheet" + "_" + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
 
-
-if __name__ == "__main__":
-    generate_illumina_demux_samplesheets("./tests/data/illumina/RunInfo.xml")
+            # Generate samplesheet with the updated settings
+            iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
