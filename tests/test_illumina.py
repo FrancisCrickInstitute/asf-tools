@@ -557,46 +557,50 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert result == expected
 
-    def test_generate_bclconfig_invalidpath(self):
+    def test_generate_bclconfig_invalidmachine(self):
         """
         Pass an invalid input as file path to method
         """
 
         # Set up
         iu = IlluminaUtils()
-        fake_list = ["values"]
+        fake_list = []
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.generate_bclconfig(fake_list, "machine", "flowcell")
+            iu.generate_bclconfig(fake_list, "flowcell")
 
-    @patch("builtins.open", new_callable=mock_open)
-    def test_generate_bclconfig_isvalid(self, mock_file):
+    def test_generate_bclconfig_invalidflowcell(self):
+        """
+        Pass an invalid input as file path to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.generate_bclconfig("machine", 123)
+
+    def test_generate_bclconfig_isvalid(self):
         """
         Test with only required parameters, no extra fields
         """
 
         # Set up
         iu = IlluminaUtils()
+        expected = {
+            "Header": {"FileFormatVersion": 2, "InstrumentPlatform": "NovaseqX", "RunName": "Flowcell123"},
+            "BCLConvert_Settings": {"SoftwareVersion": "4.2.7", "FastqCompressionFormat": "gzip"},
+        }
 
         # Test
-        iu.generate_bclconfig("mock_path.json", "NovaseqX", "Flowcell123")
+        results = iu.generate_bclconfig("NovaseqX", "Flowcell123")
 
         # Assert
-        # Load the data written to the mock file
-        mock_file().write.assert_called()
-        written_data = "".join(call.args[0] for call in mock_file().write.call_args_list)
-        data = json.loads(written_data)
+        assert results == expected
 
-        # Check the default values
-        self.assertEqual(data["Header"]["FileFormatVersion"], 2)
-        self.assertEqual(data["Header"]["InstrumentPlatform"], "NovaseqX")
-        self.assertEqual(data["Header"]["RunName"], "Flowcell123")
-        self.assertEqual(data["BCLConvert_Settings"]["SoftwareVersion"], "4.2.7")
-        self.assertEqual(data["BCLConvert_Settings"]["FastqCompressionFormat"], "gzip")
-
-    @patch("builtins.open", new_callable=mock_open)
-    def test_generate_bclconfig_override_and_additional_fields(self, mock_file):
+    def test_generate_bclconfig_override_and_additional_fields(self):
         """
         # Test with both overrides and additional fields
         """
@@ -604,19 +608,16 @@ class TestIlluminaUtils(unittest.TestCase):
         iu = IlluminaUtils()
         header_extra = {"FileFormatVersion": 3, "ExtraHeaderField": "TestHeaderValue"}
         bclconvert_extra = {"SoftwareVersion": "4.3.0", "ExtraBCLConvertField": "TestBCLValue"}
+        expected = {
+            "Header": {"FileFormatVersion": 3, "InstrumentPlatform": "NovaseqX", "RunName": "Flowcell123", "ExtraHeaderField": "TestHeaderValue"},
+            "BCLConvert_Settings": {"SoftwareVersion": "4.3.0", "FastqCompressionFormat": "gzip", "ExtraBCLConvertField": "TestBCLValue"},
+        }
 
         # Test
-        iu.generate_bclconfig("mock_path.json", "NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
+        results = iu.generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
 
-        # Load the data written to the mock file
-        written_data = "".join(call.args[0] for call in mock_file().write.call_args_list)
-        data = json.loads(written_data)
-
-        # Check overridden and additional fields
-        self.assertEqual(data["Header"]["FileFormatVersion"], 3)  # overridden
-        self.assertEqual(data["Header"]["ExtraHeaderField"], "TestHeaderValue")  # additional
-        self.assertEqual(data["BCLConvert_Settings"]["SoftwareVersion"], "4.3.0")  # overridden
-        self.assertEqual(data["BCLConvert_Settings"]["ExtraBCLConvertField"], "TestBCLValue")  # additional
+        # Assert
+        assert results == expected
 
 
 class TestIlluminaUtilsWithFixtures:

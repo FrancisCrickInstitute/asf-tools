@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import warnings
@@ -657,6 +656,10 @@ class IlluminaUtils:
             - If `header_parameters` or `bclconvert_parameters` are provided, the function will merge those extra settings into the corresponding sections.
             - If a key already exists in the section, it will be overwritten by the provided value.
         """
+        if not isinstance(machine, str):
+            raise ValueError(f"{machine} must be a string.")
+        if not isinstance(flowcell, str):
+            raise ValueError(f"{flowcell} must be a string.")
 
         # Default values for core configuration keys
         header_defaults = {"FileFormatVersion": 2, "InstrumentPlatform": machine, "RunName": flowcell}
