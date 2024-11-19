@@ -86,7 +86,21 @@ def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_p
     header_dict = config_json["Header"]
     bcl_settings_dict = config_json["BCLConvert_Settings"]
     xml_content_dict = iu.runinfo_xml_to_dict(runinfo_file)
+
+    # Obtain read specific information and format it as required by BCLconvert
     reads_dict = iu.filter_readinfo(xml_content_dict)
+    reads_list = reads_dict["reads"]
+    # Convert to dictionary
+    reads_dict = {item["read"]: item["num_cycles"] for item in reads_list}
+    key_replacements = {
+        "Read 1": "Read1Cycles",
+        "Index 2": "Index1Cycles",
+        "Index 3": "Index2Cycles",
+        "Read 4": "Read2Cycles",
+    }
+    reformatted_reads_dict = {
+        key_replacements.get(key, key): value for key, value in reads_dict.items()  # Replace key if in key_replacements; otherwise, keep it
+    }
 
     # Split samples by project type
     split_samples_by_projecttype = iu.group_samples_by_dictkey(samples_all_info, "project_type")
@@ -103,7 +117,7 @@ def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_p
         filtered_samples = {}
         for sample in samples:
             # Add 'Sample_ID' to the dictionary for each sample
-            filtered_samples[sample] = {"Sample_ID": sample, **sample_and_index_dict[sample]}
+            filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
 
         if "DLP" in project_type:
             # Add samples to DLP group
@@ -142,8 +156,18 @@ def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_p
             # Create a dictionary with a subset of samples and their index values based on their index length
             filtered_samples = {}
             for sample in index_length_sample_list["samples"]:
-                # filtered_samples[sample] = sample_and_index_dict[sample]
-                filtered_samples[sample] = {"Sample_ID": sample, **sample_and_index_dict[sample]}
+                filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
+
+            # split samples into multiple entries based on lane values
+            split_samples_dict = {}
+            for sample, details in filtered_samples.items():
+                lanes = details['Lane']  # Get the list of lanes
+                for lane in lanes:
+                    # Create a new key for each unique (sample, lane) combination
+                    unique_key = f"{sample}_Lane{lane}"
+                    # Copy the sample details and replace the Lane value with the current lane
+                    split_samples_dict[unique_key] = {**details, 'Lane': lane}
+            filtered_samples = split_samples_dict
 
             # Obtain the cycle length
             cycle_length = iu.extract_cycle_fromxml(runinfo_file)
@@ -164,4 +188,4 @@ def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_p
 
     # Generate samplesheet with the updated settings
     samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
+    iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)

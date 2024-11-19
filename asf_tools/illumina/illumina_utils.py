@@ -683,7 +683,12 @@ class IlluminaUtils:
     # create_bclconfig('bcl_config.json', machine, flowcell, header_extra=header_extra, bclconvert_extra=bclconvert_extra)
 
     def generate_bcl_samplesheet(
-        self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_path: str = "samplesheet.csv"
+        self,
+        header_dict: dict,
+        reads_dict: dict,
+        bcl_settings_dict: dict = None,
+        bcl_data_dict: dict = None,
+        output_file_path: str = "samplesheet.csv",
     ):
         """
         Generates a BCL sample sheet in CSV format, including sections for header, reads, BCLConvert settings, and BCLConvert data.
@@ -755,8 +760,8 @@ class IlluminaUtils:
     #     xml_info = self.merge_runinfo_dict_fromfile(xml_file)
     #     print(xml_info)
 
-        # last step
-        # self.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
+    # last step
+    # self.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
 
     # def extract_top_unknown_barcode_from_html(self, html_file) -> str:
     #     """
