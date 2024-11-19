@@ -1,16 +1,39 @@
-import pytest
+import os
+import unittest
+import json
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 
+from .test_io_utils import with_temporary_folder
 
-def test_generate_illumina_demux_samplesheets():
-    file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
-    # generate_illumina_demux_samplesheets(file)
-    results = generate_illumina_demux_samplesheets(file)
-    print(results)
+class TestIlluminaDemux(unittest.TestCase):
+    """Class for testing the generate_illumina_samplesheet tools"""
 
-    # Assert
-    raise ValueError
+
+    @with_temporary_folder
+    def test_generate_illumina_demux_samplesheets(self, tmp_path):
+        # Set up
+        file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
+        # create output files paths
+        tmp_samplesheet_file_path = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
+        tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
+
+        # Test
+        generate_illumina_demux_samplesheets(file, tmp_path)
+
+        # Assert
+        self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
+        self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+
+        # Check the content of the files
+        with open(tmp_samplesheet_file_path, "r") as file:
+            data = "".join(file.readlines())
+            self.assertTrue("[BCLConvert_Data]" in data)
+        with open(tmp_bclconfig_file_path, "r") as file:
+            config_json = json.load(file)
+            self.assertTrue("Header" in config_json)
+
+
 #############
 # flowcell_id = 22NWWGLT3
 # samples_all_info = {'WAR6617A1': {'sample_name': 'B_LTX_160_BS_GL_BCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': '015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A2': {'sample_name': 'B_LTX_160_SU_T1-R3_BCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': '016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A5': {'sample_name': 'B_LTX_160_BS_GL_WCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': 'WM Custom 15 (ACTTGACT-AACGAACT)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A6': {'sample_name': 'B_LTX_160_SU_T1-R3_WCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': 'WM Custom 16 (TCTTCTCG-TATCTCAT)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}}
@@ -30,12 +53,10 @@ def test_generate_illumina_demux_samplesheets():
 # samplesheet_name = 22NWWGLT3_samplesheet_8_8
 
 
-
 # import unittest
 # from unittest.mock import Mock, patch, call
 # import json
 
-# # # Assume your main script is in a module named `workflow`
 # # from workflow import IlluminaUtils, ClarityHelperLims
 
 

@@ -31,7 +31,7 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 ################################################################################################
 
 
-def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
+def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_path=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
 
@@ -75,10 +75,9 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
         machine_type = xml_filtered["machine"]
         config_json = iu.generate_bclconfig(machine_type, flowcell_id)
 
-        bcl_config_path = "bcl_config_" + flowcell_id + ".json"
-        if not os.path.exists(bcl_config_path):
-            with open(bcl_config_path, "w") as file:
-                json.dump(config_json, file, indent=4)
+        bcl_config_path = os.path.join(output_path, "bcl_config_" + flowcell_id + ".json")
+        with open(bcl_config_path, "w") as file:
+            json.dump(config_json, file, indent=4)
 
     # Extract info from the BCL Config file
     with open(bcl_config_path, "r") as file:
@@ -117,7 +116,7 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
             other_samples.update(filtered_samples)
 
     # Set up variables required for the samplesheet generation
-    samplesheet_name = None
+    samplesheet_name = "samplesheet"
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
@@ -164,7 +163,5 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
                 bcl_settings_dict["OverrideCycles"] = override_string
 
     # Generate samplesheet with the updated settings
-    if samplesheet_name:
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
-    else:
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples)
+    samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+    iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
