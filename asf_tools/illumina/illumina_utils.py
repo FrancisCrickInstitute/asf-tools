@@ -281,10 +281,10 @@ class IlluminaUtils:
             is_indexed_read = self.extract_matching_item_from_dict(read, "@IsIndexedRead")
 
             if is_indexed_read == "N":
-                read_data.append({"read": f"Read {number}", "num_cycles": f"{num_cycles} Seq"})
+                read_data.append({"read": f"Read {number}", "num_cycles": f"{num_cycles}"})
                 end_type_count += 1
             elif is_indexed_read == "Y":
-                read_data.append({"read": f"Read {number}", "num_cycles": f"{num_cycles} Seq"})
+                read_data.append({"read": f"Index {number}", "num_cycles": f"{num_cycles}"})
 
         end_type = "SR"
         if end_type_count > 1:
@@ -683,7 +683,7 @@ class IlluminaUtils:
     # create_bclconfig('bcl_config.json', machine, flowcell, header_extra=header_extra, bclconvert_extra=bclconvert_extra)
 
     def generate_bcl_samplesheet(
-        self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_name: str = "samplesheet"
+        self, header_dict: dict, reads_dict: dict, bcl_settings_dict: dict = None, bcl_data_dict: dict = None, output_file_path: str = "samplesheet.csv"
     ):
         """
         Generates a BCL sample sheet in CSV format, including sections for header, reads, BCLConvert settings, and BCLConvert data.
@@ -708,9 +708,8 @@ class IlluminaUtils:
             }
             generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, "output_samplesheet")
         """
-        output_file = output_file_name + ".csv"
         # Open the output file
-        with open(output_file, "w", encoding="ASCII") as f:
+        with open(output_file_path, "w", encoding="ASCII") as f:
             # Write the Header section
             if header_dict:
                 f.write("[Header]\n")

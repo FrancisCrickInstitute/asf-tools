@@ -754,10 +754,10 @@ class TestIlluminaUtilsWithFixtures:
                     "run_id": "20240711_LH00442_0033_A22MKK5LT3",
                     "end_type": "PE",
                     "reads": [
-                        {"read": "Read 1", "num_cycles": "151 Seq"},
-                        {"read": "Read 2", "num_cycles": "10 Seq"},
-                        {"read": "Read 3", "num_cycles": "10 Seq"},
-                        {"read": "Read 4", "num_cycles": "151 Seq"},
+                        {"read": "Read 1", "num_cycles": "151"},
+                        {"read": "Index 2", "num_cycles": "10"},
+                        {"read": "Index 3", "num_cycles": "10"},
+                        {"read": "Read 4", "num_cycles": "151"},
                     ],
                 },
             )
