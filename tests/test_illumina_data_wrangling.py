@@ -23,6 +23,11 @@ def test_generate_illumina_demux_samplesheets():
 # split_samples_by_indexlength = [{'index_length': (8, 8), 'samples': ['WAR6617A1', 'WAR6617A2', 'WAR6617A5', 'WAR6617A6']}]
 # filtered_samples -> run after the indexing commands
 # filtered_samples = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
+# for each sample:
+# index_string = CGAATTGC
+# index2_string = GTAAGGTG
+# override_string = Y151;I8N0;I8N0;Y151
+# samplesheet_name = 22NWWGLT3_samplesheet_8_8
 
 
 

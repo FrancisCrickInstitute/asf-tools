@@ -132,16 +132,24 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
             filtered_samples = {}
             for sample in index_length_sample_list["samples"]:
                 filtered_samples[sample] = sample_and_index_dict[sample]
+            # print(filtered_samples)
+            # print(index_length_sample_list)
 
+            # Obtain the cycle length
+            cycle_length = iu.extract_cycle_fromxml(runinfo_file)
+            for sample in filtered_samples.items():
+                index_string = sample[1]["index"]
+                index2_string = sample[1]["index2"] if sample[1]["index2"] else None
             # Check if Index length and Cycle length match
             if not (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
                 index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
             ):
-                override_string = iu.generate_overridecycle_string(index_string, cycle_length[1], cycle_length[0])
-                print(override_string)
+                if index2_string:
+                    override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3]))
+                else:
+                    override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                 bcl_settings_dict["OverrideCycles"] = override_string
 
-        # samplesheet_name = flowcell_id + "samplesheet_" + str(entry["index_length"][0]) + "_" + str(entry["index_length"][1])
 
-    # # Generate samplesheet with the updated settings
-    # iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+    # Generate samplesheet with the updated settings
+    iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)

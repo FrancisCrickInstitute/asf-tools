@@ -542,13 +542,13 @@ class IlluminaUtils:
         """
         # Check that input_string is a string
         if not isinstance(index_str, str):
-            raise TypeError("The index value must be a string.")
+            raise TypeError(f"The index value ({index_str}) must be a string.")
 
         # Check that input_integer and y_value are integers
         if not isinstance(runinfo_index_len, int):
-            raise TypeError("The runinfo index length must be an integer.")
+            raise TypeError(f"The runinfo index length ({runinfo_read_len}) must be an integer.")
         if not isinstance(runinfo_read_len, int):
-            raise TypeError("The runinfo read length must be an integer.")
+            raise TypeError(f"The runinfo read length ({runinfo_read_len}) must be an integer.")
 
         if index_str == "" or index_str is None:
             raise TypeError("The index value cannot be empty or None.")
