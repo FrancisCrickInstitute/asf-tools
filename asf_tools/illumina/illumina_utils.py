@@ -744,16 +744,16 @@ class IlluminaUtils:
                 for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
                     f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
 
-    def generate_bcl_samplesheet_from_runid_xml(self, runid: str, xml_file, output_file_name: str = "samplesheet"):
+    # def generate_bcl_samplesheet_from_runid_xml(self, runid: str, xml_file, output_file_path: str = "samplesheet.csv"):
 
-        # Collect sample info
-        cl = ClarityHelperLims()
-        sample_info = cl.collect_samplesheet_info(runid)
-        bcl_data_dict = cl.reformat_barcode_to_index(sample_info)
+    #     # Collect sample info
+    #     cl = ClarityHelperLims()
+    #     sample_info = cl.collect_samplesheet_info(runid)
+    #     bcl_data_dict = cl.reformat_barcode_to_index(sample_info)
 
-        # Extract relevant info from the xml file
-        xml_info = self.merge_runinfo_dict_fromfile(xml_file)
-        print(xml_info)
+    #     # Extract relevant info from the xml file
+    #     xml_info = self.merge_runinfo_dict_fromfile(xml_file)
+    #     print(xml_info)
 
         # last step
         # self.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)

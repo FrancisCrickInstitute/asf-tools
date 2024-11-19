@@ -288,10 +288,10 @@ class TestIlluminaUtils(unittest.TestCase):
             "run_id": "20240711_LH00442_0033_A22MKK5LT3",
             "end_type": "PE",
             "reads": [
-                {"read": "Read 1", "num_cycles": "151 Seq"},
-                {"read": "Read 2", "num_cycles": "10 Seq"},
-                {"read": "Read 3", "num_cycles": "10 Seq"},
-                {"read": "Read 4", "num_cycles": "151 Seq"},
+                {"read": "Read 1", "num_cycles": "151"},
+                {"read": "Index 2", "num_cycles": "10"},
+                {"read": "Index 3", "num_cycles": "10"},
+                {"read": "Read 4", "num_cycles": "151"},
             ],
             "current_date": current_datetime,
             "instrument": "LH00442",
@@ -1265,13 +1265,13 @@ class TestIlluminaUtilsWithFixtures:
         """
         # Set up
         iu = IlluminaUtils()
-        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+        output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
 
         # Test
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_path)
 
         # Assert
-        output_file = output_file_name + ".csv"
+        output_file = output_file_path
         with open(output_file, "r", encoding="ASCII") as f:
             reader = csv.reader(f)
             content = list(reader)
@@ -1314,14 +1314,14 @@ class TestIlluminaUtilsWithFixtures:
         """
         # Set up
         iu = IlluminaUtils()
-        output_file_name = os.path.join(self.tmp_path, "test_samplesheet")
+        output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
         bcl_settings_dict = {}
 
         # Test
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict=bcl_settings_dict, output_file_name=output_file_name)
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict=bcl_settings_dict, output_file_path=output_file_path)
 
         # Assert
-        output_file = output_file_name + ".csv"
+        output_file = output_file_path
         with open(output_file, "r", encoding="ASCII") as f:
             reader = csv.reader(f)
             content = list(reader)
