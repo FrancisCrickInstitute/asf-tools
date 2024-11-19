@@ -66,7 +66,7 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
     samples_all_info = cl.collect_samplesheet_info(flowcell_id)
-    sample_and_index_dict = iu.reformat_barcode(samples_all_info) # Convert barcode value from "BC (ATGC)" to "ATGC"
+    sample_and_index_dict = iu.reformat_barcode(samples_all_info)  # Convert barcode value from "BC (ATGC)" to "ATGC"
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
     if not bcl_config_path:
@@ -75,7 +75,7 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
         machine_type = xml_filtered["machine"]
         config_json = iu.generate_bclconfig(machine_type, flowcell_id)
 
-        bcl_config_path = "bcl_config" + "_" + flowcell_id + ".json"
+        bcl_config_path = "bcl_config_" + flowcell_id + ".json"
         if not os.path.exists(bcl_config_path):
             with open(bcl_config_path, "w") as file:
                 json.dump(config_json, file, indent=4)
@@ -100,10 +100,11 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
 
     ## Identify the project type and add to the appropriate dictionary
     for project_type, samples in split_samples_by_projecttype.items():
-        # Filter samples based on project type
+        # Filter samples based on project type
         filtered_samples = {}
         for sample in samples:
-            filtered_samples[sample] = sample_and_index_dict[sample]
+            # Add 'Sample_ID' to the dictionary for each sample
+            filtered_samples[sample] = {"Sample_ID": sample, **sample_and_index_dict[sample]}
 
         if "DLP" in project_type:
             # Add samples to DLP group
@@ -114,6 +115,9 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
         else:
             # Add samples to Other group (e.g., Bulk or undefined types)
             other_samples.update(filtered_samples)
+
+    # Set up variables required for the samplesheet generation
+    samplesheet_name = None
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
@@ -128,12 +132,19 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
     if other_samples:
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
         for index_length_sample_list in split_samples_by_indexlength:
+            samplesheet_name = (
+                flowcell_id
+                + "_samplesheet_"
+                + str(index_length_sample_list["index_length"][0])
+                + "_"
+                + str(index_length_sample_list["index_length"][1])
+            )
+
             # Create a dictionary with a subset of samples and their index values based on their index length
             filtered_samples = {}
             for sample in index_length_sample_list["samples"]:
-                filtered_samples[sample] = sample_and_index_dict[sample]
-            # print(filtered_samples)
-            # print(index_length_sample_list)
+                # filtered_samples[sample] = sample_and_index_dict[sample]
+                filtered_samples[sample] = {"Sample_ID": sample, **sample_and_index_dict[sample]}
 
             # Obtain the cycle length
             cycle_length = iu.extract_cycle_fromxml(runinfo_file)
@@ -145,11 +156,15 @@ def generate_illumina_demux_samplesheets(runinfo_file, bcl_config_path=None):
                 index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
             ):
                 if index2_string:
-                    override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3]))
+                    override_string = iu.generate_overridecycle_string(
+                        index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3])
+                    )
                 else:
                     override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                 bcl_settings_dict["OverrideCycles"] = override_string
 
-
     # Generate samplesheet with the updated settings
-    iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+    if samplesheet_name:
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples, samplesheet_name)
+    else:
+        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, filtered_samples)
