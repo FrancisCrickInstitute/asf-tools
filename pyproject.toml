@@ -33,6 +33,8 @@ tests = [
     "pytest",
     "pytest-cov",
     "pytest-sugar",
+    "pytest-profiling",
+    "pytest-benchmark",
 ]
 
 [tool.setuptools]
