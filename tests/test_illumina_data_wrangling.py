@@ -1,14 +1,23 @@
+import json
 import os
 import unittest
-import json
+import pytest
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 
 from .test_io_utils import with_temporary_folder
 
+
+# def test_generate_illumina_demux1():
+#     # Set up
+#     file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
+
+#     # Test
+#     generate_illumina_demux_samplesheets(file, ".")
+
+
 class TestIlluminaDemux(unittest.TestCase):
     """Class for testing the generate_illumina_samplesheet tools"""
-
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets(self, tmp_path):
@@ -45,20 +54,87 @@ class TestIlluminaDemux(unittest.TestCase):
 # other_samples = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
 # split_samples_by_indexlength = [{'index_length': (8, 8), 'samples': ['WAR6617A1', 'WAR6617A2', 'WAR6617A5', 'WAR6617A6']}]
 # filtered_samples -> run after the indexing commands
-# filtered_samples = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
+# filtered_samples = {'WAR6617A1': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A1', 'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A2', 'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A5', 'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A6', 'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
 # for each sample:
 # index_string = CGAATTGC
 # index2_string = GTAAGGTG
 # override_string = Y151;I8N0;I8N0;Y151
 # samplesheet_name = 22NWWGLT3_samplesheet_8_8
+# [151, 8, 8, 151]
+
+    @with_temporary_folder
+    def test_generate_illumina_demux_samplesheets_singlecell(self, tmp_path):
+        # Set up
+        file = "./tests/data/illumina/22T3M3LT3/RunInfo.xml"
+        # create output files paths
+        tmp_samplesheet_file_path = os.path.join(tmp_path, "22T3M3LT3_samplesheet_singlecell_.csv")
+        tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22T3M3LT3.json")
+
+        # Test
+        generate_illumina_demux_samplesheets(file, tmp_path)
+
+        # Assert
+        self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
+        self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+
+        # Check the content of the files
+        with open(tmp_samplesheet_file_path, "r") as file:
+            data = "".join(file.readlines())
+            self.assertTrue("[BCLConvert_Data]" in data)
+        with open(tmp_bclconfig_file_path, "r") as file:
+            config_json = json.load(file)
+            self.assertTrue("Header" in config_json)
 
 
+# class TestIlluminaDemuxWithFixtures(unittest.TestCase):
+#     """Class for testing the generate_illumina_samplesheet tools"""
+
+#     @pytest.fixture(scope="function", autouse=True)
+#     def temporary_folder(self):
+#         """
+#         Function-level fixture that creates a temporary folder for each test.
+#         """
+#         with tempfile.TemporaryDirectory() as tmpdirname:
+#             # Attach to the test instance
+#             self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
+#             yield
+
+    @with_temporary_folder
+    @pytest.mark.parametrize(
+            "flowcell_id,runinfo_file", [
+                ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml"),
+                ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml")
+                ]
+    )
+    def test_generate_illumina_demux_samplesheets_withfixtures(self, flowcell_id, runinfo_file, tmp_path):
+        # Set up
+        # create output files paths
+        samplesheet_file_name = flowcell_id + "_samplesheet_10_10.csv"
+        bclconfig_name = "bcl_config_" + flowcell_id + "json"
+        tmp_samplesheet_file_path = os.path.join(tmp_path, samplesheet_file_name)
+        tmp_bclconfig_file_path = os.path.join(tmp_path, bclconfig_name)
+
+        # Test
+        generate_illumina_demux_samplesheets(runinfo_file, tmp_path)
+
+        # Assert
+        self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
+        self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+
+        # Check the content of the files
+        with open(tmp_samplesheet_file_path, "r") as file:
+            data = "".join(file.readlines())
+            self.assertTrue("[BCLConvert_Data]" in data)
+        with open(tmp_bclconfig_file_path, "r") as file:
+            config_json = json.load(file)
+            self.assertTrue("Header" in config_json)
+
+
+
+###########################################
 # import unittest
 # from unittest.mock import Mock, patch, call
 # import json
-
-# # from workflow import IlluminaUtils, ClarityHelperLims
-
 
 # class TestOverallWorkflow(unittest.TestCase):
 #     def setUp(self):

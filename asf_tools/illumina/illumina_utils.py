@@ -717,25 +717,25 @@ class IlluminaUtils:
         with open(output_file_path, "w", encoding="ASCII") as f:
             # Write the Header section
             if header_dict:
-                f.write("[Header]\n")
+                f.write("[Header],,,\n")
                 for key, value in header_dict.items():
-                    f.write(f"{key},{value}\n")
+                    f.write(f"{key},{value},,\n")
 
             # Write the Reads section
             if reads_dict:
-                f.write("\n[Reads]\n")
+                f.write("\n[Reads],,,\n")
                 for key, value in reads_dict.items():
-                    f.write(f"{key},{value}\n")
+                    f.write(f"{key},{value},,\n")
 
             # Add the [BCLConvert_Settings] section at the bottom
             if bcl_settings_dict:
-                f.write("\n[BCLConvert_Settings]\n")
+                f.write("\n[BCLConvert_Settings],,,\n")
                 for key, value in bcl_settings_dict.items():
-                    f.write(f"{key},{value}\n")
+                    f.write(f"{key},{value},,\n")
 
             # Add the [BCLConvert_Data] section after the settings at the bottom
             if bcl_data_dict:
-                f.write("\n[BCLConvert_Data]\n")
+                f.write("\n[BCLConvert_Data],,,\n")
                 # Collect all unique column headers from samples_dict
                 headers = set()
                 for sample_info in bcl_data_dict.values():
