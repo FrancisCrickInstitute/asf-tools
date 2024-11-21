@@ -2,11 +2,16 @@ import json
 import os
 import unittest
 import pytest
+import tempfile
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 
 from .test_io_utils import with_temporary_folder
 
+
+from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
+
+API_TEST_DATA = "tests/data/api/clarity"
 
 # def test_generate_illumina_demux1():
 #     # Set up
@@ -19,8 +24,21 @@ from .test_io_utils import with_temporary_folder
 class TestIlluminaDemux(unittest.TestCase):
     """Class for testing the generate_illumina_samplesheet tools"""
 
+    @classmethod
+    def setUpClass(cls):
+        """Setup API connection"""
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        cls.api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+        cls.api.load_tracked_requests(data_file_path)
+        cls.data_file_path = data_file_path
+
+    @classmethod
+    def tearDownClass(cls):
+        """Teardown API connection"""
+        cls.api.save_tracked_requests(cls.data_file_path)
+
     @with_temporary_folder
-    def test_generate_illumina_demux_samplesheets(self, tmp_path):
+    def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
         # Set up
         file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
         # create output files paths
@@ -28,7 +46,7 @@ class TestIlluminaDemux(unittest.TestCase):
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
 
         # Test
-        generate_illumina_demux_samplesheets(file, tmp_path)
+        generate_illumina_demux_samplesheets(self.api, file, tmp_path)
 
         # Assert
         self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
@@ -86,48 +104,56 @@ class TestIlluminaDemux(unittest.TestCase):
             self.assertTrue("Header" in config_json)
 
 
-# class TestIlluminaDemuxWithFixtures(unittest.TestCase):
-#     """Class for testing the generate_illumina_samplesheet tools"""
+class TestIlluminaDemuxWithFixtures():
+    """Class for testing the generate_illumina_samplesheet tools"""
 
-#     @pytest.fixture(scope="function", autouse=True)
-#     def temporary_folder(self):
-#         """
-#         Function-level fixture that creates a temporary folder for each test.
-#         """
-#         with tempfile.TemporaryDirectory() as tmpdirname:
-#             # Attach to the test instance
-#             self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
-#             yield
+    @pytest.fixture(scope="class")
+    def api(self, request):
+        """Setup API connection"""
+        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+        lims = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+        lims.load_tracked_requests(data_file_path)
+        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+        yield lims
 
-    @with_temporary_folder
+    @pytest.fixture(scope="function", autouse=True)
+    def temporary_folder(self):
+        """
+        Function-level fixture that creates a temporary folder for each test.
+        """
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            # Attach to the test instance
+            self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
+            yield
+
     @pytest.mark.parametrize(
-            "flowcell_id,runinfo_file", [
-                ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml"),
-                ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml")
+            "flowcell_id,runinfo_file,samplesheet_count", [
+                ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml",2),
+                ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml",1)
                 ]
     )
-    def test_generate_illumina_demux_samplesheets_withfixtures(self, flowcell_id, runinfo_file, tmp_path):
+    def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
         # Set up
         # create output files paths
         samplesheet_file_name = flowcell_id + "_samplesheet_10_10.csv"
         bclconfig_name = "bcl_config_" + flowcell_id + "json"
-        tmp_samplesheet_file_path = os.path.join(tmp_path, samplesheet_file_name)
-        tmp_bclconfig_file_path = os.path.join(tmp_path, bclconfig_name)
+        tmp_samplesheet_file_path = os.path.join(self.tmp_path, samplesheet_file_name)
+        tmp_bclconfig_file_path = os.path.join(self.tmp_path, bclconfig_name)
 
         # Test
-        generate_illumina_demux_samplesheets(runinfo_file, tmp_path)
+        generate_illumina_demux_samplesheets(api, runinfo_file, self.tmp_path)
 
         # Assert
-        self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
-        self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+        assert os.path.exists(tmp_samplesheet_file_path)
+        assert os.path.exists(tmp_bclconfig_file_path)
 
         # Check the content of the files
         with open(tmp_samplesheet_file_path, "r") as file:
             data = "".join(file.readlines())
-            self.assertTrue("[BCLConvert_Data]" in data)
+            assert "[BCLConvert_Data]" in data
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
-            self.assertTrue("Header" in config_json)
+            assert "Header" in config_json
 
 
 

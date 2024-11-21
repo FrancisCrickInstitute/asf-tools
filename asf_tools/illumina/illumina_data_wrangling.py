@@ -31,7 +31,8 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 ################################################################################################
 
 
-def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_path=None):
+
+def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_config_path=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
 
@@ -61,7 +62,6 @@ def generate_illumina_demux_samplesheets(runinfo_file, output_path, bcl_config_p
     """
     # Initialise classes
     iu = IlluminaUtils()
-    cl = ClarityHelperLims()
 
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
