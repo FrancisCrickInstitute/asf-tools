@@ -54,9 +54,9 @@ class GenDemuxRun:
         self.samplesheet_only = samplesheet_only
         self.nextflow_version = nextflow_version
 
-    def run(self):
+    def cli_run(self):
         """
-        Run function
+        Run function from CLI
         """
 
         log.debug("Scanning run folder")
@@ -127,34 +127,13 @@ class GenDemuxRun:
                 file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
-            api = ClarityHelperLims()
-
-            # Check mode and set the appropriate check function
-            if mode == DataTypeMode.ONT:
-                sample_dict = api.collect_samplesheet_info(run_name)
-            elif mode == DataTypeMode.ILLUMINA:
-                # extract illumina RunId/flowcell name, then run check function
-                iu = IlluminaUtils()
-                run_dir = os.path.join(self.source_dir, run_name)
-                illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
-                sample_dict = api.collect_samplesheet_info(illumina_run_name)
-            else:
-                sample_dict = api.collect_samplesheet_info(run_name)
-                log.warning(f"Mode selected: {mode}. General samplesheet created.")
+            sample_dict = self.get_samplesheet(run_name, mode)
 
             # Write samplesheet
+            sample_count, samplesheet = self.create_samplesheet(sample_dict)
             with open(samplesheet_path, "w", encoding="UTF-8") as file:
-                file.write("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
-                for key, value in sample_dict.items():
-                    # Convert all None values to "" for CSV
-                    clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
-                    barcode = "unclassified"
-                    if "barcode" in value and clean_dict["barcode"] != "":
-                        barcode = clean_dict["barcode"]
-                    file.write(
-                        f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}\n"
-                    )
-                    sample_count += 1
+                for line in samplesheet:
+                    file.write(line + "\n")
 
         # Set 666 for the samplesheet
         os.chmod(samplesheet_path, PERM666)
@@ -174,6 +153,48 @@ class GenDemuxRun:
 
             # Set 777 for the run script
             os.chmod(sbatch_script_path, PERM777)
+
+    def get_samplesheet(self, run_name: str, mode: DataTypeMode) -> dict:
+        """
+        Get samplesheet from API
+        """
+        # Get samplesheet from API
+        api = ClarityHelperLims()
+
+        # Check mode and set the appropriate check function
+        if mode == DataTypeMode.ONT:
+            sample_dict = api.collect_samplesheet_info(run_name)
+        elif mode == DataTypeMode.ILLUMINA:
+            # extract illumina RunId/flowcell name, then run check function
+            iu = IlluminaUtils()
+            run_dir = os.path.join(self.source_dir, run_name)
+            illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
+            sample_dict = api.collect_samplesheet_info(illumina_run_name)
+        else:
+            sample_dict = api.collect_samplesheet_info(run_name)
+            log.warning(f"Mode selected: {mode}. General samplesheet created.")
+
+        return sample_dict
+
+    def create_samplesheet(self, sample_dict: dict) -> list:
+        """
+        Create a samplesheet as a list of strings
+        """
+        samplesheet = []
+        count = 0
+        samplesheet.append("id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode")
+        for key, value in sample_dict.items():
+            # Convert all None values to "" for CSV
+            clean_dict = {key: ("" if value is None or value == "None" else value) for key, value in value.items()}
+            barcode = "unclassified"
+            if "barcode" in value and clean_dict["barcode"] != "":
+                barcode = clean_dict["barcode"]
+            samplesheet.append(
+                f"{key},{clean_dict['sample_name']},{clean_dict['group']},{clean_dict['user']},{clean_dict['project_id']},{clean_dict['project_limsid']},{clean_dict['project_type']},{clean_dict['reference_genome']},{clean_dict['data_analysis_type']},{barcode}"
+            )
+            count += 1
+
+        return count, samplesheet
 
     def create_ont_sbatch_text(self, run_name: str, parse_pos: int = -1) -> str:
         """Creates an sbatch script from a template and returns the text
