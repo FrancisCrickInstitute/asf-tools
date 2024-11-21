@@ -65,7 +65,7 @@ class Nemo:
         """
         self.disconnect()
 
-    def run_command(self, command):
+    def run_command(self, command: str) -> tuple:
         """
         Run a custom command on the HPC server.
 
@@ -76,12 +76,22 @@ class Nemo:
         result = self.connection.run(command, hide=True)
         return result.stdout.strip(), result.stderr.strip()
 
-    def list_directory(self, directory):
+    def list_directory(self, directory: str) -> list:
         """
         List the contents of a directory.
 
         :param directory: The directory to list.
         :return: A list of FileObject instances representing the directory contents.
+        
+        Each FileObject contains the following fields:
+        - name: The name of the file or directory.
+        - owner: The owner of the file or directory.
+        - group: The group associated with the file or directory.
+        - size: The size of the file in bytes.
+        - last_modified: The last modified date and time of the file or directory.
+        - type: The type of the file (folder, file, link, other).
+        - permissions: A dictionary representing the permissions for user, group, and others.
+        - link_target: The target of the link if the file is a symbolic link.
         """
         # Lists the contents of the specified directory with detailed info
         result = self.connection.run(f'cd {directory} && ls -la --time-style=long-iso', hide=True)

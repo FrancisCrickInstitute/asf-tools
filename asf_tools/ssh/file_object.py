@@ -62,4 +62,3 @@ class FileObject:
 
     def __repr__(self):
         return (f"<type={self.type},name={self.name},owner={self.owner},group={self.group},size={self.size},last_modified={self.last_modified}>")
-
