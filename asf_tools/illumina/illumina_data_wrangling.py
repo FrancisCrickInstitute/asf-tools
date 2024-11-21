@@ -31,7 +31,6 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 ################################################################################################
 
 
-
 def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_config_path=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
@@ -161,12 +160,12 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
             # split samples into multiple entries based on lane values
             split_samples_dict = {}
             for sample, details in filtered_samples.items():
-                lanes = details['Lane']  # Get the list of lanes
+                lanes = details["Lane"]  # Get the list of lanes
                 for lane in lanes:
                     # Create a new key for each unique (sample, lane) combination
                     unique_key = f"{sample}_Lane{lane}"
                     # Copy the sample details and replace the Lane value with the current lane
-                    split_samples_dict[unique_key] = {**details, 'Lane': lane}
+                    split_samples_dict[unique_key] = {**details, "Lane": lane}
             filtered_samples = split_samples_dict
 
             # Obtain the cycle length
