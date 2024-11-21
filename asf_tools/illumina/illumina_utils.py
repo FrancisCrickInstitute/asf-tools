@@ -607,15 +607,33 @@ class IlluminaUtils:
 
         # Check if a second set of parameters is provided
         if index2_str and runinfo_index2_len and runinfo_read2_len:
-            # if index2_str is not None and runinfo_index2_len is not None and runinfo_read2_len is not None:
             # Compute values for the second set of inputs
             index_str2_len, runinfo_index2_len_diff, runinfo_read2_len = self.calculate_overridecycle_values(
                 index2_str, runinfo_index2_len, runinfo_read2_len
             )
+
+            # Construct the overridecycle_string dynamically, skipping components with a value of 0
+            components = []
+
+            if runinfo_read_len > 0:
+                components.append(f"Y{runinfo_read_len}")
+            if index_str_len > 0 or runinfo_index_len_diff > 0:
+                first_index = f"I{index_str_len}" if index_str_len > 0 else ""
+                first_index += f"N{runinfo_index_len_diff}" if runinfo_index_len_diff > 0 else ""
+                components.append(first_index)
+
+            # Construct the overridecycle_string dynamically, skipping components with a value of 0
+            if index_str2_len > 0 or runinfo_index2_len_diff > 0:
+                second_index = f"I{index_str2_len}" if index_str2_len > 0 else ""
+                second_index += f"N{runinfo_index2_len_diff}" if runinfo_index2_len_diff > 0 else ""
+                components.append(second_index)
+            if runinfo_read2_len > 0:
+                components.append(f"Y{runinfo_read2_len}")
+
             # Return the full output format with both sets
-            overridecycle_string = (
-                f"Y{runinfo_read_len};I{index_str2_len}N{runinfo_index2_len_diff};I{index_str_len}N{runinfo_index_len_diff};Y{runinfo_read2_len}"
-            )
+            # Join the components with semicolons
+            overridecycle_string = ";".join(components)
+
         elif index2_str is None and runinfo_index2_len is None and runinfo_read2_len is None:
             # Return the simplified format if only one string is provided
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"

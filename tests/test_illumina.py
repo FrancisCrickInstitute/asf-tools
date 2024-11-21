@@ -542,6 +542,24 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert result == expected
 
+    def test_generate_overridecycle_string_dualindex_noNvalue(self):
+        """
+        Pass indexes with different lengths to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        expected_1 = "Y151;I8N2;I10;Y151"
+        expected_2 = "Y151;I10;I8N2;Y151"
+
+        # Test
+        result_1 = iu.generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)
+        result_2 = iu.generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)
+
+        # Assert
+        assert result_1 == expected_1
+        assert result_2 == expected_2
+
     def test_generate_overridecycle_string_singleindex_isvalid(self):
         """
         Pass valid inputs to method
@@ -1278,23 +1296,23 @@ class TestIlluminaUtilsWithFixtures:
             print(content)
 
             # Check the header
-            assert content[0] == ["[Header]"]
-            assert ["IEMFileVersion", "4"] in content
-            assert ["Date", "2024-09-12"] in content
-            assert ["Workflow", "GenerateFASTQ"] in content
+            assert content[0] == ["[Header]", "","",""]
+            assert ["IEMFileVersion", "4","",""] in content
+            assert ["Date", "2024-09-12","",""] in content
+            assert ["Workflow", "GenerateFASTQ","",""] in content
 
             # Check the reads
-            assert ["[Reads]"] in content
-            assert ["Read1Cycles", "151"] in content
-            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+            assert ["[Reads]", "","",""] in content
+            assert ["Read1Cycles", "151","",""] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA","",""] in content
 
             # Check the bcl settings
-            assert ["[BCLConvert_Settings]"] in content
-            assert ["SoftwareVersion", "x.y.z"] in content
-            assert ["AdapterBehavior", "trim"] in content
+            assert ["[BCLConvert_Settings]", "","",""] in content
+            assert ["SoftwareVersion", "x.y.z","",""] in content
+            assert ["AdapterBehavior", "trim","",""] in content
 
             # Check the bcl data
-            assert ["[BCLConvert_Data]"] in content
+            assert ["[BCLConvert_Data]", "","",""] in content
             assert content[-3] == ["Sample_ID", "index", "index2"]
             assert content[-2] == ["sample1", "A001", "B001"]
             assert content[-1] == ["sample2", "A002", "B002"]
@@ -1327,15 +1345,15 @@ class TestIlluminaUtilsWithFixtures:
             content = list(reader)
 
             # Check the header
-            assert content[0] == ["[Header]"]
-            assert ["IEMFileVersion", "4"] in content
-            assert ["Date", "2024-09-12"] in content
-            assert ["Workflow", "GenerateFASTQ"] in content
+            assert content[0] == ["[Header]", "","",""]
+            assert ["IEMFileVersion", "4","",""] in content
+            assert ["Date", "2024-09-12","",""] in content
+            assert ["Workflow", "GenerateFASTQ","",""] in content
 
             # Check the reads
-            assert ["[Reads]"] in content
-            assert ["Read1Cycles", "151"] in content
-            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"] in content
+            assert ["[Reads]", "","",""] in content
+            assert ["Read1Cycles", "151","",""] in content
+            assert ["Adapter", "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA","",""] in content
 
             # Check BCL info is not included
             assert ["[BCLConvert_Settings]"] not in content
