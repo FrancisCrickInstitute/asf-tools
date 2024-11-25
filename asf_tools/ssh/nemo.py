@@ -4,9 +4,10 @@ Establish an SSH connection to nemo and run commands.
 
 import logging
 
-
 from fabric import Connection
+
 from asf_tools.ssh.file_object import FileObject
+
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class Nemo:
         :param key_file: The path to the SSH key file (optional).
         :param password: The password for the connection (optional).
         """
-        # Init
+        # Init
         self.host = host
         self.user = user
         self.key_file = key_file
@@ -44,11 +45,7 @@ class Nemo:
             raise ValueError("Either key_file or password must be provided for authentication.")
 
         # Init the connection
-        self.connection = Connection(
-            host=self.host,
-            user=self.user,
-            connect_kwargs=connect_kwargs
-        )
+        self.connection = Connection(host=self.host, user=self.user, connect_kwargs=connect_kwargs)
 
     def disconnect(self):
         """
@@ -82,7 +79,7 @@ class Nemo:
 
         :param directory: The directory to list.
         :return: A list of FileObject instances representing the directory contents.
-        
+
         Each FileObject contains the following fields:
         - name: The name of the file or directory.
         - owner: The owner of the file or directory.
@@ -94,11 +91,11 @@ class Nemo:
         - link_target: The target of the link if the file is a symbolic link.
         """
         # Lists the contents of the specified directory with detailed info
-        result = self.connection.run(f'cd {directory} && ls -la --time-style=long-iso', hide=True)
+        result = self.connection.run(f"cd {directory} && ls -la --time-style=long-iso", hide=True)
 
         # Parse each line of the output and structure it
         files = []
-        for line in result.stdout.strip().split('\n')[1:]:  # Skip the total line
+        for line in result.stdout.strip().split("\n")[1:]:  # Skip the total line
             # Parse out the parts of the line
             parts = line.split()
             permissions = parts[0]
