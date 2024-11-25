@@ -237,7 +237,7 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
             samplesheet_only,
             nextflow_version,
         )
-        exit_status = function.run()
+        exit_status = function.cli_run()
         if not exit_status:
             sys.exit(1)
     except (UserWarning, LookupError) as e:
