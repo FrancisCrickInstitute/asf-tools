@@ -340,7 +340,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         iu = IlluminaUtils()
-        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode":  "GTTCTT-CTGTGGGGAAT"}}
+        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"}}
         expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}}
 
         # Test

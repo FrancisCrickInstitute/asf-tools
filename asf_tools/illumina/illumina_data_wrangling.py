@@ -1,34 +1,7 @@
 import json
 import os
-import unittest
 
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import IlluminaUtils
-
-
-################
-# 1) split all samples based on len, eg :
-# samples= []
-# add sample1 to samples
-# if len(sample2) ==len(sample1)  , then add to samples
-# if len(sample2) != len(sample1) , then add to a different list
-# if len(sample3) != to len(sample1) OR len(sample2) , then add to a different list
-# etc until samples are finished
-
-
-# 2) extract index info from the runinfo xml File
-# 3) check if index info len is == len(sample)
-# if NOT equal, then extract cycle info etc and run generate_overridecycle_string
-# THEN add overridecycle_string to the dict with the bcl convert settings info
-
-
-# 4) create the bcl dicts for the samplesheet
-
-################################################################################################
-
-# def generate_bcl_config():
-
-################################################################################################
 
 
 def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_config_path=None, dlp_sample_file=None):
@@ -65,7 +38,9 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
     samples_all_info = cl.collect_samplesheet_info(flowcell_id)
-    sample_and_index_dict = iu.reformat_barcode(samples_all_info)  # Convert barcode value from "BC (ATGC)" to "ATGC". Return {} if the barcode isn't in the "BC (ATGC)" format
+    sample_and_index_dict = iu.reformat_barcode(
+        samples_all_info
+    )  # Convert barcode value from "BC (ATGC)" to "ATGC". Return original barcode string if the barcode isn't in the "BC (ATGC)" format
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
     if not bcl_config_path:
@@ -126,7 +101,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     ## Identify the project type and add to the appropriate dictionary
     for project_type, samples in split_samples_by_projecttype.items():
-        
+
         # Filter samples based on project type
         filtered_samples = {}
         for sample in samples:
@@ -183,12 +158,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
                 + "_"
                 + str(index_length_sample_list["index_length"][1])
             )
-
-            ######### redundant?
-            # # Create a dictionary with a subset of samples and their index values based on their index length
-            # filtered_samples = {}
-            # for sample in index_length_sample_list["samples"]:
-            #     filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
 
             # split samples into multiple entries based on lane values
             split_samples_dict = {}
