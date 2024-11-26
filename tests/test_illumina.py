@@ -575,6 +575,111 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert result == expected
 
+    def test_index_distance_isvalid(self):
+        """
+        Pass a valid value to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        seq1 = "AGCT"
+        seq2 = "AGCT"
+        self.assertEqual(iu.index_distance(seq1, seq2), 0)
+
+        seq3 = "AGCT"
+        seq4 = "TCGA"
+        self.assertEqual(iu.index_distance(seq3, seq4), 4)
+
+        seq5 = "AGCT"
+        seq6 = "TGCT"
+        self.assertEqual(iu.index_distance(seq5, seq6), 1)
+
+    def test_minimum_index_distance_isvalid(self):
+        """
+        Pass a valid value to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        sequences = ["AGCT", "AGCT", "AGCT"]
+        self.assertEqual(iu.minimum_index_distance(sequences), 0)
+
+        sequences = ["AGCT", "TGCA"]
+        self.assertEqual(iu.minimum_index_distance(sequences), 2)
+
+        sequences = ["AGGT", "TGCA", "AGCC"]
+        self.assertEqual(iu.minimum_index_distance(sequences), 2)
+
+    def test_csv_dlp_data_to_dict_filenotexists(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        invalid_path = "file_does_not_exist"
+
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            iu.csv_dlp_data_to_dict(invalid_path, "None")
+
+    def test_csv_dlp_data_to_dict_isvalid(self):
+        """
+        Pass a valid file to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        file_path = "./tests/data/illumina/dlp_sample_info_testdataset.csv"
+        expected = {
+            "General_sample_name_i7_313-i5_313": {
+                "Lane": "01x_01y",
+                "index": "CAACCTAG",
+                "index2": "AGGTCTGT",
+                "Sample_ID": "General_sample_name_i7_313-i5_313",
+            },
+            "General_sample_name_i7_314-i5_313": {
+                "Lane": "01x_02y",
+                "index": "AAGGACAC",
+                "index2": "AGGTCTGT",
+                "Sample_ID": "General_sample_name_i7_314-i5_313",
+            },
+            "General_sample_name_i7_315-i5_313": {
+                "Lane": "01x_03y",
+                "index": "TGCAGGTA",
+                "index2": "AGGTCTGT",
+                "Sample_ID": "General_sample_name_i7_315-i5_313",
+            },
+            "General_sample_name_i7_313-i5_314": {
+                "Lane": "02x_01y",
+                "index": "CAACCTAG",
+                "index2": "CCACAACA",
+                "Sample_ID": "General_sample_name_i7_313-i5_314",
+            },
+            "General_sample_name_i7_314-i5_314": {
+                "Lane": "02x_02y",
+                "index": "AAGGACAC",
+                "index2": "CCACAACA",
+                "Sample_ID": "General_sample_name_i7_314-i5_314",
+            },
+            "General_sample_name_i7_315-i5_314": {
+                "Lane": "02x_03y",
+                "index": "TGCAGGTA",
+                "index2": "CCACAACA",
+                "Sample_ID": "General_sample_name_i7_315-i5_314",
+            },
+        }
+
+        # Test
+        result = iu.csv_dlp_data_to_dict(file_path, "General_sample_name")
+
+        # Assert
+        assert result == expected
+
     def test_generate_bclconfig_invalidmachine(self):
         """
         Pass an invalid input as file path to method

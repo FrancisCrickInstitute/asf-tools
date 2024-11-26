@@ -1,6 +1,8 @@
+import csv
 import os
 import re
 import warnings
+from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from xml.parsers.expat import ExpatError
@@ -639,6 +641,161 @@ class IlluminaUtils:
             overridecycle_string = f"N{runinfo_index_len}Y{runinfo_read_len};I{index_str_len};N{runinfo_index_len}Y{runinfo_read_len}"
 
         return overridecycle_string
+
+    def index_distance(self, seq1, seq2):
+        """
+        Calculates the Hamming distance between two sequences.
+
+        This method compares two input sequences, `seq1` and `seq2`, and returns the number of positions
+        where the characters differ between the two sequences. It assumes that both sequences are of the same length.
+
+        Args:
+            seq1 (str): The first sequence to compare.
+            seq2 (str): The second sequence to compare.
+
+        Returns:
+            int: The Hamming distance, representing the number of differing positions between the sequences.
+
+        Raises:
+            ValueError: If the input sequences `seq1` and `seq2` have different lengths.
+        """
+        return sum(c1 != c2 for c1, c2 in zip(seq1, seq2))
+
+    def minimum_index_distance(self, sequences: str):
+        """
+        Finds the minimum Hamming distance between any two sequences in a list.
+
+        This method calculates the pairwise Hamming distances between all sequences in the provided list
+        and returns the smallest of those distances. The function assumes the input is a list of equal-length strings.
+
+        Args:
+            sequences (list of str): A list of sequences to compare.
+
+        Returns:
+            int: The minimum Hamming distance between any two sequences in the list.
+
+        Raises:
+            ValueError: If the input `sequences` list is empty or contains sequences of differing lengths.
+        """
+        min_distance = float("inf")
+        num_sequences = len(sequences)
+
+        for i in range(num_sequences):
+            for j in range(i + 1, num_sequences):
+                distance = self.index_distance(sequences[i], sequences[j])
+                min_distance = min(min_distance, distance)
+
+        return min_distance
+
+    #######option1
+
+    # def parse_csv_group_by_sample_id(csv_file_path):
+    #     """
+    #     Parses a CSV file and groups rows by Sample_ID. Each Sample_ID is mapped to a dictionary containing:
+    #     - A list of Lane values for that Sample_ID
+    #     - The Sample_ID value
+    #     - The corresponding index and index2 values
+
+    #     Args:
+    #         csv_file_path (str): Path to the CSV file to be processed.
+
+    #     Returns:
+    #         dict: A dictionary where keys are Sample_ID values, and values are dictionaries with:
+    #               - 'Lane': List of Lane values
+    #               - 'Sample_ID': The Sample_ID
+    #               - 'index': The index value for that Sample_ID
+    #               - 'index2': The index2 value for that Sample_ID
+    #     """
+    #     result = defaultdict(lambda: {'Lane': [], 'index': '', 'index2': ''})
+
+    #     with open(csv_file_path, mode='r', newline='', encoding='utf-8') as file:
+    #         csv_reader = csv.DictReader(file)
+
+    #         for row in csv_reader:
+    #             sample_id = row["Sample_ID"]
+    #             result[sample_id]["Lane"].append(row["Lane"])
+    #             result[sample_id]["Sample_ID"] = sample_id
+    #             result[sample_id]["index"] = row["index"]
+    #             result[sample_id]["index2"] = row["index2"]
+
+    #     return dict(result)
+
+    # #######option2
+
+    #     def parse_csv_group_by_column(csv_file_path):
+    #         """
+    #         Parses a CSV file and groups rows by a specified column. Each unique value in that column
+    #         is mapped to a dictionary containing:
+    #         - A list of values for each other column in the row.
+
+    #         Args:
+    #             csv_file_path (str): Path to the CSV file to be processed.
+
+    #         Returns:
+    #             dict: A dictionary where keys are unique values from the specified column, and values are
+    #                 dictionaries with the other columns as keys and their corresponding values as lists.
+    #         """
+    #         result = defaultdict(lambda: defaultdict(list))
+
+    #         with open(csv_file_path, mode='r', newline='', encoding='utf-8') as file:
+    #             csv_reader = csv.DictReader(file)
+
+    #             for row in csv_reader:
+    #                 for column, value in row.items():
+    #                     result[row["Sample_ID"]][column].append(value)
+
+    #         return dict(result)
+
+    def csv_dlp_data_to_dict(self, csv_file_path: str, selected_name: str) -> dict:
+        """
+        Parses a CSV file and groups rows by a specified column. Each unique value in that column
+        is mapped to a dictionary containing:
+        - A list of values for each other column in the row, unless there's only one value,
+        in which case the value is added directly.
+        - Modifies the Sample_ID by adding the selected name as a prefix and replacing it inside the dictionary.
+
+        Args:
+            csv_file_path (str): Path to the CSV file to be processed.
+            selected_name (str): The name to be added as a prefix to Sample_ID.
+
+        Returns:
+            dict: A dictionary where keys are modified Sample_ID values (selected_name_Sample_ID),
+                and values are dictionaries with the other columns as keys and their corresponding values.
+                If a column has only one value for a key, that value will be stored directly instead of a list.
+        """
+        if not os.path.isfile(csv_file_path):
+            raise FileNotFoundError(f"{csv_file_path} does not exist or is not a file.")
+
+        result = {}
+
+        with open(csv_file_path, mode="r", newline="", encoding="utf-8") as file:
+            csv_reader = csv.DictReader(file)
+
+            for row in csv_reader:
+                # Modify the Sample_ID to include the selected_name prefix
+                modified_sample_id = f"{selected_name}_{row['Sample_ID']}"
+
+                # Add the modified Sample_ID to results
+                if modified_sample_id not in result:
+                    result[modified_sample_id] = {}
+
+                # Group the row data by the modified Sample_ID
+                for column, value in row.items():
+                    if column != "Sample_ID":
+                        if column not in result[modified_sample_id]:
+                            result[modified_sample_id][column] = []
+                        result[modified_sample_id][column].append(value)
+
+                # After collecting the data for a row, replace Sample_ID with modified_sample_id
+                result[modified_sample_id]["Sample_ID"] = modified_sample_id
+
+        # Convert lists to single values if they have only one item
+        for sample_id, columns in result.items():
+            for column, values in columns.items():
+                if isinstance(values, list) and len(values) == 1:
+                    columns[column] = values[0]
+
+        return result
 
     def generate_bclconfig(self, machine: str, flowcell: str, header_parameters=None, bclconvert_parameters=None):
         """
