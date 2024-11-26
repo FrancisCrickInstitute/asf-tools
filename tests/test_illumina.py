@@ -318,7 +318,7 @@ class TestIlluminaUtils(unittest.TestCase):
         with self.assertRaises(TypeError):
             iu.reformat_barcode(None)
 
-    def test_reformat_barcode_isinvalid(self):
+    def test_reformat_barcode_nobarcode(self):
         """
         Pass a dict without a "barcode" value to method
         """
@@ -340,11 +340,12 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         iu = IlluminaUtils()
-        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "BC02 (GTTCTT-CTGTGGGGAAT)"}}
+        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode":  "GTTCTT-CTGTGGGGAAT"}}
         expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}}
 
         # Test
         results = iu.reformat_barcode(test_dict)
+        print(results)
 
         # Assert
         assert results == expected_output
@@ -634,7 +635,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         iu = IlluminaUtils()
-        file_path = "./tests/data/illumina/dlp_sample_info_testdataset.csv"
+        file_path = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
         expected = {
             "General_sample_name_i7_313-i5_313": {
                 "Lane": "01x_01y",

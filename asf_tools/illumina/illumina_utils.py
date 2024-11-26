@@ -407,8 +407,12 @@ class IlluminaUtils:
         for sample, details in samplesheet_dict.items():
             if "barcode" in details:
                 barcode_info = details["barcode"]
-                # Extract the barcode sequence within parentheses
-                barcode_sequence = barcode_info.split("(")[1].split(")")[0]
+
+                if "(" in barcode_info and ")" in barcode_info:
+                    # Extract the barcode sequence within parentheses
+                    barcode_sequence = barcode_info.split("(")[1].split(")")[0]
+                else:
+                    barcode_sequence = barcode_info
 
                 if "-" in barcode_sequence:
                     # Split barcode into two parts if hyphen is present
