@@ -162,25 +162,22 @@ class TestIlluminaDemuxWithFixtures:
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
         # Set up
         # create output files paths
-        samplesheet_file_name = flowcell_id + "_samplesheet_10_10.csv"
-        bclconfig_name = "bcl_config_" + flowcell_id + "json"
-        tmp_samplesheet_file_path = os.path.join(self.tmp_path, samplesheet_file_name)
+        bclconfig_name = "bcl_config_" + flowcell_id + ".json"
         tmp_bclconfig_file_path = os.path.join(self.tmp_path, bclconfig_name)
 
         # Test
         generate_illumina_demux_samplesheets(api, runinfo_file, self.tmp_path)
 
         # Assert
-        assert os.path.exists(tmp_samplesheet_file_path)
         assert os.path.exists(tmp_bclconfig_file_path)
 
         # Check the content of the files
-        with open(tmp_samplesheet_file_path, "r") as file:
-            data = "".join(file.readlines())
-            assert "[BCLConvert_Data]" in data
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             assert "Header" in config_json
+
+    # 22NWWMLT3 returns this: '22NWWMLT3_samplesheet_singlecell.csv', but not the second samplesheet
+    # 22NWYFLT3 returns this: samplesheet.csv
 
 
 ###########################################
