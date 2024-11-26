@@ -13,13 +13,6 @@ from .test_io_utils import with_temporary_folder
 
 API_TEST_DATA = "tests/data/api/clarity"
 
-# def test_generate_illumina_demux1():
-#     # Set up
-#     file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
-
-#     # Test
-#     generate_illumina_demux_samplesheets(file, ".")
-
 
 class TestIlluminaDemux(unittest.TestCase):
     """Class for testing the generate_illumina_samplesheet tools"""
@@ -117,13 +110,15 @@ class TestIlluminaDemux(unittest.TestCase):
         """
 
         # Set up
-        file = "./tests/data/illumina/HWNCWDMXY/RunInfo.xml"
+        runinfo_file = "./tests/data/illumina/HWNCWDMXY/RunInfo.xml"
+        dlp_file = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
+
         # create output files paths
         tmp_samplesheet_file_path = os.path.join(tmp_path, "HWNCWDMXY_samplesheet_dlp.csv")
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_HWNCWDMXY.json")
 
         # Test
-        generate_illumina_demux_samplesheets(self.api, file, tmp_path)
+        generate_illumina_demux_samplesheets(self.api, runinfo_file, tmp_path, dlp_sample_file=dlp_file)
 
         # Assert
         self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
@@ -136,33 +131,6 @@ class TestIlluminaDemux(unittest.TestCase):
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             self.assertTrue("Header" in config_json)
-
-    # @with_temporary_folder
-    # def test_generate_illumina_dlp_samplesheets_bulk(self, tmp_path):
-    #     """
-    #     Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
-    #     """
-
-    #     # Set up
-    #     file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
-    #     # create output files paths
-    #     tmp_samplesheet_file_path = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
-    #     tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
-
-    #     # Test
-    #     generate_illumina_demux_samplesheets(self.api, file, tmp_path)
-
-    #     # Assert
-    #     self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
-    #     self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
-
-    #     # Check the content of the files
-    #     with open(tmp_samplesheet_file_path, "r") as file:
-    #         data = "".join(file.readlines())
-    #         self.assertTrue("[BCLConvert_Data]" in data)
-    #     with open(tmp_bclconfig_file_path, "r") as file:
-    #         config_json = json.load(file)
-    #         self.assertTrue("Header" in config_json)
 
 
 class TestIlluminaDemuxWithFixtures:

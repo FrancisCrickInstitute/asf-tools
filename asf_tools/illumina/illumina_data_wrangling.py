@@ -31,7 +31,7 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 ################################################################################################
 
 
-def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_config_path=None):
+def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_config_path=None, dlp_sample_file=None):
     """
     The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
 
@@ -65,7 +65,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_file)
     samples_all_info = cl.collect_samplesheet_info(flowcell_id)
-    sample_and_index_dict = iu.reformat_barcode(samples_all_info)  # Convert barcode value from "BC (ATGC)" to "ATGC"
+    sample_and_index_dict = iu.reformat_barcode(samples_all_info)  # Convert barcode value from "BC (ATGC)" to "ATGC". Return {} if the barcode isn't in the "BC (ATGC)" format
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
     if not bcl_config_path:
@@ -105,25 +105,50 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
     split_samples_by_projecttype = iu.group_samples_by_dictkey(samples_all_info, "project_type")
 
     # Subdivide samples into different workflows based on project type
-    # Can be: DLP+, 10X ATAC, 10X, or Bulk/non-10X
+    # Fist we categorise different values for "project_type"
+    single_cell_project_types = [
+        "Single Cell",
+        "10X",
+        "10x Multiomics",
+        "10x multiome",
+        "10X-3prime",
+        "10X-3prime-nuclei",
+        "10X-Multiomics-GEX",
+        "10X-FeatureBarcoding",
+    ]
+    atac_project_types = ["ATAC", "10X ATAC", "10X-ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
+
+    # Then we assign each sample to the appropriate project group
     dlp_samples = {}
     single_cell_samples = {}
+    atac_samples = {}
     other_samples = {}
 
     ## Identify the project type and add to the appropriate dictionary
     for project_type, samples in split_samples_by_projecttype.items():
+        
         # Filter samples based on project type
         filtered_samples = {}
         for sample in samples:
             # Add 'Sample_ID' to the dictionary for each sample
-            filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
+            filtered_samples[sample] = {
+                "Lane": samples_all_info[sample]["lanes"],
+                "Sample_ID": sample,
+                **(sample_and_index_dict.get(sample, {}) if sample_and_index_dict else {}),
+            }
+            data_analysis_type = samples_all_info[sample]["data_analysis_type"]
 
-        if "DLP" in project_type:
+        if project_type is None:
+            pass
+        elif "DLP" in project_type or "DLP" in data_analysis_type:
             # Add samples to DLP group
             dlp_samples.update(filtered_samples)
-        elif "Single Cell" in project_type:
+        elif project_type in single_cell_project_types or data_analysis_type in single_cell_project_types:
             # Add samples to Single Cell group
             single_cell_samples.update(filtered_samples)
+        elif project_type in atac_project_types or data_analysis_type in atac_project_types:
+            # Add samples to ATAC group
+            atac_samples.update(filtered_samples)
         else:
             # Add samples to Other group (e.g., Bulk or undefined types)
             other_samples.update(filtered_samples)
@@ -133,13 +158,20 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
-        # Workflow not determined yet
-        pass
+        for sample in dlp_samples:
+            data_dict = iu.csv_dlp_data_to_dict(dlp_sample_file, sample)
+            filtered_samples.update(data_dict)
+        samplesheet_name = f"{flowcell_id}_samplesheet_dlp"
 
     # This should include 10X/single cell data
     if single_cell_samples:
         # All samples are expected to be dual index and one index length
-        samplesheet_name = f"{flowcell_id}_samplesheet_singlecell_"
+        samplesheet_name = f"{flowcell_id}_samplesheet_singlecell"
+
+    # This should include ATAC data
+    if atac_samples:
+        # All samples are expected to be dual index and one index length
+        samplesheet_name = f"{flowcell_id}_samplesheet_atac"
 
     if other_samples:
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
@@ -152,10 +184,11 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
                 + str(index_length_sample_list["index_length"][1])
             )
 
-            # Create a dictionary with a subset of samples and their index values based on their index length
-            filtered_samples = {}
-            for sample in index_length_sample_list["samples"]:
-                filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
+            ######### redundant?
+            # # Create a dictionary with a subset of samples and their index values based on their index length
+            # filtered_samples = {}
+            # for sample in index_length_sample_list["samples"]:
+            #     filtered_samples[sample] = {"Lane": samples_all_info[sample]["lanes"], "Sample_ID": sample, **sample_and_index_dict[sample]}
 
             # split samples into multiple entries based on lane values
             split_samples_dict = {}
@@ -172,7 +205,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
             cycle_length = iu.extract_cycle_fromxml(runinfo_file)
             for sample in filtered_samples.items():
                 index_string = sample[1]["index"]
-                index2_string = sample[1]["index2"] if sample[1]["index2"] else None
+                index2_string = sample[1].get("index2", None)
             # Check if Index length and Cycle length match
             if not (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
                 index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
@@ -184,6 +217,8 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
                 else:
                     override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                 bcl_settings_dict["OverrideCycles"] = override_string
+
+    # Calculate hamming distance for indexes
 
     # Generate samplesheet with the updated settings
     samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
