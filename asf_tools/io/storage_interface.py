@@ -4,6 +4,7 @@ A Single Interface for file/folder operations remote or local
 
 from enum import Enum
 import logging
+import os
 
 from asf_tools.ssh.nemo import Nemo
 
@@ -25,3 +26,8 @@ class StorageInterface:
         elif self.interface_type == InterfaceType.NEMO:
             self.interface = Nemo(**kwargs)
 
+    def list_directory(self, path):
+        if self.interface_type == InterfaceType.LOCAL:
+            return os.listdir(path)
+        elif self.interface_type == InterfaceType.NEMO:
+            return self.interface.list_directory(path)
