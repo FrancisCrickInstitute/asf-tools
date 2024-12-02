@@ -3,6 +3,7 @@ Establish an SSH connection to nemo and run commands.
 """
 
 import logging
+import os
 
 from fabric import Connection
 
@@ -73,7 +74,7 @@ class Nemo:
         result = self.connection.run(command, hide=True)
         return result.stdout.strip(), result.stderr.strip()
 
-    def list_directory(self, directory: str) -> list:
+    def list_directory_objects(self, directory: str) -> list:
         """
         List the contents of a directory.
 
@@ -116,3 +117,15 @@ class Nemo:
             files.append(file_object)
 
         return files
+
+    def list_directory(self, directory: str) -> list:
+        """
+        List the contents of a directory.
+
+        :param directory: The directory to list.
+        :return: A list of file paths in the directory.
+        """
+
+        # list directory objects, but just return a string path for each
+        directory_objects = self.list_directory_objects(directory)
+        return [file.name for file in directory_objects]

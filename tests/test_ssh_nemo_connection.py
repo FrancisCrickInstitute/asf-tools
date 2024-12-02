@@ -49,6 +49,51 @@ class TestNemoConnection(unittest.TestCase):
         self.assertEqual(stdout, "command output")
         self.assertEqual(stderr, "error output")
 
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_list_directory_objects(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = (
+            "total 8\n"
+            "drwxr-xr-x 2 user group 4096 2023-10-01 12:34 .\n"
+            "drwxr-xr-x 3 user group 4096 2023-10-01 12:34 ..\n"
+            "-rw-r--r-- 1 user group 1234 2023-10-01 12:34 test_file.txt\n"
+            "lrwxrwxrwx 1 user group 1234 2023-10-01 12:34 link -> target"
+        )
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        files = nemo.list_directory_objects("~")
+
+        MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
+        self.assertEqual(len(files), 4)
+        self.assertEqual(files[0].name, ".")
+        self.assertEqual(files[1].name, "..")
+        self.assertEqual(files[2].name, "test_file.txt")
+        self.assertEqual(files[3].name, "link")
+        self.assertEqual(files[3].link_target, "target")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_list_directory(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = (
+            "total 8\n"
+            "drwxr-xr-x 2 user group 4096 2023-10-01 12:34 .\n"
+            "drwxr-xr-x 3 user group 4096 2023-10-01 12:34 ..\n"
+            "-rw-r--r-- 1 user group 1234 2023-10-01 12:34 test_file.txt\n"
+            "lrwxrwxrwx 1 user group 1234 2023-10-01 12:34 link -> target"
+        )
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        files = nemo.list_directory("~")
+
+        MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
+        self.assertEqual(len(files), 4)
+        self.assertEqual(files[0], ".")
+        self.assertEqual(files[1], "..")
+        self.assertEqual(files[2], "test_file.txt")
+        self.assertEqual(files[3], "link")
+
     # def test_nemo_dev(self):
     #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
     #     folder = nemo.list_directory("~")
