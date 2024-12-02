@@ -31,3 +31,9 @@ class StorageInterface:
             return os.listdir(path)
         elif self.interface_type == InterfaceType.NEMO:
             return self.interface.list_directory(path)
+
+    def exists(self, path):
+        if self.interface_type == InterfaceType.LOCAL:
+            return os.path.exists(path)
+        elif self.interface_type == InterfaceType.NEMO:
+            return self.interface.exists(path)

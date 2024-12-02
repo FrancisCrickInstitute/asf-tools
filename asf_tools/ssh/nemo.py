@@ -3,9 +3,9 @@ Establish an SSH connection to nemo and run commands.
 """
 
 import logging
-import os
 
 from fabric import Connection
+from invoke.exceptions import UnexpectedExit
 
 from asf_tools.ssh.file_object import FileObject
 
@@ -129,3 +129,17 @@ class Nemo:
         # list directory objects, but just return a string path for each
         directory_objects = self.list_directory_objects(directory)
         return [file.name for file in directory_objects]
+
+    def exists(self, path: str) -> bool:
+        """
+        Check if a file or directory exists.
+
+        :param path: The path to check.
+        :return: True if the file or directory exists, False otherwise.
+        """
+        # Check if the path exists
+        try:
+            self.connection.run(f"test -e {path}", hide=True)
+        except UnexpectedExit:
+            return False
+        return True

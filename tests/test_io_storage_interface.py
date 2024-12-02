@@ -40,6 +40,26 @@ class TestStorageInterface(unittest.TestCase):
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
         self.assertEqual(result, [".", "..", "test_file.txt", "link"])
 
+    @patch("os.path.exists")
+    def test_storage_mock_exists_local(self, mock_exists):
+        mock_exists.return_value = True
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        result = storage_interface.exists("/some/local/path")
+        mock_exists.assert_called_once_with("/some/local/path")
+        self.assertTrue(result)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_exists_nemo(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.ok = True
+        MockConnection().run.return_value = mock_result
+
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        result = storage_interface.exists("~")
+
+        MockConnection().run.assert_called_once_with("test -e ~", hide=True)
+        self.assertTrue(result)
+
 
 class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 

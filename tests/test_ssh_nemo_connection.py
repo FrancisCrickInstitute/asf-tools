@@ -94,11 +94,23 @@ class TestNemoConnection(unittest.TestCase):
         self.assertEqual(files[2], "test_file.txt")
         self.assertEqual(files[3], "link")
 
-    # def test_nemo_dev(self):
-    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
-    #     folder = nemo.list_directory("~")
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_exists(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.ok = True
+        MockConnection().run.return_value = mock_result
 
-    #     for file in folder:
-    #         print(file)
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        result = nemo.exists("~")
 
-    #     raise NotImplementedError("Test not implemented")
+        MockConnection().run.assert_called_once_with("test -e ~", hide=True)
+        self.assertTrue(result)
+
+
+    def test_nemo_dev(self):
+        nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
+        test = nemo.exists(".bashrcxcxx")
+
+        print(test)
+
+        raise NotImplementedError("Test not implemented")
