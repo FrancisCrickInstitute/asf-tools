@@ -160,6 +160,9 @@ class TestIlluminaDemuxWithFixtures:
         [("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 2), ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1)],
     )
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
+        """
+        Pass real runs with a mix of samples with different project types and/or index length. Check that a samplesheet are generated, how many and their content
+        """
         # Set up
         # create output files paths
         bclconfig_name = "bcl_config_" + flowcell_id + ".json"
@@ -175,6 +178,11 @@ class TestIlluminaDemuxWithFixtures:
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             assert "Header" in config_json
+
+        # Verify the number of SampleSheet files
+        samplesheet_files = [f for f in os.listdir(self.tmp_path) if "samplesheet" in f.lower() and os.path.isfile(os.path.join(self.tmp_path, f))]
+        print(samplesheet_files)
+        assert len(samplesheet_files) == samplesheet_count
 
     # 22NWWMLT3 returns this: '22NWWMLT3_samplesheet_singlecell.csv', but not the second samplesheet
     # 22NWYFLT3 returns this: samplesheet.csv
