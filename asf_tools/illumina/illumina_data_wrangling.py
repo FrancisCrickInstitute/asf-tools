@@ -115,17 +115,11 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
         if project_type is None:
             pass
-        elif "DLP" in project_type or "DLP" in data_analysis_type:
-            # Add samples to DLP group
-            dlp_samples.update(filtered_samples)
-        elif project_type in single_cell_project_types or data_analysis_type in single_cell_project_types:
-            # Add samples to Single Cell group
-            single_cell_samples.update(filtered_samples)
-        elif project_type in atac_project_types or data_analysis_type in atac_project_types:
-            # Add samples to ATAC group
-            atac_samples.update(filtered_samples)
         else:
-            # Add samples to Other group (e.g., Bulk or undefined types)
+            iu.update_sample_dict(project_type, data_analysis_type, "DLP", filtered_samples, dlp_samples)
+            iu.update_sample_dict(project_type, data_analysis_type, single_cell_project_types, filtered_samples, single_cell_samples)
+            iu.update_sample_dict(project_type, data_analysis_type, atac_project_types, filtered_samples, atac_samples)
+        if not dlp_samples and not single_cell_samples and not atac_samples:
             other_samples.update(filtered_samples)
 
     # Set up variables required for the samplesheet generation
