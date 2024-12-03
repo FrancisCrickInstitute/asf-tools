@@ -1,5 +1,6 @@
 import json
 import os
+import warnings
 
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
@@ -81,6 +82,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     # Subdivide samples into different workflows based on project type
     # Fist we categorise different values for "project_type"
+    dlp_project_types = ["DLP"]
     single_cell_project_types = [
         "Single Cell",
         "10X",
@@ -113,12 +115,14 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
             }
             data_analysis_type = samples_all_info[sample]["data_analysis_type"]
 
+        # Ensure that project_type has a value other than None (ie. not associated with control samples or edge cases)
         if project_type is None:
+            warnings.warn(f"'{samples}' have None project_type.", UserWarning)
             pass
         else:
-            iu.update_sample_dict(project_type, data_analysis_type, "DLP", filtered_samples, dlp_samples)
-            iu.update_sample_dict(project_type, data_analysis_type, single_cell_project_types, filtered_samples, single_cell_samples)
-            iu.update_sample_dict(project_type, data_analysis_type, atac_project_types, filtered_samples, atac_samples)
+            iu.populate_dict_with_sample_data(project_type, data_analysis_type, dlp_project_types, filtered_samples, dlp_samples)
+            iu.populate_dict_with_sample_data(project_type, data_analysis_type, single_cell_project_types, filtered_samples, single_cell_samples)
+            iu.populate_dict_with_sample_data(project_type, data_analysis_type, atac_project_types, filtered_samples, atac_samples)
         if not dlp_samples and not single_cell_samples and not atac_samples:
             other_samples.update(filtered_samples)
 
@@ -127,8 +131,9 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
+        filtered_samples = {}
         for sample in dlp_samples:
-            data_dict = iu.csv_dlp_data_to_dict(dlp_sample_file, sample)
+            data_dict = iu.dlp_barcode_data_to_dict(dlp_sample_file, sample)
             filtered_samples.update(data_dict)
         samplesheet_name = f"{flowcell_id}_samplesheet_dlp"
 

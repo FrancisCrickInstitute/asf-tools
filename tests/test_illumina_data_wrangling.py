@@ -127,7 +127,10 @@ class TestIlluminaDemux(unittest.TestCase):
         # Check the content of the files
         with open(tmp_samplesheet_file_path, "r") as file:
             data = "".join(file.readlines())
+            print(data)
             self.assertTrue("[BCLConvert_Data]" in data)
+            self.assertTrue("Lane,Sample_ID,index,index2" in data)
+            self.assertTrue("CAACCTAG,AGGTCTGT" in data)
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             self.assertTrue("Header" in config_json)
