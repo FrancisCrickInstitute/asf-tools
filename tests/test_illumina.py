@@ -471,7 +471,7 @@ class TestIlluminaUtils(unittest.TestCase):
         assert result1 == expected1
         assert result2 == expected2
 
-    def test_update_sample_dict_isnone(self):
+    def test_populate_dict_with_sample_data_isnone(self):
         """
         Pass an project value that is not in project_type nor data_analysis_type
         """
@@ -479,14 +479,15 @@ class TestIlluminaUtils(unittest.TestCase):
         iu = IlluminaUtils()
         sample_dict = {"sample1": "sample_1"}
         dict_to_update = {}
+        project_value = ["project_value_not_matching"]
 
         # Test
-        result1 = iu.update_sample_dict("project_type", "data_analysis_type", "project_value_not_matching", sample_dict, dict_to_update)
+        result1 = iu.populate_dict_with_sample_data("project_type", "data_analysis_type", project_value, sample_dict, dict_to_update)
 
         # Assert
         assert result1 is None
 
-    def test_update_sample_dict_isinvalid(self):
+    def test_populate_dict_with_sample_data_isinvalid(self):
         """
         Pass an invalid input
         """
@@ -498,9 +499,9 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.update_sample_dict("project_type", "data_analysis_type", input_not_valid, sample_dict, dict_to_update)
+            iu.populate_dict_with_sample_data("project_type", "data_analysis_type", input_not_valid, sample_dict, dict_to_update)
 
-    def test_update_sample_dict_isvalid(self):
+    def test_populate_dict_with_sample_data_isvalid(self):
         """
         Pass valid inputs
         """
@@ -508,14 +509,16 @@ class TestIlluminaUtils(unittest.TestCase):
         iu = IlluminaUtils()
         sample_dict = {"sample1": "sample_1"}
         sample_dict2 = {"sample2": "sample_2", "sample3": "sample_3"}
+        project_value1 = ["project_type"]
+        project_value2 = ["data_analysis"]
         dict_to_update = {}
         dict_to_update2 = {}
         expected1 = {"sample1": "sample_1"}
         expected2 = {"sample2": "sample_2", "sample3": "sample_3"}
 
         # Test
-        result1 = iu.update_sample_dict("project_type_str", "data_analysis_type_str", "project_type", sample_dict, dict_to_update)
-        result2 = iu.update_sample_dict("project_type_str", "data_analysis_type_str", "data_analysis", sample_dict2, dict_to_update2)
+        result1 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type_str", project_value1, sample_dict, dict_to_update)
+        result2 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type_str", project_value2, sample_dict2, dict_to_update2)
 
         # Assert
         assert result1 == expected1
@@ -665,7 +668,7 @@ class TestIlluminaUtils(unittest.TestCase):
         sequences = ["AGGT", "TGCA", "AGCC"]
         self.assertEqual(iu.minimum_index_distance(sequences), 2)
 
-    def test_csv_dlp_data_to_dict_filenotexists(self):
+    def test_dlp_barcode_data_to_dict_filenotexists(self):
         """
         Pass None to method
         """
@@ -676,9 +679,9 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            iu.csv_dlp_data_to_dict(invalid_path, "None")
+            iu.dlp_barcode_data_to_dict(invalid_path, "None")
 
-    def test_csv_dlp_data_to_dict_isvalid(self):
+    def test_dlp_barcode_data_to_dict_isvalid(self):
         """
         Pass a valid file to method
         """
@@ -726,7 +729,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        result = iu.csv_dlp_data_to_dict(file_path, "General_sample_name")
+        result = iu.dlp_barcode_data_to_dict(file_path, "General_sample_name")
 
         # Assert
         assert result == expected

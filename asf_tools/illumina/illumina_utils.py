@@ -520,14 +520,14 @@ class IlluminaUtils:
 
         return grouped_samples
 
-    def update_sample_dict(self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict) -> dict:
+    def populate_dict_with_sample_data(self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict) -> dict:
         """
         Updates the given dictionary with sample data based on project type and analysis type.
 
         Parameters:
         - project_type (str): The current project type.
         - data_analysis_type (str): The type of data analysis.
-        - project_value (str | list): A single project type or a list of project types to match against.
+        - project_value (list): A list of project types to match against.
         - sample_dict (dict): A sample dictionary to add if the condition is met.
         - dict_to_update (dict): The dictionary to be updated with matching samples.
 
@@ -538,20 +538,16 @@ class IlluminaUtils:
             raise TypeError(f"{project_type} must be a string.")
         if not isinstance(data_analysis_type, str):
             raise TypeError(f"{data_analysis_type} must be a string.")
-        if not isinstance(project_value, str) and not isinstance(project_value, list):
-            raise TypeError(f"{project_value} must be a string or a list.")
+        if not isinstance(project_value, list):
+            raise TypeError(f"{project_value} must be a list.")
         if not isinstance(sample_dict, dict):
             raise TypeError(f"{sample_dict} must be a dictionary.")
         if not isinstance(dict_to_update, dict):
             raise TypeError(f"{dict_to_update} must be a dictionary.")
 
         # Update dict_to_update based on whether project_value is a string or a list
-        if isinstance(project_value, str):
-            if project_value in project_type or project_value in data_analysis_type:
-                dict_to_update.update(sample_dict)
-                return dict_to_update
-        elif isinstance(project_value, list):
-            if project_type in project_value or data_analysis_type in project_value:
+        for entry in project_value:
+            if entry in project_type or entry in data_analysis_type:
                 dict_to_update.update(sample_dict)
                 return dict_to_update
 
@@ -729,7 +725,7 @@ class IlluminaUtils:
 
         return min_distance
 
-    def csv_dlp_data_to_dict(self, csv_file_path: str, selected_name: str) -> dict:
+    def dlp_barcode_data_to_dict(self, csv_file_path: str, selected_name: str) -> dict:
         """
         Parses a CSV file and groups rows by a specified column. Each unique value in that column
         is mapped to a dictionary containing:
@@ -759,24 +755,15 @@ class IlluminaUtils:
                 modified_sample_id = f"{selected_name}_{row['Sample_ID']}"
 
                 # Add the modified Sample_ID to results
-                if modified_sample_id not in result:
-                    result[modified_sample_id] = {}
+                result[modified_sample_id] = {}
 
                 # Group the row data by the modified Sample_ID
                 for column, value in row.items():
                     if column != "Sample_ID":
-                        if column not in result[modified_sample_id]:
-                            result[modified_sample_id][column] = []
-                        result[modified_sample_id][column].append(value)
+                        result[modified_sample_id][column] = value
 
                 # After collecting the data for a row, replace Sample_ID with modified_sample_id
                 result[modified_sample_id]["Sample_ID"] = modified_sample_id
-
-        # Convert lists to single values if they have only one item
-        for sample_id, columns in result.items():
-            for column, values in columns.items():
-                if isinstance(values, list) and len(values) == 1:
-                    columns[column] = values[0]
 
         return result
 
