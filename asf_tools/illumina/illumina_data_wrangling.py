@@ -144,7 +144,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     # This should include ATAC data
     if atac_samples:
-        # All samples are expected to be dual index and one index length
+        # All samples are expected to be single index and one index length
         samplesheet_name = f"{flowcell_id}_samplesheet_atac"
 
     if other_samples:

@@ -408,21 +408,26 @@ class IlluminaUtils:
             if "barcode" in details:
                 barcode_info = details["barcode"]
 
+                # Extract the barcode sequence within parentheses, if present
                 if "(" in barcode_info and ")" in barcode_info:
-                    # Extract the barcode sequence within parentheses
                     barcode_sequence = barcode_info.split("(")[1].split(")")[0]
                 else:
                     barcode_sequence = barcode_info
 
                 if "-" in barcode_sequence:
-                    # Split barcode into two parts if hyphen is present
-                    index1, index2 = barcode_sequence.split("-")
-                    sample_index_dict[sample] = {"index": index1, "index2": index2}
+                    # Split the barcode sequence by hyphens
+                    indices = barcode_sequence.split("-")
+
+                    # Generate a dictionary of indices dynamically (index, index2, ...)
+                    index_dict = {"index": indices[0]}
+                    index_dict.update({f"index{i + 2}": idx for i, idx in enumerate(indices[1:])})
+                    sample_index_dict[sample] = index_dict
                 else:
                     # If no hyphen, keep as a single index
                     sample_index_dict[sample] = {"index": barcode_sequence}
             else:
-                return None
+                # Skip samples without barcode information
+                continue
 
         return sample_index_dict
 

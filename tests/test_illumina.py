@@ -326,12 +326,13 @@ class TestIlluminaUtils(unittest.TestCase):
         # Set up
         iu = IlluminaUtils()
         test_dict = {"value1": "invalid", "value2": "dictionary"}
+        expected = {}
 
         # Test
         results = iu.reformat_barcode(test_dict)
 
         # Assert
-        assert results is None
+        assert results == expected
 
     def test_reformat_barcode_isvalid(self):
         """
@@ -340,8 +341,8 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         iu = IlluminaUtils()
-        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"}}
-        expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}}
+        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"}, "Sample3": {"barcode": "15 SI-NA-G2 (ATAACCTA-CGGTGAGC-GATCTTAT-TCCGAGCG)"}}
+        expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}, "Sample3": {"index": "ATAACCTA", "index2": "CGGTGAGC", "index3": "GATCTTAT", "index4": "TCCGAGCG"}}
 
         # Test
         results = iu.reformat_barcode(test_dict)
