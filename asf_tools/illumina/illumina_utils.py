@@ -520,6 +520,44 @@ class IlluminaUtils:
 
         return grouped_samples
 
+    def update_sample_dict(self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict) -> dict:
+        """
+        Updates the given dictionary with sample data based on project type and analysis type.
+
+        Parameters:
+        - project_type (str): The current project type.
+        - data_analysis_type (str): The type of data analysis.
+        - project_value (str | list): A single project type or a list of project types to match against.
+        - sample_dict (dict): A sample dictionary to add if the condition is met.
+        - dict_to_update (dict): The dictionary to be updated with matching samples.
+
+        Returns:
+        - dict: The updated dictionary.
+        """
+        if not isinstance(project_type, str):
+            raise TypeError(f"{project_type} must be a string.")
+        if not isinstance(data_analysis_type, str):
+            raise TypeError(f"{data_analysis_type} must be a string.")
+        if not isinstance(project_value, str) and not isinstance(project_value, list):
+            raise TypeError(f"{project_value} must be a string or a list.")
+        if not isinstance(sample_dict, dict):
+            raise TypeError(f"{sample_dict} must be a dictionary.")
+        if not isinstance(dict_to_update, dict):
+            raise TypeError(f"{dict_to_update} must be a dictionary.")
+
+        # Update dict_to_update based on whether project_value is a string or a list
+        if isinstance(project_value, str):
+            if project_value in project_type or project_value in data_analysis_type:
+                dict_to_update.update(sample_dict)
+                return dict_to_update
+        elif isinstance(project_value, list):
+            if project_type in project_value or data_analysis_type in project_value:
+                dict_to_update.update(sample_dict)
+                return dict_to_update
+
+        # Return None if no condition is met
+        return None
+
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
         Calculates and validates override cycle values based on index length and read length.
