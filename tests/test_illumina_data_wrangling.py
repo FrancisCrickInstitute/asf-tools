@@ -128,14 +128,12 @@ class TestIlluminaDemux(unittest.TestCase):
         # Check the content of the files
         with open(tmp_samplesheet_file_path, "r") as file:
             data = "".join(file.readlines())
-            print(data)
             self.assertTrue("[BCLConvert_Data]" in data)
             self.assertTrue("Lane,Sample_ID,index,index2" in data)
             self.assertTrue("CAACCTAG,AGGTCTGT" in data)
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             self.assertTrue("Header" in config_json)
-
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_mix(self, tmp_path):
@@ -147,21 +145,14 @@ class TestIlluminaDemux(unittest.TestCase):
         file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
         # create output files paths
         tmp_samplesheet_file_path_bulk = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
-        tmp_samplesheet_file_path_atac = os.path.join(tmp_path, "22NWWGLT3_samplesheet_atac`.csv")
-        tmp_samplesheet_file_path_SC = os.path.join(tmp_path, "22NWWGLT3_samplesheet_singlecell.csv")
+        tmp_samplesheet_file_path_atac = os.path.join(tmp_path, "22NWWGLT3_samplesheet_atac.csv")
+        tmp_samplesheet_file_path_sc = os.path.join(tmp_path, "22NWWGLT3_samplesheet_singlecell.csv")
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
 
         # Extract mocked sample info from the json file
         # Load the content of the JSON file into the 'info' variable
-        with open('json_22NWWGLT3.json', 'r') as json_file:
+        with open("json_22NWWGLT3.json", "r") as json_file:
             json_info = json.load(json_file)
-        # print(json_info)
-        # # Mock return values
-        # with mock.patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info") as mock_collect_samplesheet_info:
-        #     mock_collect_samplesheet_info.return_value = json_info
-        # Mock ClarityHelperLims and pass it as an argument
-        # mock_cl = mock.MagicMock()
-        # mock_cl.collect_samplesheet_info.return_value = json_info
         with mock.patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims") as MockClarityHelperLims:
             # Create a mock instance of ClarityHelperLims
             mock_cl = MockClarityHelperLims.return_value
@@ -173,8 +164,8 @@ class TestIlluminaDemux(unittest.TestCase):
             # Assert
             self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
-            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac)) # this fails
-            # mock_cl.mock_collect_samplesheet_info.assert_called_once_with("22NWWGLT3") # Called 0 times.
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
 
             # Check the content of the files
             with open(tmp_samplesheet_file_path_bulk, "r") as file:
@@ -183,58 +174,6 @@ class TestIlluminaDemux(unittest.TestCase):
             with open(tmp_bclconfig_file_path, "r") as file:
                 config_json = json.load(file)
                 self.assertTrue("Header" in config_json)
-
-    # @with_temporary_folder
-    # def test_generate_illumina_demux_samplesheets_mix(self, tmp_path):
-    #     """
-    #     Pass real run ID with singlecell samples, check that a samplesheet is generated and its content.
-    #     """
-    #     # Set up
-    #     file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
-    #     tmp_samplesheet_file_path_bulk = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
-    #     tmp_samplesheet_file_path_atac = os.path.join(tmp_path, "22NWWGLT3_samplesheet_atac.csv")
-    #     tmp_samplesheet_file_path_SC = os.path.join(tmp_path, "22NWWGLT3_samplesheet_singlecell.csv")
-    #     tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
-
-    #     # Mock data
-    #     with open('json_22NWWGLT3.json', 'r') as json_file:
-    #         json_info = json.load(json_file)
-    #     # print(isinstance(json_info, dict)) # true
-
-    #     with mock.patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info") as mock_collect_samplesheet_info, \
-    #         mock.patch("asf_tools.illumina.illumina_utils.IlluminaUtils") as mock_illumina_utils:
-
-    #         # Mock collect_samplesheet_info
-    #         mock_collect_samplesheet_info.return_value = json_info
-    #         # print(isinstance(mock_collect_samplesheet_info.return_value, dict)) # True
-
-    #         # Mock IlluminaUtils methods
-    #         mock_illumina_utils_instance = mock_illumina_utils.return_value
-    #         mock_illumina_utils_instance.extract_illumina_runid_fromxml.return_value = "22NWWGLT3"
-    #         # mock_illumina_utils_instance.runinfo_xml_to_dict.return_value = {"machine": "HiSeq", "flowcell": "22NWWGLT3"}
-    #         # mock_illumina_utils_instance.filter_runinfo.return_value = {"machine": "HiSeq"}
-    #         # mock_illumina_utils_instance.generate_bclconfig.return_value = {"Header": {}, "BCLConvert_Settings": {}}
-    #         # mock_illumina_utils_instance.filter_readinfo.return_value = {"reads": []}
-    #         # mock_illumina_utils_instance.group_samples_by_dictkey.return_value = {"project_type": []}
-
-    #         # Test
-    #         generate_illumina_demux_samplesheets(mock_collect_samplesheet_info, file, tmp_path)
-
-    #         # Assert that the mock is called
-    #         mock_collect_samplesheet_info.assert_called_once_with("22NWWGLT3")
-
-    #         # Assert that files are created
-    #         self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
-    #         self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
-    #         self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
-
-    #         # Check file content
-    #         with open(tmp_samplesheet_file_path_bulk, "r") as file:
-    #             data = "".join(file.readlines())
-    #             self.assertIn("[BCLConvert_Data]", data)
-    #         with open(tmp_bclconfig_file_path, "r") as file:
-    #             config_json = json.load(file)
-    #             self.assertIn("Header", config_json)
 
 
 class TestIlluminaDemuxWithFixtures:
@@ -261,7 +200,11 @@ class TestIlluminaDemuxWithFixtures:
 
     @pytest.mark.parametrize(
         "flowcell_id,runinfo_file,samplesheet_count",
-        [("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1), ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 1), ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 1)],
+        [
+            ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 1),
+            ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 1),
+        ],
     )
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
         """

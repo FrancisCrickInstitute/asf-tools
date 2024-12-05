@@ -139,7 +139,7 @@
             "1"
         ]
     },
-    "WAR6617A1": {
+    "WAR6617A9": {
         "sample_name": "B_LTX_160_BS_GL_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -154,13 +154,13 @@
             "2"
         ]
     },
-    "WAR6617A2": {
+    "WAR6617A10": {
         "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
         "project_id": "DN23378",
         "project_limsid": "WAR6617",
-        "project_type": "Single Cell",
+        "project_type": "WGS",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
         "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
@@ -170,7 +170,7 @@
             "3"
         ]
     },
-    "WAR6617A3": {
+    "WAR6617A11": {
         "sample_name": "B_LTX_160_BS_GL_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -187,7 +187,7 @@
             "4"
         ]
     },
-    "WAR6617A4": {
+    "WAR6617A12": {
         "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -205,13 +205,13 @@
             "5"
         ]
     },
-    "WAR6617A5": {
+    "WAR6617A13": {
         "sample_name": "B_LTX_160_BS_GL_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
         "project_id": "DN23378",
         "project_limsid": "WAR6617",
-        "project_type": "ATAC",
+        "project_type": "WGS",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
         "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
@@ -224,7 +224,7 @@
             "6"
         ]
     },
-    "WAR6617A6": {
+    "WAR6617A14": {
         "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -244,7 +244,7 @@
             "7"
         ]
     },
-    "WAR6617A7": {
+    "WAR6617A15": {
         "sample_name": "B_LTX_160_BS_GL_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -265,7 +265,7 @@
             "8"
         ]
     },
-    "WAR6617A8": {
+    "WAR6617A16": {
         "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -279,7 +279,7 @@
             "1"
         ]
     },
-    "WAR6617A1": {
+    "WAR6617A17": {
         "sample_name": "B_LTX_160_BS_GL_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -294,7 +294,7 @@
             "2"
         ]
     },
-    "WAR6617A2": {
+    "WAR6617A18": {
         "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -310,7 +310,7 @@
             "3"
         ]
     },
-    "WAR6617A3": {
+    "WAR6617A19": {
         "sample_name": "B_LTX_160_BS_GL_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -327,7 +327,7 @@
             "4"
         ]
     },
-    "WAR6617A4": {
+    "WAR6617A20": {
         "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -345,7 +345,7 @@
             "5"
         ]
     },
-    "WAR6617A5": {
+    "WAR6617A21": {
         "sample_name": "B_LTX_160_BS_GL_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -364,7 +364,7 @@
             "6"
         ]
     },
-    "WAR6617A6": {
+    "WAR6617A22": {
         "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -384,7 +384,7 @@
             "7"
         ]
     },
-    "WAR6617A7": {
+    "WAR6617A23": {
         "sample_name": "B_LTX_160_BS_GL_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",
@@ -405,7 +405,7 @@
             "8"
         ]
     },
-    "WAR6617A8": {
+    "WAR6617A24": {
         "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
         "group": "swantonc",
         "user": "sophie.ward",

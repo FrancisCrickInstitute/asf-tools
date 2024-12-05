@@ -520,7 +520,9 @@ class IlluminaUtils:
 
         return grouped_samples
 
-    def populate_dict_with_sample_data(self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict) -> dict:
+    def populate_dict_with_sample_data(
+        self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict
+    ) -> dict:
         """
         Updates the given dictionary with sample data based on project type and analysis type.
 

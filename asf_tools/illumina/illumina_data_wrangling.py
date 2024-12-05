@@ -137,15 +137,27 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
             filtered_samples.update(data_dict)
         samplesheet_name = f"{flowcell_id}_samplesheet_dlp"
 
+        # Generate samplesheet with the updated settings
+        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, dlp_samples, samplesheet_path)
+
     # This should include 10X/single cell data
     if single_cell_samples:
         # All samples are expected to be dual index and one index length
         samplesheet_name = f"{flowcell_id}_samplesheet_singlecell"
 
+        # Generate samplesheet with the updated settings
+        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, single_cell_samples, samplesheet_path)
+
     # This should include ATAC data
     if atac_samples:
-        # All samples are expected to be dual index and one index length
+        # All samples are expected to be single index and one index length
         samplesheet_name = f"{flowcell_id}_samplesheet_atac"
+
+        # Generate samplesheet with the updated settings
+        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, atac_samples, samplesheet_path)
 
     if other_samples:
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
@@ -185,6 +197,10 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
                 else:
                     override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                 bcl_settings_dict["OverrideCycles"] = override_string
+
+        # Generate samplesheet with the updated settings
+        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
 
     # Calculate hamming distance for indexes
 
