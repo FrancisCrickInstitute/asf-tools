@@ -1,0 +1,422 @@
+{
+    "WAR6617A1": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "WGS",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2"
+        ]
+    },
+    "WAR6617A2": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "Single Cell",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    "WAR6617A3": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4"
+        ]
+    },
+    "WAR6617A4": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-Multiomics-GEX",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ]
+    },
+    "WAR6617A5": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ]
+    },
+    "WAR6617A6": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ]
+    },
+    "WAR6617A7": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-ATAC",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8"
+        ]
+    },
+    "WAR6617A8": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X-Multiomics-ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1"
+        ]
+    },
+    "WAR6617A1": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "WGS",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2"
+        ]
+    },
+    "WAR6617A2": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "Single Cell",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    "WAR6617A3": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4"
+        ]
+    },
+    "WAR6617A4": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-Multiomics-GEX",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ]
+    },
+    "WAR6617A5": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ]
+    },
+    "WAR6617A6": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ]
+    },
+    "WAR6617A7": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-ATAC",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8"
+        ]
+    },
+    "WAR6617A8": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X-Multiomics-ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1"
+        ]
+    },
+    "WAR6617A1": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "WGS",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2"
+        ]
+    },
+    "WAR6617A2": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "Single Cell",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    "WAR6617A3": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4"
+        ]
+    },
+    "WAR6617A4": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-Multiomics-GEX",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ]
+    },
+    "WAR6617A5": {
+        "sample_name": "B_LTX_160_BS_GL_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ]
+    },
+    "WAR6617A6": {
+        "sample_name": "B_LTX_160_SU_T1-R3_BCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+        ]
+    },
+    "WAR6617A7": {
+        "sample_name": "B_LTX_160_BS_GL_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "None",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "10X-ATAC",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "lanes": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8"
+        ]
+    },
+    "WAR6617A8": {
+        "sample_name": "B_LTX_160_SU_T1-R3_WCPP",
+        "group": "swantonc",
+        "user": "sophie.ward",
+        "project_id": "DN23378",
+        "project_limsid": "WAR6617",
+        "project_type": "10X-Multiomics-ATAC",
+        "reference_genome": "Homo sapiens",
+        "data_analysis_type": "None",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "lanes": [
+            "1"
+        ]
+    }
+}
