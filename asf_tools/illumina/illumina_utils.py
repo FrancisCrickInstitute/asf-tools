@@ -2,15 +2,11 @@ import csv
 import os
 import re
 import warnings
-from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from xml.parsers.expat import ExpatError
 
 import xmltodict
-from bs4 import BeautifulSoup
-
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 
 
 class IndexMode(Enum):
@@ -519,43 +515,6 @@ class IlluminaUtils:
                 grouped_samples[key_value].append(sample_id)
 
         return grouped_samples
-
-    def populate_dict_with_sample_data(
-        self, project_type: str, data_analysis_type: str, project_value, sample_dict: dict, dict_to_update: dict
-    ) -> dict:
-        """
-        Updates the given dictionary with sample data based on project type and analysis type.
-
-        Parameters:
-        - project_type (str): The current project type.
-        - data_analysis_type (str): The type of data analysis.
-        - project_value (list): A list of project types to match against.
-        - sample_dict (dict): A sample dictionary to add if the condition is met.
-        - dict_to_update (dict): The dictionary to be updated with matching samples.
-
-        Returns:
-        - dict: The updated dictionary.
-        """
-        if not isinstance(project_type, str):
-            raise TypeError(f"{project_type} must be a string.")
-        if not isinstance(data_analysis_type, str):
-            raise TypeError(f"{data_analysis_type} must be a string.")
-        if not isinstance(project_value, list):
-            raise TypeError(f"{project_value} must be a list.")
-        if not isinstance(sample_dict, dict):
-            raise TypeError(f"{sample_dict} must be a dictionary.")
-        if not isinstance(dict_to_update, dict):
-            raise TypeError(f"{dict_to_update} must be a dictionary.")
-
-        # Update dict_to_update based on whether project_value is a string or a list
-        for entry in project_value:
-            # Check for exact matches in project_type or data_analysis_type
-            if any(entry == project for project in project_type) or entry == data_analysis_type:
-                dict_to_update.update(sample_dict)
-                return dict_to_update
-
-        # Return None if no condition is met
-        return None
 
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
