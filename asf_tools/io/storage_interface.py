@@ -9,7 +9,7 @@ import subprocess
 
 from asf_tools.ssh.file_object import FileType
 from asf_tools.ssh.nemo import Nemo
-from asf_tools.io.utils import list_directory_names
+from asf_tools.io.utils import list_directory_names, check_file_exist
 
 
 log = logging.getLogger()
@@ -53,6 +53,12 @@ class StorageInterface:
             return os.path.exists(path)
         elif self.interface_type == InterfaceType.NEMO:
             return self.interface.exists(path)
+
+    def exists_with_pattern(self, path, pattern):
+        if self.interface_type == InterfaceType.LOCAL:
+            return check_file_exist(path, pattern)
+        elif self.interface_type == InterfaceType.NEMO:
+            return self.interface.exists_with_pattern(path, pattern)
 
     def run_command(self, command):
         if self.interface_type == InterfaceType.NEMO:

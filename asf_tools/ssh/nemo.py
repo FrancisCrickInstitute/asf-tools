@@ -143,3 +143,16 @@ class Nemo:
         except UnexpectedExit:
             return False
         return True
+
+    def exists_with_pattern(self, path: str, pattern: str) -> bool:
+        """
+        Check if a file or directory exists within the path that matches the pattern.
+
+        :param path: The path to check.
+        :param pattern: The pattern to match.
+
+        :return: True if the file or directory exists and matches the pattern, False otherwise.
+        """
+        result = self.connection.run(f"find {path} -maxdepth 1 -name '{pattern}'", hide=True)
+        # If output is non-empty, files exist
+        return bool(result.stdout.strip())

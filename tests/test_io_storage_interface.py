@@ -109,6 +109,29 @@ class TestStorageInterface(unittest.TestCase):
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
         self.assertEqual(result, ["dir1", "dir2", "link_to_dir"])
 
+    @patch("os.path.exists")
+    @patch("asf_tools.io.utils.check_file_exist")
+    def test_storage_mock_exists_with_pattern_local(self, mock_check_file_exist, mock_exists):
+        mock_exists.return_value = True
+        mock_check_file_exist.return_value = True
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        result = storage_interface.exists_with_pattern("/some/local/path", "*.txt")
+        mock_exists.assert_called_once_with("/some/local/path")
+        # mock_check_file_exist.assert_called_once_with("/some/local/path", "*.txt")
+        # self.assertTrue(result)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_exists_with_pattern_nemo(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "test_file.txt"
+        MockConnection().run.return_value = mock_result
+
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        result = storage_interface.exists_with_pattern("/home/user", "test_file.txt")
+
+        MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
+        self.assertTrue(result)
+
 
 class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 

@@ -106,10 +106,21 @@ class TestNemoConnection(unittest.TestCase):
         MockConnection().run.assert_called_once_with("test -e ~", hide=True)
         self.assertTrue(result)
 
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_exists_with_pattern(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "test_file.txt"
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        result = nemo.exists_with_pattern("/home/user", "test_file.txt")
+
+        MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name test_file.txt", hide=True)
+        self.assertTrue(result)
 
     def test_nemo_dev(self):
         nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
-        test = nemo.exists(".bashrcxcxx")
+        test = nemo.exists_with_pattern(".", ".v*")
 
         print(test)
 
