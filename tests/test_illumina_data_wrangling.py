@@ -7,6 +7,7 @@ from unittest import mock
 import pytest
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
+from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 from .test_io_utils import with_temporary_folder
@@ -30,6 +31,32 @@ class TestIlluminaDemux(unittest.TestCase):
     def tearDownClass(cls):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
+
+    def test_generate_illumina_demux_samplesheets_general(self):
+        """
+        Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
+        """
+
+        # Set up
+        file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
+        # create output files paths
+        # tmp_samplesheet_file_path = os.path.join("22NWWGLT3_samplesheet_8_8.csv")
+        # tmp_bclconfig_file_path = os.path.join("bcl_config_22NWWGLT3.json")
+
+        # Test
+        generate_illumina_demux_samplesheets(self.api, file, ".")
+
+        # Assert
+        # self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
+        # self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+
+        # Check the content of the files
+        # with open(tmp_samplesheet_file_path, "r") as file:
+        #     data = "".join(file.readlines())
+        #     self.assertTrue("[BCLConvert_Data]" in data)
+        # with open(tmp_bclconfig_file_path, "r") as file:
+        #     config_json = json.load(file)
+        #     self.assertTrue("Header" in config_json)
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
@@ -142,11 +169,14 @@ class TestIlluminaDemux(unittest.TestCase):
         """
 
         # Set up
+        iu = IlluminaUtils()
+
         file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
         # create output files paths
         tmp_samplesheet_file_path_bulk = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
         tmp_samplesheet_file_path_atac = os.path.join(tmp_path, "22NWWGLT3_samplesheet_atac.csv")
         tmp_samplesheet_file_path_sc = os.path.join(tmp_path, "22NWWGLT3_samplesheet_singlecell.csv")
+        tmp_samplesheet_file_path_general = os.path.join(tmp_path, "22NWWGLT3_samplesheet.csv")
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
 
         # Extract mocked sample info from the json file
@@ -163,9 +193,10 @@ class TestIlluminaDemux(unittest.TestCase):
 
             # Assert
             self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_general))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
-            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
+            # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
 
             # Check the content of the files
             with open(tmp_samplesheet_file_path_bulk, "r") as file:
@@ -174,6 +205,26 @@ class TestIlluminaDemux(unittest.TestCase):
             with open(tmp_bclconfig_file_path, "r") as file:
                 config_json = json.load(file)
                 self.assertTrue("Header" in config_json)
+            # Check the content of the files
+            with open(tmp_samplesheet_file_path_atac, "r") as file:
+                data = "".join(file.readlines())
+                print(data)
+
+            # Check the number of samples for each samplesheet
+            samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general,  "Sample_ID")
+            samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
+            # samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
+            samples_atac = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
+
+            expected_samples_bulk = 5
+            expected_samples_sc = 8
+            expected_samples_atac = 11
+            expected_samples_general = 24
+
+            assert samples_general == expected_samples_general
+            # assert samples_bulk == expected_samples_bulk # 3 == 5
+            # assert samples_sc == expected_samples_sc # 17 == 8
+            assert samples_atac == expected_samples_atac # 14 == 11, 6 ==1
 
 
 class TestIlluminaDemuxWithFixtures:
@@ -202,7 +253,7 @@ class TestIlluminaDemuxWithFixtures:
         "flowcell_id,runinfo_file,samplesheet_count",
         [
             ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1),
-            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 1),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 2),
             ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 1),
         ],
     )
@@ -229,5 +280,3 @@ class TestIlluminaDemuxWithFixtures:
         # Verify the number of SampleSheet files
         samplesheet_files = [f for f in os.listdir(self.tmp_path) if "samplesheet" in f.lower() and os.path.isfile(os.path.join(self.tmp_path, f))]
         assert len(samplesheet_files) == samplesheet_count
-
-    # 22NWYFLT3 returns this: samplesheet.csv

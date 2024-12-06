@@ -82,7 +82,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
 
     # Subdivide samples into different workflows based on project type
     # Fist we categorise different values for "project_type"
-    dlp_project_types = ["DLP"]
+    # dlp_project_types = ["DLP"]
     single_cell_project_types = [
         "Single Cell",
         "10X",
@@ -119,15 +119,20 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
         if project_type is None:
             warnings.warn(f"'{samples}' have None project_type.", UserWarning)
             pass
+        elif "DLP" in project_type or "DLP" in data_analysis_type:
+                dlp_samples.update(filtered_samples)
         else:
-            iu.populate_dict_with_sample_data(project_type, data_analysis_type, dlp_project_types, filtered_samples, dlp_samples)
             iu.populate_dict_with_sample_data(project_type, data_analysis_type, single_cell_project_types, filtered_samples, single_cell_samples)
             iu.populate_dict_with_sample_data(project_type, data_analysis_type, atac_project_types, filtered_samples, atac_samples)
+
         if not dlp_samples and not single_cell_samples and not atac_samples:
             other_samples.update(filtered_samples)
 
     # Set up variables required for the samplesheet generation
-    samplesheet_name = "samplesheet"
+    samplesheet_name = f"{flowcell_id}_samplesheet"
+    # Generate samplesheet with the updated settings
+    samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+    iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
@@ -135,7 +140,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
         for sample in dlp_samples:
             data_dict = iu.dlp_barcode_data_to_dict(dlp_sample_file, sample)
             filtered_samples.update(data_dict)
-        samplesheet_name = f"{flowcell_id}_samplesheet_dlp"
+        samplesheet_name = samplesheet_name + "_dlp"
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
@@ -144,7 +149,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
     # This should include 10X/single cell data
     if single_cell_samples:
         # All samples are expected to be dual index and one index length
-        samplesheet_name = f"{flowcell_id}_samplesheet_singlecell"
+        samplesheet_name = samplesheet_name + "_singlecell"
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
@@ -153,7 +158,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
     # This should include ATAC data
     if atac_samples:
         # All samples are expected to be single index and one index length
-        samplesheet_name = f"{flowcell_id}_samplesheet_atac"
+        samplesheet_name = samplesheet_name + "_atac"
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
@@ -202,8 +207,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_file, output_path, bcl_conf
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
 
-    # Calculate hamming distance for indexes
-
-    # Generate samplesheet with the updated settings
-    samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
+    # # Generate samplesheet with the updated settings
+    # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+    # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
