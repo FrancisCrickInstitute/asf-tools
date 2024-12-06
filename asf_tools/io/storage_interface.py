@@ -7,7 +7,9 @@ import logging
 import os
 import subprocess
 
+from asf_tools.ssh.file_object import FileType
 from asf_tools.ssh.nemo import Nemo
+from asf_tools.io.utils import list_directory_names
 
 
 log = logging.getLogger()
@@ -31,6 +33,20 @@ class StorageInterface:
             return os.listdir(path)
         elif self.interface_type == InterfaceType.NEMO:
             return self.interface.list_directory(path)
+
+    def list_directories_with_links(self, path):
+        dirlist = []
+        if self.interface_type == InterfaceType.LOCAL:
+            return list_directory_names(path)
+        elif self.interface_type == InterfaceType.NEMO:
+            dir_objs = self.interface.list_directory_objects(path)
+            for obj in dir_objs:
+                if obj.type == FileType.FOLDER:
+                    dirlist.append(obj.name)
+                elif obj.type == FileType.LINK:
+                    if '.' not in obj.link_target.split('/')[-1]:
+                        dirlist.append(obj.name)
+        return dirlist
 
     def exists(self, path):
         if self.interface_type == InterfaceType.LOCAL:

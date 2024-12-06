@@ -82,6 +82,33 @@ class TestStorageInterface(unittest.TestCase):
         self.assertEqual(stdout, "command output")
         self.assertEqual(stderr, "error output")
 
+    @patch("os.listdir")
+    @patch("os.path.isdir")
+    def test_storage_mock_list_directories_with_links_local(self, mock_isdir, mock_listdir):
+        mock_listdir.return_value = ["dir1", "dir2", "link_to_dir"]
+        mock_isdir.side_effect = lambda x: x != "link_to_dir"
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        result = storage_interface.list_directories_with_links("/some/local/path")
+        mock_listdir.assert_called_once_with("/some/local/path")
+        self.assertEqual(result, ["dir1", "dir2", "link_to_dir"])
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_list_directories_with_links_nemo(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = (
+            "total 8\n"
+            "drwxr-xr-x 2 user group 4096 2023-10-01 12:34 dir1\n"
+            "drwxr-xr-x 3 user group 4096 2023-10-01 12:34 dir2\n"
+            "lrwxrwxrwx 1 user group 1234 2023-10-01 12:34 link_to_dir -> /some/target/dir"
+        )
+        MockConnection().run.return_value = mock_result
+
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        result = storage_interface.list_directories_with_links("~")
+
+        MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
+        self.assertEqual(result, ["dir1", "dir2", "link_to_dir"])
+
 
 class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 
