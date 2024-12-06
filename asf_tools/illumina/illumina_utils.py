@@ -549,7 +549,8 @@ class IlluminaUtils:
 
         # Update dict_to_update based on whether project_value is a string or a list
         for entry in project_value:
-            if entry in project_type or entry in data_analysis_type:
+            # Check for exact matches in project_type or data_analysis_type
+            if any(entry == project for project in project_type) or entry == data_analysis_type:
                 dict_to_update.update(sample_dict)
                 return dict_to_update
 
@@ -821,14 +822,6 @@ class IlluminaUtils:
 
         return config_data
 
-    # Usage example:
-    # Assuming you have functions `filter_runinfo` and `extract_illumina_runid_fromxml` to get `machine` and `flowcell`
-    # machine = filter_runinfo(xml_file)
-    # flowcell = extract_illumina_runid_fromxml(xml_file)
-    # header_extra = {"InstrumentType": "NextSeq"}
-    # bclconvert_extra = {"ReadStructure": "151T8T151"}
-    # create_bclconfig('bcl_config.json', machine, flowcell, header_extra=header_extra, bclconvert_extra=bclconvert_extra)
-
     def generate_bcl_samplesheet(
         self,
         header_dict: dict,
@@ -896,62 +889,47 @@ class IlluminaUtils:
                 for sample_id, sample_info in bcl_data_dict.items():  # pylint: disable=unused-variable
                     f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")
 
-    # def generate_bcl_samplesheet_from_runid_xml(self, runid: str, xml_file, output_file_path: str = "samplesheet.csv"):
+    def count_samples_in_bcl_samplesheet(self, file_path: str, search_string: str) -> int:
+        """
+        Counts the number of non-empty lines from the first occurrence of a substring in a CSV file,
+        excluding the matching line.
 
-    #     # Collect sample info
-    #     cl = ClarityHelperLims()
-    #     sample_info = cl.collect_samplesheet_info(runid)
-    #     bcl_data_dict = cl.reformat_barcode_to_index(sample_info)
+        This function scans each row of a CSV file to find the first occurrence of a
+        specified substring. Once the substring is found, it counts the remaining non-empty
+        lines from that point to the end of the file, excluding the matching row and any empty rows.
 
-    #     # Extract relevant info from the xml file
-    #     xml_info = self.merge_runinfo_dict_fromfile(xml_file)
-    #     print(xml_info)
+        Args:
+            file_path (str): The file path to the CSV file.
+            search_string (str): The substring to search for in the rows.
 
-    # last step
-    # self.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_name)
+        Returns:
+            int: The count of non-empty lines from the first match (excluding the match row)
+                to the end of the file. Returns 0 if the file is empty or no match is found.
 
-    # def extract_top_unknown_barcode_from_html(self, html_file) -> str:
-    #     """
-    #     Extract the 'sequence' value with the highest 'count' under "Top Unknown Barcodes" from the HTML file.
+        Raises:
+            FileNotFoundError: If the provided file does not exist or cannot be opened.
+            ValueError: If the search_string is empty or is empty.
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"{file_path} does not exist.")
 
-    #     Args:
-    #         html_file (file-like object): The HTML file containing the "Top Unknown Barcodes" table.
+        if not isinstance(search_string, str):
+            raise ValueError(f"{search_string} must be a string.")
 
-    #     Returns:
-    #         str: The top unknown barcode sequence with the highest count.
-    #     """
-    #     if not os.path.isfile(html_file):
-    #         raise FileNotFoundError(f"{html_file} does not exist or is not a file.")
+        with open(file_path, "r", newline="", encoding="ASCII") as file:
+            reader = csv.reader(file)
+            # Convert all rows to a list to allow multiple passes over the data
+            rows = list(reader)
+            match_found = False
+            lines_count = 0
 
-    #     soup = BeautifulSoup(html_file, 'html.parser')
+            for row in rows:
+                if match_found:
+                    # Count the row if it's non-empty
+                    if any(cell.strip() for cell in row):  # check if row is not empty
+                        lines_count += 1
+                elif any(search_string in cell for cell in row):
+                    # Mark that a match was found, but do not count this row
+                    match_found = True
 
-    #     validate_html_format = soup.find('html')
-    #     if validate_html_format is None:
-    #         raise ValueError("Input file is not HTML.")
-
-    #     # Locate the "Top Unknown Barcodes" table or section
-    #     top_barcodes_table = soup.find(text="Top Unknown Barcodes")
-    #     if not top_barcodes_table:
-    #         raise ValueError("Could not find 'Top Unknown Barcodes' in the HTML file")
-
-    #     # Find the associated table or section containing the sequence and count
-    #     table = top_barcodes_table.find_next("table")
-    #     if not table:
-    #         raise ValueError("Could not find a table after 'Top Unknown Barcodes'")
-
-    #     # Parse the table for rows of barcode sequences and counts
-    #     rows = table.find_all("tr")
-    #     max_count = 0
-    #     top_sequence = None
-    #     for row in rows[1:]:  # Skip header row
-    #         columns = row.find_all("td")
-    #         sequence = columns[0].text.strip()
-    #         count = int(columns[1].text.strip())
-    #         if count > max_count:
-    #             max_count = count
-    #             top_sequence = sequence
-
-    #     if not top_sequence:
-    #         raise ValueError("Could not find a valid sequence in the table")
-
-    #     return top_sequence
+            return lines_count if match_found else None
