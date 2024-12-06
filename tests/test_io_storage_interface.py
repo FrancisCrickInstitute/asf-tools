@@ -60,6 +60,28 @@ class TestStorageInterface(unittest.TestCase):
         MockConnection().run.assert_called_once_with("test -e ~", hide=True)
         self.assertTrue(result)
 
+    @patch("subprocess.run")
+    def test_storage_mock_run_command_local(self, mock_run):
+        mock_run.return_value = MagicMock(stdout="command output", stderr="error output")
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        result = storage_interface.run_command("ls -las")
+        mock_run.assert_called_once_with("ls -las", shell=True, check=True)
+        self.assertIsNotNone(result)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_run_command_nemo(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "command output"
+        mock_result.stderr.strip.return_value = "error output"
+        MockConnection().run.return_value = mock_result
+
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        stdout, stderr = storage_interface.run_command("ls -las")
+
+        MockConnection().run.assert_called_once_with("ls -las", hide=True)
+        self.assertEqual(stdout, "command output")
+        self.assertEqual(stderr, "error output")
+
 
 class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 
