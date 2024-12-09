@@ -5,6 +5,7 @@ Establish an SSH connection to nemo and run commands.
 import logging
 
 from fabric import Connection
+from invoke.exceptions import UnexpectedExit
 
 from asf_tools.ssh.file_object import FileObject
 
@@ -73,7 +74,7 @@ class Nemo:
         result = self.connection.run(command, hide=True)
         return result.stdout.strip(), result.stderr.strip()
 
-    def list_directory(self, directory: str) -> list:
+    def list_directory_objects(self, directory: str) -> list:
         """
         List the contents of a directory.
 
@@ -116,3 +117,78 @@ class Nemo:
             files.append(file_object)
 
         return files
+
+    def list_directory(self, directory: str) -> list:
+        """
+        List the contents of a directory.
+
+        :param directory: The directory to list.
+        :return: A list of file paths in the directory.
+        """
+
+        # list directory objects, but just return a string path for each
+        directory_objects = self.list_directory_objects(directory)
+        return [file.name for file in directory_objects]
+
+    def exists(self, path: str) -> bool:
+        """
+        Check if a file or directory exists.
+
+        :param path: The path to check.
+        :return: True if the file or directory exists, False otherwise.
+        """
+        # Check if the path exists
+        try:
+            self.connection.run(f"test -e {path}", hide=True)
+        except UnexpectedExit:
+            return False
+        return True
+
+    def exists_with_pattern(self, path: str, pattern: str) -> bool:
+        """
+        Check if a file or directory exists within the path that matches the pattern.
+
+        :param path: The path to check.
+        :param pattern: The pattern to match.
+
+        :return: True if the file or directory exists and matches the pattern, False otherwise.
+        """
+        result = self.connection.run(f"find {path} -maxdepth 1 -name '{pattern}'", hide=True)
+        # If output is non-empty, files exist
+        return bool(result.stdout.strip())
+
+    def make_dirs(self, path: str):
+        """
+        Create a directory.
+
+        :param path: The path of the directory to create.
+        """
+        self.connection.run(f"mkdir -p {path}", hide=True)
+
+    def write_file(self, path: str, content: str):
+        """
+        Write content to a file.
+
+        :param path: The path of the file to write.
+        :param content: The content to write to the file.
+        """
+        self.connection.run(f'echo "{content}" > {path}', hide=True)
+
+    def read_file(self, path: str) -> str:
+        """
+        Read the contents of a file.
+
+        :param path: The path of the file to read.
+        :return: The contents of the file.
+        """
+        result = self.connection.run(f"cat {path}", hide=True)
+        return result.stdout.strip()
+
+    def chmod(self, path: str, permissions: str):
+        """
+        Set the permissions of a file or directory.
+
+        :param path: The path of the file or directory.
+        :param permissions: The permissions to set.
+        """
+        self.connection.run(f"chmod {permissions} {path}", hide=True)
