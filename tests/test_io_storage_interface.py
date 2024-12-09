@@ -4,10 +4,11 @@ Tests for the Storage Interface module.
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
-import unittest
-import pytest
 import os
-from unittest.mock import patch, MagicMock
+import unittest
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 
@@ -158,7 +159,7 @@ class TestStorageInterface(unittest.TestCase):
 
     def test_storage_parse_permission_string(self):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
-        
+
         perm, numeric_perm = storage_interface.parse_permission_string("rwxr-xr--")
         self.assertEqual(perm, 0o754)
         self.assertEqual(numeric_perm, "754")
@@ -195,7 +196,6 @@ class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 
         # Assert
         self.assertTrue("illumina" in result)
-
 
     @pytest.mark.only_run_with_direct_target
     def test_storage_integration_list_directory_remote(self):

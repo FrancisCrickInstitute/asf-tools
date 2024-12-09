@@ -2,15 +2,16 @@
 A Single Interface for file/folder operations remote or local
 """
 
-from enum import Enum
 import logging
 import os
 import stat
 import subprocess
+from enum import Enum
 
+from asf_tools.io.utils import check_file_exist, list_directory_names
 from asf_tools.ssh.file_object import FileType
 from asf_tools.ssh.nemo import Nemo
-from asf_tools.io.utils import list_directory_names, check_file_exist
+
 
 # File permission constants
 PERM777 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IWOTH | stat.S_IXOTH
@@ -19,12 +20,15 @@ PERM666 = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP | stat.S_IRO
 # Logger setup
 log = logging.getLogger()
 
+
 class InterfaceType(Enum):
     """
     Enum for specifying the type of storage interface.
     """
+
     LOCAL = 1
     NEMO = 2
+
 
 class StorageInterface:
     """
@@ -73,7 +77,7 @@ class StorageInterface:
                 if obj.type == FileType.FOLDER:
                     dirlist.append(obj.name)
                 elif obj.type == FileType.LINK:
-                    if '.' not in obj.link_target.split('/')[-1]:
+                    if "." not in obj.link_target.split("/")[-1]:
                         dirlist.append(obj.name)
         return dirlist
 
@@ -133,7 +137,7 @@ class StorageInterface:
         :param content: The content to write to the file.
         """
         if self.interface_type == InterfaceType.LOCAL:
-            with open(path, 'w', encoding="UTF-8") as f:
+            with open(path, "w", encoding="UTF-8") as f:
                 f.write(content)
         elif self.interface_type == InterfaceType.NEMO:
             self.interface.write_file(path, content)
@@ -146,7 +150,7 @@ class StorageInterface:
         :return: The contents of the file.
         """
         if self.interface_type == InterfaceType.LOCAL:
-            with open(path, 'r', encoding="UTF-8") as f:
+            with open(path, "r", encoding="UTF-8") as f:
                 return f.read()
         elif self.interface_type == InterfaceType.NEMO:
             return self.interface.read_file(path)
@@ -162,9 +166,15 @@ class StorageInterface:
             raise ValueError("Invalid permission string. Use a format like 'rwxr-xr--'.")
 
         modes = [
-            (stat.S_IRUSR, 'r'), (stat.S_IWUSR, 'w'), (stat.S_IXUSR, 'x'),
-            (stat.S_IRGRP, 'r'), (stat.S_IWGRP, 'w'), (stat.S_IXGRP, 'x'),
-            (stat.S_IROTH, 'r'), (stat.S_IWOTH, 'w'), (stat.S_IXOTH, 'x')
+            (stat.S_IRUSR, "r"),
+            (stat.S_IWUSR, "w"),
+            (stat.S_IXUSR, "x"),
+            (stat.S_IRGRP, "r"),
+            (stat.S_IWGRP, "w"),
+            (stat.S_IXGRP, "x"),
+            (stat.S_IROTH, "r"),
+            (stat.S_IWOTH, "w"),
+            (stat.S_IXOTH, "x"),
         ]
 
         # Convert permission string to a chmod octal integer
@@ -176,13 +186,13 @@ class StorageInterface:
         # Convert permission string to numeric (e.g., 'rwxr-xr--' -> 754)
         numeric_perm = ""
         for i in range(0, len(permission_string), 3):
-            group = permission_string[i:i+3]
+            group = permission_string[i : i + 3]
             group_value = 0
-            if group[0] == 'r':
+            if group[0] == "r":
                 group_value += 4
-            if group[1] == 'w':
+            if group[1] == "w":
                 group_value += 2
-            if group[2] == 'x':
+            if group[2] == "x":
                 group_value += 1
             numeric_perm += str(group_value)
         return perm, numeric_perm
