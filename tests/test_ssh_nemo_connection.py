@@ -49,11 +49,109 @@ class TestNemoConnection(unittest.TestCase):
         self.assertEqual(stdout, "command output")
         self.assertEqual(stderr, "error output")
 
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_list_directory_objects(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = (
+            "total 8\n"
+            "drwxr-xr-x 2 user group 4096 2023-10-01 12:34 .\n"
+            "drwxr-xr-x 3 user group 4096 2023-10-01 12:34 ..\n"
+            "-rw-r--r-- 1 user group 1234 2023-10-01 12:34 test_file.txt\n"
+            "lrwxrwxrwx 1 user group 1234 2023-10-01 12:34 link -> target"
+        )
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        files = nemo.list_directory_objects("~")
+
+        MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
+        self.assertEqual(len(files), 4)
+        self.assertEqual(files[0].name, ".")
+        self.assertEqual(files[1].name, "..")
+        self.assertEqual(files[2].name, "test_file.txt")
+        self.assertEqual(files[3].name, "link")
+        self.assertEqual(files[3].link_target, "target")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_list_directory(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = (
+            "total 8\n"
+            "drwxr-xr-x 2 user group 4096 2023-10-01 12:34 .\n"
+            "drwxr-xr-x 3 user group 4096 2023-10-01 12:34 ..\n"
+            "-rw-r--r-- 1 user group 1234 2023-10-01 12:34 test_file.txt\n"
+            "lrwxrwxrwx 1 user group 1234 2023-10-01 12:34 link -> target"
+        )
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        files = nemo.list_directory("~")
+
+        MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
+        self.assertEqual(len(files), 4)
+        self.assertEqual(files[0], ".")
+        self.assertEqual(files[1], "..")
+        self.assertEqual(files[2], "test_file.txt")
+        self.assertEqual(files[3], "link")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_exists(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.ok = True
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        result = nemo.exists("~")
+
+        MockConnection().run.assert_called_once_with("test -e ~", hide=True)
+        self.assertTrue(result)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_exists_with_pattern(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "test_file.txt"
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        result = nemo.exists_with_pattern("/home/user", "test_file.txt")
+
+        MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
+        self.assertTrue(result)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_make_dirs(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.make_dirs("/some/new/directory")
+        MockConnection().run.assert_called_once_with("mkdir -p /some/new/directory", hide=True)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_write_file(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.write_file("/some/path/to/file.txt", "file content")
+        MockConnection().run.assert_called_once_with('echo "file content" > /some/path/to/file.txt', hide=True)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_read_file(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "file content"
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        content = nemo.read_file("/some/path/to/file.txt")
+
+        MockConnection().run.assert_called_once_with("cat /some/path/to/file.txt", hide=True)
+        self.assertEqual(content, "file content")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_chmod(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.chmod("/some/path/to/file.txt", "755")
+        MockConnection().run.assert_called_once_with("chmod 755 /some/path/to/file.txt", hide=True)
+
     # def test_nemo_dev(self):
     #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
-    #     folder = nemo.list_directory("~")
+    #     test = nemo.exists_with_pattern(".", ".v*")
 
-    #     for file in folder:
-    #         print(file)
+    #     print(test)
 
     #     raise NotImplementedError("Test not implemented")
