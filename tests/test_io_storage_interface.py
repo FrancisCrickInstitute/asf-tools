@@ -116,7 +116,7 @@ class TestStorageInterface(unittest.TestCase):
         mock_exists.return_value = True
         mock_check_file_exist.return_value = True
         storage_interface = StorageInterface(InterfaceType.LOCAL)
-        result = storage_interface.exists_with_pattern("/some/local/path", "*.txt")
+        _ = storage_interface.exists_with_pattern("/some/local/path", "*.txt")
         mock_exists.assert_called_once_with("/some/local/path")
         # mock_check_file_exist.assert_called_once_with("/some/local/path", "*.txt")
         # self.assertTrue(result)
