@@ -156,3 +156,39 @@ class Nemo:
         result = self.connection.run(f"find {path} -maxdepth 1 -name '{pattern}'", hide=True)
         # If output is non-empty, files exist
         return bool(result.stdout.strip())
+
+    def make_dirs(self, path: str):
+        """
+        Create a directory.
+
+        :param path: The path of the directory to create.
+        """
+        self.connection.run(f"mkdir -p {path}", hide=True)
+
+    def write_file(self, path: str, content: str):
+        """
+        Write content to a file.
+
+        :param path: The path of the file to write.
+        :param content: The content to write to the file.
+        """
+        self.connection.run(f'echo "{content}" > {path}', hide=True)
+
+    def read_file(self, path: str) -> str:
+        """
+        Read the contents of a file.
+
+        :param path: The path of the file to read.
+        :return: The contents of the file.
+        """
+        result = self.connection.run(f"cat {path}", hide=True)
+        return result.stdout.strip()
+
+    def chmod(self, path: str, permissions: str):
+        """
+        Set the permissions of a file or directory.
+
+        :param path: The path of the file or directory.
+        :param permissions: The permissions to set.
+        """
+        self.connection.run(f"chmod {permissions} {path}", hide=True)

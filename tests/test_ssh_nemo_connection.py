@@ -115,13 +115,43 @@ class TestNemoConnection(unittest.TestCase):
         nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
         result = nemo.exists_with_pattern("/home/user", "test_file.txt")
 
-        MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name test_file.txt", hide=True)
+        MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
         self.assertTrue(result)
 
-    def test_nemo_dev(self):
-        nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
-        test = nemo.exists_with_pattern(".", ".v*")
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_make_dirs(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.make_dirs("/some/new/directory")
+        MockConnection().run.assert_called_once_with("mkdir -p /some/new/directory", hide=True)
 
-        print(test)
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_write_file(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.write_file("/some/path/to/file.txt", "file content")
+        MockConnection().run.assert_called_once_with('echo "file content" > /some/path/to/file.txt', hide=True)
 
-        raise NotImplementedError("Test not implemented")
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_read_file(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "file content"
+        MockConnection().run.return_value = mock_result
+
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        content = nemo.read_file("/some/path/to/file.txt")
+
+        MockConnection().run.assert_called_once_with("cat /some/path/to/file.txt", hide=True)
+        self.assertEqual(content, "file content")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_nemo_chmod(self, MockConnection):
+        nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
+        nemo.chmod("/some/path/to/file.txt", "755")
+        MockConnection().run.assert_called_once_with("chmod 755 /some/path/to/file.txt", hide=True)
+
+    # def test_nemo_dev(self):
+    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
+    #     test = nemo.exists_with_pattern(".", ".v*")
+
+    #     print(test)
+
+    #     raise NotImplementedError("Test not implemented")

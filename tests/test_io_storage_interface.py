@@ -132,6 +132,56 @@ class TestStorageInterface(unittest.TestCase):
         MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
         self.assertTrue(result)
 
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_make_dirs_nemo(self, MockConnection):
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        storage_interface.make_dirs("/some/new/directory")
+        MockConnection().run.assert_called_once_with("mkdir -p /some/new/directory", hide=True)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_write_file_nemo(self, MockConnection):
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        storage_interface.write_file("/some/path/to/file.txt", "file content")
+        MockConnection().run.assert_called_once_with('echo "file content" > /some/path/to/file.txt', hide=True)
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_read_file_nemo(self, MockConnection):
+        mock_result = MagicMock()
+        mock_result.stdout.strip.return_value = "file content"
+        MockConnection().run.return_value = mock_result
+
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        content = storage_interface.read_file("/some/path/to/file.txt")
+
+        MockConnection().run.assert_called_once_with("cat /some/path/to/file.txt", hide=True)
+        self.assertEqual(content, "file content")
+
+    def test_storage_parse_permission_string(self):
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        
+        perm, numeric_perm = storage_interface.parse_permission_string("rwxr-xr--")
+        self.assertEqual(perm, 0o754)
+        self.assertEqual(numeric_perm, "754")
+
+        perm, numeric_perm = storage_interface.parse_permission_string("rw-rw-r--")
+        self.assertEqual(perm, 0o664)
+        self.assertEqual(numeric_perm, "664")
+
+        with self.assertRaises(ValueError):
+            storage_interface.parse_permission_string("invalid")
+
+    @patch("asf_tools.ssh.nemo.Connection")
+    def test_storage_mock_chmod_nemo(self, MockConnection):
+        storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
+        storage_interface.chmod("/some/path/to/file.txt", "rwxr-xr--")
+        MockConnection().run.assert_called_once_with("chmod 754 /some/path/to/file.txt", hide=True)
+
+    @patch("os.chmod")
+    def test_storage_mock_chmod_local(self, mock_chmod):
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        storage_interface.chmod("/some/path/to/file.txt", "rwxr-xr--")
+        mock_chmod.assert_called_once_with("/some/path/to/file.txt", 0o754)
+
 
 class TestStorageInterfaceIntegrationTests(unittest.TestCase):
 
