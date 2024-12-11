@@ -26,7 +26,7 @@ def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     run_dir_1 = os.path.join(tmp_path, "run01")
@@ -48,7 +48,7 @@ def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
     )
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     run_dir_1 = os.path.join(tmp_path, "run01")
@@ -64,7 +64,7 @@ def test_ont_gen_demux_run_sbatch_file(self, tmp_path):
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False)
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -88,7 +88,7 @@ def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -108,7 +108,7 @@ def test_ont_gen_demux_run_file_permissions(self, tmp_path):
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     run_file = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -125,7 +125,7 @@ def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False)
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -158,7 +158,7 @@ def test_ont_gen_demux_samplesheet_only(self, tmp_path):
     os.makedirs(os.path.join(tmp_path, "run01"))
 
     # Test
-    test.cli_run()
+    test.run()
 
     # Assert
     samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -186,7 +186,7 @@ def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_
 
     # Test
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
-    test.cli_run()
+    test.run()
 
     # Setup Assertion
     samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -233,7 +233,7 @@ def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_i
 
     # Test
     test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
-    test.cli_run()
+    test.run()
 
     # Setup Assertion
     samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -342,6 +342,7 @@ nextflow run /path/to/pipeline \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
   --dorado_model sup \\
   --dorado_bc_parse_pos {parse_pos}
+
 """
     result = instance.create_ont_sbatch_text(run_name, parse_pos)
     self.assertEqual(result.strip(), expected_output.strip())

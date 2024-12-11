@@ -28,6 +28,8 @@ class DataManagement:
     """
     Helper functions for data management
     """
+    def __init__(self, storage_interface):
+        self.storage_interface = storage_interface
 
     def check_pipeline_run_complete(self, run_dir: str):
         """
@@ -40,7 +42,7 @@ class DataManagement:
         - bool: True if the run directory is complete, False otherwise.
         """
         completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
-        return os.path.exists(completed_file)
+        return self.storage_interface.exists(completed_file)
 
     def check_ont_sequencing_run_complete(self, run_dir: str):
         """
@@ -50,7 +52,7 @@ class DataManagement:
         Args:
         - run_dir (str): Path to the run directory.
         """
-        return check_file_exist(run_dir, "sequencing_summary*")
+        return self.storage_interface.exists_with_pattern(run_dir, "sequencing_summary*")
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
