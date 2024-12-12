@@ -197,7 +197,7 @@ class TestIlluminaDemux(unittest.TestCase):
             self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_general))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
-            # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
             self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
 
             # Check the content of the files

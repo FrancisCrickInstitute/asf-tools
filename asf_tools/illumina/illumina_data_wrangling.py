@@ -88,7 +88,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     # Subdivide samples into different workflows based on project type
     # Fist we categorise different values for "project_type"
-    # dlp_project_types = ["DLP"]
     single_cell_project_types = [
         "Single Cell",
         "10X",
@@ -117,23 +116,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     atac_samples = {}
     other_samples = {}
 
-    # # Rename sample_name to Sample_ID
-    # for key, details in samples_all_info.items():
-    #     details["Sample_ID"] = details.pop("sample_name")
-
-    # # Group data by project type and data analysis type
-    # grouped_data = defaultdict(list)
-    # for key, details in samples_all_info.items():
-    #     group_key = (details['project_type'], details['data_analysis_type'])
-    #     grouped_data[group_key].append({key: details})
-
-    ## Identify the project type and add to the appropriate dictionary
-    # print(samples_all_info)
-
-    # # Split samples by project type
-    # split_samples_by_projecttype = iu.group_samples_by_dictkey(samples_all_info, "project_type")
-    # print(split_samples_by_projecttype)
-
     samples_bcldata_dict = {}
     for sample in samples_all_info:
         # print("*********************************")
@@ -146,18 +128,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
             "Sample_ID": sample,
             **(sample_and_index_dict.get(sample, {}) if sample_and_index_dict else {}),
         }
-
-        # # Filter samples based on project type
-        # filtered_samples = {}
-        # for sample in samples:
-        #     # print(sample)
-        #     # Add 'Sample_ID' to the dictionary for each sample
-        #     filtered_samples[sample] = {
-        #         "Lane": samples_all_info[sample]["lanes"],
-        #         "Sample_ID": sample,
-        #         # **(sample_and_index_dict.get(sample, {}) if sample_and_index_dict else {}),
-        #     }
-        # print(filtered_samples)
 
     for sample in samples_bcldata_dict:
         project_type = samples_all_info[sample]["project_type"]
