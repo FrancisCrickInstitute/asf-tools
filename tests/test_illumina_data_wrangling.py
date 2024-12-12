@@ -193,42 +193,41 @@ class TestIlluminaDemux(unittest.TestCase):
             # Test
             generate_illumina_demux_samplesheets(mock_cl, run_info_path, tmp_path)
 
-            # # Assert
-            # self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
-            # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_general))
-            # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
+            # Assert
+            self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_general))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
             # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_atac))
-            # # self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
+            self.assertTrue(os.path.exists(tmp_samplesheet_file_path_sc))
 
-            # # Check the content of the files
-            # with open(tmp_samplesheet_file_path_bulk, "r") as file:
-            #     data = "".join(file.readlines())
-            #     self.assertTrue("[BCLConvert_Data]" in data)
-            # with open(tmp_bclconfig_file_path, "r") as file:
-            #     config_json = json.load(file)
-            #     self.assertTrue("Header" in config_json)
-            # # Check the content of the files
+            # Check the content of the files
+            with open(tmp_samplesheet_file_path_bulk, "r") as file:
+                data = "".join(file.readlines())
+                self.assertTrue("[BCLConvert_Data]" in data)
+            with open(tmp_bclconfig_file_path, "r") as file:
+                config_json = json.load(file)
+                self.assertTrue("Header" in config_json)
+            # Check the content of the files
             # with open(tmp_samplesheet_file_path_atac, "r") as file:
             #     data = "".join(file.readlines())
-            #     print(data)
+            #     # print(data)
 
-            # # Check the number of samples for each samplesheet
-            # samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general,  "Sample_ID")
-            # samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
-            # samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
+            # Check the number of samples for each samplesheet
+            samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general,  "Sample_ID")
+            samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
+            # print(samples_bulk)
+            samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
             # samples_atac = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
 
-            expected_samples_bulk = 5
-            expected_samples_sc = 8
-            expected_samples_atac = 11
-            expected_samples_general = 24
+            expected_unique_samples_bulk = 15 # 5 samples
+            expected_unique_samples_sc = 33 # 8 samples
+            expected_unique_samples_atac = 60 # 11 samples
+            expected_unique_samples_general = 108
 
-            # assert samples_general == expected_samples_general
-            # assert samples_bulk == expected_samples_bulk # 3 == 5
-            # assert samples_sc == expected_samples_sc # 17 == 8
-            # assert samples_atac == expected_samples_atac # 14 == 11, 6 ==1
-
-            raise NotImplementedError
+            assert samples_general == expected_unique_samples_general
+            assert samples_bulk == expected_unique_samples_bulk  # 3 == 5
+            assert samples_sc == expected_unique_samples_sc  # 17 == 8
+            # assert samples_atac == expected_unique_samples_atac # 14 == 11, 6 ==11
 
 
 class TestIlluminaDemuxWithFixtures:
