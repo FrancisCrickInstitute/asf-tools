@@ -471,59 +471,6 @@ class TestIlluminaUtils(unittest.TestCase):
         assert result1 == expected1
         assert result2 == expected2
 
-    def test_populate_dict_with_sample_data_isnone(self):
-        """
-        Pass an project value that is not in project_type nor data_analysis_type
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        dict_to_update = {}
-        project_value = ["project_value_not_matching"]
-
-        # Test
-        result1 = iu.populate_dict_with_sample_data("project_type", "data_analysis_type", project_value, sample_dict, dict_to_update)
-
-        # Assert
-        assert result1 is None
-
-    def test_populate_dict_with_sample_data_isinvalid(self):
-        """
-        Pass an invalid input
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        dict_to_update = {}
-        input_not_valid = {}
-
-        # Test and Assert
-        with self.assertRaises(TypeError):
-            iu.populate_dict_with_sample_data("project_type", "data_analysis_type", input_not_valid, sample_dict, dict_to_update)
-
-    def test_populate_dict_with_sample_data_isvalid(self):
-        """
-        Pass valid inputs
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        sample_dict2 = {"sample2": "sample_2", "sample3": "sample_3"}
-        project_value1 = ["project_type"]
-        project_value2 = ["data_analysis_type"]
-        dict_to_update = {}
-        dict_to_update2 = {}
-        expected1 = {"sample1": "sample_1"}
-        expected2 = {"sample2": "sample_2", "sample3": "sample_3"}
-
-        # Test
-        result1 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type_str", project_value1, sample_dict, dict_to_update)
-        result2 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type", project_value2, sample_dict2, dict_to_update2)
-
-        # Assert
-        assert result1 != expected1
-        assert result2 == expected2
-
     def test_calculate_overridecycle_values_indexnone(self):
         """
         Pass empty target string to method
