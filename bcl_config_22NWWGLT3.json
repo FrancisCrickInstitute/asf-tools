@@ -1,0 +1,11 @@
+{
+    "Header": {
+        "FileFormatVersion": 2,
+        "InstrumentPlatform": "NovaSeqX",
+        "RunName": "22NWWGLT3"
+    },
+    "BCLConvert_Settings": {
+        "SoftwareVersion": "4.2.7",
+        "FastqCompressionFormat": "gzip"
+    }
+}

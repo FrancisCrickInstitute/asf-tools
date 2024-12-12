@@ -472,59 +472,6 @@ class TestIlluminaUtils(unittest.TestCase):
         assert result1 == expected1
         assert result2 == expected2
 
-    def test_populate_dict_with_sample_data_isnone(self):
-        """
-        Pass an project value that is not in project_type nor data_analysis_type
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        dict_to_update = {}
-        project_value = ["project_value_not_matching"]
-
-        # Test
-        result1 = iu.populate_dict_with_sample_data("project_type", "data_analysis_type", project_value, sample_dict, dict_to_update)
-
-        # Assert
-        assert result1 is None
-
-    def test_populate_dict_with_sample_data_isinvalid(self):
-        """
-        Pass an invalid input
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        dict_to_update = {}
-        input_not_valid = {}
-
-        # Test and Assert
-        with self.assertRaises(TypeError):
-            iu.populate_dict_with_sample_data("project_type", "data_analysis_type", input_not_valid, sample_dict, dict_to_update)
-
-    def test_populate_dict_with_sample_data_isvalid(self):
-        """
-        Pass valid inputs
-        """
-        # Set up
-        iu = IlluminaUtils()
-        sample_dict = {"sample1": "sample_1"}
-        sample_dict2 = {"sample2": "sample_2", "sample3": "sample_3"}
-        project_value1 = ["project_type"]
-        project_value2 = ["data_analysis"]
-        dict_to_update = {}
-        dict_to_update2 = {}
-        expected1 = {"sample1": "sample_1"}
-        expected2 = {"sample2": "sample_2", "sample3": "sample_3"}
-
-        # Test
-        result1 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type_str", project_value1, sample_dict, dict_to_update)
-        result2 = iu.populate_dict_with_sample_data("project_type_str", "data_analysis_type_str", project_value2, sample_dict2, dict_to_update2)
-
-        # Assert
-        assert result1 == expected1
-        assert result2 == expected2
-
     def test_calculate_overridecycle_values_indexnone(self):
         """
         Pass empty target string to method
@@ -782,6 +729,7 @@ class TestIlluminaUtils(unittest.TestCase):
         """
         # Test with both overrides and additional fields
         """
+
         # Set up
         iu = IlluminaUtils()
         header_extra = {"FileFormatVersion": 3, "ExtraHeaderField": "TestHeaderValue"}
@@ -796,6 +744,35 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Assert
         assert results == expected
+
+    def test_count_samples_in_bcl_samplesheet_isinvalid(self):
+        """
+        Test with invalid input, ie. that is not string
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        invalid_entry = []
+        invalid_entry2 = 2
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.count_samples_in_bcl_samplesheet("./", invalid_entry)
+        with self.assertRaises(ValueError):
+            iu.count_samples_in_bcl_samplesheet("./", invalid_entry2)
+
+    def test_count_samples_in_bcl_samplesheet_nofileinput(self):
+        """
+        Pass a file that does not exist
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        invalid_path = "file_does_not_exist"
+
+        # Test and Assert
+        with self.assertRaises(FileNotFoundError):
+            iu.count_samples_in_bcl_samplesheet(invalid_path, "string")
 
 
 class TestIlluminaUtilsWithFixtures:
@@ -1081,3 +1058,58 @@ class TestIlluminaUtilsWithFixtures:
             # Check BCL info is not included
             assert ["[BCLConvert_Settings]"] not in content
             assert ["[BCLConvert_Data]"] not in content
+
+    def test_count_samples_in_bcl_samplesheet_isnone(self):
+        """
+        Pass input string not present in file content
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
+        with open(file_path, "w", encoding="ASCII") as f:
+            f.write("[Header],,\n")
+            f.write("[FileFormatVersion],2,\n")
+        expected = None
+
+        # Test
+        results = iu.count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
+
+        # Assert
+        assert results == expected
+
+    def test_count_samples_in_bcl_samplesheet_isvalid(self):
+        """
+        Pass a valid input to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Create file with content
+        file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
+        with open(file_path, "w", encoding="ASCII") as f:
+            f.write("[Header],,\n")
+            f.write("[FileFormatVersion],2,\n")
+            f.write("[BCLConvert_Data],,\n")
+            f.write("Lane,Sample_ID,index,index2\n")
+            f.write("1,WAR6617A1,CGAATTGC,GTAAGGTG\n")
+            f.write("2,WAR6617A1,CGAATTGC,GTAAGGTG\n")
+        expected = 2
+
+        file_path2 = os.path.join(self.tmp_path, "test_bcl_samplesheet_2.csv")
+        with open(file_path2, "w", encoding="ASCII") as f:
+            f.write("[Header],,\n")
+            f.write("Lane,Sample_ID,index,index2\n")
+            f.write("1,WAR6617A1,CGAATTGC,GTAAGGTG\n")
+            f.write("2,WAR6617A1,CGAATTGC,GTAAGGTG\n")
+            f.write("2,WAR6617A1,CGAATTGC,GTAAGGTG\n")
+        expected2 = 3
+
+        # Test
+        results = iu.count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
+        results2 = iu.count_samples_in_bcl_samplesheet(file_path2, "Sample_ID")
+
+        # Assert
+        assert results == expected
+        assert results2 == expected2
