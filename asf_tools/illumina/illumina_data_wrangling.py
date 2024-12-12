@@ -148,9 +148,9 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     # # COMMENT - these loops dont make sense
     # print("---------------------------------")
     # print("DLP -- " + str(len(dlp_samples)))
-    print("SC -- " + str((single_cell_samples)))
+    # print("SC -- " + str((single_cell_samples)))
     print("ATAC -- " + str(len(atac_samples)))
-    print("OTHER -- " + str(len(other_samples)))
+    # print("OTHER -- " + str(len(other_samples)))
     # print("---------------------------------")
 
     # split samples into multiple entries based on lane values
@@ -185,7 +185,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     # This should include 10X/single cell data
     if len(single_cell_samples) > 0:
         # All samples are expected to be dual index and one index length
-        samplesheet_name = samplesheet_name + "_singlecell"
+        samplesheet_name_sc = samplesheet_name + "_singlecell"
 
         # split samples into multiple entries based on lane values
         split_samples_dict = {}
@@ -198,13 +198,13 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                 split_samples_dict[unique_key] = {**details, "Lane": lane}
 
         # Generate samplesheet with the updated settings
-        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        samplesheet_path = os.path.join(output_path, samplesheet_name_sc + ".csv")
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     # This should include ATAC data
     if atac_samples:
         # All samples are expected to be single index and one index length
-        samplesheet_name = samplesheet_name + "_atac"
+        samplesheet_name_atac = samplesheet_name + "_atac"
 
         # split samples into multiple entries based on lane values
         split_samples_dict = {}
@@ -217,14 +217,16 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                 split_samples_dict[unique_key] = {**details, "Lane": lane}
 
         # Generate samplesheet with the updated settings
-        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        # print(split_samples_dict)
+        samplesheet_path = os.path.join(output_path, samplesheet_name_atac + ".csv")
+        print(samplesheet_path)
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     if other_samples:
         # print(other_samples)
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
         for index_length_sample_list in split_samples_by_indexlength:
-            samplesheet_name = (
+            samplesheet_name_bulk = (
                 flowcell_id
                 + "_samplesheet_"
                 + str(index_length_sample_list["index_length"][0])
@@ -261,7 +263,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                 bcl_settings_dict["OverrideCycles"] = override_string
 
         # Generate samplesheet with the updated settings
-        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     # # Generate samplesheet with the updated settings
