@@ -256,8 +256,8 @@ class TestIlluminaDemuxWithFixtures:
         "flowcell_id,runinfo_file,samplesheet_count",
         [
             ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1),
-            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 2),
-            ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 1),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3),
+            ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2), # 1 general samplesheet, 1 project specific samplesheet
         ],
     )
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
@@ -280,7 +280,18 @@ class TestIlluminaDemuxWithFixtures:
             config_json = json.load(file)
             assert "Header" in config_json
 
-        print(os.listdir(self.tmp_path))
+        # print(os.listdir(self.tmp_path))
         # Verify the number of SampleSheet files
         samplesheet_files = [f for f in os.listdir(self.tmp_path) if "samplesheet" in f.lower() and os.path.isfile(os.path.join(self.tmp_path, f))]
-        # assert len(samplesheet_files) == samplesheet_count
+        # print(samplesheet_files)
+        assert len(samplesheet_files) == samplesheet_count
+
+        general_samplesheet_name = os.path.join(self.tmp_path, flowcell_id + "_samplesheet.csv")
+        # print(general_samplesheet_name)
+        # Check the content of the files
+        with open(general_samplesheet_name, "r") as file:
+            data = "".join(file.readlines())
+            # print(data)
+            assert "[BCLConvert_Data]" in data
+            assert "Lane,Sample_ID" in data
+            assert "Lane,Sample_ID,index,index2" in data

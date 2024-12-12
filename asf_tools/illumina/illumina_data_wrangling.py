@@ -118,9 +118,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     samples_bcldata_dict = {}
     for sample in samples_all_info:
-        # print("*********************************")
-        # print(project_type)
-        # print(samples_all_info)
         
         # Add 'Sample_ID' to the dictionary for each sample
         samples_bcldata_dict[sample] = {
@@ -147,10 +144,10 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     # # COMMENT - these loops dont make sense
     # print("---------------------------------")
-    # print("DLP -- " + str(len(dlp_samples)))
-    # print("SC -- " + str((single_cell_samples)))
+    print("DLP -- " + str(len(dlp_samples)))
+    print("SC -- " + str(len(single_cell_samples)))
     print("ATAC -- " + str(len(atac_samples)))
-    # print("OTHER -- " + str(len(other_samples)))
+    print("OTHER -- " + str(len(other_samples)))
     # print("---------------------------------")
 
     # split samples into multiple entries based on lane values
@@ -167,8 +164,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     # Generate samplesheet with the updated settings
     samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
     iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_general_dict, samplesheet_path)
-
-    # print("*********************************")
 
     # Initiate processing only if samples are present for each workflow
     if dlp_samples:
@@ -217,55 +212,56 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                 split_samples_dict[unique_key] = {**details, "Lane": lane}
 
         # Generate samplesheet with the updated settings
-        # print(split_samples_dict)
         samplesheet_path = os.path.join(output_path, samplesheet_name_atac + ".csv")
-        print(samplesheet_path)
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     if other_samples:
-        # print(other_samples)
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
-        for index_length_sample_list in split_samples_by_indexlength:
-            samplesheet_name_bulk = (
-                flowcell_id
-                + "_samplesheet_"
-                + str(index_length_sample_list["index_length"][0])
-                + "_"
-                + str(index_length_sample_list["index_length"][1])
-            )
+        if len(split_samples_by_indexlength) == 0:
+            warnings.warn(f"None of the bulk or 'other samples' have index information", UserWarning)
 
-            # split samples into multiple entries based on lane values
-            split_samples_dict = {}
-            for sample, details in other_samples.items():
-                lanes = details["Lane"]  # Get the list of lanes
-                for lane in lanes:
-                    # Create a new key for each unique (sample, lane) combination
-                    unique_key = f"{sample}_Lane_{lane}"
-                    # Copy the sample details and replace the Lane value with the current lane
-                    split_samples_dict[unique_key] = {**details, "Lane": lane}
-            # filtered_samples = split_samples_dict
+        if len(split_samples_by_indexlength) > 0:
+            for index_length_sample_list in split_samples_by_indexlength:
+                samplesheet_name_bulk = (
+                    flowcell_id
+                    + "_samplesheet_"
+                    + str(index_length_sample_list["index_length"][0])
+                    + "_"
+                    + str(index_length_sample_list["index_length"][1])
+                )
 
-            # Obtain the cycle length
-            cycle_length = iu.extract_cycle_fromxml(runinfo_path)
-            for sample in split_samples_dict.items():
-                index_string = sample[1]["index"]
-                index2_string = sample[1].get("index2", None)
-            # Check if Index length and Cycle length match
-            if not (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
-                index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
-            ):
-                if index2_string:
-                    override_string = iu.generate_overridecycle_string(
-                        index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3])
-                    )
-                else:
-                    override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
-                bcl_settings_dict["OverrideCycles"] = override_string
+                # split samples into multiple entries based on lane values
+                split_samples_dict = {}
+                for sample, details in other_samples.items():
+                    lanes = details["Lane"]  # Get the list of lanes
+                    for lane in lanes:
+                        # Create a new key for each unique (sample, lane) combination
+                        unique_key = f"{sample}_Lane_{lane}"
+                        # Copy the sample details and replace the Lane value with the current lane
+                        split_samples_dict[unique_key] = {**details, "Lane": lane}
+                # filtered_samples = split_samples_dict
 
-        # Generate samplesheet with the updated settings
-        samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+                # Obtain the cycle length
+                cycle_length = iu.extract_cycle_fromxml(runinfo_path)
+                for sample in split_samples_dict.items():
+                    index_string = sample[1]["index"]
+                    index2_string = sample[1].get("index2", None)
+                # Check if Index length and Cycle length match
+                if not (index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == 0) or (
+                    index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
+                ):
+                    if index2_string:
+                        override_string = iu.generate_overridecycle_string(
+                            index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3])
+                        )
+                    else:
+                        override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
+                    bcl_settings_dict["OverrideCycles"] = override_string
 
-    # # Generate samplesheet with the updated settings
-    # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
+            # Generate samplesheet with the updated settings
+            samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
+            iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+
+    # # # Generate samplesheet with the updated settings
+    # # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+    # # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
