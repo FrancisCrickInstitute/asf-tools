@@ -427,6 +427,69 @@ class IlluminaUtils:
 
         return sample_index_dict
 
+    def atac_reformat_barcode(self, samplesheet_dict: dict) -> dict:
+        """
+        Extracts and formats barcode sequences from a sample dictionary.
+
+        This function takes a dictionary of samples, where each sample has associated details,
+        including a "barcode" field. It validates the input as a dictionary, then processes
+        each sample's barcode by extracting the sequence within parentheses. If the barcode
+        sequence contains hyphens ("-"), it splits the sequence into a list of substrings.
+
+        Args:
+            samplesheet_dict (dict): A dictionary containing sample data, where each sample entry
+                may include a "barcode" field.
+
+        Returns:
+            dict: A dictionary where each key is a sample identifier, and the value is a dictionary containing:
+                - "index" (list): A list of substrings created by splitting the extracted barcode sequence at hyphens.
+
+            None: If any sample entry is missing the "barcode" key, returns None.
+
+        Raises:
+            TypeError: If the input `samplesheet_dict` is not a dictionary.
+
+        Example:
+            Input:
+                {
+                    "Sample1": {"barcode": "BC01 (ATAACCTA-CGGTGAGC-GATCTTAT-TCCGAGCG)"},
+                    "Sample2": {"barcode": "BC02 (AAGAAAGTTGTCGGTGTCTTTGTG)"}
+                }
+
+            Output:
+                {
+                    "Sample1": {"index": ["ATAACCTA", "CGGTGAGC", "GATCTTAT", "TCCGAGCG"]},
+                    "Sample2": {"index": ["AAGAAAGTTGTCGGTGTCTTTGTG"]}
+                }
+        """
+        # Validate input type
+        if not isinstance(samplesheet_dict, dict):
+            raise TypeError("The input value must be a dictionary.")
+
+        # Initialize an empty dictionary to store reformatted barcodes
+        sample_index_dict = {}
+
+        for sample, details in samplesheet_dict.items():
+            if "barcode" in details:
+                barcode_info = details["barcode"]
+
+                # Extract the barcode sequence within parentheses, if present
+                if "(" in barcode_info and ")" in barcode_info:
+                    barcode_sequence = barcode_info.split("(")[1].split(")")[0]
+                else:
+                    barcode_sequence = barcode_info
+
+                # Split the barcode sequence by hyphen into a list
+                indices = barcode_sequence.split("-")
+
+                # Store the list of substrings under the "index" key
+                sample_index_dict[sample] = {"index": indices}
+            else:
+                # Skip samples without barcode information
+                continue
+
+        return sample_index_dict
+
     def group_samples_by_index_length(self, sample_index_dict: dict) -> list:
         """
         Splits samples from a dictionary into groups based on the length of 'index' and 'index2'.
