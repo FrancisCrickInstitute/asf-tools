@@ -103,6 +103,54 @@ class IlluminaUtils:
 
         return item
 
+    def extract_illumina_runid_fromxml(self, runinfo_file) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) from an XML RunInfo file.
+
+        This method converts the given XML RunInfo file into a dictionary, then extracts the
+        Flowcell ID (run ID) by locating the matching item within the dictionary.
+
+        Args:
+            runinfo_file (str): The path to the XML RunInfo file from which to extract the Run ID.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the XML file.
+
+        Raises:
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        runinfo_dict = self.runinfo_xml_to_dict(runinfo_file)
+        container_name = self.extract_matching_item_from_dict(runinfo_dict, "Flowcell")
+
+        return container_name
+
+    def extract_illumina_runid_frompath(self, path: str, file_name: str) -> str:
+        """
+        Extract the Illumina Run ID (Flowcell ID) by searching for a specific XML file in a directory path.
+
+        This method traverses the directory structure starting from the given `path`, searching for a file
+        with the specified `file_name`. Once found, it extracts the Illumina Run ID (Flowcell ID) by parsing
+        the XML file.
+
+        Args:
+            path (str): The root directory to begin the search for the XML file.
+            file_name (str): The name of the XML file to look for in the directory structure.
+
+        Returns:
+            str: The extracted Flowcell ID (Run ID) from the found XML file.
+
+        Raises:
+            FileNotFoundError: If the specified file is not found within the given path.
+            ValueError: If the runinfo_file is invalid or does not contain a Flowcell ID.
+            TypeError: If the item is not found in the list.
+        """
+        for dirpath, dirnames, filenames in os.walk(path):  # pylint: disable=unused-variable
+            if file_name in filenames:
+                xml_file = os.path.join(dirpath, file_name)
+                runid = self.extract_illumina_runid_fromxml(xml_file)
+                return runid
+
     def filter_runinfo(self, runinfo_dict: dict) -> dict:
         """
         Filters and restructures information from a RunInfo dictionary.
@@ -252,5 +300,53 @@ class IlluminaUtils:
 
         return merged_result
 
+    def dict_to_illumina_v2_csv(self, header_dict: dict, settings_dict: dict, samples_dict: dict, output_file_name: str):
+        """
+        Generate a basic CSV file from provided dictionaries containing header, settings, and sample data.
 
-# my $insert = {'SampleSheet_Trigger' => 'N', 'SampleSheet_TimeStamp' => $sst, 'SampleSheet' => $ss, 'End_Type' => $end_type}
+        This method takes three dictionaries (`header_dict`, `settings_dict`, and `samples_dict`), and writes
+        their contents into a CSV file. The output CSV file is structured with sections for headers, settings,
+        and sample data, where each dictionary corresponds to a different section in the file.
+
+        Args:
+            header_dict (dict): A dictionary containing header information (e.g., metadata or project info).
+            settings_dict (dict): A dictionary containing configuration or settings data.
+            samples_dict (dict): A dictionary where each entry corresponds to a sample with its associated data.
+            output_file_name (str): The base name of the CSV file to be generated (without the ".csv" extension).
+
+        Returns:
+            None: The method writes data to a CSV file and does not return anything.
+
+        Raises:
+            IOError: If there is an error writing to the file.
+        """
+        output_file = output_file_name + ".csv"
+        # Open the output file
+        with open(output_file, "w", encoding="ASCII") as f:
+            # Write the Header section
+            if header_dict:
+                f.write("[Header]\n")
+                for key, value in header_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Write the Settings section
+            if settings_dict:
+                f.write("\n[Settings]\n")
+                for key, value in settings_dict.items():
+                    f.write(f"{key},{value}\n")
+
+            # Write the Sample section
+            if samples_dict:
+                f.write("\n[Data]\n")
+                # Collect all unique column headers from samples_dict
+                headers = set()
+                for sample_info in samples_dict.values():
+                    headers.update(sample_info.keys())
+
+                # Write the column headers to the file
+                headers = sorted(headers)
+                f.write(",".join(headers) + "\n")
+
+                # Write each sample's data
+                for sample_id, sample_info in samples_dict.items():  # pylint: disable=unused-variable
+                    f.write(",".join([str(sample_info.get(h, "")) for h in headers]) + "\n")

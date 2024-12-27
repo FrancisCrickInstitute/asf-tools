@@ -18,6 +18,7 @@ from rich.table import Table
 from rich.text import Text
 
 import asf_tools
+from asf_tools.io.data_management import DataTypeMode
 
 
 # Set up logging as the root logger
@@ -114,12 +115,12 @@ def asf_tools_cli(ctx, verbose, hide_progress, log_file):
     }
 
 
-# asf-tools ont subcommands
+# asf-tools pipeline subcommands
 @asf_tools_cli.group()
 @click.pass_context
-def ont(ctx):
+def pipeline(ctx):
     """
-    Commands to manage ONT data
+    Commands to manage Pipeline execution
     """
     # ensure that ctx.obj exists and is a dict (in case `cli()` is called
     # by means other than the `if` block below)
@@ -127,7 +128,7 @@ def ont(ctx):
 
 
 # asf-tools ont gen-demux-run
-@ont.command("gen-demux-run")
+@pipeline.command("gen-demux-run")
 @click.pass_context
 @click.option(
     "-s",
@@ -142,6 +143,13 @@ def ont(ctx):
     type=click.Path(exists=True),
     required=True,
     help=r"Target directory to write runs",
+)
+@click.option(
+    "-m",
+    "--mode",
+    type=click.Choice([c.value for c in DataTypeMode]),
+    required=True,
+    help=r"Mode options ONT, Illumina or General",
 )
 @click.option(
     "-p",
@@ -195,9 +203,10 @@ def ont(ctx):
     default=None,
     help="Set the version of Nextflow to use in the sbatch header",
 )
-def ont_gen_demux_run(ctx,  # pylint: disable=W0613
+def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-arguments
                       source_dir,
                       target_dir,
+                      mode,
                       pipeline_dir,
                       nextflow_cache,
                       nextflow_work,
@@ -211,12 +220,13 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.ont.ont_gen_demux_run import OntGenDemuxRun  # pylint: disable=C0415
+    from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
 
     try:
-        function = OntGenDemuxRun(
+        function = GenDemuxRun(
             source_dir,
             target_dir,
+            DataTypeMode(mode),
             pipeline_dir,
             nextflow_cache,
             nextflow_work,
@@ -227,7 +237,7 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
             samplesheet_only,
             nextflow_version,
         )
-        exit_status = function.run()
+        exit_status = function.cli_run()
         if not exit_status:
             sys.exit(1)
     except (UserWarning, LookupError) as e:
@@ -235,7 +245,7 @@ def ont_gen_demux_run(ctx,  # pylint: disable=W0613
         sys.exit(1)
 
 # asf-tools ont deliver-to-targets
-@ont.command("deliver-to-targets")
+@pipeline.command("deliver-to-targets")
 @click.pass_context
 @click.option(
     "-s",
@@ -274,7 +284,7 @@ def deliver_to_targets(
     interactive,):
     """
     Symlinks demux outputs to the user directory
-    """
+    """  # pylint: disable=too-many-positional-arguments
     from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
     dm = DataManagement()
@@ -333,7 +343,7 @@ def deliver_to_targets(
                     )
 
 # asf-tools ont scan-run-state
-@ont.command("scan-run-state")
+@pipeline.command("scan-run-state")
 @click.pass_context
 @click.option(
     "--raw_dir",
@@ -354,6 +364,12 @@ def deliver_to_targets(
     help="Target data delivery directory",
 )
 @click.option(
+    "--mode",
+    type=click.Choice([c.value for c in DataTypeMode]),
+    required=True,
+    help="Mode options, ONT or Illumina",
+)
+@click.option(
     "--slurm_user",
     required=False,
     help="Slurm user to check job status",
@@ -368,11 +384,12 @@ def deliver_to_targets(
     required=False,
     help="Slurm job output file",
 )
-def scan_run_state(
+def scan_run_state(  # pylint: disable=too-many-positional-arguments
     ctx,  # pylint: disable=W0613
     raw_dir,
     run_dir,
     target_dir,
+    mode,
     slurm_user,
     job_prefix,
     slurm_file):
@@ -387,6 +404,7 @@ def scan_run_state(
         raw_dir,
         run_dir,
         target_dir,
+        DataTypeMode(mode),
         slurm_user,
         job_prefix,
         slurm_file,
