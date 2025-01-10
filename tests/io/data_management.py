@@ -92,7 +92,7 @@ def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
     self.assertFalse(result)
 
 
-def test_check_ont_sequencing_run_complete_true_1(self):
+def test_check_ont_sequencing_run_complete_true(self):
     """
     Test function when the ONT sequencing run is complete
     """
@@ -100,22 +100,6 @@ def test_check_ont_sequencing_run_complete_true_1(self):
     # Set up
     dm = DataManagement()
     run_dir = "tests/data/ont/runs/run01"
-
-    # Test
-    result = dm.check_ont_sequencing_run_complete(run_dir)
-
-    # Assert
-    self.assertTrue(result)
-
-
-def test_check_ont_sequencing_run_complete_true_2(self):
-    """
-    Test function when the ONT sequencing run is complete
-    """
-
-    # Set up
-    dm = DataManagement()
-    run_dir = "tests/data/ont/runs/run02"
 
     # Test
     result = dm.check_ont_sequencing_run_complete(run_dir)
