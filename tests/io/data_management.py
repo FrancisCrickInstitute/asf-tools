@@ -623,6 +623,18 @@ def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_get
             "last_modified_h": "June 15, 2024, 00:00:00 UTC",
             "last_modified_m": "2024-06-15 00:00:00+00:00",
         },
+        "run04": {
+            "path": "tests/data/ont/runs/run04",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
+        "run05": {
+            "path": "tests/data/ont/runs/run05",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
     }
     assert old_data == expected_results
 
