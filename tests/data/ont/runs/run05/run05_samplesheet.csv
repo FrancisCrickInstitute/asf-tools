@@ -1,0 +1,4 @@
+sample_id,sample_name,group,user,project_id,barcode
+sample01,my_sample_1,smithj,john.smith,DN23241,barcode01
+sample02,my_sample_1,smithj,john.smith,DN23241,barcode02
+sample03,my_sample_1,smithj,john.smith,DN23241,barcode03

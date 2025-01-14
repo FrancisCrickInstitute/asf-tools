@@ -511,6 +511,7 @@ class DataManagement:
 
         # Detect folders older than N months
         stale_folders = self.find_stale_directories(path, months)
+        print(stale_folders)
 
         # For each run folder in dict, detect and delete "work" dir
         for key in stale_folders:  # pylint: disable=C0206
