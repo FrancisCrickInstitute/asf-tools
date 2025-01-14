@@ -19,7 +19,7 @@ def test_list_directory(self):
     dir_list = list_directory_names(path)
 
     # Assert
-    self.assertEqual(len(dir_list), 3)
+    self.assertEqual(len(dir_list), 5)
 
 
 @with_temporary_folder
@@ -40,7 +40,7 @@ def test_list_directory_symlink(self, tmp_path):
     dir_list = list_directory_names(tmp_path)
 
     # Assert
-    self.assertEqual(len(dir_list), 3)
+    self.assertEqual(len(dir_list), 5)
 
 
 def test_check_file_exist_isvalid(self):

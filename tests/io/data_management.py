@@ -44,7 +44,23 @@ def test_check_pipeline_run_complete_true(self):
     self.assertTrue(result)
 
 
-def test_check_ont_sequencing_run_complete_false(self):
+def test_check_ont_sequencing_run_complete_false_nocount(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run04"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_false_archive(self):
     """
     Test function when the ONT sequencing run is not complete
     """
@@ -52,6 +68,22 @@ def test_check_ont_sequencing_run_complete_false(self):
     # Set up
     dm = DataManagement()
     run_dir = "tests/data/ont/runs/run03"
+
+    # Test
+    result = dm.check_ont_sequencing_run_complete(run_dir)
+
+    # Assert
+    self.assertFalse(result)
+
+
+def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
+    """
+    Test function when the ONT sequencing run is not complete
+    """
+
+    # Set up
+    dm = DataManagement()
+    run_dir = "tests/data/ont/runs/run05"
 
     # Test
     result = dm.check_ont_sequencing_run_complete(run_dir)
@@ -587,6 +619,18 @@ def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_get
         },
         "run02": {
             "path": "tests/data/ont/runs/run02",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
+        "run04": {
+            "path": "tests/data/ont/runs/run04",
+            "days_since_modified": 61,
+            "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+            "last_modified_m": "2024-06-15 00:00:00+00:00",
+        },
+        "run05": {
+            "path": "tests/data/ont/runs/run05",
             "days_since_modified": 61,
             "last_modified_h": "June 15, 2024, 00:00:00 UTC",
             "last_modified_m": "2024-06-15 00:00:00+00:00",
