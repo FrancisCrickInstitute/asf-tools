@@ -4,6 +4,7 @@ Clarity API Child class with helper functions
 
 import logging
 import queue
+import warnings
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
@@ -366,9 +367,62 @@ class ClarityHelperLims(ClarityLims):
 
         return merged_dict
 
+    # currently index,index2 and Index_ID is all merged into "barcode"
+    # this is the header created by the perl scripts:
+    # Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
+    # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,CTAAGGTC,TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+    # 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
 
-# currently index,index2 and Index_ID is all merged into "barcode"
-# this is the header created by the perl scripts:
-# Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
-# 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
-# 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+    def extract_value_from_text(self, text: str, keyword: str) -> str:
+        """Helper to extract value after a keyword with cleanup."""
+        if text is None:
+            raise ValueError("text input is None")
+
+        if keyword is None:
+            raise ValueError("keyword input is None")
+
+        if keyword in text:
+            extracted = text.split(keyword, 1)[1]
+            return extracted.lstrip(": ").strip()
+        return None
+
+    def extract_value_from_project_field(self, project_id: str, field: str, value: str) -> str:
+        """
+        Extracts the value following the keyword in a project's field value.
+
+        Args:
+            project (str): The identifier to search for the project.
+            field (str): The name of the field to search for in the project.
+            value (str): The keyword to search within the field's value.
+
+        Returns:
+            Optional[str]: The extracted value following the keyword, with any leading ":" or space removed, or None if not found.
+        """
+        if project_id is None:
+            raise ValueError("project_id is None")
+
+        if field is None:
+            raise ValueError("field input is None")
+
+        if value is None:
+            raise ValueError("value input is None")
+
+        projects = self.get_projects(search_id=project_id)
+
+        # Check for the field in the project's main attributes
+        field_value = getattr(projects, field, None)
+        if isinstance(field_value, str):
+            result = self.extract_value_from_text(field_value, value)
+            if result:
+                return result
+
+        # Check for the field inside udf_fields
+        if projects.udf_fields:
+            for udf in projects.udf_fields:
+                if udf.name == field:
+                    result = self.extract_value_from_text(udf.value, value)
+                    if result:
+                        return result
+        else:
+            warnings.warn(f"{field} not found in project {project_id}.")
+            return None

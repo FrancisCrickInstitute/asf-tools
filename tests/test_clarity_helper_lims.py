@@ -103,6 +103,75 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
 
+    def test_clarity_helper_extract_value_from_text_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.extract_value_from_text(None, "input")
+
+        with self.assertRaises(ValueError):
+            self.api.extract_value_from_text("input", None)
+
+        with self.assertRaises(TypeError):
+            self.api.extract_value_from_text("input")
+
+    def test_clarity_helper_extract_value_from_text_nomatch(self):
+        """
+        Pass strings that do not match
+        """
+
+        # Setup
+        text = "input"
+        keyword = "string"
+
+        # Test
+        results = self.api.extract_value_from_text(text, keyword)
+
+        # Assert
+        assert results is None
+
+    def test_clarity_helper_extract_value_from_text_isvalid(self):
+        """
+        Pass strings that do  match
+        """
+
+        # Setup
+        keyword_1= "input"
+        text_1 = "input: random words"
+        expected_results_1 = "random words"
+
+        keyword_2 = "word"
+        text_2 = "input word: some other random words"
+        expected_results_2 = "some other random words"
+
+        # Test
+        results_1 = self.api.extract_value_from_text(text_1, keyword_1)
+        results_2 = self.api.extract_value_from_text(text_2, keyword_2)
+
+        # Assert
+        assert results_1 == expected_results_1
+        assert results_2 == expected_results_2
+
+    def test_clarity_helper_extract_value_from_project_field_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.extract_value_from_project_field(None, "input2", "input3")
+
+        with self.assertRaises(ValueError):
+            self.api.extract_value_from_project_field("input1", None, "input3")
+
+        with self.assertRaises(ValueError):
+            self.api.extract_value_from_project_field("input1", "input2", None)
+
+        with self.assertRaises(TypeError):
+            self.api.extract_value_from_project_field("input1", "input2")
 
 class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
@@ -580,3 +649,14 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert merged_dict == expected_dict
+
+    @pytest.mark.parametrize("project_id,field,value,expected_string", [("KAN6921", "data_analysis_type", "ont_custom", None), ("KAN6921", "Reference Genome", "Homo", "sapiens"), ("KAN6921", "open_date", "2024", "-03-20")])
+    def test_clarity_helper_extract_value_from_project_field_isinvalid(self, api, project_id, field, value, expected_string):
+        """
+        Pass a project id that does not exist
+        """
+        # Test and Assert
+        results = api.extract_value_from_project_field(project_id, field, value)
+
+        # Assert
+        assert results == expected_string
