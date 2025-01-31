@@ -6,6 +6,8 @@ import queue
 import re
 import warnings
 
+import xmltodict
+
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
@@ -266,6 +268,86 @@ class ClarityHelperLims(ClarityLims):
                 sample_info.update(info)
         return sample_info
 
+    def get_barcode_from_reagenttypes(self, sample_barcode: str) -> str:
+        # uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes" + "?name=" + sample_barcode
+        # xml_data = self.get_with_uri(uri)
+
+        # # Parse data
+        # data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
+        # data_dict = data_dict["rtp:reagent-types"]
+        # data_dict = data_dict["reagent-type"]
+        # data_dict_uri = data_dict["uri"]
+        # xml_uri = self.get_with_uri(data_dict_uri)
+
+        # uri_xml = xmltodict.parse(xml_uri, process_namespaces=False, attr_prefix="")
+        # uri_xml = uri_xml["rtp:reagent-type"]
+        # uri_xml = uri_xml["special-type"]
+        # uri_xml = uri_xml["attribute"]
+
+        # barcode = "Unknown"
+        # if uri_xml['name'] == 'Sequence':
+        #     barcode = uri_xml["value"]
+        # else:
+        #     barcode = sample_barcode
+
+        # return barcode
+
+        """
+        Fetches and processes barcode information for a given sample.
+
+        This function retrieves reagent type data and parses it to extract a barcode
+        value if the 'Sequence' attribute is present. If not, it returns the given
+        sample barcode as a fallback.
+
+        Args:
+            sample_barcode (str): The sample's barcode to use as a fallback.
+
+        Returns:
+            str: The extracted barcode value or the provided sample barcode as a fallback.
+
+        Warns:
+            UserWarning: If there are issues accessing the XML data structure or API responses.
+        """
+        # Construct URI for reagent types
+        base_uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes"
+        uri = f"{base_uri}?name={sample_barcode}"
+
+        # Fetch and parse reagent type data
+        xml_data = self.get_with_uri(uri)
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
+
+        # Validate reagent-types and reagent-type keys
+        reagent_types = data_dict.get("rtp:reagent-types")
+        if not reagent_types:
+            warnings.warn("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.", UserWarning)
+            return sample_barcode
+
+        reagent_type = reagent_types.get("reagent-type")
+        if not reagent_type or "uri" not in reagent_type:
+            warnings.warn("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.", UserWarning)
+            return sample_barcode
+
+        data_dict_uri = reagent_type["uri"]
+
+        # Fetch and parse detailed reagent type data
+        xml_uri = self.get_with_uri(data_dict_uri)
+        uri_xml = xmltodict.parse(xml_uri, process_namespaces=False, attr_prefix="")
+
+        # Validate special-type and attribute keys
+        special_type = uri_xml.get("rtp:reagent-type", {}).get("special-type")
+        if not special_type or "attribute" not in special_type:
+            warnings.warn("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.", UserWarning)
+            return sample_barcode
+
+        attribute = special_type["attribute"]
+
+        # Validate attribute name and value
+        if attribute.get("name") == "Sequence":
+            return attribute.get("value", "Unknown")
+        else:
+            warnings.warn("Attribute 'name' is not 'Sequence'. Returning fallback barcode.", UserWarning)
+            return sample_barcode
+
     def get_sample_barcode_from_runid(self, run_id: str) -> dict:
         """
         Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
@@ -334,7 +416,8 @@ class ClarityHelperLims(ClarityLims):
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
                         sample_name = sample_info.id
                         reagent_barcode = output_expanded.reagent_labels[0]
-                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+                        reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
+                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
 
         return sample_barcode_match
 
@@ -368,8 +451,9 @@ class ClarityHelperLims(ClarityLims):
         for sample_id in sample_list:
             info = self.get_samples(search_id=sample_id.id)
             sample_name = info.id
-            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
-            sample_barcode[sample_name] = {"barcode": reagent_barcode}
+            reagent_barcode_from_sample = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+            reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode_from_sample)
+            sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
 
         return sample_barcode
 
