@@ -384,13 +384,15 @@ class IlluminaUtils:
             Input:
                 {
                     "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
-                    "Sample2": {"barcode": "BC02 (GTTCTT-CTGTGGGGAATACGAGT)"}
+                    "Sample2": {"barcode": "BC02 (GTTCTT-CTGTGGGGAATACGAGT)"},
+                    "Sample3": {"barcode": "GTTCTT-CTGTGGGGAATA"},
                 }
 
             Output:
                 {
                     "Sample1": {"index": "AAGAAAGTTGTCGGTGTCTTTGTG"},
-                    "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAATACGAGT"}
+                    "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAATACGAGT"},
+                    "Sample3": {"index": "GTTCTT-CTGTGGGGAATA"},
                 }
         """
         # Check that input_string is a string
@@ -403,6 +405,7 @@ class IlluminaUtils:
         for sample, details in samplesheet_dict.items():
             if "barcode" in details:
                 barcode_info = details["barcode"]
+                barcode_sequence = ""
 
                 if "(" in barcode_info and ")" in barcode_info:
                     # Extract the barcode sequence within parentheses
@@ -454,7 +457,7 @@ class IlluminaUtils:
             # Ensure 'index' value is present
             if "index" not in indices:
                 warnings.warn(f"Index value for '{sample_id}' not found.", UserWarning)
-
+                # pass
             else:
                 # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
                 index_length = len(indices["index"])

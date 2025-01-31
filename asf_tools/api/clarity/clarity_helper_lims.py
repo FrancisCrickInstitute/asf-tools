@@ -269,29 +269,6 @@ class ClarityHelperLims(ClarityLims):
         return sample_info
 
     def get_barcode_from_reagenttypes(self, sample_barcode: str) -> str:
-        # uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes" + "?name=" + sample_barcode
-        # xml_data = self.get_with_uri(uri)
-
-        # # Parse data
-        # data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
-        # data_dict = data_dict["rtp:reagent-types"]
-        # data_dict = data_dict["reagent-type"]
-        # data_dict_uri = data_dict["uri"]
-        # xml_uri = self.get_with_uri(data_dict_uri)
-
-        # uri_xml = xmltodict.parse(xml_uri, process_namespaces=False, attr_prefix="")
-        # uri_xml = uri_xml["rtp:reagent-type"]
-        # uri_xml = uri_xml["special-type"]
-        # uri_xml = uri_xml["attribute"]
-
-        # barcode = "Unknown"
-        # if uri_xml['name'] == 'Sequence':
-        #     barcode = uri_xml["value"]
-        # else:
-        #     barcode = sample_barcode
-
-        # return barcode
-
         """
         Fetches and processes barcode information for a given sample.
 
