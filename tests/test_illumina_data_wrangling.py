@@ -203,6 +203,11 @@ class TestIlluminaDemux(unittest.TestCase):
             with open(tmp_samplesheet_file_path_bulk, "r") as file:
                 data = "".join(file.readlines())
                 self.assertTrue("[BCLConvert_Data]" in data)
+                self.assertTrue("Lane,Sample_ID,index,index2" in data)
+            with open(tmp_samplesheet_file_path_general, "r") as file:
+                data = "".join(file.readlines())
+                self.assertTrue("[BCLConvert_Data]" in data)
+                self.assertTrue("Lane,Sample_ID,index,index2" in data)
             with open(tmp_bclconfig_file_path, "r") as file:
                 config_json = json.load(file)
                 self.assertTrue("Header" in config_json)
@@ -210,18 +215,19 @@ class TestIlluminaDemux(unittest.TestCase):
             with open(tmp_samplesheet_file_path_atac, "r") as file:
                 data = "".join(file.readlines())
                 self.assertTrue("WAR6617A5" in data)
+                self.assertTrue("Lane,Sample_ID,index,index2" in data)
                 # print(data)
 
             # Check the number of samples for each samplesheet
-            samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general,  "Sample_ID")
+            samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
             samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
             # print(samples_bulk)
             samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
             samples_atac = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
 
-            expected_unique_samples_entries_bulk = 15 # 5 samples
-            expected_unique_samples_entries_sc = 33 # 8 samples
-            expected_unique_samples_entries_atac = 60 # 11 samples
+            expected_unique_samples_entries_bulk = 15  # 5 samples
+            expected_unique_samples_entries_sc = 33  # 8 samples
+            expected_unique_samples_entries_atac = 60  # 11 samples
             expected_unique_samples_entries_general = 108
 
             assert samples_general == expected_unique_samples_entries_general
@@ -257,7 +263,7 @@ class TestIlluminaDemuxWithFixtures:
         [
             ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1),
             ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3),
-            ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2), # 1 general samplesheet, 1 project specific samplesheet
+            ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2),  # 1 general samplesheet, 1 project specific samplesheet
         ],
     )
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
@@ -283,7 +289,7 @@ class TestIlluminaDemuxWithFixtures:
         # print(os.listdir(self.tmp_path))
         # Verify the number of SampleSheet files
         samplesheet_files = [f for f in os.listdir(self.tmp_path) if "samplesheet" in f.lower() and os.path.isfile(os.path.join(self.tmp_path, f))]
-        # print(samplesheet_files)
+        print(samplesheet_files)
         assert len(samplesheet_files) == samplesheet_count
 
         general_samplesheet_name = os.path.join(self.tmp_path, flowcell_id + "_samplesheet.csv")
@@ -295,3 +301,7 @@ class TestIlluminaDemuxWithFixtures:
             assert "[BCLConvert_Data]" in data
             assert "Lane,Sample_ID" in data
             assert "Lane,Sample_ID,index,index2" in data
+
+        # ['22NWYFLT3_samplesheet.csv']
+        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
+        # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']

@@ -1,10 +1,11 @@
-from collections import defaultdict
 import json
+import logging
 import os
 import warnings
-import logging
+from collections import defaultdict
 
 from asf_tools.illumina.illumina_utils import IlluminaUtils
+
 
 log = logging.getLogger(__name__)
 
@@ -118,7 +119,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     samples_bcldata_dict = {}
     for sample in samples_all_info:
-        
+
         # Add 'Sample_ID' to the dictionary for each sample
         samples_bcldata_dict[sample] = {
             "Lane": samples_all_info[sample]["lanes"],
@@ -159,6 +160,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
             unique_key = f"{sample}_Lane_{lane}"
             # Copy the sample details and replace the Lane value with the current lane
             split_samples_general_dict[unique_key] = {**details, "Lane": lane}
+    print(split_samples_general_dict)
     # Set up variables required for the samplesheet generation
     samplesheet_name = f"{flowcell_id}_samplesheet"
     # Generate samplesheet with the updated settings
@@ -222,6 +224,8 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
         if len(split_samples_by_indexlength) > 0:
             for index_length_sample_list in split_samples_by_indexlength:
+                # if "index_length" == 0:
+                #     print("index_length is 0")
                 samplesheet_name_bulk = (
                     flowcell_id
                     + "_samplesheet_"
