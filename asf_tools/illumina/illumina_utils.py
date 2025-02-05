@@ -456,8 +456,8 @@ class IlluminaUtils:
         for sample_id, indices in sample_index_dict.items():
             # Ensure 'index' value is present
             if "index" not in indices:
-                warnings.warn(f"Index value for '{sample_id}' not found.", UserWarning)
-                # pass
+                # warnings.warn(f"Index value for '{sample_id}' not found.", UserWarning)
+                pass
             else:
                 # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
                 index_length = len(indices["index"])

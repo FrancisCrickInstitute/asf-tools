@@ -190,12 +190,14 @@ class ClarityHelperLims(ClarityLims):
             project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
             reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
             data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+            library_type = next((item.value for item in project.udf_fields if item.name == "Library Type"), None)
         else:
             project_name = None
             project_limsid = None
             project_type = None
             reference_genome = None
             data_analysis_type = None
+            library_type = None
 
         # Get the submitter details
         if sample_project:
@@ -223,6 +225,7 @@ class ClarityHelperLims(ClarityLims):
             "project_type": project_type,
             "reference_genome": reference_genome,
             "data_analysis_type": data_analysis_type,
+            "library_type": library_type
         }
 
         return sample_info
@@ -320,7 +323,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Validate attribute name and value
         if attribute.get("name") == "Sequence":
-            return attribute.get("value", "Unknown")
+            return attribute.get("value", "None")
         else:
             warnings.warn("Attribute 'name' is not 'Sequence'. Returning fallback barcode.", UserWarning)
             return sample_barcode
@@ -428,11 +431,58 @@ class ClarityHelperLims(ClarityLims):
         for sample_id in sample_list:
             info = self.get_samples(search_id=sample_id.id)
             sample_name = info.id
+            artifact_uri = self.get_artifacts(search_id=info.artifact.id)
+            if artifact_uri.reagent_labels:
+                print(sample_id)
+                reagent = artifact_uri.reagent_labels[0]
+                reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent)
+                sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+            else:
+                reagent_barcode_from_sample = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+                reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode_from_sample)
+                sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+
+        return sample_barcode
+
+
+    def get_sample_custom_barcode_from_sampleid(self, sample_id: str) -> dict:
+        """
+        Retrieve a mapping of custom barcodes for all samples associated with a given run ID.
+
+        This method first retrieves all artifacts associated with the specified run ID, then extracts
+        the list of samples from these artifacts. For each sample, it fetches detailed information and
+        extracts the custom barcode from a UDF field named "Index". The resulting mapping of sample names
+        to their barcodes is returned.
+
+        Args:
+            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+
+        Returns:
+            dict: A dictionary where each key is the sample name (str), and the value is a dictionary containing:
+                - "barcode": The custom barcode (str) associated with the sample.
+
+        Raises:
+            ValueError: If the provided run_id is None or invalid.
+            KeyError: If the run_id does not exist in the system.
+        """
+
+        # Extract barcodes
+        sample_barcode = {}
+        info = self.get_samples(search_id=sample_id)
+        sample_name = info.id
+        artifact_uri = self.get_artifacts(search_id=info.artifact.id)
+        if artifact_uri.reagent_labels:
+            print(sample_id)
+            reagent = artifact_uri.reagent_labels[0]
+            reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent)
+            sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+        else:
             reagent_barcode_from_sample = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
             reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode_from_sample)
             sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
 
         return sample_barcode
+
 
     def reformat_barcode_to_index(self, barcode_dict: dict) -> dict:
         """
@@ -537,13 +587,10 @@ class ClarityHelperLims(ClarityLims):
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
-
-        # # Merge dictionaries using sample names as keys
-        # merged_dict = sample_metadata
-        # for key, value in barcode_info.items():
-        #     for sub_key, sub_value in value.items():
-        #         if key in merged_dict:
-        #             merged_dict[key][sub_key] = sub_value
+        # print(sample_metadata)
+        for sample in sample_metadata:
+            if sample_metadata[sample]["library_type"] == "Premade":
+                barcode_info[sample] = self.get_sample_custom_barcode_from_sampleid(sample)
 
         # Initialize an empty dictionary for the final merged output
         merged_dict = {}

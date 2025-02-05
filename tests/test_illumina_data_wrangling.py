@@ -6,7 +6,7 @@ from unittest import mock
 
 import pytest
 
-from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
+from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets, check_sample_to_dataanalysis_and_index
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
@@ -14,6 +14,8 @@ from .test_io_utils import with_temporary_folder
 
 
 API_TEST_DATA = "tests/data/api/clarity"
+
+
 
 
 class TestIlluminaDemux(unittest.TestCase):
@@ -31,6 +33,21 @@ class TestIlluminaDemux(unittest.TestCase):
     def tearDownClass(cls):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
+
+    def test_check_sample_to_dataanalysis_and_index(self):
+        # set up
+        # info = ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3)
+        file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+        output_path = "test_info_22NWWMLT3_1.csv"
+
+        # file = "./tests/data/illumina/22NWYFLT3/RunInfo.xml"
+        # output_path = "test_info_22NWYFLT3_1.csv"
+
+        # Test
+        check_sample_to_dataanalysis_and_index(self.api, file, output_path)
+
+        raise ValueError
+
 
     # def test_generate_illumina_demux_samplesheets_general(self):
     #     """
