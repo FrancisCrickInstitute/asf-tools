@@ -444,25 +444,24 @@ class ClarityHelperLims(ClarityLims):
         return sample_barcode
 
 
-    def get_sample_custom_barcode_from_sampleid(self, sample_id: str) -> dict:
+    def get_sample_custom_barcode_from_sampleid(self, sample_id: str) -> str:
         """
-        Retrieve a mapping of custom barcodes for all samples associated with a given run ID.
+        Retrieve the custom barcode associated with a specific sample ID.
 
-        This method first retrieves all artifacts associated with the specified run ID, then extracts
-        the list of samples from these artifacts. For each sample, it fetches detailed information and
-        extracts the custom barcode from a UDF field named "Index". The resulting mapping of sample names
-        to their barcodes is returned.
+        This method retrieves information about the sample identified by the given sample ID,
+        extracts the associated artifact, and determines the custom barcode. The barcode is
+        retrieved from either the reagent labels of the artifact or a UDF field named "Index."
+        If a reagent label is found, the barcode is processed through reagent type information.
 
         Args:
-            run_id (str): The unique identifier for the run whose sample barcodes are to be retrieved.
+            sample_id (str): The unique identifier of the sample for which the custom barcode is to be retrieved.
 
         Returns:
-            dict: A dictionary where each key is the sample name (str), and the value is a dictionary containing:
-                - "barcode": The custom barcode (str) associated with the sample.
+            str: The custom barcode associated with the specified sample.
 
         Raises:
-            ValueError: If the provided run_id is None or invalid.
-            KeyError: If the run_id does not exist in the system.
+            ValueError: If the provided sample ID is None or invalid.
+            KeyError: If required keys (e.g., artifact ID or UDF field) are missing in the system data.
         """
 
         # Extract barcodes
@@ -578,11 +577,11 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
-        for sample in barcode_info.keys():
-            if sample not in sample_metadata.keys():
+        for sample in barcode_info:
+            if sample not in sample_metadata:
                 print(sample)
-        # print(len(sample_metadata))
-        # print(len(barcode_info))
+        print(len(sample_metadata))
+        print(len(barcode_info))
         # print(barcode_info)
         lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
