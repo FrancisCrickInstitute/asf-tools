@@ -274,7 +274,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 def check_sample_to_dataanalysis_and_index(cl, runinfo_path, file_path):
     # Initialise classes
     iu = IlluminaUtils()
-    cl = ClarityHelperLims()
 
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_path)

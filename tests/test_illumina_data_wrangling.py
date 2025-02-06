@@ -37,11 +37,11 @@ class TestIlluminaDemux(unittest.TestCase):
     def test_check_sample_to_dataanalysis_and_index(self):
         # set up
         # info = ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3)
-        file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-        output_path = "test_info_22NWWMLT3_1.csv"
+        # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+        # output_path = "test_info_22NWWMLT3_1.csv"
 
-        # file = "./tests/data/illumina/22NWYFLT3/RunInfo.xml"
-        # output_path = "test_info_22NWYFLT3_1.csv"
+        file = "./tests/data/illumina/22NWYFLT3/RunInfo.xml"
+        output_path = "test_info_22NWYFLT3_1.csv"
 
         # Test
         check_sample_to_dataanalysis_and_index(self.api, file, output_path)

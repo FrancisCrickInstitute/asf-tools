@@ -521,6 +521,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "WGS",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
+                        "library_type": "ONT DNA Ligation"
                     }
                 },
             ),  # ONT
@@ -536,6 +537,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "mRNA-Seq from RNA",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "RNA-Seq",
+                        "library_type": "NEBNext_Low_Input_w_NEB_Ultra_II_FS"
                     }
                 },
             ),
@@ -551,6 +553,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
+                        "library_type": "Premade"
                     }
                 },
             ),
@@ -586,6 +589,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": None,
                         "reference_genome": None,
                         "data_analysis_type": None,
+                        "library_type": None
                     }
                 },
             ),
@@ -743,6 +747,18 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert barcode == expected_dict
 
+    @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
+    def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, api, sample, expected_barcode):
+        """
+        Pass real artifact IDs and test expected number of samples back
+        """
+
+        # Test
+        results = api.get_sample_custom_barcode_from_sampleid(sample)
+
+        # Assert
+        assert results == expected_barcode
+
     @pytest.mark.parametrize(
         "run_id,expected_dict",
         [
@@ -759,6 +775,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A2": {
@@ -771,6 +788,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A3": {
@@ -783,6 +801,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A4": {
@@ -795,6 +814,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                 },
@@ -812,6 +832,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "CTGAGCCA",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2840": {
@@ -824,6 +845,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "AGCCATGC",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2841": {
@@ -836,6 +858,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "data_analysis_type": "Whole Exome",
                         "project_type": "WES",
                         "barcode": "GTACGCAA",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2842": {
@@ -848,6 +871,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "AGTACAAG",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2843": {
@@ -860,6 +884,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "ACATTGGC",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2844": {
@@ -872,6 +897,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "ATTGAGGA",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2845": {
@@ -884,6 +910,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "GTCGTAGA",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2848": {
@@ -896,6 +923,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "AACGTGAT",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2849": {
@@ -908,6 +936,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
                         "barcode": "CACTTCGA",
+                        'library_type': 'SureSelectXT Human All Exon V5plus',
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                 },
@@ -925,6 +954,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
                         "barcode": "ACTCCGCG-TAGTCGTT",
+                        'library_type': 'Premade',
                         "lanes": ["1"],
                     },
                 },
@@ -942,6 +972,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
                         "barcode": "",
+                        "library_type": "ONT DNA Ligation",
                         "lanes": ["1"],
                     }
                 },

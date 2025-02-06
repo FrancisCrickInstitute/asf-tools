@@ -1,429 +1,429 @@
 sample_name,data_analysis_type,barcode
-ss1_NON_3prV4GEX,10X-3prime,
-ss4_NON_3prV4GEX,10X-3prime,
-ss8_NON_3prV4GEX,10X-3prime,
-ss1_GFP_3prV4GEX,10X-3prime,
-ss4_GFP_3prV4GEX,10X-3prime,
-ss8_GFP_3prV4GEX,10X-3prime,
-NMP3443_5prV3BCR,10X-3prime,
-1_SA6_Bcl2_4WPI_3prV4snGEX,10X-3prime,
-2_SA6_Dlxl2_4WPI_3prV4snGEX,10X-3prime,
-NMP2374_5prV3GEX,10X-3prime,
-LTX0223_T1_R1_LTX0667_T1_R1_3prV4snGEX,10X-3prime,
-NMP7523_5prV3GEX,10X-3prime,
-New_C_GFP_snGEX,10X-3prime,
-LB_CD25neg_relapse_6812_1L_GEX,10X-FeatureBarcoding,
-totalPC_recallNPCGG_GEX,10X-3prime,
-totalPC_recallNPCGG_BCR,10X-3prime,
-totalPC_recallNPCGG_TSC,10X-3prime,
-Sample_1_ZZOP_469_1c_6mo_fixed_multiome_mxGEX,10X-Multiomics,
-NestinGFP8w_2_mxGEX,10X-Multiomics,
-CR001,RNA-Seq,
-CR002,RNA-Seq,
-CR003,RNA-Seq,
-CR004,RNA-Seq,
-CR005,RNA-Seq,
-CR006,RNA-Seq,
-CR007,RNA-Seq,
-CR008,RNA-Seq,
-CR009,RNA-Seq,
-ctrl1_ipsc_cyto,Watchmaker RNA polyA,
-ctrl1_ipsc_LMW,Watchmaker RNA polyA,
-ctrl1_ipsc_MMW,Watchmaker RNA polyA,
-ctrl1_ipsc_HMW,Watchmaker RNA polyA,
-ctrl3_ipsc_cyto,Watchmaker RNA polyA,
-ctrl3_ipsc_LMW,Watchmaker RNA polyA,
-ctrl3_ipsc_MMW,Watchmaker RNA polyA,
-ctrl3_ipsc_HMW,Watchmaker RNA polyA,
-ctrl4_ipsc_cyto,Watchmaker RNA polyA,
-ctrl4_ipsc_80S,Watchmaker RNA polyA,
-ctrl4_ipsc_LMW,Watchmaker RNA polyA,
-ctrl4_ipsc_MMW,Watchmaker RNA polyA,
-ctrl4_ipsc_HMW,Watchmaker RNA polyA,
-ctrl6_ipsc_cyto,Watchmaker RNA polyA,
-ctrl6_ipsc_80S,Watchmaker RNA polyA,
-ctrl6_ipsc_LMW,Watchmaker RNA polyA,
-ctrl6_ipsc_MMW,Watchmaker RNA polyA,
-ctrl6_ipsc_HMW,Watchmaker RNA polyA,
-GLIB_ipsc_cyto,Watchmaker RNA polyA,
-GLIB_ipsc_LMW,Watchmaker RNA polyA,
-GLIB_ipsc_MMW,Watchmaker RNA polyA,
-GLIB_ipsc_HMW,Watchmaker RNA polyA,
-CBID_ipsc_cyto,Watchmaker RNA polyA,
-CBID_ipsc_LMW,Watchmaker RNA polyA,
-CBID_ipsc_MMW,Watchmaker RNA polyA,
-CBID_ipsc_HMW,Watchmaker RNA polyA,
-CBIE_ipsc_cyto,Watchmaker RNA polyA,
-CBIE_ipsc_LMW,Watchmaker RNA polyA,
-CBIE_ipsc_MMW,Watchmaker RNA polyA,
-CBIE_ipsc_HMW,Watchmaker RNA polyA,
-NC2_ipsc_cyto,Watchmaker RNA polyA,
-NC2_ipsc_80S,Watchmaker RNA polyA,
-NC2_ipsc_LMW,Watchmaker RNA polyA,
-NC2_ipsc_MMW,Watchmaker RNA polyA,
-NC2_ipsc_HMW,Watchmaker RNA polyA,
-NE6_ipsc_cyto,Watchmaker RNA polyA,
-NE6_ipsc_LMW,Watchmaker RNA polyA,
-NE6_ipsc_MMW,Watchmaker RNA polyA,
-NE6_ipsc_HMW,Watchmaker RNA polyA,
-ctrl1_pmn_cyto,Watchmaker RNA polyA,
-ctrl1_pmn_80S,Watchmaker RNA polyA,
-ctrl1_pmn_LMW,Watchmaker RNA polyA,
-ctrl1_pmn_MMW,Watchmaker RNA polyA,
-ctrl1_pmn_HMW,Watchmaker RNA polyA,
-ctrl3_pmn_cyto,Watchmaker RNA polyA,
-ctrl3_pmn_80S,Watchmaker RNA polyA,
-ctrl3_pmn_LMW,Watchmaker RNA polyA,
-ctrl3_pmn_MMW,Watchmaker RNA polyA,
-ctrl3_pmn_HMW,Watchmaker RNA polyA,
-ctrl4_pmn_cyto,Watchmaker RNA polyA,
-ctrl4_pmn_80S,Watchmaker RNA polyA,
-ctrl4_pmn_LMW,Watchmaker RNA polyA,
-ctrl4_pmn_HMW,Watchmaker RNA polyA,
-ctrl6_pmn_cyto,Watchmaker RNA polyA,
-ctrl6_pmn_80S,Watchmaker RNA polyA,
-ctrl6_pmn_LMW,Watchmaker RNA polyA,
-ctrl6_pmn_MMW,Watchmaker RNA polyA,
-ctrl6_pmn_HMW,Watchmaker RNA polyA,
-GLIB_pmn_cyto,Watchmaker RNA polyA,
-GLIB_pmn_80S,Watchmaker RNA polyA,
-GLIB_pmn_LMW,Watchmaker RNA polyA,
-GLIB_pmn_MMW,Watchmaker RNA polyA,
-GLIB_pmn_HMW,Watchmaker RNA polyA,
-CBID_pmn_cyto,Watchmaker RNA polyA,
-CBID_pmn_80S,Watchmaker RNA polyA,
-CBID_pmn_LMW,Watchmaker RNA polyA,
-CBID_pmn_MMW,Watchmaker RNA polyA,
-CBID_pmn_HMW,Watchmaker RNA polyA,
-CBIE_pmn_cyto,Watchmaker RNA polyA,
-CBIE_pmn_80S,Watchmaker RNA polyA,
-CBIE_pmn_LMW,Watchmaker RNA polyA,
-CBIE_pmn_MMW,Watchmaker RNA polyA,
-CBIE_pmn_HMW,Watchmaker RNA polyA,
-NC2_pmn_cyto,Watchmaker RNA polyA,
-NC2_pmn_80S,Watchmaker RNA polyA,
-NC2_pmn_LMW,Watchmaker RNA polyA,
-NC2_pmn_MMW,Watchmaker RNA polyA,
-NC2_pmn_HMW,Watchmaker RNA polyA,
-NE6_pmn_cyto,Watchmaker RNA polyA,
-NE6_pmn_80S,Watchmaker RNA polyA,
-NE6_pmn_LMW,Watchmaker RNA polyA,
-NE6_pmn_MMW,Watchmaker RNA polyA,
-NE6_pmn_HMW,Watchmaker RNA polyA,
-ctrl1_mn_cyto,Watchmaker RNA polyA,
-ctrl1_mn_80S,Watchmaker RNA polyA,
-ctrl1_mn_LMW,Watchmaker RNA polyA,
-ctrl1_mn_MMW,Watchmaker RNA polyA,
-ctrl1_mn_HMW,Watchmaker RNA polyA,
-ctrl3_mn_cyto,Watchmaker RNA polyA,
-ctrl3_mn_80S,Watchmaker RNA polyA,
-ctrl3_mn_LMW,Watchmaker RNA polyA,
-ctrl3_mn_MMW,Watchmaker RNA polyA,
-ctrl3_mn_HMW,Watchmaker RNA polyA,
-ctrl4_mn_cyto,Watchmaker RNA polyA,
-ctrl4_mn_80S,Watchmaker RNA polyA,
-ctrl4_mn_LMW,Watchmaker RNA polyA,
-ctrl4_mn_MMW,Watchmaker RNA polyA,
-ctrl4_mn_HMW,Watchmaker RNA polyA,
-ctrl6_mn_cyto,Watchmaker RNA polyA,
-ctrl6_mn_80S,Watchmaker RNA polyA,
-ctrl6_mn_LMW,Watchmaker RNA polyA,
-ctrl6_mn_MMW,Watchmaker RNA polyA,
-ctrl6_mn_HMW,Watchmaker RNA polyA,
-GLIB_mn_cyto,Watchmaker RNA polyA,
-GLIB_mn_80S,Watchmaker RNA polyA,
-GLIB_mn_LMW,Watchmaker RNA polyA,
-GLIB_mn_MMW,Watchmaker RNA polyA,
-GLIB_mn_HMW,Watchmaker RNA polyA,
-CBID_mn_cyto,Watchmaker RNA polyA,
-CBID_mn_80S,Watchmaker RNA polyA,
-CBID_mn_LMW,Watchmaker RNA polyA,
-CBID_mn_MMW,Watchmaker RNA polyA,
-CBID_mn_HMW,Watchmaker RNA polyA,
-CBIE_mn_cyto,Watchmaker RNA polyA,
-CBIE_mn_80S,Watchmaker RNA polyA,
-CBIE_mn_LMW,Watchmaker RNA polyA,
-CBIE_mn_MMW,Watchmaker RNA polyA,
-CBIE_mn_HMW,Watchmaker RNA polyA,
-NC2_mn_cyto,Watchmaker RNA polyA,
-NC2_mn_80S,Watchmaker RNA polyA,
-NC2_mn_LMW,Watchmaker RNA polyA,
-NC2_mn_MMW,Watchmaker RNA polyA,
-NC2_mn_HMW,Watchmaker RNA polyA,
-NE6_mn_cyto,Watchmaker RNA polyA,
-NE6_mn_80S,Watchmaker RNA polyA,
-NE6_mn_LMW,Watchmaker RNA polyA,
-NE6_mn_MMW,Watchmaker RNA polyA,
-NE6_mn_HMW,Watchmaker RNA polyA,
-ctrl1_ipsc_80S,Watchmaker RNA polyA,
-ctrl3_ipsc_80S,Watchmaker RNA polyA,
-GLIB_ipsc_80S,Watchmaker RNA polyA,
-CBID_ipsc_80S,Watchmaker RNA polyA,
-CBIE_ipsc_80S,Watchmaker RNA polyA,
-NE6_ipsc_80S,Watchmaker RNA polyA,
-ctrl4_pmn_MMW,Watchmaker RNA polyA,
-No_Template_Control,Unknown,
-No_Template_Control,Unknown,
-No_Template_Control,Unknown,
-K1013_PR006_R01,Watchmaker RNA Ribo/Globin depletion,
-K1006_PR009_R01,Watchmaker RNA Ribo/Globin depletion,
-K1141_PR003_R01,Watchmaker RNA Ribo/Globin depletion,
-K1153_PR005_R01,Watchmaker RNA Ribo/Globin depletion,
-RMH04_PR001_R01,Watchmaker RNA Ribo/Globin depletion,
-AGO2_9_N,Premade,
-AGO2_9_L,Premade,
-AGO2_S_N,Premade,
-AGO2_S_L,Premade,
-FUS_N,Premade,
-FUS_L,Premade,
-FUS_H,Premade,
-H3K4,Premade,
-BRCA1u1rHMEC5_D7,Premade,
-BRCA1u1rHMEC5_D14,Premade,
-BRCA1u1rHMEC5_D14o,Premade,
-BRCA1u1rHMEC5_D21,Premade,
-BRCA1u1rHMEC5_D21o,Premade,
-BRCA1u1rHMEC6_D7,Premade,
-BRCA1u1rHMEC6_D14,Premade,
-BRCA1u1rHMEC6_D14o,Premade,
-BRCA1u1rHMEC6_D21,Premade,
-BRCA1u1rHMEC6_D21o,Premade,
-BRCA1u1_neg,Premade,
-BRCA1u1_HDRL,Premade,
-WT_1,Watchmaker RNA globin and ribosome  depletion,
-WT_2,Watchmaker RNA globin and ribosome  depletion,
-WT_3,Watchmaker RNA globin and ribosome  depletion,
-WT_4,Watchmaker RNA globin and ribosome  depletion,
-WT_5,Watchmaker RNA globin and ribosome  depletion,
-WT_6,Watchmaker RNA globin and ribosome  depletion,
-HDM_3wk_1,Watchmaker RNA globin and ribosome  depletion,
-HDM_3wk_2,Watchmaker RNA globin and ribosome  depletion,
-HDM_3wk_3,Watchmaker RNA globin and ribosome  depletion,
-HDM_3wk_6,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_1,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_3,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_4,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_1,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_2,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_3,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_4,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_5,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_1,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_2,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_3,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_4,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_5,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_6,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_1,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_2,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_3,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_4,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_5,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_6,Watchmaker RNA globin and ribosome  depletion,
-HDM_3wk_8,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_7,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_8,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_7,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_8,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_GdCl3_9,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_7,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_8,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Bud_9,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_7,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_8,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_9,Watchmaker RNA globin and ribosome  depletion,
-HDM_5wk_Gd_Bud_10,Watchmaker RNA globin and ribosome  depletion,
-WT_7,Watchmaker RNA globin and ribosome  depletion,
-WT_8,Watchmaker RNA globin and ribosome  depletion,
-WT_9,Watchmaker RNA globin and ribosome  depletion,
-M3_GLORI,Premade,
-Prpf8_GLORI,Premade,
-M3_RNA_seq,Premade,
-Prpf8_RNA_seq,Premade,
-No_Template_Control,Unknown,
-PF1,Watchmaker RNA Ribo/Globin depletion,
-PF2,Watchmaker RNA Ribo/Globin depletion,
-PF3,Watchmaker RNA Ribo/Globin depletion,
-PIR2_PoolOne_001,Premade,
-MFDpir_PoolOne_001,Premade,
-DMSO_DMSO_1,Premade,
-DMSO_DMSO_2,Premade,
-DMSO_DMSO_3,Premade,
-DMSO_DMSO_4,Premade,
-DMSO_DMSO_5,Premade,
-DMSO_DMSO_6,Premade,
-DMSO_JQ1_8,Premade,
-DMSO_JQ1_9,Premade,
-DMSO_JQ1_10,Premade,
-DMSO_JQ1_11,Premade,
-DMSO_JQ1_12,Premade,
-DMSO_MZ1_13,Premade,
-DMSO_MZ1_14,Premade,
-DMSO_MZ1_15,Premade,
-DMSO_MZ1_16,Premade,
-DMSO_MZ1_17,Premade,
-DMSO_MZ1_18,Premade,
-dTAG_DMSO_20,Premade,
-dTAG_DMSO_21,Premade,
-No_Template_Control,Unknown,
-dTAG_DMSO_22,Premade,
-dTAG_DMSO_23,Premade,
-dTAG_DMSO_24,Premade,
-dTAG_JQ1_25,Premade,
-dTAG_JQ1_26,Premade,
-dTAG_JQ1_27,Premade,
-dTAG_JQ1_28,Premade,
-dTAG_JQ1_29,Premade,
-dTAG_JQ1_30,Premade,
-dTAG_MZ1_32,Premade,
-dTAG_MZ1_33,Premade,
-dTAG_MZ1_34,Premade,
-dTAG_MZ1_35,Premade,
-dTAG_MZ1_36,Premade,
-DMSO_JQ1_7,Premade,
-dTAG_DMSO_19,Premade,
-dTAG_MZ1_31,Premade,
-BAR_Primary_DNA,Premade,
-BAR_Primary_Protein,Premade,
-1709_Kpn,Premade,
-OaAEP2_select_1,Premade,
-OaAEP2_select_2,Premade,
-OaAEP2_select_3,Premade,
-OaAEP2_select_4,Premade,
-OaAEP2_select_5,Premade,
-OaAEP2_select_6,Premade,
-CEP_T1h2_Puro,Premade,
-OaAEP2_Select_0,Premade,
-Mouse1-DMSO-12h,Premade,
-Mouse2-DMSO-12h,Premade,
-Mouse3-DMSO-12h,Premade,
-Mouse1-Romidepsin-12h,Premade,
-Mouse2-Romidepsin-12h,Premade,
-Mouse3-Romidepsin-12h,Premade,
-Mouse1-Panobinostat-12h,Premade,
-Mouse2-Panobinostat-12h,Premade,
-Mouse3-Panobinostat-12h,Premade,
-Mouse1-BRD3308-12h,Premade,
-Mouse2-BRD3308-12h,Premade,
-Mouse3-BRD3308-12h,Premade,
-BRCA1i11rHMEC5_D7,Premade,
-BRCA1i11rHMEC5_D14,Premade,
-BRCA1i11rHMEC5_D14o,Premade,
-BRCA1i11rHMEC5_D21,Premade,
-BRCA1i11rHMEC5_D21o,Premade,
-BRCA1i11rHMEC6_D7,Premade,
-BRCA1i11rHMEC6_D14,Premade,
-BRCA1i11rHMEC6_D14o,Premade,
-BRCA1i11rHMEC6_D21,Premade,
-BRCA1i11rHMEC6_D21o,Premade,
-BRCA1i11_neg,Premade,
+ss1_NON_3prV4GEX,10X-3prime,GTGGATCAAA-GCCAACCCTG
+ss4_NON_3prV4GEX,10X-3prime,TCTACCATTT-CGGGAGAGTC
+ss8_NON_3prV4GEX,10X-3prime,CAATCCCGAC-CCGAGTAGTA
+ss1_GFP_3prV4GEX,10X-3prime,TTAATACGCG-CACCTCGGGT
+ss4_GFP_3prV4GEX,10X-3prime,ATGGAGGGAG-ATAACCCATT
+ss8_GFP_3prV4GEX,10X-3prime,AAGGGCCGCA-CTGATTCCTC
+NMP3443_5prV3BCR,10X-3prime,TCGTCAAGAT-GCAACTCAGG
+1_SA6_Bcl2_4WPI_3prV4snGEX,10X-3prime,CATGTGGGTT-GATTCCTTTA
+2_SA6_Dlxl2_4WPI_3prV4snGEX,10X-3prime,TAGCATAGTG-CGGCTCTGTC
+NMP2374_5prV3GEX,10X-3prime,AAGATTGGAT-AGCGGGATTT
+LTX0223_T1_R1_LTX0667_T1_R1_3prV4snGEX,10X-3prime,TTATTCGAGG-CTGTCCTGCT
+NMP7523_5prV3GEX,10X-3prime,TGTAGTCATT-CTTGATCGTA
+New_C_GFP_snGEX,10X-3prime,GAGACGCACG-CTATGAACAT
+LB_CD25neg_relapse_6812_1L_GEX,10X-FeatureBarcoding,CGTCCACCTG-CATTCATGAC
+totalPC_recallNPCGG_GEX,10X-3prime,TGCAATGTTC-GCTTGTCGAA
+totalPC_recallNPCGG_BCR,10X-3prime,ACAATGTGAA-CGTACCGTTA
+totalPC_recallNPCGG_TSC,10X-3prime,TGGCTACCGG-CTGAGTCATT
+Sample_1_ZZOP_469_1c_6mo_fixed_multiome_mxGEX,10X-Multiomics,ACAGTAACTA-ACAGTTCGTT
+NestinGFP8w_2_mxGEX,10X-Multiomics,TGCGCGGTTT-CAAGGATAAA
+CR001,RNA-Seq,AGCAATTC-CTGCTCCT
+CR002,RNA-Seq,CCTATGCC-CAAGCTTA
+CR003,RNA-Seq,AAGGATGT-CACTTCAT
+CR004,RNA-Seq,TTGAGCCT-TCATTCGA
+CR005,RNA-Seq,CACATCCT-GCTGCACT
+CR006,RNA-Seq,TTCGCTGA-CGCATATT
+CR007,RNA-Seq,CATGCTTA-ATGAATTA
+CR008,RNA-Seq,AAGTAGAG-ATCGACTG
+CR009,RNA-Seq,CATAGCGA-GACGGTTA
+ctrl1_ipsc_cyto,Watchmaker RNA polyA,TAGCGAGGCT-CCGTGAGCAA
+ctrl1_ipsc_LMW,Watchmaker RNA polyA,GCGCCATATA-TAGGAGGTTC
+ctrl1_ipsc_MMW,Watchmaker RNA polyA,GCATAAGATC-TCCAGTTCTC
+ctrl1_ipsc_HMW,Watchmaker RNA polyA,CTCACCAGTT-GACACACCAA
+ctrl3_ipsc_cyto,Watchmaker RNA polyA,CACGAGTGTC-CTCTAGCCTA
+ctrl3_ipsc_LMW,Watchmaker RNA polyA,GATAGATCAG-ATGGCGTACG
+ctrl3_ipsc_MMW,Watchmaker RNA polyA,CGCACATTAC-CTACGTTCCA
+ctrl3_ipsc_HMW,Watchmaker RNA polyA,CAGACTGCAG-TAAGGCCGGT
+ctrl4_ipsc_cyto,Watchmaker RNA polyA,GCGAAGTAGG-ACACAATGGT
+ctrl4_ipsc_80S,Watchmaker RNA polyA,GCCTCTCAGA-AGTCGTCACG
+ctrl4_ipsc_LMW,Watchmaker RNA polyA,AAGGTGTACT-CTGTAGCGCT
+ctrl4_ipsc_MMW,Watchmaker RNA polyA,CAATGCGTGT-GCGCGAACAT
+ctrl4_ipsc_HMW,Watchmaker RNA polyA,TGTTACAGAG-CTGGTACACA
+ctrl6_ipsc_cyto,Watchmaker RNA polyA,GATGCTAGAA-CTGGCATCCA
+ctrl6_ipsc_80S,Watchmaker RNA polyA,TGGTGGTTGT-TTGACAGGTA
+ctrl6_ipsc_LMW,Watchmaker RNA polyA,GTTAGTGCCT-TGCTATGCAG
+ctrl6_ipsc_MMW,Watchmaker RNA polyA,GAGTAGTGAC-TTGGCATCGC
+ctrl6_ipsc_HMW,Watchmaker RNA polyA,ATGGTTGTTG-CCTCATAACT
+GLIB_ipsc_cyto,Watchmaker RNA polyA,ACTAGTAGTC-GAGTGTACGT
+GLIB_ipsc_LMW,Watchmaker RNA polyA,CGGAGACTAT-GTAGAAGCAT
+GLIB_ipsc_MMW,Watchmaker RNA polyA,CAACTACCGC-CCTGCAGCAT
+GLIB_ipsc_HMW,Watchmaker RNA polyA,GTGAAGACAC-GATCAAGCCA
+CBID_ipsc_cyto,Watchmaker RNA polyA,GCGACAATAT-CCGTACGAAT
+CBID_ipsc_LMW,Watchmaker RNA polyA,CGCAATAAGA-ACGCTGTAGG
+CBID_ipsc_MMW,Watchmaker RNA polyA,TAGGTTCAAG-GCCGGTAAGT
+CBID_ipsc_HMW,Watchmaker RNA polyA,GTGACGCACA-CGCAACAACG
+CBIE_ipsc_cyto,Watchmaker RNA polyA,TCGACCAGCA-GAGTTCGAAC
+CBIE_ipsc_LMW,Watchmaker RNA polyA,TTACGGACGC-GCTGGCCAAT
+CBIE_ipsc_MMW,Watchmaker RNA polyA,ACGATGGTTA-CCTAGCAATT
+CBIE_ipsc_HMW,Watchmaker RNA polyA,AACGCTCTGA-CACGTTACTC
+NC2_ipsc_cyto,Watchmaker RNA polyA,TTGCCGTATC-CCGCTAATGT
+NC2_ipsc_80S,Watchmaker RNA polyA,ACGCAACACA-CTCCTGAATG
+NC2_ipsc_LMW,Watchmaker RNA polyA,ATCATACCGC-AGTACGACAT
+NC2_ipsc_MMW,Watchmaker RNA polyA,TGTCAGGCTT-GTAAGGAATC
+NC2_ipsc_HMW,Watchmaker RNA polyA,ACAATAGCAC-ATAGGCATAC
+NE6_ipsc_cyto,Watchmaker RNA polyA,AATAGACTGC-GCGACCTTGA
+NE6_ipsc_LMW,Watchmaker RNA polyA,TCCGGAGAAC-CCAGAGGAAT
+NE6_ipsc_MMW,Watchmaker RNA polyA,GATTGGCGAT-AATGAGACAG
+NE6_ipsc_HMW,Watchmaker RNA polyA,GATCCACTTA-AACAGAACAC
+ctrl1_pmn_cyto,Watchmaker RNA polyA,AAGGTGTTAG-CACCAGCACA
+ctrl1_pmn_80S,Watchmaker RNA polyA,GACTTAGGTC-AAGTCCATAG
+ctrl1_pmn_LMW,Watchmaker RNA polyA,CACGTGATGG-ACACGTTGTA
+ctrl1_pmn_MMW,Watchmaker RNA polyA,AATGGACGCG-CGGTGCACTT
+ctrl1_pmn_HMW,Watchmaker RNA polyA,TCGCTGAGAG-CTAGAGCATT
+ctrl3_pmn_cyto,Watchmaker RNA polyA,AAGACTCTCG-GAAGGAGAGC
+ctrl3_pmn_80S,Watchmaker RNA polyA,CCAATGTTGA-GACATTCAAG
+ctrl3_pmn_LMW,Watchmaker RNA polyA,TCCGAGATGC-TAAGGTGACA
+ctrl3_pmn_MMW,Watchmaker RNA polyA,GTAATACTCG-GATTCGTGAG
+ctrl3_pmn_HMW,Watchmaker RNA polyA,CTCTTCAGCA-GTAGAGACAA
+ctrl4_pmn_cyto,Watchmaker RNA polyA,AGAGCAGTAT-CCTCCTCTTG
+ctrl4_pmn_80S,Watchmaker RNA polyA,CCAGTGCACT-GATACGGAGG
+ctrl4_pmn_LMW,Watchmaker RNA polyA,CGCTAATTGC-AATGCGATGG
+ctrl4_pmn_HMW,Watchmaker RNA polyA,CCGAAGGTTC-GTCAGATAGA
+ctrl6_pmn_cyto,Watchmaker RNA polyA,CTACAAGTTC-TTCATGGTGC
+ctrl6_pmn_80S,Watchmaker RNA polyA,ATGATCAACG-GACGCTATAC
+ctrl6_pmn_LMW,Watchmaker RNA polyA,GATTCTTAGC-ACCGCTAGCA
+ctrl6_pmn_MMW,Watchmaker RNA polyA,CTGTATGCCA-ACAGCCGGAA
+ctrl6_pmn_HMW,Watchmaker RNA polyA,ACCAGGAATT-ATGCCATGCT
+GLIB_pmn_cyto,Watchmaker RNA polyA,GCGATGGAAG-ATCTTGCGGC
+GLIB_pmn_80S,Watchmaker RNA polyA,AGGACGGACA-CCACGACTTC
+GLIB_pmn_LMW,Watchmaker RNA polyA,ATACACACCT-CTATCACACT
+GLIB_pmn_MMW,Watchmaker RNA polyA,AGCCACTCGT-ATCCTCTTGG
+GLIB_pmn_HMW,Watchmaker RNA polyA,GCATTCCTTC-AAGCAGGCTC
+CBID_pmn_cyto,Watchmaker RNA polyA,GAAGATCGAC-CGTGGTCACT
+CBID_pmn_80S,Watchmaker RNA polyA,CGTACTTAGA-TGAACATCGG
+CBID_pmn_LMW,Watchmaker RNA polyA,TAAGGCTCAC-AAGTAACGTC
+CBID_pmn_MMW,Watchmaker RNA polyA,GATAGACAAC-ACGTGAACAC
+CBID_pmn_HMW,Watchmaker RNA polyA,AGACGACAGA-ATTCCAGCTC
+CBIE_pmn_cyto,Watchmaker RNA polyA,TTGTGATCCT-ATGCCTTCAT
+CBIE_pmn_80S,Watchmaker RNA polyA,CATCAGGCGT-CGGTAACACG
+CBIE_pmn_LMW,Watchmaker RNA polyA,AATCGTGCGG-TCTACTGAAC
+CBIE_pmn_MMW,Watchmaker RNA polyA,ATCGAGAGAC-TCTGCTTCCA
+CBIE_pmn_HMW,Watchmaker RNA polyA,TGTGACGTAT-CTAACGCTGC
+NC2_pmn_cyto,Watchmaker RNA polyA,AACCTGATCT-CGGACGGAAT
+NC2_pmn_80S,Watchmaker RNA polyA,TAACTTGGTC-GATTCACGAC
+NC2_pmn_LMW,Watchmaker RNA polyA,TAGGTCCAGA-CGGATGAGCA
+NC2_pmn_MMW,Watchmaker RNA polyA,CGGATCATTA-AAGGTTACGG
+NC2_pmn_HMW,Watchmaker RNA polyA,TGTCGGTGCT-CGGAAGAACT
+NE6_pmn_cyto,Watchmaker RNA polyA,TCGAACACGA-AGAACCTCGC
+NE6_pmn_80S,Watchmaker RNA polyA,TTACTTCGTG-ATCCGATCTT
+NE6_pmn_LMW,Watchmaker RNA polyA,AGAAGATTGG-AGTACCTTCT
+NE6_pmn_MMW,Watchmaker RNA polyA,CATATGGTGC-TGAGATCTGT
+NE6_pmn_HMW,Watchmaker RNA polyA,ACGAGACGTC-AGAGAGACCG
+ctrl1_mn_cyto,Watchmaker RNA polyA,CATAAGCGAC-CTTGAAGAGG
+ctrl1_mn_80S,Watchmaker RNA polyA,CTCTCTCTAG-CCAATCAAGT
+ctrl1_mn_LMW,Watchmaker RNA polyA,TCTACAGCTA-GTCTTCCATT
+ctrl1_mn_MMW,Watchmaker RNA polyA,AGCACCAGTC-GCTACACGAG
+ctrl1_mn_HMW,Watchmaker RNA polyA,CAACCATACA-TATAACCGGT
+ctrl3_mn_cyto,Watchmaker RNA polyA,TCGACGTTGG-CACACTTATC
+ctrl3_mn_80S,Watchmaker RNA polyA,AATCGAACTC-TAAGGTTCGT
+ctrl3_mn_LMW,Watchmaker RNA polyA,ACTTCAACAG-ATGCTCACGC
+ctrl3_mn_MMW,Watchmaker RNA polyA,CGAGTTCGCA-CATAATCCGG
+ctrl3_mn_HMW,Watchmaker RNA polyA,GACAATGCGG-CACTCAACAA
+ctrl4_mn_cyto,Watchmaker RNA polyA,GTGCTATCGA-CGGTGCTTAA
+ctrl4_mn_80S,Watchmaker RNA polyA,GTCTTCTCGA-GTTGGCACCA
+ctrl4_mn_LMW,Watchmaker RNA polyA,GTAGGCCGTT-AGACAGTGGC
+ctrl4_mn_MMW,Watchmaker RNA polyA,AAGAGTACGA-ACGTCCTTGC
+ctrl4_mn_HMW,Watchmaker RNA polyA,AGGCTGGAGA-ATGACAGTTG
+ctrl6_mn_cyto,Watchmaker RNA polyA,TGGACAATAG-CACAGGACTC
+ctrl6_mn_80S,Watchmaker RNA polyA,TCCTACGTGC-ATAGCACCTA
+ctrl6_mn_LMW,Watchmaker RNA polyA,AAGTGGCATT-CGATTGTTCT
+ctrl6_mn_MMW,Watchmaker RNA polyA,AGAACCTACA-ACCGTACACT
+ctrl6_mn_HMW,Watchmaker RNA polyA,ATACACAGAG-CCTTCTGACT
+GLIB_mn_cyto,Watchmaker RNA polyA,CGGATTGATC-TGTTGTGACT
+GLIB_mn_80S,Watchmaker RNA polyA,CACGAGAAGT-CTACGCAGAC
+GLIB_mn_LMW,Watchmaker RNA polyA,TAAGCCACGC-TCGTTCGTAA
+GLIB_mn_MMW,Watchmaker RNA polyA,TCACACGGAT-CGATCAGAAG
+GLIB_mn_HMW,Watchmaker RNA polyA,CCACGATAAC-GTCAGGCATG
+CBID_mn_cyto,Watchmaker RNA polyA,GCAACCTGAG-CGCAATGAAC
+CBID_mn_80S,Watchmaker RNA polyA,ATGGTGTATC-CCACAATTGC
+CBID_mn_LMW,Watchmaker RNA polyA,AGGTCTATGG-GTTCTCACGG
+CBID_mn_MMW,Watchmaker RNA polyA,ACTGGCAAGA-ATGGACAACA
+CBID_mn_HMW,Watchmaker RNA polyA,GACAATTAGC-TCATGACCGG
+CBIE_mn_cyto,Watchmaker RNA polyA,TCAATCAGAG-AACCAGAGTC
+CBIE_mn_80S,Watchmaker RNA polyA,AGGATACGGT-TGACGTGGTT
+CBIE_mn_LMW,Watchmaker RNA polyA,CTTGCGAAGA-CCGCGTCATT
+CBIE_mn_MMW,Watchmaker RNA polyA,AGAACCGGAC-TATGGTAGGA
+CBIE_mn_HMW,Watchmaker RNA polyA,CTCAGAATTC-CGGTCTCTGT
+NC2_mn_cyto,Watchmaker RNA polyA,ACCTCATTGA-AGATCGGATA
+NC2_mn_80S,Watchmaker RNA polyA,ACAAGAACCT-TTCAGTATCG
+NC2_mn_LMW,Watchmaker RNA polyA,TTCTACCGGC-CTTACGAGTA
+NC2_mn_MMW,Watchmaker RNA polyA,AACATAAGGC-CTAAGCTAAC
+NC2_mn_HMW,Watchmaker RNA polyA,GCTACAGGTC-TCCTGCATAA
+NE6_mn_cyto,Watchmaker RNA polyA,TGGCACGAAC-AAGAGTCAGG
+NE6_mn_80S,Watchmaker RNA polyA,CACACTGTTG-AACCAATGCA
+NE6_mn_LMW,Watchmaker RNA polyA,TATGATGCAG-CAACTGGCCT
+NE6_mn_MMW,Watchmaker RNA polyA,CGTGGCAGAA-CATCGGAAGA
+NE6_mn_HMW,Watchmaker RNA polyA,AGAGTATGTG-GAAGCCATCT
+ctrl1_ipsc_80S,Watchmaker RNA polyA,AACTCTCTAC-GAGAAGCCGT
+ctrl3_ipsc_80S,Watchmaker RNA polyA,GTATGCCACA-GAAGACTCGG
+GLIB_ipsc_80S,Watchmaker RNA polyA,GCCAACAGAC-AACGTGAACG
+CBID_ipsc_80S,Watchmaker RNA polyA,TAGTCCATCT-CTGTCCTGTC
+CBIE_ipsc_80S,Watchmaker RNA polyA,ATTCTCCACG-CGATCATCGA
+NE6_ipsc_80S,Watchmaker RNA polyA,GCGGAGTCAA-AGCTATAGAG
+ctrl4_pmn_MMW,Watchmaker RNA polyA,CAACCATGAT-GTCACCTTAT
+No_Template_Control,Unknown,CGTCGCCTAT-CGAGAAGATA
+No_Template_Control,Unknown,TTCGTTCACA-CACTAATCAG
+No_Template_Control,Unknown,GTAACAGGAA-TCTGAAGACA
+K1013_PR006_R01,Watchmaker RNA Ribo/Globin depletion,TATGGCAAGC-CATTGCTGTT
+K1006_PR009_R01,Watchmaker RNA Ribo/Globin depletion,CCTAAGCTGA-AGATGCGACG
+K1141_PR003_R01,Watchmaker RNA Ribo/Globin depletion,GCCACCTAGT-ATACATCGCA
+K1153_PR005_R01,Watchmaker RNA Ribo/Globin depletion,AGTATCCGAT-TAGCGCAATA
+RMH04_PR001_R01,Watchmaker RNA Ribo/Globin depletion,CCTCGTTGGA-TAACGCAGTC
+AGO2_9_N,Premade,ATCACG
+AGO2_9_L,Premade,CGATGT
+AGO2_S_N,Premade,TTAGGC
+AGO2_S_L,Premade,TGACCA
+FUS_N,Premade,ACAGTG
+FUS_L,Premade,GCCAAT
+FUS_H,Premade,CAGATC
+H3K4,Premade,ACTTGA
+BRCA1u1rHMEC5_D7,Premade,GCTATCCT-CACCTGTT
+BRCA1u1rHMEC5_D14,Premade,AAGCACTG-GTTGACCT
+BRCA1u1rHMEC5_D14o,Premade,CAACACCT-TGGTAGCT
+BRCA1u1rHMEC5_D21,Premade,ACAGCTCA-GAGCAGTA
+BRCA1u1rHMEC5_D21o,Premade,GATAGGCT-TGTGACTG
+BRCA1u1rHMEC6_D7,Premade,ACTCCATC-CCTTGATC
+BRCA1u1rHMEC6_D14,Premade,ATCACACG-TACGCTAC
+BRCA1u1rHMEC6_D14o,Premade,ATATGCGC-CTGATCGT
+BRCA1u1rHMEC6_D21,Premade,AAGCACTG-CACCTGTT
+BRCA1u1rHMEC6_D21o,Premade,CAACACCT-GTTGACCT
+BRCA1u1_neg,Premade,ACAGCTCA-TGGTAGCT
+BRCA1u1_HDRL,Premade,GATAGGCT-GAGCAGTA
+WT_1,Watchmaker RNA globin and ribosome  depletion,CGCGGTATCT-GATCGGTAAT
+WT_2,Watchmaker RNA globin and ribosome  depletion,ACTCCGAAGC-GCAACACGGA
+WT_3,Watchmaker RNA globin and ribosome  depletion,CGATGTCTTG-GAACGTTCGG
+WT_4,Watchmaker RNA globin and ribosome  depletion,CTCCGCCATA-TGCTGAACGC
+WT_5,Watchmaker RNA globin and ribosome  depletion,AACGAAGATC-TTAGACCACA
+WT_6,Watchmaker RNA globin and ribosome  depletion,AATAGGTAGG-CCATAAGCCA
+HDM_3wk_1,Watchmaker RNA globin and ribosome  depletion,ATGTTGCCAC-ATGGCTTCTA
+HDM_3wk_2,Watchmaker RNA globin and ribosome  depletion,ACAACAGGCT-CAACAGTGGA
+HDM_3wk_3,Watchmaker RNA globin and ribosome  depletion,TATCCGCGTC-ACGATGCAAC
+HDM_3wk_6,Watchmaker RNA globin and ribosome  depletion,AATCTGCAGT-TCACTTCGCA
+HDM_5wk_1,Watchmaker RNA globin and ribosome  depletion,GAGATGAGAG-AACGCCATTC
+HDM_5wk_3,Watchmaker RNA globin and ribosome  depletion,TGACACGATT-CTTCCTAGGC
+HDM_5wk_4,Watchmaker RNA globin and ribosome  depletion,CCTCCTGTGA-CGTAGACGTG
+HDM_5wk_GdCl3_1,Watchmaker RNA globin and ribosome  depletion,TATGCGTAGC-GTGCCTCTGA
+HDM_5wk_GdCl3_2,Watchmaker RNA globin and ribosome  depletion,CAGCAGGTCA-TACCTAAGTG
+HDM_5wk_GdCl3_3,Watchmaker RNA globin and ribosome  depletion,TTACGCGCAT-TGTCGTTAAG
+HDM_5wk_GdCl3_4,Watchmaker RNA globin and ribosome  depletion,AGGATGTCCA-AACGTCCAGT
+HDM_5wk_GdCl3_5,Watchmaker RNA globin and ribosome  depletion,AGTTCAGGCG-AATAGCTGTG
+HDM_5wk_Bud_1,Watchmaker RNA globin and ribosome  depletion,TCACCATAAG-TCCTGAACTT
+HDM_5wk_Bud_2,Watchmaker RNA globin and ribosome  depletion,GTGCTCTAGG-CGTTGGTAAC
+HDM_5wk_Bud_3,Watchmaker RNA globin and ribosome  depletion,TAGGCGAATG-TCACTGGACT
+HDM_5wk_Bud_4,Watchmaker RNA globin and ribosome  depletion,CCAGTCGTCA-TAGCCTAGCG
+HDM_5wk_Bud_5,Watchmaker RNA globin and ribosome  depletion,TCTAGCTGCG-CCTTACCTAT
+HDM_5wk_Bud_6,Watchmaker RNA globin and ribosome  depletion,TTCTCTTAGC-AGCTCGAGGA
+HDM_5wk_Gd_Bud_1,Watchmaker RNA globin and ribosome  depletion,GCCAGCTATC-ACACGAACAA
+HDM_5wk_Gd_Bud_2,Watchmaker RNA globin and ribosome  depletion,CGCCAAGGTA-GAACACTATC
+HDM_5wk_Gd_Bud_3,Watchmaker RNA globin and ribosome  depletion,ACTTCCGGCA-ACAATTGGTC
+HDM_5wk_Gd_Bud_4,Watchmaker RNA globin and ribosome  depletion,GCAATCTGCT-CTTGGTTCGT
+HDM_5wk_Gd_Bud_5,Watchmaker RNA globin and ribosome  depletion,AGTAAGGAGA-GACCAAGCAT
+HDM_5wk_Gd_Bud_6,Watchmaker RNA globin and ribosome  depletion,AGAAGACCTA-TGTTACGGTT
+HDM_3wk_8,Watchmaker RNA globin and ribosome  depletion,AGATTAGCGT-ATATAAGGCG
+HDM_5wk_7,Watchmaker RNA globin and ribosome  depletion,TCGCGACACT-ACATTACTCG
+HDM_5wk_8,Watchmaker RNA globin and ribosome  depletion,CTTACGAACT-CTCAGTCCGT
+HDM_5wk_GdCl3_7,Watchmaker RNA globin and ribosome  depletion,CCTGACATCT-CTGGTAGCTA
+HDM_5wk_GdCl3_8,Watchmaker RNA globin and ribosome  depletion,AAGCGCTTAG-GTCACAGACA
+HDM_5wk_GdCl3_9,Watchmaker RNA globin and ribosome  depletion,CTCTATTGAG-GACTTGCGTG
+HDM_5wk_Bud_7,Watchmaker RNA globin and ribosome  depletion,CCGAACAGAG-GCGAGTATCA
+HDM_5wk_Bud_8,Watchmaker RNA globin and ribosome  depletion,CCGTGAGTTC-TCATACCAAG
+HDM_5wk_Bud_9,Watchmaker RNA globin and ribosome  depletion,AGGTAACAAC-AGCATCGTGC
+HDM_5wk_Gd_Bud_7,Watchmaker RNA globin and ribosome  depletion,TGGAGATCGA-CATACCGCTG
+HDM_5wk_Gd_Bud_8,Watchmaker RNA globin and ribosome  depletion,CAAGACTCAA-TATGACGGTG
+HDM_5wk_Gd_Bud_9,Watchmaker RNA globin and ribosome  depletion,CGAGCGTAGT-TGCGTGAGCA
+HDM_5wk_Gd_Bud_10,Watchmaker RNA globin and ribosome  depletion,AACAACACAG-GCCAATGTTC
+WT_7,Watchmaker RNA globin and ribosome  depletion,CACTTACGGC-CTTCTCCAGC
+WT_8,Watchmaker RNA globin and ribosome  depletion,AGAACTAACG-CTCTCGATAA
+WT_9,Watchmaker RNA globin and ribosome  depletion,TCAATTCCGA-CGGATCTACA
+M3_GLORI,Premade,ATTCAGAA-GGCTCTGA
+Prpf8_GLORI,Premade,GAATTCGT-AGGCGAAG
+M3_RNA_seq,Premade,ATTACTCG-TATAGCCT
+Prpf8_RNA_seq,Premade,GAGATTCC-ATAGAGGC
+No_Template_Control,Unknown,CCAGACCGAT-TGCAAGTAGC
+PF1,Watchmaker RNA Ribo/Globin depletion,ATAAGCGGAG-CGTAGAACAG
+PF2,Watchmaker RNA Ribo/Globin depletion,TCCAACTGAA-CCTACGGACA
+PF3,Watchmaker RNA Ribo/Globin depletion,ATTCGGCTTA-CGGACGTTAA
+PIR2_PoolOne_001,Premade,GAACTGAGCG-TCGTGGAGCG
+MFDpir_PoolOne_001,Premade,CTTGCCATTA-ATCACGAAGG
+DMSO_DMSO_1,Premade,GCTAGGTA-CACCATTG
+DMSO_DMSO_2,Premade,TGAGAATC-CACCATTG
+DMSO_DMSO_3,Premade,CTTCCTAT-CACCATTG
+DMSO_DMSO_4,Premade,AGGTGCAG-CACCATTG
+DMSO_DMSO_5,Premade,CTCACGTC-CACCATTG
+DMSO_DMSO_6,Premade,GGAGAGCT-CACCATTG
+DMSO_JQ1_8,Premade,CCATAGAA-CACCATTG
+DMSO_JQ1_9,Premade,TACCGTGC-CACCATTG
+DMSO_JQ1_10,Premade,GCTAGGTA-TTATCAGC
+DMSO_JQ1_11,Premade,TGAGAATC-TTATCAGC
+DMSO_JQ1_12,Premade,CTTCCTAT-TTATCAGC
+DMSO_MZ1_13,Premade,AGGTGCAG-TTATCAGC
+DMSO_MZ1_14,Premade,CTCACGTC-TTATCAGC
+DMSO_MZ1_15,Premade,GGAGAGCT-TTATCAGC
+DMSO_MZ1_16,Premade,CCATAGAA-TTATCAGC
+DMSO_MZ1_17,Premade,TACCGTGC-TTATCAGC
+DMSO_MZ1_18,Premade,GCTAGGTA-CATATGGT
+dTAG_DMSO_20,Premade,TGAGAATC-CATATGGT
+dTAG_DMSO_21,Premade,CTTCCTAT-CATATGGT
+No_Template_Control,Unknown,GAACCGCATT-AGGCATAATG
+dTAG_DMSO_22,Premade,AGGTGCAG-CATATGGT
+dTAG_DMSO_23,Premade,CTCACGTC-CATATGGT
+dTAG_DMSO_24,Premade,GGAGAGCT-CATATGGT
+dTAG_JQ1_25,Premade,CCATAGAA-CATATGGT
+dTAG_JQ1_26,Premade,TACCGTGC-CATATGGT
+dTAG_JQ1_27,Premade,GCTAGGTA-TGCTAGAC
+dTAG_JQ1_28,Premade,TGAGAATC-TGCTAGAC
+dTAG_JQ1_29,Premade,CTTCCTAT-TGCTAGAC
+dTAG_JQ1_30,Premade,AGGTGCAG-TGCTAGAC
+dTAG_MZ1_32,Premade,CTCACGTC-TGCTAGAC
+dTAG_MZ1_33,Premade,GGAGAGCT-TGCTAGAC
+dTAG_MZ1_34,Premade,CCATAGAA-TGCTAGAC
+dTAG_MZ1_35,Premade,TACCGTGC-TGCTAGAC
+dTAG_MZ1_36,Premade,GCTAGGTA-AGAAGTCA
+DMSO_JQ1_7,Premade,TGAGAATC-AGAAGTCA
+dTAG_DMSO_19,Premade,CTTCCTAT-AGAAGTCA
+dTAG_MZ1_31,Premade,AGGTGCAG-AGAAGTCA
+BAR_Primary_DNA,Premade,ACTCTCGA-TGGTACAG
+BAR_Primary_Protein,Premade,AGGCAGAA-AACCGTTC
+1709_Kpn,Premade,ATTCCATAAG-TGCCTGGTGG
+OaAEP2_select_1,Premade,TAAGGCGA-GTAAGGAG
+OaAEP2_select_2,Premade,CGTACTAG-GTAAGGAG
+OaAEP2_select_3,Premade,AGGCAGAA-GTAAGGAG
+OaAEP2_select_4,Premade,TCCTGAGC-GTAAGGAG
+OaAEP2_select_5,Premade,GGACTCCT-GTAAGGAG
+OaAEP2_select_6,Premade,TAGGCATG-GTAAGGAG
+CEP_T1h2_Puro,Premade,TAAGGCGA-ACTGCATA
+OaAEP2_Select_0,Premade,CGTACTAG-ACTGCATA
+Mouse1-DMSO-12h,Premade,TAAGGCGA-TAGATCGC
+Mouse2-DMSO-12h,Premade,CGTACTAG-TAGATCGC
+Mouse3-DMSO-12h,Premade,AGGCAGAA-TAGATCGC
+Mouse1-Romidepsin-12h,Premade,TCCTGAGC-TAGATCGC
+Mouse2-Romidepsin-12h,Premade,TAAGGCGA-CTCTCTAT
+Mouse3-Romidepsin-12h,Premade,CGTACTAG-CTCTCTAT
+Mouse1-Panobinostat-12h,Premade,AGGCAGAA-CTCTCTAT
+Mouse2-Panobinostat-12h,Premade,TCCTGAGC-CTCTCTAT
+Mouse3-Panobinostat-12h,Premade,TAAGGCGA-TATCCTCT
+Mouse1-BRD3308-12h,Premade,CGTACTAG-TATCCTCT
+Mouse2-BRD3308-12h,Premade,AGGCAGAA-TATCCTCT
+Mouse3-BRD3308-12h,Premade,TCCTGAGC-TATCCTCT
+BRCA1i11rHMEC5_D7,Premade,CAACACCT-CACCTGTT
+BRCA1i11rHMEC5_D14,Premade,ACAGCTCA-GTTGACCT
+BRCA1i11rHMEC5_D14o,Premade,GATAGGCT-TGGTAGCT
+BRCA1i11rHMEC5_D21,Premade,ACTCCATC-GAGCAGTA
+BRCA1i11rHMEC5_D21o,Premade,ATCACACG-TGTGACTG
+BRCA1i11rHMEC6_D7,Premade,ATATGCGC-CCTTGATC
+BRCA1i11rHMEC6_D14,Premade,GCTATCCT-TACGCTAC
+BRCA1i11rHMEC6_D14o,Premade,AAGCACTG-CTGATCGT
+BRCA1i11rHMEC6_D21,Premade,ACAGCTCA-CACCTGTT
+BRCA1i11rHMEC6_D21o,Premade,GATAGGCT-GTTGACCT
+BRCA1i11_neg,Premade,ACTCCATC-TGGTAGCT
 BRCA1i11_HDRL,Premade,ATCACACG-GAGCAGTA
-SRF_ChIP_0minCD_1,NEB Ultra II DNA,
-SRF_ChIP_0minCD_2,NEB Ultra II DNA,
-SRF_ChIP_0minCD_3,NEB Ultra II DNA,
-SRF_ChIP_15minCD_1,NEB Ultra II DNA,
-SRF_ChIP_15minCD_2,NEB Ultra II DNA,
-SRF_ChIP_15minCD_3,NEB Ultra II DNA,
-SRF_ChIP_120minCD_1,NEB Ultra II DNA,
-SRF_ChIP_120minCD_2,NEB Ultra II DNA,
-SRF_ChIP_120minCD_3,NEB Ultra II DNA,
-PolII_ChIP_0minCD_1,NEB Ultra II DNA,
-PolII_ChIP_0minCD_2,NEB Ultra II DNA,
-PolII_ChIP_0minCD_3,NEB Ultra II DNA,
-PolII_ChIP_15minCD_1,NEB Ultra II DNA,
-PolII_ChIP_15minCD_2,NEB Ultra II DNA,
-PolII_ChIP_15minCD_3,NEB Ultra II DNA,
-PolII_ChIP_120minCD_1,NEB Ultra II DNA,
-PolII_ChIP_120minCD_2,NEB Ultra II DNA,
-PolII_ChIP_120minCD_3,NEB Ultra II DNA,
-Input_sample_0minCD_1_2_3,NEB Ultra II DNA,
-Input_sample_15minCD_1_2_3,NEB Ultra II DNA,
-Input_sample_120minCD_1_2_3,NEB Ultra II DNA,
-SRF_ChIP_0minFCS_1,NEB Ultra II DNA,
-SRF_ChIP_0minFCS_2,NEB Ultra II DNA,
-SRF_ChIP_0minFCS_3,NEB Ultra II DNA,
-SRF_ChIP_15minFCS_1,NEB Ultra II DNA,
-SRF_ChIP_15minFCS_2,NEB Ultra II DNA,
-SRF_ChIP_15minFCS_3,NEB Ultra II DNA,
-SRF_ChIP_120minFCS_1,NEB Ultra II DNA,
-SRF_ChIP_120minFCS_2,NEB Ultra II DNA,
-SRF_ChIP_120minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_0minFCS_1,NEB Ultra II DNA,
-PolII_ChIP_0minFCS_2,NEB Ultra II DNA,
-PolII_ChIP_0minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_15minFCS_1,NEB Ultra II DNA,
-PolII_ChIP_15minFCS_2,NEB Ultra II DNA,
-PolII_ChIP_15minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_120minFCS_1,NEB Ultra II DNA,
-PolII_ChIP_120minFCS_2,NEB Ultra II DNA,
-PolII_ChIP_120minFCS_3,NEB Ultra II DNA,
-Input_sample_0minFCS_1_2_3,NEB Ultra II DNA,
-Input_sample_15minFCS_1_2_3,NEB Ultra II DNA,
-Input_sample_120minFCS_1_2_3,NEB Ultra II DNA,
-SRF_ChIP_30minCD_1,NEB Ultra II DNA,
-SRF_ChIP_30minCD_2,NEB Ultra II DNA,
-SRF_ChIP_30minCD_3,NEB Ultra II DNA,
-SRF_ChIP_60minCD_1,NEB Ultra II DNA,
-SRF_ChIP_60minCD_2,NEB Ultra II DNA,
-SRF_ChIP_60minCD_3,NEB Ultra II DNA,
-PolII_ChIP_30minCD_1,NEB Ultra II DNA,
-PolII_ChIP_30minCD_3,NEB Ultra II DNA,
-Input_sample_30minCD_SRF_PolII,NEB Ultra II DNA,
-Input_sample_60minCD_SRF_PolII,NEB Ultra II DNA,
-MRTFA_ChIP_30minCD_1,NEB Ultra II DNA,
-MRTFA_ChIP_30minCD_2,NEB Ultra II DNA,
-MRTFA_ChIP_30minCD_3,NEB Ultra II DNA,
-MRTFA_ChIP_60minCD_1,NEB Ultra II DNA,
-MRTFA_ChIP_60minCD_2,NEB Ultra II DNA,
-MRTFA_ChIP_60minCD_3,NEB Ultra II DNA,
-S5P_ChIP_30minCD_1,NEB Ultra II DNA,
-S5P_ChIP_30minCD_2,NEB Ultra II DNA,
-S5P_ChIP_30minCD_3,NEB Ultra II DNA,
-S5P_ChIP_60minCD_1,NEB Ultra II DNA,
-S5P_ChIP_60minCD_2,NEB Ultra II DNA,
-S5P_ChIP_60minCD_3,NEB Ultra II DNA,
-S2P_ChIP_30minCD_1,NEB Ultra II DNA,
-S2P_ChIP_30minCD_2,NEB Ultra II DNA,
-S2P_ChIP_30minCD_3,NEB Ultra II DNA,
-S2P_ChIP_60minCD_1,NEB Ultra II DNA,
-S2P_ChIP_60minCD_2,NEB Ultra II DNA,
-S2P_ChIP_60minCD_3,NEB Ultra II DNA,
-Input_sample_30minCD_MRTFA_S5P_S2P,NEB Ultra II DNA,
-Input_sample_60minCD_MRTFA_S5P_S2P,NEB Ultra II DNA,
-SRF_ChIP_30minFCS_1,NEB Ultra II DNA,
-SRF_ChIP_30minFCS_2,NEB Ultra II DNA,
-SRF_ChIP_60minFCS_1,NEB Ultra II DNA,
-SRF_ChIP_60minFCS_2,NEB Ultra II DNA,
-SRF_ChIP_60minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_30minFCS_1,NEB Ultra II DNA,
-PolII_ChIP_60minFCS_2,NEB Ultra II DNA,
-PolII_ChIP_60minFCS_3,NEB Ultra II DNA,
-Input_sample_30minFCS_SRF_PolII,NEB Ultra II DNA,
-Input_sample_60minFCS_SRF_PolII,NEB Ultra II DNA,
-MRTFA_ChIP_30minFCS_1,NEB Ultra II DNA,
-MRTFA_ChIP_30minFCS_2,NEB Ultra II DNA,
-MRTFA_ChIP_30minFCS_3,NEB Ultra II DNA,
-MRTFA_ChIP_60minFCS_1,NEB Ultra II DNA,
-MRTFA_ChIP_60minFCS_2,NEB Ultra II DNA,
-MRTFA_ChIP_60minFCS_3,NEB Ultra II DNA,
-S5P_ChIP_30minFCS_1,NEB Ultra II DNA,
-S5P_ChIP_30minFCS_2,NEB Ultra II DNA,
-S5P_ChIP_30minFCS_3,NEB Ultra II DNA,
-S5P_ChIP_60minFCS_1,NEB Ultra II DNA,
-S5P_ChIP_60minFCS_2,NEB Ultra II DNA,
-S5P_ChIP_60minFCS_3,NEB Ultra II DNA,
-S2P_ChIP_30minFCS_1,NEB Ultra II DNA,
-S2P_ChIP_30minFCS_2,NEB Ultra II DNA,
-S2P_ChIP_30minFCS_3,NEB Ultra II DNA,
-S2P_ChIP_60minFCS_1,NEB Ultra II DNA,
-S2P_ChIP_60minFCS_2,NEB Ultra II DNA,
-S2P_ChIP_60minFCS_3,NEB Ultra II DNA,
-Input_sample_30minFCS_MRTFA_S5P_S2P,NEB Ultra II DNA,
-Input_sample_60minFCS_MRTFA_S5P_S2P,NEB Ultra II DNA,
-PolII_ChIP_60minCD_1,NEB Ultra II DNA,
-PolII_ChIP_60minCD_2,NEB Ultra II DNA,
-PolII_ChIP_60minCD_3,NEB Ultra II DNA,
-SRF_ChIP_30minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_30minFCS_2,NEB Ultra II DNA,
-PolII_ChIP_30minFCS_3,NEB Ultra II DNA,
-PolII_ChIP_60minFCS_1,NEB Ultra II DNA,
+SRF_ChIP_0minCD_1,NEB Ultra II DNA,AAAGATCG-GTTGCCTT
+SRF_ChIP_0minCD_2,NEB Ultra II DNA,GTGAGCTA-CCAATGAA
+SRF_ChIP_0minCD_3,NEB Ultra II DNA,AACGCGGG-ATCAGTTG
+SRF_ChIP_15minCD_1,NEB Ultra II DNA,CTTGTGCT-ACATACAC
+SRF_ChIP_15minCD_2,NEB Ultra II DNA,GCTTACCC-CTCCATAT
+SRF_ChIP_15minCD_3,NEB Ultra II DNA,AGTAAACA-GCTTAAGT
+SRF_ChIP_120minCD_1,NEB Ultra II DNA,CGATGTAA-ACACGTAT
+SRF_ChIP_120minCD_2,NEB Ultra II DNA,CCTAGTCG-CAAGAAGT
+SRF_ChIP_120minCD_3,NEB Ultra II DNA,AGTAGTAA-TATCAGTA
+PolII_ChIP_0minCD_1,NEB Ultra II DNA,TACTAAGG-CGAGTCAG
+PolII_ChIP_0minCD_2,NEB Ultra II DNA,CATTCGGA-TTTCCATC
+PolII_ChIP_0minCD_3,NEB Ultra II DNA,AATCGTCA-CTTTAACT
+PolII_ChIP_15minCD_1,NEB Ultra II DNA,GCTGATTT-GCCTCTAT
+PolII_ChIP_15minCD_2,NEB Ultra II DNA,CGCGAAAG-CCTCCTTT
+PolII_ChIP_15minCD_3,NEB Ultra II DNA,TTGCCACT-CAGTTCCC
+PolII_ChIP_120minCD_1,NEB Ultra II DNA,TTCGTGGA-TACCTTGT
+PolII_ChIP_120minCD_2,NEB Ultra II DNA,AGTCCCGG-ACTTCTGC
+PolII_ChIP_120minCD_3,NEB Ultra II DNA,TCCTGGAC-TTAAGCAG
+Input_sample_0minCD_1_2_3,NEB Ultra II DNA,CTACATGA-ATCAAATC
+Input_sample_15minCD_1_2_3,NEB Ultra II DNA,CCGGATAG-TTTGAGTC
+Input_sample_120minCD_1_2_3,NEB Ultra II DNA,AACCCGCC-AAATCCTC
+SRF_ChIP_0minFCS_1,NEB Ultra II DNA,CGAACGTG-TACAGATG
+SRF_ChIP_0minFCS_2,NEB Ultra II DNA,CCGTAGAA-TAAGCGCA
+SRF_ChIP_0minFCS_3,NEB Ultra II DNA,CATCTACT-CAACGGAA
+SRF_ChIP_15minFCS_1,NEB Ultra II DNA,AGTCTGCT-AGCCTGGA
+SRF_ChIP_15minFCS_2,NEB Ultra II DNA,GCCGAATC-GAGGACAG
+SRF_ChIP_15minFCS_3,NEB Ultra II DNA,ACTATGAT-CTATCGAA
+SRF_ChIP_120minFCS_1,NEB Ultra II DNA,CCCTATCT-TCACTAAC
+SRF_ChIP_120minFCS_2,NEB Ultra II DNA,CGTTGTCC-TCGATAAG
+SRF_ChIP_120minFCS_3,NEB Ultra II DNA,TGGAACGG-CTTTATTC
+PolII_ChIP_0minFCS_1,NEB Ultra II DNA,CCCTTCGG-CTGCCTTC
+PolII_ChIP_0minFCS_2,NEB Ultra II DNA,TGTCCAAA-ACAACCAA
+PolII_ChIP_0minFCS_3,NEB Ultra II DNA,AGTACAAG-GCAATGGG
+PolII_ChIP_15minFCS_1,NEB Ultra II DNA,TACTGTGA-CTGGACAC
+PolII_ChIP_15minFCS_2,NEB Ultra II DNA,CCGGAATT-AAGTATGC
+PolII_ChIP_15minFCS_3,NEB Ultra II DNA,TCGCTCGG-TCCGATGG
+PolII_ChIP_120minFCS_1,NEB Ultra II DNA,AGTGCGGA-GACAACGG
+PolII_ChIP_120minFCS_2,NEB Ultra II DNA,GCTTCACA-TAGCTTTA
+PolII_ChIP_120minFCS_3,NEB Ultra II DNA,CCGATCGT-AAACAGTC
+Input_sample_0minFCS_1_2_3,NEB Ultra II DNA,CCGTAAGC-ACCTCACT
+Input_sample_15minFCS_1_2_3,NEB Ultra II DNA,AGTTGGAT-GACATTAA
+Input_sample_120minFCS_1_2_3,NEB Ultra II DNA,TAACACGC-ATGTACGT
+SRF_ChIP_30minCD_1,NEB Ultra II DNA,TTGTTGCA-ACGACGTC
+SRF_ChIP_30minCD_2,NEB Ultra II DNA,CCACACTT-GTATGACG
+SRF_ChIP_30minCD_3,NEB Ultra II DNA,CCCGTTTG-TACAGCAA
+SRF_ChIP_60minCD_1,NEB Ultra II DNA,ATGCTCCC-CAGCAGGG
+SRF_ChIP_60minCD_2,NEB Ultra II DNA,GCTCAATA-GATAAATG
+SRF_ChIP_60minCD_3,NEB Ultra II DNA,GTAGTTCG-GCATCAAG
+PolII_ChIP_30minCD_1,NEB Ultra II DNA,CGAGAACC-CGATACAT
+PolII_ChIP_30minCD_3,NEB Ultra II DNA,GCCATGTA-AACCCTAT
+Input_sample_30minCD_SRF_PolII,NEB Ultra II DNA,CCCTCGTA-CTCTTCTA
+Input_sample_60minCD_SRF_PolII,NEB Ultra II DNA,CGATATGG-TACGTCCC
+MRTFA_ChIP_30minCD_1,NEB Ultra II DNA,TTGTGCCC-GATGGAAA
+MRTFA_ChIP_30minCD_2,NEB Ultra II DNA,TGTCCTCT-GTTCGTCG
+MRTFA_ChIP_30minCD_3,NEB Ultra II DNA,GTATAGTC-GAGACCAA
+MRTFA_ChIP_60minCD_1,NEB Ultra II DNA,TTTGGGAT-ACGTGAAC
+MRTFA_ChIP_60minCD_2,NEB Ultra II DNA,CACCAAGC-TTCCCTTT
+MRTFA_ChIP_60minCD_3,NEB Ultra II DNA,CGGAGAGG-GACGCTCG
+S5P_ChIP_30minCD_1,NEB Ultra II DNA,TATTTACC-CTCACGTC
+S5P_ChIP_30minCD_2,NEB Ultra II DNA,TATATGGA-CTGCCAAG
+S5P_ChIP_30minCD_3,NEB Ultra II DNA,GTTAACAT-ACGCCGCA
+S5P_ChIP_60minCD_1,NEB Ultra II DNA,CGTCTTGG-CGCCAGTC
+S5P_ChIP_60minCD_2,NEB Ultra II DNA,CGTAGCGA-CTAAACAA
+S5P_ChIP_60minCD_3,NEB Ultra II DNA,TAGTCACA-TATACCTC
+S2P_ChIP_30minCD_1,NEB Ultra II DNA,AGAAGTGG-CTCTTGAT
+S2P_ChIP_30minCD_2,NEB Ultra II DNA,CGTGGATT-ACTCTTAG
+S2P_ChIP_30minCD_3,NEB Ultra II DNA,GTAGATGC-GAGCAACA
+S2P_ChIP_60minCD_1,NEB Ultra II DNA,TACCGCTC-CAGTGACG
+S2P_ChIP_60minCD_2,NEB Ultra II DNA,CGAACCAC-AAGATTGA
+S2P_ChIP_60minCD_3,NEB Ultra II DNA,TATTGTTC-GTGTGTTT
+Input_sample_30minCD_MRTFA_S5P_S2P,NEB Ultra II DNA,GTTGTGTG-CGTCCGAC
+Input_sample_60minCD_MRTFA_S5P_S2P,NEB Ultra II DNA,AAAGCTAA-TGTCGTAG
+SRF_ChIP_30minFCS_1,NEB Ultra II DNA,TGGAGATT-CAATCATA
+SRF_ChIP_30minFCS_2,NEB Ultra II DNA,AATTAGAC-GTTCTTAT
+SRF_ChIP_60minFCS_1,NEB Ultra II DNA,CGGACGGA-GAAGAGGG
+SRF_ChIP_60minFCS_2,NEB Ultra II DNA,GCAGAGCC-TAGTAATC
+SRF_ChIP_60minFCS_3,NEB Ultra II DNA,GCATGATC-GTGTGGAG
+PolII_ChIP_30minFCS_1,NEB Ultra II DNA,TCGACCTA-ACGTTGTA
+PolII_ChIP_60minFCS_2,NEB Ultra II DNA,CGTATAAA-TTGCACCG
+PolII_ChIP_60minFCS_3,NEB Ultra II DNA,AGAGACGG-GCGGGATA
+Input_sample_30minFCS_SRF_PolII,NEB Ultra II DNA,TACAAGTC-GAAGTGAA
+Input_sample_60minFCS_SRF_PolII,NEB Ultra II DNA,TGAATCTT-CTGTTTAC
+MRTFA_ChIP_30minFCS_1,NEB Ultra II DNA,GCAACTTG-GAGCACTC
+MRTFA_ChIP_30minFCS_2,NEB Ultra II DNA,ACGACGTC-TTGTTGCA
+MRTFA_ChIP_30minFCS_3,NEB Ultra II DNA,GTATGACG-CCACACTT
+MRTFA_ChIP_60minFCS_1,NEB Ultra II DNA,TACAGCAA-CCCGTTTG
+MRTFA_ChIP_60minFCS_2,NEB Ultra II DNA,CAGCAGGG-ATGCTCCC
+MRTFA_ChIP_60minFCS_3,NEB Ultra II DNA,GATAAATG-GCTCAATA
+S5P_ChIP_30minFCS_1,NEB Ultra II DNA,GCATCAAG-GTAGTTCG
+S5P_ChIP_30minFCS_2,NEB Ultra II DNA,CGATACAT-CGAGAACC
+S5P_ChIP_30minFCS_3,NEB Ultra II DNA,AACCCTAT-GCCATGTA
+S5P_ChIP_60minFCS_1,NEB Ultra II DNA,ACGTCGAG-TTTCTCTA
+S5P_ChIP_60minFCS_2,NEB Ultra II DNA,TGACTAGA-CCAGCGAT
+S5P_ChIP_60minFCS_3,NEB Ultra II DNA,TAGACGGG-TGGGAGTG
+S2P_ChIP_30minFCS_1,NEB Ultra II DNA,CTCTTCTA-CCCTCGTA
+S2P_ChIP_30minFCS_2,NEB Ultra II DNA,TACGTCCC-CGATATGG
+S2P_ChIP_30minFCS_3,NEB Ultra II DNA,GATGGAAA-TTGTGCCC
+S2P_ChIP_60minFCS_1,NEB Ultra II DNA,GTTCGTCG-TGTCCTCT
+S2P_ChIP_60minFCS_2,NEB Ultra II DNA,GAGACCAA-GTATAGTC
+S2P_ChIP_60minFCS_3,NEB Ultra II DNA,ACGTGAAC-TTTGGGAT
+Input_sample_30minFCS_MRTFA_S5P_S2P,NEB Ultra II DNA,TTCCCTTT-CACCAAGC
+Input_sample_60minFCS_MRTFA_S5P_S2P,NEB Ultra II DNA,GACGCTCG-CGGAGAGG
+PolII_ChIP_60minCD_1,NEB Ultra II DNA,TATACCTC-TAGTCACA
+PolII_ChIP_60minCD_2,NEB Ultra II DNA,CTCTTGAT-AGAAGTGG
+PolII_ChIP_60minCD_3,NEB Ultra II DNA,ACTCTTAG-CGTGGATT
+SRF_ChIP_30minFCS_3,NEB Ultra II DNA,GAGCAACA-GTAGATGC
+PolII_ChIP_30minFCS_2,NEB Ultra II DNA,CAGTGACG-TACCGCTC
+PolII_ChIP_30minFCS_3,NEB Ultra II DNA,AAGATTGA-CGAACCAC
+PolII_ChIP_60minFCS_1,NEB Ultra II DNA,GTGTGTTT-TATTGTTC

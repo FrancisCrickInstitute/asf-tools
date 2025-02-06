@@ -433,7 +433,6 @@ class ClarityHelperLims(ClarityLims):
             sample_name = info.id
             artifact_uri = self.get_artifacts(search_id=info.artifact.id)
             if artifact_uri.reagent_labels:
-                print(sample_id)
                 reagent = artifact_uri.reagent_labels[0]
                 reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent)
                 sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
@@ -467,21 +466,17 @@ class ClarityHelperLims(ClarityLims):
         """
 
         # Extract barcodes
-        sample_barcode = {}
         info = self.get_samples(search_id=sample_id)
-        sample_name = info.id
         artifact_uri = self.get_artifacts(search_id=info.artifact.id)
+        reagent_barcode = ""
         if artifact_uri.reagent_labels:
-            print(sample_id)
             reagent = artifact_uri.reagent_labels[0]
-            reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent)
-            sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+            reagent_barcode = self.get_barcode_from_reagenttypes(reagent)
         else:
-            reagent_barcode_from_sample = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
-            reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode_from_sample)
-            sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+        reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
 
-        return sample_barcode
+        return reagent_barcode_from_reagenttypes
 
 
     def reformat_barcode_to_index(self, barcode_dict: dict) -> dict:
@@ -583,14 +578,21 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
+        for sample in barcode_info.keys():
+            if sample not in sample_metadata.keys():
+                print(sample)
+        # print(len(sample_metadata))
+        # print(len(barcode_info))
+        # print(barcode_info)
         lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
-        # print(sample_metadata)
         for sample in sample_metadata:
-            if sample_metadata[sample]["library_type"] == "Premade":
-                barcode_info[sample] = self.get_sample_custom_barcode_from_sampleid(sample)
+            if sample not in barcode_info:
+            # if sample_metadata[sample]["library_type"] == "Premade":
+                barcode_from_sample_id = self.get_sample_custom_barcode_from_sampleid(sample)
+                barcode_info[sample] = {'barcode': barcode_from_sample_id}
 
         # Initialize an empty dictionary for the final merged output
         merged_dict = {}
