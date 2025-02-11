@@ -162,6 +162,7 @@ class ClarityHelperLims(ClarityLims):
         Returns:
             dict: A dictionary containing detailed information about the sample, including:
                 - sample_name (str): The name of the sample.
+                - sample_id (str): The unique identifier for the sample.
                 - group (str): The lab group associated with the sample.
                 - user (str): The user associated with the sample.
                 - project_id (str): The project ID associated with the sample.
@@ -353,13 +354,36 @@ class ClarityHelperLims(ClarityLims):
             ValueError: If the provided run_id is None or invalid.
             ValueError: If the initial process is None.
         """
-        artifacts_list = self.get_artifacts_from_runid(run_id)
+        pools_list = self.get_artifacts_from_runid(run_id)
 
         # Extract parent_process information from each artifact
-        artifacts_list = self.expand_stubs(artifacts_list, expansion_type=Artifact)
+        pools_list_expanded = self.expand_stubs(pools_list, expansion_type=Artifact)
+
+        # Extract sample names and the corresponding Library Type value associated with the pool artifacts
+        pool_sample_dict = {}
+        for process in pools_list_expanded:
+            for sample in process.samples:
+                sample = self.expand_stub(sample, expansion_type=Sample)
+                library_type = next((item.value for item in sample.udf_fields if item.name == "Library Type"), None)
+                pool_sample_dict[sample.id] = {"library_type": library_type}
+
         initial_parent_process_list = []
-        initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list if artifact.parent_process is not None)
+        initial_parent_process_list.extend(artifact.parent_process for artifact in pools_list_expanded if artifact.parent_process is not None)
         initial_process = self.expand_stubs(initial_parent_process_list, expansion_type=Process)
+
+        ############# this returns 428 samples
+        # pool_sample_dict = {}
+        # other_list = []
+        # for process in pools_list_expanded:
+        #     for sample in process.samples:
+        #         try:
+        #             sample = self.expand_stub(sample, expansion_type=Sample)
+        #             library_type = next((item.value for item in sample.udf_fields if item.name == "Library Type"), None)
+        #             pool_sample_dict[sample.id] = library_type
+        #             uri = sample.uri
+        #             other_dict[sample.id] = uri
+        #         except:
+        #             other_list.append(sample.id)
 
         if initial_process is None:
             raise ValueError("Initial process is None")
@@ -372,6 +396,7 @@ class ClarityHelperLims(ClarityLims):
 
         sample_barcode_match = {}
         # Loop through parent process until the "T Custom Indexing"
+        # filter for samples that do not have premade libraries
         while process_queue.qsize() > 0:
             process = process_queue.get()
             if process.id in visited_processes:
@@ -383,6 +408,13 @@ class ClarityHelperLims(ClarityLims):
                 # Add parent processes to the stack for further processing
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
+                        input_stub_expand = self.expand_stub(input_output.input, expansion_type=Artifact)
+                        # print(input_stub_expand)
+                        sample_stud = input_stub_expand.samples
+                        sample_list = []
+                        for sample in sample_stud:
+                            sample_list.append(sample.id)
+                        print(sample_list)
                         parent_process = input_output.input.parent_process
                         if parent_process:
                             parent_process = self.expand_stub(parent_process, expansion_type=Process)
@@ -394,7 +426,7 @@ class ClarityHelperLims(ClarityLims):
                         output_expanded = self.expand_stub(input_output.output, expansion_type=Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
-                        sample_name = sample_info.id
+                        sample_name = sample_info.limsid
                         reagent_barcode = output_expanded.reagent_labels[0]
                         reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
                         sample_barcode_match[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
@@ -430,7 +462,7 @@ class ClarityHelperLims(ClarityLims):
         sample_barcode = {}
         for sample_id in sample_list:
             info = self.get_samples(search_id=sample_id.id)
-            sample_name = info.id
+            sample_name = info.limsid
             artifact_uri = self.get_artifacts(search_id=info.artifact.id)
             if artifact_uri.reagent_labels:
                 reagent = artifact_uri.reagent_labels[0]
@@ -577,19 +609,13 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
-        for sample in barcode_info:
-            if sample not in sample_metadata:
-                print(sample)
-        print(len(sample_metadata))
-        print(len(barcode_info))
-        # print(barcode_info)
         lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
+
         for sample in sample_metadata:
             if sample not in barcode_info:
-            # if sample_metadata[sample]["library_type"] == "Premade":
                 barcode_from_sample_id = self.get_sample_custom_barcode_from_sampleid(sample)
                 barcode_info[sample] = {'barcode': barcode_from_sample_id}
 

@@ -286,32 +286,6 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
 
-    # def test_clarity_helper_collect_samplesheet_info_isvalid1(self):
-    #     """
-    #     Pass real run_id and test expected values in the dictionary output
-    #     """
-
-    # # merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
-    # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
-    # updated_dict = self.api.reformat_barcode_to_index(merged_dict)
-    # # Test
-    # csv_file = "bcl_samplesheet_22NWYFLT3.csv"
-
-    # # Open a file for writing
-    # with open(csv_file, mode="w", newline="") as file:
-    #     writer = csv.writer(file)
-
-    #     # Write the header
-    #     writer.writerow(["Sample_ID", "index", "index2"])
-
-    #     # Write the rows
-    #     for sample_id, indexes in updated_dict.items():
-    #         writer.writerow([sample_id, indexes["index"], indexes["index2"]])
-    # Assert
-
-    # results = self.api.get_artifacts_from_runid("20240417_1729_1C_PAW45723_05bb74c5")
-    # raise ValueError
-
 
 class TestClarityHelperLimsyWithFixtures:
     """Class for clarity tests with fixtures"""
@@ -665,10 +639,11 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         barcode_dict = api.get_sample_barcode_from_runid(run_id)
-        print(barcode_dict)
+        # print(barcode_dict)
 
         # Assert
         assert barcode_dict == expected_dict
+        raise ValueError
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",

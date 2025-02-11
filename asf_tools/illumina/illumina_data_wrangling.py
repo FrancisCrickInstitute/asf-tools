@@ -144,14 +144,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
         else:
             other_samples.update({sample: samples_bcldata_dict[sample]})
 
-    # # COMMENT - these loops dont make sense
-    # print("---------------------------------")
-    print("DLP -- " + str(len(dlp_samples)))
-    print("SC -- " + str(len(single_cell_samples)))
-    print("ATAC -- " + str(len(atac_samples)))
-    print("OTHER -- " + str(len(other_samples)))
-    # print("---------------------------------")
-
     # split samples into multiple entries based on lane values
     split_samples_general_dict = {}
     for sample, details in samples_bcldata_dict.items():
@@ -161,7 +153,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
             unique_key = f"{sample}_Lane_{lane}"
             # Copy the sample details and replace the Lane value with the current lane
             split_samples_general_dict[unique_key] = {**details, "Lane": lane}
-    # print(split_samples_general_dict)
     # Set up variables required for the samplesheet generation
     samplesheet_name = f"{flowcell_id}_samplesheet"
     # Generate samplesheet with the updated settings
@@ -225,8 +216,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
         if len(split_samples_by_indexlength) > 0:
             for index_length_sample_list in split_samples_by_indexlength:
-                # if "index_length" == 0:
-                #     print("index_length is 0")
                 samplesheet_name_bulk = (
                     flowcell_id
                     + "_samplesheet_"
@@ -270,51 +259,3 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     # # # Generate samplesheet with the updated settings
     # # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
     # # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
-
-def check_sample_to_dataanalysis_and_index(cl, runinfo_path, file_path):
-    # Initialise classes
-    iu = IlluminaUtils()
-
-    # Obtain sample information and format it as required by `BCLConvert_Data`
-    flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_path)
-    samples_all_info = cl.collect_samplesheet_info(flowcell_id)
-    # print(samples_all_info)
-
-    # Convert barcode value from "BC (ATGC)" to "ATGC". Return original barcode string if the barcode isn't in the "BC (ATGC)" format
-    sample_and_index_dict = iu.reformat_barcode(samples_all_info)
-
-    for sample in samples_all_info:
-        # print(sample)
-        analysis_type = samples_all_info[sample].get("data_analysis_type")
-        # print(analysis_type)
-        # Check if `data_analysis_type` is None or empty and update it
-        if analysis_type is None or analysis_type == "None" or analysis_type == "Other":
-            # print(samples_all_info[sample]["barcode"])
-            # Attempt to update `data_analysis_type` from the project or other sources
-            sample_data = cl.get_samples(search_id=sample)
-            # Extract "Library Type" as a fallback for `data_analysis_type`
-            library_type = next(
-                    (item.value for item in sample_data.udf_fields if item.name == "Library Type"), 
-                    None
-                )
-            # print(library_type)
-            samples_all_info[sample]["data_analysis_type"] = library_type or "Unknown"
-            # if library_type == "Premade":
-            #     print(sample + " " + library_type + " " + samples_all_info[sample]["barcode"])
-
-
-    # print((samples_all_info))
-    #     # print(data_analysis_type)
-    with open(file_path, mode='w', newline='') as csv_file:
-            csv_file.write('sample_name,data_analysis_type,barcode\n')
-
-            # Write each entry as a row
-            # for sample_id, entry in samples_all_info.items():
-            #     csv_file.write(f"{entry['sample_name']},{entry['data_analysis_type']},{entry['barcode']}\n")
-            for sample_id, entry in samples_all_info.items():
-                sample_name = entry.get("sample_name", "")
-                data_analysis_type = entry.get("data_analysis_type", "")
-                barcode = entry.get("barcode", "")
-                csv_file.write(f"{sample_name},{data_analysis_type},{barcode}\n")
-
-# sample_name, data_analysis_type, barcode

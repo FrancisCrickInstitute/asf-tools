@@ -6,7 +6,7 @@ from unittest import mock
 
 import pytest
 
-from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets, check_sample_to_dataanalysis_and_index
+from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
@@ -34,47 +34,6 @@ class TestIlluminaDemux(unittest.TestCase):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
 
-    def test_check_sample_to_dataanalysis_and_index(self):
-        # set up
-        # info = ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3)
-        # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-        # output_path = "test_info_22NWWMLT3_1.csv"
-
-        file = "./tests/data/illumina/22NWYFLT3/RunInfo.xml"
-        output_path = "test_info_22NWYFLT3_1.csv"
-
-        # Test
-        check_sample_to_dataanalysis_and_index(self.api, file, output_path)
-
-        raise ValueError
-
-
-    # def test_generate_illumina_demux_samplesheets_general(self):
-    #     """
-    #     Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
-    #     """
-
-    #     # Set up
-    #     file = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
-    #     # create output files paths
-    #     tmp_samplesheet_file_path = os.path.join("22NWWGLT3_samplesheet_8_8.csv")
-    #     tmp_bclconfig_file_path = os.path.join("bcl_config_22NWWGLT3.json")
-
-    #     # Test
-    #     generate_illumina_demux_samplesheets(self.api, file, ".")
-
-    #     # Assert
-    #     self.assertTrue(os.path.exists(tmp_samplesheet_file_path))
-    #     self.assertTrue(os.path.exists(tmp_bclconfig_file_path))
-
-    #     # Check the content of the files
-    #     with open(tmp_samplesheet_file_path, "r") as file:
-    #         data = "".join(file.readlines())
-    #         self.assertTrue("[BCLConvert_Data]" in data)
-    #     with open(tmp_bclconfig_file_path, "r") as file:
-    #         config_json = json.load(file)
-    #         self.assertTrue("Header" in config_json)
-
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
         """
@@ -101,25 +60,6 @@ class TestIlluminaDemux(unittest.TestCase):
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             self.assertTrue("Header" in config_json)
-
-    #############
-    # flowcell_id = 22NWWGLT3
-    # samples_all_info = {'WAR6617A1': {'sample_name': 'B_LTX_160_BS_GL_BCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': '015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A2': {'sample_name': 'B_LTX_160_SU_T1-R3_BCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': '016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A5': {'sample_name': 'B_LTX_160_BS_GL_WCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': 'WM Custom 15 (ACTTGACT-AACGAACT)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}, 'WAR6617A6': {'sample_name': 'B_LTX_160_SU_T1-R3_WCPP', 'group': 'swantonc', 'user': 'sophie.ward', 'project_id': 'DN23378', 'project_limsid': 'WAR6617', 'project_type': 'WGS', 'reference_genome': 'Homo sapiens', 'data_analysis_type': 'None', 'barcode': 'WM Custom 16 (TCTTCTCG-TATCTCAT)', 'lanes': ['1', '2', '3', '4', '5', '6', '7', '8']}}
-    # sample_and_index_dict = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
-    # config_json = {'Header': {'FileFormatVersion': 2, 'InstrumentPlatform': 'NovaSeqX', 'RunName': '22NWWGLT3'}, 'BCLConvert_Settings': {'SoftwareVersion': '4.2.7', 'FastqCompressionFormat': 'gzip'}}
-    # reads_dict = {'run_id': '20241105_LH00442_0065_B22NWWGLT3', 'end_type': 'PE', 'reads': [{'read': 'Read 1', 'num_cycles': '151 Seq'}, {'read': 'Read 2', 'num_cycles': '8 Seq'}, {'read': 'Read 3', 'num_cycles': '8 Seq'}, {'read': 'Read 4', 'num_cycles': '151 Seq'}]}
-    # project_type = WGS
-    # filtered_samples = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
-    # other_samples = {'WAR6617A1': {'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
-    # split_samples_by_indexlength = [{'index_length': (8, 8), 'samples': ['WAR6617A1', 'WAR6617A2', 'WAR6617A5', 'WAR6617A6']}]
-    # filtered_samples -> run after the indexing commands
-    # filtered_samples = {'WAR6617A1': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A1', 'index': 'CGAATTGC', 'index2': 'GTAAGGTG'}, 'WAR6617A2': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A2', 'index': 'GGAAGAGA', 'index2': 'CGAGAGAA'}, 'WAR6617A5': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A5', 'index': 'ACTTGACT', 'index2': 'AACGAACT'}, 'WAR6617A6': {'Lane': ['1', '2', '3', '4', '5', '6', '7', '8'], 'Sample_ID': 'WAR6617A6', 'index': 'TCTTCTCG', 'index2': 'TATCTCAT'}}
-    # for each sample:
-    # index_string = CGAATTGC
-    # index2_string = GTAAGGTG
-    # override_string = Y151;I8N0;I8N0;Y151
-    # samplesheet_name = 22NWWGLT3_samplesheet_8_8
-    # [151, 8, 8, 151]
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_singlecell(self, tmp_path):
@@ -278,8 +218,8 @@ class TestIlluminaDemuxWithFixtures:
     @pytest.mark.parametrize(
         "flowcell_id,runinfo_file,samplesheet_count",
         [
-            ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 1),
-            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 3),
+            ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 2),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 4),
             ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2),  # 1 general samplesheet, 1 project specific samplesheet
         ],
     )
@@ -303,7 +243,6 @@ class TestIlluminaDemuxWithFixtures:
             config_json = json.load(file)
             assert "Header" in config_json
 
-        # print(os.listdir(self.tmp_path))
         # Verify the number of SampleSheet files
         samplesheet_files = [f for f in os.listdir(self.tmp_path) if "samplesheet" in f.lower() and os.path.isfile(os.path.join(self.tmp_path, f))]
         print(samplesheet_files)
@@ -314,11 +253,23 @@ class TestIlluminaDemuxWithFixtures:
         # Check the content of the files
         with open(general_samplesheet_name, "r") as file:
             data = "".join(file.readlines())
-            # print(data)
             assert "[BCLConvert_Data]" in data
             assert "Lane,Sample_ID" in data
             assert "Lane,Sample_ID,index,index2" in data
 
+        for samplesheet in samplesheet_files:
+            samplesheet_name = os.path.join(self.tmp_path, samplesheet)
+            with open(samplesheet_name, "r") as file:
+                data = "".join(file.readlines())
+                assert "[BCLConvert_Data]" in data
+                assert "Lane,Sample_ID" in data
+                assert "Lane,Sample_ID,index,index2" in data
+
         # ['22NWYFLT3_samplesheet.csv']
         # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
+        # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
+
+
+        # ['22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet.csv']
+        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
         # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
