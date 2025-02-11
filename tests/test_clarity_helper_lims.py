@@ -478,7 +478,6 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
-        # raise ValueError
 
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
@@ -643,7 +642,6 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert barcode_dict == expected_dict
-        raise ValueError
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
