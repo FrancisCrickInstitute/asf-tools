@@ -226,7 +226,7 @@ class ClarityHelperLims(ClarityLims):
             "project_type": project_type,
             "reference_genome": reference_genome,
             "data_analysis_type": data_analysis_type,
-            "library_type": library_type
+            "library_type": library_type,
         }
 
         return sample_info
@@ -414,7 +414,6 @@ class ClarityHelperLims(ClarityLims):
         #             other_list.append(sample.id)
 
         non_pooled_sample_list = []
-        premade_sample_list = []
         sample_barcode_match = {}
 
         # Collect a list of all the initial parent processes required for initiating the binary search tree
@@ -466,7 +465,7 @@ class ClarityHelperLims(ClarityLims):
                                     sample_barcode_match[sample] = {"barcode": barcode_from_sampleid}
                             else:
                                 non_pooled_sample_list.append(sample)
-                                continue
+                                continue  # Skip to the next sample
             else:
                 # Extract barcode information and store it in "sample_barcode_match"
                 for input_output in process.input_output_map:
@@ -573,7 +572,7 @@ class ClarityHelperLims(ClarityLims):
 
                 # Check if a match was found (ie. Split the section at the dash "-")
                 if match:
-                    index, separator, index2 = match.groups()
+                    index, separator, index2 = match.groups()  # pylint: disable=unused-variable
                 else:
                     # If no match, assign the whole section to index and keep index2 empty
                     index, index2 = barcode_section, ""
@@ -627,10 +626,11 @@ class ClarityHelperLims(ClarityLims):
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
 
+        # Check that all samples have barcode information, add it if missing
         for sample in sample_metadata:
             if sample not in barcode_info:
                 barcode_from_sample_id = self.get_sample_custom_barcode_from_sampleid(sample)
-                barcode_info[sample] = {'barcode': barcode_from_sample_id}
+                barcode_info[sample] = {"barcode": barcode_from_sample_id}
 
         # Initialize an empty dictionary for the final merged output
         merged_dict = {}
@@ -648,7 +648,7 @@ class ClarityHelperLims(ClarityLims):
             merged_dict[sample_id]["lanes"] = []
 
         # Loop through lanes in lane_info to add lane numbers
-        for lane_id, lane_data in lane_info.items():
+        for lane_id, lane_data in lane_info.items():  # pylint: disable=unused-variable
             lane_number = lane_data["lane"]
 
             # Add each sample's lane number to the "lanes" list

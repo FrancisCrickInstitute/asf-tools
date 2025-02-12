@@ -4,8 +4,8 @@ import os
 import warnings
 from collections import defaultdict
 
-from asf_tools.illumina.illumina_utils import IlluminaUtils
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
+from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 
 log = logging.getLogger(__name__)

@@ -16,8 +16,6 @@ from .test_io_utils import with_temporary_folder
 API_TEST_DATA = "tests/data/api/clarity"
 
 
-
-
 class TestIlluminaDemux(unittest.TestCase):
     """Class for testing the generate_illumina_samplesheet tools"""
 
@@ -280,7 +278,6 @@ class TestIlluminaDemuxWithFixtures:
         # ['22NWYFLT3_samplesheet.csv']
         # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
         # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
-
 
         # ['22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet.csv']
         # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
