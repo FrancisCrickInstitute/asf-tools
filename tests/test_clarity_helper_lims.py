@@ -2,10 +2,10 @@
 Clarity helper API Tests
 """
 
-import csv
 import os
 import unittest
 import warnings
+from unittest.mock import MagicMock, patch
 
 import pytest
 from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
@@ -99,9 +99,134 @@ class TestClarityHelperLims(unittest.TestCase):
         Pass None to method
         """
 
+        # Test
+        results = self.api.get_sample_info(None)
+
+        # Assert
+        assert results is None
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(None)
+
+        # Assert
+        assert results is None
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_isinvalid(self):
+        """
+        Pass a valid input to method
+        """
+        # Setup
+        barcode = "fake_barcode"
+
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_sample_info(None)
+        with warnings.catch_warnings(record=True) as warn:
+            warnings.simplefilter("always")  # Catch all warnings
+
+            results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
+
+            # Assert
+            # check the barcode returned and if a warning was raised
+            self.assertEqual(results, barcode)
+            self.assertEqual(len(warn), 1)
+            self.assertIs(warn[-1].category, UserWarning)
+
+    @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
+    @patch.object(ClarityHelperLimsMock, "get_with_uri")
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_1(self, mock_get_with_uri, mock_xmltodict_parse):
+        """
+        Mock api connection to return the first warning
+        """
+        # Setup
+        barcode = "fake_barcode"
+
+        mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
+        mock_xmltodict_parse.return_value = {}
+
+        # Test
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            results = self.api.get_barcode_from_reagenttypes(barcode)
+
+            # Assert
+            # check the barcode returned and if the correct warning was raised
+            self.assertEqual(results, barcode)
+            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
+            self.assertTrue(any("Missing 'rtp:reagent-types'" in str(warning.message) for warning in w))
+
+    @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
+    @patch.object(ClarityHelperLimsMock, "get_with_uri")
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_2(self, mock_get_with_uri, mock_xmltodict_parse):
+        """
+        Mock api connection to return the second warning
+        """
+        # Setup
+        barcode = "fake_barcode"
+
+        mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
+        mock_xmltodict_parse.return_value = {"rtp:reagent-types": {"reagent-type": {}}}
+
+        # Test
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            results = self.api.get_barcode_from_reagenttypes(barcode)
+
+            # Assert
+            # check the barcode returned and if the correct warning was raised
+            self.assertEqual(results, barcode)
+            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
+            self.assertTrue(any("Missing 'reagent-type' or 'uri'" in str(warning.message) for warning in w))
+
+    @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
+    @patch.object(ClarityHelperLimsMock, "get_with_uri")
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_3(self, mock_get_with_uri, mock_xmltodict_parse):
+        """
+        Mock api connection to return the third warning
+        """
+        # Setup
+        barcode = "fake_barcode"
+
+        mock_get_with_uri.side_effect = [
+            "<xml>mock_reagent_types</xml>",  # first API call
+            "<xml>mock_reagent_type_details</xml>",  # second API call
+        ]
+
+        mock_xmltodict_parse.side_effect = [
+            {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},  # first parsed XML
+            {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}},  # second parsed XML
+        ]
+
+        # Test
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+
+            results = self.api.get_barcode_from_reagenttypes(barcode)
+
+            # Assert
+            # check the barcode returned and if the correct warning was raised
+            self.assertEqual(results, barcode)
+            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
+            self.assertTrue(any("Attribute 'name' is not 'Sequence'" in str(warning.message) for warning in w))
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
+        """
+        Pass a valid input to method
+        """
+        # Setup
+        barcode = "N701-N501 (TAAGGCGA-TAGATCGC)"
+        results_barcode = "TAAGGCGA-TAGATCGC"
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert results == results_barcode
 
     def test_clarity_helper_get_sample_barcode_from_runid_isnone(self):
         """
@@ -160,32 +285,6 @@ class TestClarityHelperLims(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(ValueError):
             self.api.collect_samplesheet_info(None)
-
-    # def test_clarity_helper_collect_samplesheet_info_isvalid1(self):
-    #     """
-    #     Pass real run_id and test expected values in the dictionary output
-    #     """
-
-    # # merged_dict = self.api.collect_samplesheet_info("22NWWMLT3")
-    # merged_dict = self.api.collect_samplesheet_info("22NWYFLT3")
-    # updated_dict = self.api.reformat_barcode_to_index(merged_dict)
-    # # Test
-    # csv_file = "bcl_samplesheet_22NWYFLT3.csv"
-
-    # # Open a file for writing
-    # with open(csv_file, mode="w", newline="") as file:
-    #     writer = csv.writer(file)
-
-    #     # Write the header
-    #     writer.writerow(["Sample_ID", "index", "index2"])
-
-    #     # Write the rows
-    #     for sample_id, indexes in updated_dict.items():
-    #         writer.writerow([sample_id, indexes["index"], indexes["index2"]])
-    # Assert
-
-    # results = self.api.get_artifacts_from_runid("20240417_1729_1C_PAW45723_05bb74c5")
-    # raise ValueError
 
 
 class TestClarityHelperLimsyWithFixtures:
@@ -379,7 +478,6 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
-        # raise ValueError
 
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
@@ -396,6 +494,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "WGS",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
+                        "library_type": "ONT DNA Ligation",
                     }
                 },
             ),  # ONT
@@ -411,6 +510,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "mRNA-Seq from RNA",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "RNA-Seq",
+                        "library_type": "NEBNext_Low_Input_w_NEB_Ultra_II_FS",
                     }
                 },
             ),
@@ -426,6 +526,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
+                        "library_type": "Premade",
                     }
                 },
             ),
@@ -461,6 +562,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": None,
                         "reference_genome": None,
                         "data_analysis_type": None,
+                        "library_type": None,
                     }
                 },
             ),
@@ -508,23 +610,23 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "20240417_1729_1C_PAW45723_05bb74c5",
                 {
-                    "VIV6902A1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
-                    "VIV6902A2": {"barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"},
-                    "VIV6902A3": {"barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"},
-                    "VIV6902A4": {"barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)"},
+                    "VIV6902A1": {"barcode": "AAGAAAGTTGTCGGTGTCTTTGTG"},
+                    "VIV6902A2": {"barcode": "TCGATTCCGTTTGTAGTCGTCTGT"},
+                    "VIV6902A3": {"barcode": "GAGTCTTGTGTCCCAGTTACCAGG"},
+                    "VIV6902A4": {"barcode": "TTCGGATTCTATCGTGTTTCCCTA"},
                 },
             ),  # ONT
             ("20240625_1734_2F_PAW20497_d0c3cbb5", {}),
             (
                 "20240807_1248_P2S-02348-A_PAW31464_90cccf6c",
                 {
-                    "SWA6667A7": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
-                    "SWA6667A8": {"barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"},
-                    "SWA6667A37": {"barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"},
-                    "SWA6667A38": {"barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)"},
-                    "SWA6667A39": {"barcode": "BC05 (CTTGTCCAGGGTTTGTGTAACCTT)"},
-                    "SWA6667A41": {"barcode": "BC06 (TTCTCGCAAAGGCAGAAAGTAGTC)"},
-                    "201C-2072202": {"barcode": "BC07 (GTGTTACCGTGGGAATGAATCCTT)"},
+                    "SWA6667A7": {"barcode": "AAGAAAGTTGTCGGTGTCTTTGTG"},
+                    "SWA6667A8": {"barcode": "TCGATTCCGTTTGTAGTCGTCTGT"},
+                    "SWA6667A37": {"barcode": "GAGTCTTGTGTCCCAGTTACCAGG"},
+                    "SWA6667A38": {"barcode": "TTCGGATTCTATCGTGTTTCCCTA"},
+                    "SWA6667A39": {"barcode": "CTTGTCCAGGGTTTGTGTAACCTT"},
+                    "SWA6667A41": {"barcode": "TTCTCGCAAAGGCAGAAAGTAGTC"},
+                    "201C-2072202": {"barcode": "GTGTTACCGTGGGAATGAATCCTT"},
                 },
             ),
         ],
@@ -536,6 +638,7 @@ class TestClarityHelperLimsyWithFixtures:
 
         # Test
         barcode_dict = api.get_sample_barcode_from_runid(run_id)
+        # print(barcode_dict)
 
         # Assert
         assert barcode_dict == expected_dict
@@ -546,56 +649,56 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "22G2JFLT4",
                 {
-                    "SOA6876A276": {"barcode": "32307 AGL IP7_85 and IP5_435 (AGACCAAT-AACTCCGG)"},
-                    "SOA6876A277": {"barcode": "28501 AGL IP7_75 and IP5_469 (ACCAAGAT-ATTGGTCT)"},
-                    "SOA6876A278": {"barcode": "10824 AGL IP7_29 and IP5_456 (ACTCTTGG-AGCTCCAA)"},
-                    "SOA6876A279": {"barcode": "70456 AGL IP7_184 and IP5_568 (CGTTCGCT-AGCGAACG)"},
-                    "SOA6876A280": {"barcode": "55832 AGL IP7_146 and IP5_536 (CGTAGATC-CAATTGCA)"},
-                    "SOA6876A281": {"barcode": "61953 AGL IP7_162 and IP5_513 (TGGTCCTG-TAACGAAG)"},
-                    "SOA6876A282": {"barcode": "48877 AGL IP7_128 and IP5_493 (AGCAAGGC-GCCGTCCG)"},
-                    "SOA6876A283": {"barcode": "60014 AGL IP7_157 and IP5_494 (TGGTTGAC-TCTGACTG)"},
-                    "SOA6876A284": {"barcode": "20386 AGL IP7_54 and IP5_418 (TGCTCTTC-AGGTCGGA)"},
-                    "SOA6876A285": {"barcode": "15828 AGL IP7_42 and IP5_468 (ATAATGGT-AGGTAGTT)"},
-                    "SOA6876A286": {"barcode": "24256 AGL IP7_64 and IP5_448 (TCAGTTAA-TTAACTGA)"},
-                    "SOA6876A287": {"barcode": "22351 AGL IP7_59 and IP5_463 (CCGGCGAC-TTCTAATG)"},
-                    "SOA6876A288": {"barcode": "8463 AGL IP7_23 and IP5_399 (GGCTTGAA-TTGACTAT)"},
-                    "SOA6876A289": {"barcode": "3483 AGL IP7_10 and IP5_411 (GGCCTCCT-AATCGCAT)"},
-                    "SOA6876A290": {"barcode": "25369 AGL IP7_67 and IP5_409 (CTATTCAT-AAGAGCGC)"},
-                    "SOA6876A291": {"barcode": "32656 AGL IP7_86 and IP5_400 (TCTACTAC-GTTAGCCG)"},
-                    "SOA6876A292": {"barcode": "25038 AGL IP7_66 and IP5_462 (ACCTTATT-AGGCGTCG)"},
-                    "SOA6876A293": {"barcode": "4290 AGL IP7_12 and IP5_450 (ACTGCAAG-AATAAGGT)"},
-                    "SOA6876A294": {"barcode": "6234 AGL IP7_17 and IP5_474 (TCGTTCGA-CCGCTAAC)"},
-                    "SOA6876A295": {"barcode": "38188 AGL IP7_100 and IP5_556 (CGCAAGCT-GAGCCTCC)"},
-                    "SOA6876A296": {"barcode": "62326 AGL IP7_163 and IP5_502 (GTTCAATA-GGAGCCAA)"},
-                    "SOA6876A297": {"barcode": "72319 AGL IP7_189 and IP5_511 (CCTTCAGG-CGCCAGTT)"},
-                    "SOA6876A298": {"barcode": "49340 AGL IP7_129 and IP5_572 (CTTCGTTA-CTTGAGTT)"},
-                    "SOA6876A299": {"barcode": "44672 AGL IP7_117 and IP5_512 (CTGGATAA-GCCTTGCT)"},
-                    "SOA6876A300": {"barcode": "66624 AGL IP7_174 and IP5_576 (GATCTTCC-TTGCGGAC)"},
-                    "SOA6876A301": {"barcode": "57393 AGL IP7_150 and IP5_561 (AGGCAAGG-ATTAATCC)"},
-                    "SOA6876A302": {"barcode": "50791 AGL IP7_133 and IP5_487 (CGGAATCA-TGCTTCGC)"},
-                    "SOA6876A303": {"barcode": "47410 AGL IP7_124 and IP5_562 (TGACGAAC-AATGCAAT)"},
-                    "SOA6876A304": {"barcode": "6999 AGL IP7_19 and IP5_471 (TCCTCCGC-CTAGGACC)"},
-                    "SOA6876A305": {"barcode": "13844 AGL IP7_37 and IP5_404 (ACTCCGCG-GTCGCGAA)"},
-                    "SOA6876A306": {"barcode": "7688 AGL IP7_21 and IP5_392 (CTCTGATG-CAATGGAT)"},
-                    "SOA6876A307": {"barcode": "21130 AGL IP7_56 and IP5_394 (GCTCTGCT-AGGAGGCC)"},
-                    "SOA6876A308": {"barcode": "55479 AGL IP7_145 and IP5_567 (TCAGGCGA-GATAAGTA)"},
-                    "SOA6876A309": {"barcode": "54249 AGL IP7_142 and IP5_489 (ACTATATA-ACTTACGG)"},
-                    "SOA6876A310": {"barcode": "46568 AGL IP7_122 and IP5_488 (GAACCGTT-AATCCGTC)"},
-                    "SOA6876A311": {"barcode": "44266 AGL IP7_116 and IP5_490 (GGCAGCCG-AAGGTTAT)"},
-                    "SOA6876A312": {"barcode": "53531 AGL IP7_140 and IP5_539 (AGCGGCAA-AGCAGGAG)"},
-                    "SOA6876A313": {"barcode": "42791 AGL IP7_112 and IP5_551 (TGACTCAA-CGGAACTT)"},
-                    "SOA6876A314": {"barcode": "49644 AGL IP7_130 and IP5_492 (GCATGGCG-CGACGTTA)"},
-                    "SOA6876A315": {"barcode": "55078 AGL IP7_144 and IP5_550 (AAGTTGGA-CGACGGCT)"},
-                    "SOA6876A316": {"barcode": "25797 AGL IP7_68 and IP5_453 (CGACGTAG-TGAGATCA)"},
-                    "SOA6876A317": {"barcode": "8879 AGL IP7_24 and IP5_431 (TCCGTATA-ATGCTTCT)"},
-                    "SOA6876A318": {"barcode": "1950 AGL IP7_6 and IP5_414 (CCATATAG-CGGTTCCA)"},
-                    "SOA6876A319": {"barcode": "30776 AGL IP7_81 and IP5_440 (CTGCTCGT-AGCAGAGC)"},
+                    "SOA6876A276": {"barcode": "AGACCAAT-AACTCCGG"},
+                    "SOA6876A277": {"barcode": "ACCAAGAT-ATTGGTCT"},
+                    "SOA6876A278": {"barcode": "ACTCTTGG-AGCTCCAA"},
+                    "SOA6876A279": {"barcode": "CGTTCGCT-AGCGAACG"},
+                    "SOA6876A280": {"barcode": "CGTAGATC-CAATTGCA"},
+                    "SOA6876A281": {"barcode": "TGGTCCTG-TAACGAAG"},
+                    "SOA6876A282": {"barcode": "AGCAAGGC-GCCGTCCG"},
+                    "SOA6876A283": {"barcode": "TGGTTGAC-TCTGACTG"},
+                    "SOA6876A284": {"barcode": "TGCTCTTC-AGGTCGGA"},
+                    "SOA6876A285": {"barcode": "ATAATGGT-AGGTAGTT"},
+                    "SOA6876A286": {"barcode": "TCAGTTAA-TTAACTGA"},
+                    "SOA6876A287": {"barcode": "CCGGCGAC-TTCTAATG"},
+                    "SOA6876A288": {"barcode": "GGCTTGAA-TTGACTAT"},
+                    "SOA6876A289": {"barcode": "GGCCTCCT-AATCGCAT"},
+                    "SOA6876A290": {"barcode": "CTATTCAT-AAGAGCGC"},
+                    "SOA6876A291": {"barcode": "TCTACTAC-GTTAGCCG"},
+                    "SOA6876A292": {"barcode": "ACCTTATT-AGGCGTCG"},
+                    "SOA6876A293": {"barcode": "ACTGCAAG-AATAAGGT"},
+                    "SOA6876A294": {"barcode": "TCGTTCGA-CCGCTAAC"},
+                    "SOA6876A295": {"barcode": "CGCAAGCT-GAGCCTCC"},
+                    "SOA6876A296": {"barcode": "GTTCAATA-GGAGCCAA"},
+                    "SOA6876A297": {"barcode": "CCTTCAGG-CGCCAGTT"},
+                    "SOA6876A298": {"barcode": "CTTCGTTA-CTTGAGTT"},
+                    "SOA6876A299": {"barcode": "CTGGATAA-GCCTTGCT"},
+                    "SOA6876A300": {"barcode": "GATCTTCC-TTGCGGAC"},
+                    "SOA6876A301": {"barcode": "AGGCAAGG-ATTAATCC"},
+                    "SOA6876A302": {"barcode": "CGGAATCA-TGCTTCGC"},
+                    "SOA6876A303": {"barcode": "TGACGAAC-AATGCAAT"},
+                    "SOA6876A304": {"barcode": "TCCTCCGC-CTAGGACC"},
+                    "SOA6876A305": {"barcode": "ACTCCGCG-GTCGCGAA"},
+                    "SOA6876A306": {"barcode": "CTCTGATG-CAATGGAT"},
+                    "SOA6876A307": {"barcode": "GCTCTGCT-AGGAGGCC"},
+                    "SOA6876A308": {"barcode": "TCAGGCGA-GATAAGTA"},
+                    "SOA6876A309": {"barcode": "ACTATATA-ACTTACGG"},
+                    "SOA6876A310": {"barcode": "GAACCGTT-AATCCGTC"},
+                    "SOA6876A311": {"barcode": "GGCAGCCG-AAGGTTAT"},
+                    "SOA6876A312": {"barcode": "AGCGGCAA-AGCAGGAG"},
+                    "SOA6876A313": {"barcode": "TGACTCAA-CGGAACTT"},
+                    "SOA6876A314": {"barcode": "GCATGGCG-CGACGTTA"},
+                    "SOA6876A315": {"barcode": "AAGTTGGA-CGACGGCT"},
+                    "SOA6876A316": {"barcode": "CGACGTAG-TGAGATCA"},
+                    "SOA6876A317": {"barcode": "TCCGTATA-ATGCTTCT"},
+                    "SOA6876A318": {"barcode": "CCATATAG-CGGTTCCA"},
+                    "SOA6876A319": {"barcode": "CTGCTCGT-AGCAGAGC"},
                 },
             ),  # custom barcode
             (
                 "ASF_A05136-P27",
                 {
-                    "SKO6875A940": {"barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)"},
+                    "SKO6875A940": {"barcode": "ACTCCGCG-TAGTCGTT"},
                 },
             ),  # custom barcode
             (
@@ -617,6 +720,18 @@ class TestClarityHelperLimsyWithFixtures:
         # Assert
         assert barcode == expected_dict
 
+    @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
+    def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, api, sample, expected_barcode):
+        """
+        Pass real artifact IDs and test expected number of samples back
+        """
+
+        # Test
+        results = api.get_sample_custom_barcode_from_sampleid(sample)
+
+        # Assert
+        assert results == expected_barcode
+
     @pytest.mark.parametrize(
         "run_id,expected_dict",
         [
@@ -624,7 +739,7 @@ class TestClarityHelperLimsyWithFixtures:
                 "20240417_1729_1C_PAW45723_05bb74c5",
                 {
                     "VIV6902A1": {
-                        "barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)",
+                        "barcode": "AAGAAAGTTGTCGGTGTCTTTGTG",
                         "sample_name": "BR1_D0",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -633,10 +748,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A2": {
-                        "barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)",
+                        "barcode": "TCGATTCCGTTTGTAGTCGTCTGT",
                         "sample_name": "BR1_D7",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -645,10 +761,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A3": {
-                        "barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)",
+                        "barcode": "GAGTCTTGTGTCCCAGTTACCAGG",
                         "sample_name": "BR2_D0",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -657,10 +774,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                     "VIV6902A4": {
-                        "barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)",
+                        "barcode": "TTCGGATTCTATCGTGTTTCCCTA",
                         "sample_name": "BR2_D7",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -669,6 +787,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
                         "lanes": ["1"],
                     },
                 },
@@ -685,7 +804,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 40 H05 (CTGAGCCA)",
+                        "barcode": "CTGAGCCA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2840": {
@@ -697,7 +817,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 41 A06 (AGCCATGC)",
+                        "barcode": "AGCCATGC",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2841": {
@@ -709,7 +830,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "Whole Exome",
                         "project_type": "WES",
-                        "barcode": "SXT 42 B06 (GTACGCAA)",
+                        "barcode": "GTACGCAA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2842": {
@@ -721,7 +843,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 43 C06 (AGTACAAG)",
+                        "barcode": "AGTACAAG",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2843": {
@@ -733,7 +856,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 44 D06 (ACATTGGC)",
+                        "barcode": "ACATTGGC",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2844": {
@@ -745,7 +869,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 45 E06 (ATTGAGGA)",
+                        "barcode": "ATTGAGGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2845": {
@@ -757,7 +882,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 46 F06 (GTCGTAGA)",
+                        "barcode": "GTCGTAGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2848": {
@@ -769,7 +895,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 03 C01 (AACGTGAT)",
+                        "barcode": "AACGTGAT",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2849": {
@@ -781,7 +908,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 04 D01 (CACTTCGA)",
+                        "barcode": "CACTTCGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
                         "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                 },
@@ -798,7 +926,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
-                        "barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)",
+                        "barcode": "ACTCCGCG-TAGTCGTT",
+                        "library_type": "Premade",
                         "lanes": ["1"],
                     },
                 },
@@ -816,6 +945,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
                         "barcode": "",
+                        "library_type": "ONT DNA Ligation",
                         "lanes": ["1"],
                     }
                 },

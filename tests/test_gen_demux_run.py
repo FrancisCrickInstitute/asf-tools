@@ -29,7 +29,7 @@ class TestGenDemuxRun(unittest.TestCase):
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -50,7 +50,7 @@ class TestGenDemuxRun(unittest.TestCase):
         )
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -65,7 +65,7 @@ class TestGenDemuxRun(unittest.TestCase):
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False)
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -88,7 +88,7 @@ class TestGenDemuxRun(unittest.TestCase):
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -107,7 +107,7 @@ class TestGenDemuxRun(unittest.TestCase):
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         run_file = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -123,7 +123,7 @@ class TestGenDemuxRun(unittest.TestCase):
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False)
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -155,7 +155,7 @@ class TestGenDemuxRun(unittest.TestCase):
         os.makedirs(os.path.join(tmp_path, "run01"))
 
         # Test
-        test.run()
+        test.cli_run()
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -182,7 +182,7 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Test
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
-        test.run()
+        test.cli_run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -228,7 +228,7 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Test
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
-        test.run()
+        test.cli_run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")

@@ -4,6 +4,7 @@ import os
 import warnings
 from collections import defaultdict
 
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 
@@ -142,14 +143,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
             dlp_samples.extend({sample: samples_bcldata_dict[sample]})
         else:
             other_samples.update({sample: samples_bcldata_dict[sample]})
-
-    # # COMMENT - these loops dont make sense
-    # print("---------------------------------")
-    # print("DLP -- " + str(len(dlp_samples)))
-    # print("SC -- " + str(len(single_cell_samples)))
-    # print("ATAC -- " + str((atac_samples)))
-    # print("OTHER -- " + str(len(other_samples)))
-    # print("---------------------------------")
 
     # split samples into multiple entries based on lane values
     split_samples_general_dict = {}

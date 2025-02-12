@@ -3,15 +3,11 @@ Tests covering the data_transfer module
 """
 
 import csv
-import io
-import json
 import os
 import tempfile
 import unittest
 import warnings
 from datetime import datetime
-from unittest import mock
-from unittest.mock import MagicMock, mock_open, patch
 from xml.parsers.expat import ExpatError
 
 import pytest
