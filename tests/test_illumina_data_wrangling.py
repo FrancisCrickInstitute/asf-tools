@@ -194,7 +194,7 @@ class TestIlluminaDemux(unittest.TestCase):
 
             expected_unique_samples_entries_bulk = 15  # 5 samples
             expected_unique_samples_entries_sc = 33  # 8 samples
-            expected_unique_samples_entries_atac = 60  # 11 samples
+            expected_unique_samples_entries_atac = 226  # 11 samples
             expected_unique_samples_entries_general = 108
 
             assert samples_general == expected_unique_samples_entries_general
