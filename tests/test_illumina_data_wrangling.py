@@ -194,7 +194,7 @@ class TestIlluminaDemux(unittest.TestCase):
 
             expected_unique_samples_entries_bulk = 15  # 5 samples
             expected_unique_samples_entries_sc = 33  # 8 samples
-            expected_unique_samples_entries_atac = 60  # 11 samples
+            expected_unique_samples_entries_atac = 226  # 11 samples
             expected_unique_samples_entries_general = 108
 
             assert samples_general == expected_unique_samples_entries_general
@@ -265,7 +265,7 @@ class TestIlluminaDemuxWithFixtures:
             data = "".join(file.readlines())
             assert "[BCLConvert_Data]" in data
             assert "Lane,Sample_ID" in data
-            assert "Lane,Sample_ID,index,index2" in data
+        assert "Lane,Sample_ID,index,index2" in data
 
         for samplesheet in samplesheet_files:
             samplesheet_name = os.path.join(self.tmp_path, samplesheet)

@@ -195,19 +195,22 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
         # All samples are expected to be single index and one index length
         samplesheet_name_atac = samplesheet_name + "_atac"
 
-        # split samples into multiple entries based on lane values
-        split_samples_dict = {}
-        for sample, details in atac_samples.items():
-            lanes = details["Lane"]  # Get the list of lanes
-            for lane in lanes:
-                # Create a new key for each unique (sample, lane) combination
-                unique_key = f"{sample}_Lane_{lane}"
-                # Copy the sample details and replace the Lane value with the current lane
-                split_samples_dict[unique_key] = {**details, "Lane": lane}
+        # Subset sample_all_info to include only keys present in atac_sample
+        atac_all_sample_info = {key: samples_all_info[key] for key in atac_samples if key in samples_all_info}
+        new_atac_barcode_info = iu.atac_reformat_barcode(atac_all_sample_info)
+
+        # Format information according to BCL Convert requirements
+        atac_samples_bcldata_dict = {}
+        for sample in new_atac_barcode_info:
+            # Iterate over each lane and each index for the current sample
+            for lane in atac_all_sample_info[sample]["lanes"]:
+                for barcode in new_atac_barcode_info[sample]["index"]:
+                    # Create a unique entry for each lane-barcode combination
+                    atac_samples_bcldata_dict[f"{sample}_L{lane}_{barcode}"] = {"Lane": lane, "Sample_ID": sample, "index": barcode, "index2": ""}
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name_atac + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, atac_samples_bcldata_dict, samplesheet_path)
 
     if other_samples:
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)

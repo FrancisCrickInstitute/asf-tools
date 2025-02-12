@@ -93,7 +93,7 @@
         "project_type": "10X ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA-CTATAGAG-CGATTTAA)",
         "lanes": [
             "1",
             "2",
@@ -113,7 +113,7 @@
         "project_type": "None",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "10X-ATAC",
-        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT-GGAAGAGA-CGAGAGAA)",
         "lanes": [
             "1",
             "2",
@@ -134,7 +134,7 @@
         "project_type": "10X-Multiomics-ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT-CGAGAGAA-CTATAGAG)",
         "lanes": [
             "1"
         ]
@@ -233,7 +233,7 @@
         "project_type": "10X ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA-TCTTCTCG-TATCTCAT)",
         "lanes": [
             "1",
             "2",
@@ -253,7 +253,7 @@
         "project_type": "None",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "10X-ATAC",
-        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "barcode": "WM Custom 15 (ACTTGACT-TCAACTCG-TAATTCAT-AACGAACT)",
         "lanes": [
             "1",
             "2",
@@ -274,7 +274,7 @@
         "project_type": "10X-Multiomics-ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT)",
+        "barcode": "WM Custom 16 (TCTTCTCG-TATCTCAT-TGGGGTCG-TATGGCAT)",
         "lanes": [
             "1"
         ]
@@ -354,7 +354,7 @@
         "project_type": "ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG)",
+        "barcode": "015 NEBNext G2 S716-S559 (CGAATTGC-GTAAGGTG-CTTATGC-GTAAAATG)",
         "lanes": [
             "1",
             "2",
@@ -373,7 +373,7 @@
         "project_type": "10X ATAC",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "None",
-        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA)",
+        "barcode": "016 NEBNext H2 S708-S521 (GGAAGAGA-CGAGAGAA-GGTATTGA-CGTTTGAA)",
         "lanes": [
             "1",
             "2",
@@ -393,7 +393,7 @@
         "project_type": "None",
         "reference_genome": "Homo sapiens",
         "data_analysis_type": "10X-ATAC",
-        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT)",
+        "barcode": "WM Custom 15 (ACTTGACT-AACGAACT-ACTTAACT-AACGGGCT)",
         "lanes": [
             "1",
             "2",

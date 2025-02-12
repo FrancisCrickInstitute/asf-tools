@@ -322,12 +322,13 @@ class TestIlluminaUtils(unittest.TestCase):
         # Set up
         iu = IlluminaUtils()
         test_dict = {"value1": "invalid", "value2": "dictionary"}
+        expected = {}
 
         # Test
         results = iu.reformat_barcode(test_dict)
 
         # Assert
-        assert results is None
+        assert results == expected
 
     def test_reformat_barcode_isvalid(self):
         """
@@ -336,11 +337,72 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         iu = IlluminaUtils()
-        test_dict = {"Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"}, "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"}}
-        expected_output = {"Sample1": {"index": "AAGAAAGTTGTCGGTGTG"}, "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"}}
+        test_dict = {
+            "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
+            "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"},
+            "Sample3": {"barcode": "15 SI-NA-G2 (ATAACCTA-CGGTGAGC-GATCTTAT-TCCGAGCG)"},
+        }
+        expected_output = {
+            "Sample1": {"index": "AAGAAAGTTGTCGGTGTG"},
+            "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"},
+            "Sample3": {"index": "ATAACCTA", "index2": "CGGTGAGC", "index3": "GATCTTAT", "index4": "TCCGAGCG"},
+        }
 
         # Test
         results = iu.reformat_barcode(test_dict)
+        print(results)
+
+        # Assert
+        assert results == expected_output
+
+    def test_atac_reformat_barcode_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            iu.atac_reformat_barcode(None)
+
+    def test_atac_reformat_barcode_nobarcode(self):
+        """
+        Pass a dict without a "barcode" value to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {"value1": "invalid", "value2": "dictionary"}
+        expected = {}
+
+        # Test
+        results = iu.atac_reformat_barcode(test_dict)
+
+        # Assert
+        assert results == expected
+
+    def test_atac_reformat_barcode_isvalid(self):
+        """
+        Pass a valid dict to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        test_dict = {
+            "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
+            "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT-ATTCTT-CTGTGAAT"},
+            "Sample3": {"barcode": "15 SI-NA-G2 (ATAACCTA-CGGTGAGC-GATCTTAT-TCCGAGCG)"},
+        }
+        expected_output = {
+            "Sample1": {"index": ["AAGAAAGTTGTCGGTGTG"]},
+            "Sample2": {"index": ["GTTCTT", "CTGTGGGGAAT", "ATTCTT", "CTGTGAAT"]},
+            "Sample3": {"index": ["ATAACCTA", "CGGTGAGC", "GATCTTAT", "TCCGAGCG"]},
+        }
+
+        # Test
+        results = iu.atac_reformat_barcode(test_dict)
         print(results)
 
         # Assert
