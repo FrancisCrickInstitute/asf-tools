@@ -10,6 +10,28 @@ from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 log = logging.getLogger(__name__)
 
+SINGLE_CELL_PROJECT_TYPES = [
+    "Single Cell",
+    "10X",
+    "10x Multiomics",
+    "10x multiome",
+    "10X-3prime-nuclei",
+    "10X-Multiomics-GEX",
+    "10X-FeatureBarcoding",
+]
+SINGLE_CELL_DATA_ANALYSIS_TYPES = [
+    "10X-3prime",
+    "10X-CNV",
+    "10X-FeatureBarcoding",
+    "10X-Multiomics",
+    "10X-Multiomics-GEX",
+    "10X-Flex",
+]
+ATAC_PROJECT_TYPES = ["ATAC", "ATAC-Seq", "10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
+ATAC_DATA_ANALYSIS_TYPES = [
+    "10X-ATAC",
+]
+
 
 def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_config_path=None, dlp_sample_file=None):
     """
@@ -90,27 +112,27 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     # Subdivide samples into different workflows based on project type
     # Fist we categorise different values for "project_type"
-    single_cell_project_types = [
-        "Single Cell",
-        "10X",
-        "10x Multiomics",
-        "10x multiome",
-        "10X-3prime-nuclei",
-        "10X-Multiomics-GEX",
-        "10X-FeatureBarcoding",
-    ]
-    single_cell_data_analysis_types = [
-        "10X-3prime",
-        "10X-CNV",
-        "10X-FeatureBarcoding",
-        "10X-Multiomics",
-        "10X-Multiomics-GEX",
-        "10X-Flex",
-    ]
-    atac_project_types = ["ATAC", "ATAC-Seq", "10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
-    atac_data_analysis_types = [
-        "10X-ATAC",
-    ]
+    # single_cell_project_types = [
+    #     "Single Cell",
+    #     "10X",
+    #     "10x Multiomics",
+    #     "10x multiome",
+    #     "10X-3prime-nuclei",
+    #     "10X-Multiomics-GEX",
+    #     "10X-FeatureBarcoding",
+    # ]
+    # single_cell_data_analysis_types = [
+    #     "10X-3prime",
+    #     "10X-CNV",
+    #     "10X-FeatureBarcoding",
+    #     "10X-Multiomics",
+    #     "10X-Multiomics-GEX",
+    #     "10X-Flex",
+    # ]
+    # atac_project_types = ["ATAC", "ATAC-Seq", "10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
+    # atac_data_analysis_types = [
+    #     "10X-ATAC",
+    # ]
 
     # Then we assign each sample to the appropriate project group
     dlp_samples = []
@@ -135,9 +157,9 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
         # Ensure that project_type has a value other than None (ie. not associated with control samples or edge cases)
         if project_type is None:
             log.warning(f"'{sample}' have None project_type.")
-        elif project_type in single_cell_project_types or data_analysis_type in single_cell_data_analysis_types:
+        elif project_type in SINGLE_CELL_PROJECT_TYPES or data_analysis_type in SINGLE_CELL_DATA_ANALYSIS_TYPES:
             single_cell_samples.update({sample: samples_bcldata_dict[sample]})
-        elif project_type in atac_project_types or data_analysis_type in atac_data_analysis_types:
+        elif project_type in ATAC_PROJECT_TYPES or data_analysis_type in ATAC_DATA_ANALYSIS_TYPES:
             atac_samples.update({sample: samples_bcldata_dict[sample]})
         elif "DLP" in project_type or "DLP" in data_analysis_type or "DLPplus" in data_analysis_type:
             dlp_samples.extend({sample: samples_bcldata_dict[sample]})
