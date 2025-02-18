@@ -2,9 +2,7 @@ import json
 import logging
 import os
 import warnings
-from collections import defaultdict
 
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import IlluminaUtils
 
 
@@ -35,15 +33,16 @@ ATAC_DATA_ANALYSIS_TYPES = [
 
 def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_config_path=None, dlp_sample_file=None):
     """
-    The overall functionality is split into 2 sections: one is gathering and formatting sample information as required for further processing, while the second part is gathering BCL_convert specific information.
+    Generate Illumina demultiplexing samplesheets.
 
-    The gathering and reformatting of the sample information allows the function to create different samplesheets for single/dual index samples, as well as help the user identify possibly problematic samples earlier.
-    Meanwhile the second part of the code helps tailor setting values based on the sample type, eg. adding an `OverrideCycle` parameter when the index length does not match the Cycle length defined in the RuniInfo.xml file.
+    This function is divided into two main sections:
+    1. Gathering and formatting sample information as required for further processing.
+    2. Gathering BCL Convert specific information.
 
-    The first part of this function is designed to take a RunInfo.xml file as an input and then perform these steps:
-    1) extract RunID value (Flowcell ID) from the RunInfo.xml file.
-    2) extract Cycle length value (NumCycles) from the RunInfo.xml file.
-    3) use the RunID value to generate a dict of dicts (`samples_all_info`) with this information for each sample:
+    The first part of this function performs the following steps:
+    1. Extract RunID value (Flowcell ID) from the RunInfo.xml file.
+    2. Extract Cycle length value (NumCycles) from the RunInfo.xml file.
+    3. Use the RunID value to generate a dictionary of dictionaries (`samples_all_info`) with this information for each sample:
         sample_name (str): {
             "group": lab (str),
             "user": user_fullname (str),
@@ -52,14 +51,32 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
             "reference_genome": reference_genome (str or None),
             "data_analysis_type": data_analysis_type (str or None),
             "barcode": reagent_barcode (str)
-        },
-    4) extract information from `samples_all_info` and format it as required by the `BCLConvert_Data` section of the final samplesheets, this includes:
-        - filter `samples_all_info` to only keep the "sample_name" and "barcode" information
-        - reformat "barcode" value and assign to "index" (also to "index2" where approriate)
-        then save it in `sample_and_index_dict`
-    5) evaluate Index length for each sample and group them based on the index length value. the groups and associated samples are saved in the `split_samples_by_indexlength` list
-    6) create a subset of `sample_and_index_dict` for each group listed in `split_samples_by_indexlength`
-    7) if the Cycle length does not match the Index length, calculate the new OverrideCycle value
+        }
+    4. Extract information from `samples_all_info` and format it as required by the `BCLConvert_Data` section of the final samplesheets, including:
+        - Filtering `samples_all_info` to only keep the "sample_name" and "barcode" information.
+        - Reformatting "barcode" value and assigning it to "index" (and "index2" where appropriate).
+        - Saving the formatted information in `sample_and_index_dict`.
+    5. Evaluate Index length for each sample and group them based on the index length value. The groups and associated samples are saved in the `split_samples_by_indexlength` list.
+    6. Create a subset of `sample_and_index_dict` for each group listed in `split_samples_by_indexlength`.
+    7. If the Cycle length does not match the Index length, calculate the new OverrideCycle value.
+
+    The second part of this function performs the following steps:
+    1. Load RunInfo.xml file and filter out unnecessary information.
+    2. If no BCL Config file is provided, generate a basic config file with relevant information.
+    3. Extract information from the BCL Config file if provided.
+    4. Obtain read specific information and format it as required by BCL Convert.
+    5. Subdivide samples into different workflows based on project type.
+    6. Generate samplesheets for each workflow (DLP, single cell, ATAC, and other samples - aka bulk samples).
+
+    Parameters:
+    cl (object): An object that provides methods to collect samplesheet information.
+    runinfo_path (str): Path to the RunInfo.xml file.
+    output_path (str): Path to the output directory where samplesheets will be saved.
+    bcl_config_path (str, optional): Path to the BCL Config file. If not provided, a basic config file will be generated.
+    dlp_sample_file (str, optional): Path to the DLP sample file.
+
+    Returns:
+    None
     """
     # Initialise classes
     iu = IlluminaUtils()
@@ -111,30 +128,6 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     }
 
     # Subdivide samples into different workflows based on project type
-    # Fist we categorise different values for "project_type"
-    # single_cell_project_types = [
-    #     "Single Cell",
-    #     "10X",
-    #     "10x Multiomics",
-    #     "10x multiome",
-    #     "10X-3prime-nuclei",
-    #     "10X-Multiomics-GEX",
-    #     "10X-FeatureBarcoding",
-    # ]
-    # single_cell_data_analysis_types = [
-    #     "10X-3prime",
-    #     "10X-CNV",
-    #     "10X-FeatureBarcoding",
-    #     "10X-Multiomics",
-    #     "10X-Multiomics-GEX",
-    #     "10X-Flex",
-    # ]
-    # atac_project_types = ["ATAC", "ATAC-Seq", "10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
-    # atac_data_analysis_types = [
-    #     "10X-ATAC",
-    # ]
-
-    # Then we assign each sample to the appropriate project group
     dlp_samples = []
     single_cell_samples = {}
     atac_samples = {}
@@ -237,7 +230,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
     if other_samples:
         split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
         if len(split_samples_by_indexlength) == 0:
-            warnings.warn(f"None of the bulk or 'other samples' have index information", UserWarning)
+            warnings.warn("None of the bulk or 'other samples' have index information", UserWarning)
 
         if len(split_samples_by_indexlength) > 0:
             for index_length_sample_list in split_samples_by_indexlength:
@@ -257,14 +250,12 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                 # split samples into multiple entries based on lane values
                 split_samples_dict = {}
                 for sample, details in merge_sample_index_info.items():
-                    # print(sample, details)
                     lanes = details["Lane"]  # Get the list of lanes
                     for lane in lanes:
                         # Create a new key for each unique (sample, lane) combination
                         unique_key = f"{sample}_Lane_{lane}"
                         # Copy the sample details and replace the Lane value with the current lane
                         split_samples_dict[unique_key] = {**details, "Lane": lane}
-                print(split_samples_dict)
 
                 # Obtain the cycle length
                 cycle_length = iu.extract_cycle_fromxml(runinfo_path)

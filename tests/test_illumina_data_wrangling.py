@@ -32,18 +32,19 @@ class TestIlluminaDemux(unittest.TestCase):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
 
-    # def test_test(self):
-    #     """
-    #     Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
-    #     """
+    def test_test(self):
+        """
+        Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
+        """
 
-    #     # Set up
-    #     # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-    #     file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
-    #     # create output files paths
+        # Set up
+        # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+        file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
+        # create output files paths
 
-    #     # Test
-    #     generate_illumina_demux_samplesheets(self.api, file, ".")
+        # Test
+        generate_illumina_demux_samplesheets(self.api, file, ".")
+        # raise ValueError
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
@@ -266,8 +267,8 @@ class TestIlluminaDemuxWithFixtures:
     @pytest.mark.parametrize(
         "flowcell_id,runinfo_file,samplesheet_count",
         [
-            ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 2),
-            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 4),
+            ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 4),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 6),
             ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2),  # 1 general samplesheet, 1 project specific samplesheet
         ],
     )
@@ -309,14 +310,15 @@ class TestIlluminaDemuxWithFixtures:
             samplesheet_name = os.path.join(self.tmp_path, samplesheet)
             with open(samplesheet_name, "r") as file:
                 data = "".join(file.readlines())
+                # print(data)
                 assert "[BCLConvert_Data]" in data
                 assert "Lane,Sample_ID" in data
-                assert "Lane,Sample_ID,index,index2" in data
+                if "_0" in samplesheet_name:
+                    print(samplesheet_name)
+                    assert "Lane,Sample_ID,index" in data
+                else:
+                    assert "Lane,Sample_ID,index,index2" in data
 
-        # ['22NWYFLT3_samplesheet.csv']
-        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
-        # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
-
-        # ['22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet.csv']
-        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
+        # ['22NWYFLT3_samplesheet_10_10.csv', '22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet_8_8.csv', '22NWYFLT3_samplesheet.csv']
+        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet_10_10.csv', '22NWWMLT3_samplesheet_8_8.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
         # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
