@@ -249,16 +249,22 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                     + str(index_length_sample_list["index_length"][1])
                 )
 
+                merge_sample_index_info = {}
+                for sample in index_length_sample_list["samples"]:
+                    if sample in other_samples:
+                        merge_sample_index_info[sample] = other_samples[sample]
+
                 # split samples into multiple entries based on lane values
                 split_samples_dict = {}
-                for sample, details in other_samples.items():
+                for sample, details in merge_sample_index_info.items():
+                    # print(sample, details)
                     lanes = details["Lane"]  # Get the list of lanes
                     for lane in lanes:
                         # Create a new key for each unique (sample, lane) combination
                         unique_key = f"{sample}_Lane_{lane}"
                         # Copy the sample details and replace the Lane value with the current lane
                         split_samples_dict[unique_key] = {**details, "Lane": lane}
-                # filtered_samples = split_samples_dict
+                print(split_samples_dict)
 
                 # Obtain the cycle length
                 cycle_length = iu.extract_cycle_fromxml(runinfo_path)
@@ -277,10 +283,10 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
                         override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                     bcl_settings_dict["OverrideCycles"] = override_string
 
-            # Generate samplesheet with the updated settings
-            samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
-            iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+                # Generate samplesheet with the updated settings
+                samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
+                iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
-    # # # Generate samplesheet with the updated settings
-    # # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    # # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
+    # # Generate samplesheet with the updated settings
+    # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+    # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
