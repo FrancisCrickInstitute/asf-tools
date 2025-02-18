@@ -32,18 +32,18 @@ class TestIlluminaDemux(unittest.TestCase):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
 
-    def test_test(self):
-        """
-        Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
-        """
+    # def test_test(self):
+    #     """
+    #     Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
+    #     """
 
-        # Set up
-        # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-        file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
-        # create output files paths
+    #     # Set up
+    #     # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+    #     file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
+    #     # create output files paths
 
-        # Test
-        generate_illumina_demux_samplesheets(self.api, file, ".")
+    #     # Test
+    #     generate_illumina_demux_samplesheets(self.api, file, ".")
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
@@ -57,7 +57,7 @@ class TestIlluminaDemux(unittest.TestCase):
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
         tmp_samplesheet_file_path_bulk = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
         tmp_samplesheet_file_path_general = os.path.join(tmp_path, "22NWWGLT3_samplesheet.csv")
-        # connedct to Illumina utils
+        # connect to Illumina utils
         iu = IlluminaUtils()
 
         # Test
@@ -72,11 +72,12 @@ class TestIlluminaDemux(unittest.TestCase):
             data = "".join(file.readlines())
             self.assertTrue("[BCLConvert_Data]" in data)
             self.assertTrue("Lane,Sample_ID,index,index2" in data)
-            # print(data)
+            print(data)
         with open(tmp_samplesheet_file_path_bulk, "r") as file:
             data = "".join(file.readlines())
             self.assertTrue("[BCLConvert_Data]" in data)
             self.assertTrue("Lane,Sample_ID,index,index2" in data)
+            self.assertTrue("WAR6617A6,TCTTCTCG,TATCTCAT" in data)
         with open(tmp_bclconfig_file_path, "r") as file:
             config_json = json.load(file)
             self.assertTrue("Header" in config_json)
@@ -102,6 +103,8 @@ class TestIlluminaDemux(unittest.TestCase):
         # create output files paths
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22T3M3LT3.json")
         tmp_samplesheet_file_path = os.path.join(tmp_path, "22T3M3LT3_samplesheet_singlecell.csv")
+        # connect to Illumina utils
+        iu = IlluminaUtils()
 
         # Test
         generate_illumina_demux_samplesheets(self.api, file, tmp_path)
@@ -118,6 +121,12 @@ class TestIlluminaDemux(unittest.TestCase):
             data = "".join(file.readlines())
             self.assertTrue("[BCLConvert_Data]" in data)
             self.assertTrue("Lane,Sample_ID,index,index2" in data)
+            # print(data)
+
+        # Check the number of samples
+        samples_singlecell = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
+        expected_unique_samples_entries_singlecell = 136
+        assert samples_singlecell == expected_unique_samples_entries_singlecell
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_dlp(self, tmp_path):
@@ -128,6 +137,8 @@ class TestIlluminaDemux(unittest.TestCase):
         # Set up
         runinfo_file = "./tests/data/illumina/HWNCWDMXY/RunInfo.xml"
         dlp_file = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
+        # connect to Illumina utils
+        iu = IlluminaUtils()
 
         # create output files paths
         tmp_samplesheet_file_path = os.path.join(tmp_path, "HWNCWDMXY_samplesheet_dlp.csv")
@@ -149,6 +160,12 @@ class TestIlluminaDemux(unittest.TestCase):
             self.assertTrue("[BCLConvert_Data]" in data)
             self.assertTrue("Lane,Sample_ID,index,index2" in data)
             self.assertTrue("CAACCTAG,AGGTCTGT" in data)
+            print(data)
+
+        # Check the number of samples
+        samples_dlp = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
+        expected_unique_samples_entries_dlp = 12
+        assert samples_dlp == expected_unique_samples_entries_dlp
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_mix(self, tmp_path):
