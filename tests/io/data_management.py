@@ -414,6 +414,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
+    print(result)
 
     # Assert
     self.assertEqual(len(result), 0)
