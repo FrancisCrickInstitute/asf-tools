@@ -255,9 +255,9 @@ def test_deliver_to_targets_valid(self, tmp_path):
     dt.deliver_to_targets(basepath_target, tmp_path)
 
     # Assert
-    run_dir_1 = os.path.join(tmp_path1, "asf", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_2 = os.path.join(tmp_path2, "asf", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_3 = os.path.join(tmp_path3, "asf", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
     self.assertTrue(os.path.islink(run_dir_1))
     self.assertTrue(os.path.islink(run_dir_2))
     self.assertTrue(os.path.islink(run_dir_3))
@@ -315,9 +315,9 @@ def test_deliver_to_targets_symlink_overide(self, tmp_path):
     dt.deliver_to_targets(basepath_target, tmp_path, "/test/path")
 
     # Assert
-    run_dir_1 = os.path.join(tmp_path1, "asf", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_2 = os.path.join(tmp_path2, "asf", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-    run_dir_3 = os.path.join(tmp_path3, "asf", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+    run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
     self.assertTrue(os.path.islink(run_dir_1))
     self.assertTrue(os.path.islink(run_dir_2))
     self.assertTrue(os.path.islink(run_dir_3))
@@ -414,6 +414,7 @@ def test_scan_delivery_state_none_to_deliver(self, tmp_path):
 
     # Test
     result = dm.scan_delivery_state(source_dir, target_dir)
+    print(result)
 
     # Assert
     self.assertEqual(len(result), 0)

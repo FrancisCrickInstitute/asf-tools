@@ -173,36 +173,56 @@ class DataManagement:
             split_path = relative_path.split(os.sep)
             if len(split_path) >= 5:
                 split_path = split_path[:5]
-                group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
+                group, user, genomics_stp, project_id, run_id = split_path  # pylint: disable=unused-variable
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
                 # create source path up to the final run_id dir
                 source_path_to_runid = os.path.join(
+                    data_path, info_dict["group"], info_dict["user"], "genomics-stp", info_dict["project_id"], info_dict["run_id"]
+                )
+                source_path_to_runid_legacy = os.path.join(
                     data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"]
                 )
 
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
-                    if not os.path.exists(project_path):
+                    project_path = os.path.join(permissions_path, info_dict["user"], "genomics-stp", info_dict["project_id"])
+                    project_path_legacy = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
+                    if not os.path.exists(project_path) and not os.path.exists(project_path_legacy):
                         os.makedirs(project_path, exist_ok=True)
 
                     # Override symlink path if host provided to deal with symlink paths in containers
                     if symlink_host_base_path is not None:
-                        source_path_to_runid = os.path.join(
-                            symlink_host_base_path,
-                            info_dict["run_id"],
-                            "results",
-                            "grouped",
-                            info_dict["group"],
-                            info_dict["user"],
-                            "asf",
-                            info_dict["project_id"],
-                            info_dict["run_id"],
-                        )
+                        if not os.path.exists(project_path):
+                            source_path_to_runid_legacy = os.path.join(
+                                symlink_host_base_path,
+                                info_dict["run_id"],
+                                "results",
+                                "grouped",
+                                info_dict["group"],
+                                info_dict["user"],
+                                "asf",
+                                info_dict["project_id"],
+                                info_dict["run_id"],
+                            )
+                        else:
+                            source_path_to_runid = os.path.join(
+                                symlink_host_base_path,
+                                info_dict["run_id"],
+                                "results",
+                                "grouped",
+                                info_dict["group"],
+                                info_dict["user"],
+                                "genomics-stp",
+                                info_dict["project_id"],
+                                info_dict["run_id"],
+                            )
 
                     # symlink data to target path
-                    self.symlink_to_target(source_path_to_runid, project_path)
+                    if not os.path.exists(project_path):
+                        self.symlink_to_target(source_path_to_runid_legacy, project_path_legacy)
+                    else:
+                        self.symlink_to_target(source_path_to_runid, project_path)
                 else:
                     user_path_not_exist.append(permissions_path)
         if len(user_path_not_exist) > 0:
@@ -265,7 +285,7 @@ class DataManagement:
                 # Find the group, user, project_id, run_id
                 if len(split_path) == 7:
                     split_path = split_path[2:]
-                    group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
+                    group, user, genomics_stp, project_id, run_id = split_path  # pylint: disable=unused-variable
 
                     # build target path
                     target_path = os.path.join(target_dir, *split_path)
