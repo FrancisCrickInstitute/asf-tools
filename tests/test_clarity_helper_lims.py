@@ -74,6 +74,55 @@ class TestClarityHelperLims(unittest.TestCase):
         with self.assertRaises((HTTPError, ConnectionError)):
             self.api.get_samples_from_artifacts(artifacts_list)
 
+    def test_clarity_helper_get_check_sample_dropoff_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Test
+        results = self.api.check_sample_dropoff_info(None)
+
+        # Assert
+        assert results is None
+
+    def test_clarity_helper_get_check_sample_dropoff_isinvalid(self):
+        """
+        Pass real sample IDs and test expected values in the dictionary output
+        """
+
+        # Set up
+        sample = "non_valid"
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            self.api.check_sample_dropoff_info(sample)
+
+    def test_clarity_helper_get_check_sample_dropoff_isvalid(self):
+        """
+        Pass real sample IDs and test expected values in the dictionary output
+        """
+
+        # Set up
+        sample_1 = "GOL5512A6973"  # drop-off sample
+        expected_dict_1 = {
+            "Drop-Off Amplicon Size (bp)": "114",
+            "Drop-Off Budget Code": "CC2063",
+            "Drop-Off Lab Name": "saterialea",
+            "Drop-Off Number of Replicates Requested": "2",
+            "Drop-Off Researcher Name": "Silvia Haase",
+        }
+
+        sample_2 = "KAN6921A20"  # regular sample
+        expected_dict_2 = {}
+
+        # Test
+        get_info_1 = self.api.check_sample_dropoff_info(sample_1)
+        get_info_2 = self.api.check_sample_dropoff_info(sample_2)
+
+        # Assert
+        assert get_info_1 == expected_dict_1
+        assert get_info_2 == expected_dict_2
+
     def test_clarity_helper_get_sample_info_isnone(self):
         """
         Pass None to method
@@ -191,6 +240,21 @@ class TestClarityHelperLimsyWithFixtures:
                     }
                 },
             ),
+            (
+                "GOL5512A6973",
+                {
+                    "GOL5512A6973": {
+                        "sample_name": "CpPRO_input",
+                        "group": "saterialea",
+                        "user": "silvia.haase",
+                        "project_id": "DN19023",
+                        "project_limsid": "GOL5512",
+                        "project_type": "Amplicons",
+                        "reference_genome": "Other",
+                        "data_analysis_type": "None",
+                    }
+                },
+            ),  # Illumina drop off
         ],
     )
     def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):

@@ -4,6 +4,7 @@ Clarity API Child class with helper functions
 
 import logging
 import queue
+from requests.exceptions import HTTPError
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
@@ -92,6 +93,45 @@ class ClarityHelperLims(ClarityLims):
         unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
         return unique_sample_list
 
+    def check_sample_dropoff_info(self, sample_id: str) -> bool:
+        """
+        Check if a sample has been assigned drop-off information.
+
+        This method retrieves the sample information for the given sample ID and checks if the sample
+        has any drop-off entries within the sample UDFs fields. If such fields are found,
+        their names and values are returned in a dictionary.
+
+        Args:
+            sample_id (str): The unique identifier for the sample to be checked.
+
+        Returns:
+            dict: A dictionary containing the drop-off information for the sample, where the keys are
+                the names of the UDF fields and the values are the corresponding field values.
+                If the sample has no drop-off information, an empty dictionary is returned.
+                If the sample_id is None, None is returned.
+
+        Raises:
+            ValueError: If the provided sample_id is None.
+        """
+        if sample_id is None:
+            return None
+
+        try:
+            # Expand sample stub
+            sample = self.get_samples(search_id=sample_id)
+
+            dropoff_sample_info = {}
+            # Check if the sample has a drop-off field and return values if it does
+            for entry in sample.udf_fields:
+                entry_name = entry.name
+                entry_value = entry.value
+
+                if "Drop-Off" in entry_name:
+                    dropoff_sample_info[entry_name] = entry_value
+            return dropoff_sample_info
+        except HTTPError:
+            raise ValueError("Sample not found")
+
     def get_sample_info(self, sample: str) -> dict:
         """
         Retrieve detailed information for a given sample.
@@ -143,19 +183,32 @@ class ClarityHelperLims(ClarityLims):
             data_analysis_type = None
 
         # Get the submitter details
-        if sample_project:
-            user = self.get_researchers(search_id=project.researcher.id)
-        else:
-            user = self.get_researchers(search_id=sample.submitter.id)
+        lab_name = None
+        user_fullname = None
 
-        # these get the submitter, not the scientist, info
-        user_firstname = user.first_name
-        user_lastname = user.last_name
-        user_fullname = (user_firstname + "." + user_lastname).lower()
+        # first check if the sample has drop-off information
+        dropoff_info = self.check_sample_dropoff_info(sample_id)
+        if "Drop-Off Lab Name" in dropoff_info:
+            lab_name = dropoff_info["Drop-Off Lab Name"]
+        if "Drop-Off Researcher Name" in dropoff_info:
+            dropoff_user_fullname = dropoff_info["Drop-Off Researcher Name"]
+            user_fullname = dropoff_user_fullname.lower().replace(" ", ".")
 
-        # Get the lab details
-        lab = self.expand_stub(user.lab, expansion_type=Lab)
-        lab_name = lab.name
+        # if no drop-off information, get the submitter details from the project information
+        if not dropoff_info:
+            if sample_project:
+                user = self.get_researchers(search_id=project.researcher.id)
+            else:
+                user = self.get_researchers(search_id=sample.submitter.id)
+
+            # these get the submitter, not the scientist, info
+            user_firstname = user.first_name
+            user_lastname = user.last_name
+            user_fullname = (user_firstname + "." + user_lastname).lower()
+
+            # Get the lab details
+            lab = self.expand_stub(user.lab, expansion_type=Lab)
+            lab_name = lab.name
 
         # Store obtained information in a dictionary
         sample_info = {}
