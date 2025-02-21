@@ -221,9 +221,18 @@ class TestIlluminaDemux(unittest.TestCase):
             # Check the content of the files
             with open(tmp_samplesheet_file_path_atac, "r") as file:
                 data = "".join(file.readlines())
-                self.assertTrue("WAR6617A5" in data)
+                self.assertTrue("WAR6617A5,CGAATTGC" in data)
+                self.assertTrue("WAR6617A5,GTAAGGTG" in data)
                 self.assertTrue("Lane,Sample_ID,index,index2" in data)
                 # print(data)
+            with open(tmp_samplesheet_file_path_bulk, "r") as file:
+                data = "".join(file.readlines())
+                self.assertTrue("WAR6617A1,CGAATTGC,GTAAGGTG" in data)
+                self.assertTrue("Lane,Sample_ID,index,index2" in data)
+            with open(tmp_samplesheet_file_path_sc, "r") as file:
+                data = "".join(file.readlines())
+                self.assertTrue("WAR6617A2,GGAAGAGA,CGAGAGAA" in data)
+                self.assertTrue("Lane,Sample_ID,index,index2" in data)
 
             # Check the number of samples for each samplesheet
             samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
