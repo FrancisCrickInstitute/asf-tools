@@ -25,6 +25,7 @@ class TestIoUtils(unittest.TestCase):
         # Assert
         self.assertEqual(len(dir_list), 5)
 
+
     @with_temporary_folder
     def test_list_directory_symlink(self, tmp_path):
         """Test list directories"""
@@ -45,6 +46,7 @@ class TestIoUtils(unittest.TestCase):
         # Assert
         self.assertEqual(len(dir_list), 5)
 
+
     def test_check_file_exist_isvalid(self):
         """Test if different paths return a boolean value as expected"""
 
@@ -64,6 +66,7 @@ class TestIoUtils(unittest.TestCase):
         self.assertTrue(run2)
         self.assertFalse(run3)
 
+
     def test_check_file_exist_invalid(self):
         """Test path returns false"""
 
@@ -77,6 +80,7 @@ class TestIoUtils(unittest.TestCase):
         # Assert
         self.assertFalse(run)
 
+
     def test_check_file_exist_pathnotexist(self):
         """Test if different paths return true/false as expected"""
 
@@ -87,6 +91,7 @@ class TestIoUtils(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             check_file_exist(path1, pattern)
+
 
     def test_delete_all_items_valid_pathnotexist(self):
         """Test a non existant path"""
@@ -99,6 +104,7 @@ class TestIoUtils(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             delete_all_items(path1, pattern)
 
+
     @with_temporary_folder
     def test_delete_all_items_valid_mode_invalid(self, tmp_path):
         """Test an invalid mode"""
@@ -109,6 +115,7 @@ class TestIoUtils(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(ValueError):
             delete_all_items(tmp_path, mode)
+
 
     @with_temporary_folder
     def test_delete_all_items_valid_filemode(self, tmp_path):
@@ -136,6 +143,7 @@ class TestIoUtils(unittest.TestCase):
 
         # Assert
         self.assertFalse(os.path.isfile(test_file))
+
 
     @with_temporary_folder
     def test_delete_all_items_valid_dirmode(self, tmp_path):

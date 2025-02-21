@@ -3,6 +3,8 @@ Clarity API Child class with helper functions
 """
 
 import queue
+import warnings
+import re
 from requests.exceptions import HTTPError
 
 import xmltodict

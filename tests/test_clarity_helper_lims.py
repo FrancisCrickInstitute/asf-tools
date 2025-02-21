@@ -591,6 +591,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Amplicons",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
+                        "library_type": "Index PCR",
                     }
                 },
             ),  # Illumina drop off
