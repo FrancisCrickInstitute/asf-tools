@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.DEBUG,  # Ensure warnings and above are logged
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("test_logs.log"),  # Save logs to a file
+        logging.FileHandler("test_logs.log", mode="w"),  # Save logs to a file
         logging.StreamHandler()  # Print logs to console
     ]
 )
@@ -375,13 +375,13 @@ class ClarityHelperLims(ClarityLims):
         # Validate reagent-types and reagent-type keys
         reagent_types = data_dict.get("rtp:reagent-types")
         if not reagent_types:
-            log.info("here's a second info message")
+            log.info("here's a first info message")
             log.warning("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.")
             return sample_barcode
 
         reagent_type = reagent_types.get("reagent-type")
         if not reagent_type or "uri" not in reagent_type:
-            log.info("here's a third info message")
+            log.info("here's a second info message")
             log.warning("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.")
             return sample_barcode
 
@@ -394,7 +394,7 @@ class ClarityHelperLims(ClarityLims):
         # Validate special-type and attribute keys
         special_type = uri_xml.get("rtp:reagent-type", {}).get("special-type")
         if not special_type or "attribute" not in special_type:
-            log.info("here's a fourth info message")
+            log.info("here's a third info message")
             log.warning("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.")
             return sample_barcode
 
@@ -404,6 +404,7 @@ class ClarityHelperLims(ClarityLims):
         if attribute.get("name") == "Sequence":
             return attribute.get("value", "None")
         else:
+            log.info("here's a fourth info message")
             log.warning("Attribute 'name' is not 'Sequence'. Returning fallback barcode.")
             return sample_barcode
 
@@ -476,20 +477,6 @@ class ClarityHelperLims(ClarityLims):
                 sample = self.expand_stub(sample, expansion_type=Sample)
                 library_type = next((item.value for item in sample.udf_fields if item.name == "Library Type"), None)
                 pool_sample_dict[sample.id] = {"library_type": library_type}
-
-        ############# this returns 428 samples
-        # pool_sample_dict = {}
-        # other_list = []
-        # for process in pools_list_expanded:
-        #     for sample in process.samples:
-        #         try:
-        #             sample = self.expand_stub(sample, expansion_type=Sample)
-        #             library_type = next((item.value for item in sample.udf_fields if item.name == "Library Type"), None)
-        #             pool_sample_dict[sample.id] = library_type
-        #             uri = sample.uri
-        #             other_dict[sample.id] = uri
-        #         except:
-        #             other_list.append(sample.id)
 
         non_pooled_sample_list = []
         sample_barcode_match = {}

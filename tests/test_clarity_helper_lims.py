@@ -19,14 +19,6 @@ from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
-# logging.basicConfig(
-#     filename="logfile.log",  # Name of the log file (stored locally)
-#     filemode="w",  # "w" to overwrite each time, use "a" to append
-#     level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
-#     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
-#     datefmt="%Y-%m-%d %H:%M:%S"
-# )
-
 # Get the logger
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -186,13 +178,6 @@ class TestClarityHelperLims(unittest.TestCase):
         barcode = "fake_barcode"
         log_file = "test_logs.log"
 
-        # # Create file handler
-        # file_handler = logging.FileHandler("barcode_from_reagenttypes_isinvalid.log", mode="w")  # Save logs to a file
-        # file_handler.setLevel(logging.DEBUG)
-
-        # # Add handlers to the logger
-        # log.addHandler(file_handler)
-
         # if log_file:
         #     log_fh = logging.FileHandler(log_file, encoding="utf-8")
         #     log_fh.setLevel(logging.DEBUG)
@@ -212,12 +197,11 @@ class TestClarityHelperLims(unittest.TestCase):
         with open(log_file, "r") as file:
             log_content = file.read()
             assert "WARNING" in log_content, "No warning found in log file!"
-        
-        # self.assertIs(log.handlers[-1].category, warning)
-        # logging.shutdown()
 
-        for handler in logging.root.handlers[:]:  # Remove existing handlers
-            logging.root.removeHandler(handler)
+        logging.shutdown()
+
+        # for handler in logging.root.handlers[:]:  # Remove existing handlers
+        #     logging.root.removeHandler(handler)
 
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
@@ -244,9 +228,7 @@ class TestClarityHelperLims(unittest.TestCase):
             log_content = file.read()
             assert "WARNING" in log_content, "No warning found in log file!"
             assert "Missing 'rtp:reagent-types' in Clarity XML response." in log_content, "No warning found in log file"
-        
-        # self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in log.handlers))
-        # self.assertTrue(any("Missing 'rtp:reagent-types'" in str(warning.message) for warning in log.handlers))
+        logging.shutdown()
 
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
@@ -274,9 +256,49 @@ class TestClarityHelperLims(unittest.TestCase):
             assert "WARNING" in log_content, "No warning found in log file!"
             assert "Missing 'reagent-type' or 'uri' in reagent-type data." in log_content, "No warning found in log file!"
 
+        logging.shutdown()
+
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
     def test_clarity_helper_get_barcode_from_reagenttypes_warning_3(self, mock_get_with_uri, mock_xmltodict_parse):
+        """
+        Mock api connection to return the third warning
+        """
+        # Setup
+        barcode = "fake_barcode"
+        log_file = "test_logs.log"
+
+        mock_get_with_uri.side_effect = [
+            "<xml>mock_reagent_types</xml>",  # first API call
+            "<xml>mock_reagent_type_details</xml>",  # second API call
+        ]
+
+        mock_xmltodict_parse.side_effect = [
+            {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},  # first parsed XML
+            {"rtp:reagent-type": {}},  # second parsed XML
+        ]
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+        print(results)
+
+        # Assert
+        # check the barcode returned and if the correct warning was raised
+        self.assertEqual(results, barcode)
+        print(log.handlers)
+
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
+            assert "Missing 'special-type' or 'attribute' field in Clarity." in log_content, "No warning found in log file"
+        for handler in logging.root.handlers[:]:  # Remove existing handlers
+            logging.root.removeHandler(handler)
+
+
+    @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
+    @patch.object(ClarityHelperLimsMock, "get_with_uri")
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_4(self, mock_get_with_uri, mock_xmltodict_parse):
         """
         Mock api connection to return the third warning
         """
@@ -307,11 +329,10 @@ class TestClarityHelperLims(unittest.TestCase):
         with open(log_file, "r") as file:
             log_content = file.read()
             assert "WARNING" in log_content, "No warning found in log file!"
-            assert "Missing 'special-type' or 'attribute' field in Clarity." in log_content, "No warning found in log file"
+            assert "Attribute 'name' is not 'Sequence'." in log_content, "No warning found in log file"
 
-        # self.assertEqual(len(log.handlers), 1)  
-        # self.assertIs(log.handlers[-1].levelname, "WARNING")
-        # self.assertIs(log.handlers[-1].msg, "UserWarning")
+        logging.shutdown()
+
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
         """
