@@ -2,6 +2,8 @@
 Clarity API Child class with helper functions
 """
 
+import logging
+
 import queue
 import warnings
 import re
@@ -12,6 +14,25 @@ import xmltodict
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
+# logging.basicConfig(
+#     filename="logfile.log",  # Name of the log file (stored locally)
+#     filemode="w",  # "w" to overwrite each time, use "a" to append
+#     level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
+#     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
+#     datefmt="%Y-%m-%d %H:%M:%S"
+# )
+
+logging.basicConfig(
+    level=logging.DEBUG,  # Ensure warnings and above are logged
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("test_logs.log"),  # Save logs to a file
+        logging.StreamHandler()  # Print logs to console
+    ]
+)
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class ClarityHelperLims(ClarityLims):
     """
@@ -342,6 +363,7 @@ class ClarityHelperLims(ClarityLims):
         Warns:
             UserWarning: If there are issues accessing the XML data structure or API responses.
         """
+        log.info("here's an info message")
         # Construct URI for reagent types
         base_uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes"
         uri = f"{base_uri}?name={sample_barcode}"
@@ -353,12 +375,14 @@ class ClarityHelperLims(ClarityLims):
         # Validate reagent-types and reagent-type keys
         reagent_types = data_dict.get("rtp:reagent-types")
         if not reagent_types:
-            warnings.warn("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.", UserWarning)
+            log.info("here's a second info message")
+            log.warning("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.")
             return sample_barcode
 
         reagent_type = reagent_types.get("reagent-type")
         if not reagent_type or "uri" not in reagent_type:
-            warnings.warn("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.", UserWarning)
+            log.info("here's a third info message")
+            log.warning("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.")
             return sample_barcode
 
         data_dict_uri = reagent_type["uri"]
@@ -370,7 +394,8 @@ class ClarityHelperLims(ClarityLims):
         # Validate special-type and attribute keys
         special_type = uri_xml.get("rtp:reagent-type", {}).get("special-type")
         if not special_type or "attribute" not in special_type:
-            warnings.warn("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.", UserWarning)
+            log.info("here's a fourth info message")
+            log.warning("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.")
             return sample_barcode
 
         attribute = special_type["attribute"]
@@ -379,7 +404,7 @@ class ClarityHelperLims(ClarityLims):
         if attribute.get("name") == "Sequence":
             return attribute.get("value", "None")
         else:
-            warnings.warn("Attribute 'name' is not 'Sequence'. Returning fallback barcode.", UserWarning)
+            log.warning("Attribute 'name' is not 'Sequence'. Returning fallback barcode.")
             return sample_barcode
 
     def get_sample_custom_barcode_from_sampleid(self, sample_id: str) -> str:
@@ -637,7 +662,7 @@ class ClarityHelperLims(ClarityLims):
 
         # Check if no barcodes were processed and raise a warning
         if not has_valid_barcodes:
-            warnings.warn("No valid barcode values found in the provided samples.", UserWarning)
+            log.warning("No valid barcode values found in the provided samples.")
 
         return extracted_info
 

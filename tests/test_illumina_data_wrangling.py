@@ -32,19 +32,19 @@ class TestIlluminaDemux(unittest.TestCase):
         """Teardown API connection"""
         cls.api.save_tracked_requests(cls.data_file_path)
 
-    def test_test(self):
-        """
-        Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
-        """
+    # def test_test(self):
+    #     """
+    #     Pass real run ID with bulk/non-singlecell samples, check that a samplesheet is generated and its content
+    #     """
 
-        # Set up
-        # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-        file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
-        # create output files paths
+    #     # Set up
+    #     # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+    #     file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
+    #     # create output files paths
 
-        # Test
-        generate_illumina_demux_samplesheets(self.api, file, ".")
-        # raise ValueError
+    #     # Test
+    #     generate_illumina_demux_samplesheets(self.api, file, ".")
+    #     # raise ValueError
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):

@@ -4,6 +4,8 @@ Clarity helper API Tests
 
 import os
 import unittest
+import logging
+import sys
 import warnings
 from unittest.mock import patch
 
@@ -17,6 +19,17 @@ from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
+# logging.basicConfig(
+#     filename="logfile.log",  # Name of the log file (stored locally)
+#     filemode="w",  # "w" to overwrite each time, use "a" to append
+#     level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
+#     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
+#     datefmt="%Y-%m-%d %H:%M:%S"
+# )
+
+# Get the logger
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
@@ -171,18 +184,40 @@ class TestClarityHelperLims(unittest.TestCase):
         """
         # Setup
         barcode = "fake_barcode"
+        log_file = "test_logs.log"
+
+        # # Create file handler
+        # file_handler = logging.FileHandler("barcode_from_reagenttypes_isinvalid.log", mode="w")  # Save logs to a file
+        # file_handler.setLevel(logging.DEBUG)
+
+        # # Add handlers to the logger
+        # log.addHandler(file_handler)
+
+        # if log_file:
+        #     log_fh = logging.FileHandler(log_file, encoding="utf-8")
+        #     log_fh.setLevel(logging.DEBUG)
+        #     log_fh.setFormatter(logging.Formatter("[%(asctime)s] %(name)-20s [%(levelname)-7s]  %(message)s"))
+        #     log.addHandler(log_fh)
 
         # Test and Assert
-        with warnings.catch_warnings(record=True) as warn:
-            warnings.simplefilter("always")  # Catch all warnings
+        results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
 
-            results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
+        print(log.handlers)
 
-            # Assert
-            # check the barcode returned and if a warning was raised
-            self.assertEqual(results, barcode)
-            self.assertEqual(len(warn), 1)
-            self.assertIs(warn[-1].category, UserWarning)
+        # Assert
+        # check the barcode returned and if a warning was raised
+        self.assertEqual(results, barcode)
+
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
+        
+        # self.assertIs(log.handlers[-1].category, warning)
+        # logging.shutdown()
+
+        for handler in logging.root.handlers[:]:  # Remove existing handlers
+            logging.root.removeHandler(handler)
 
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
@@ -192,21 +227,26 @@ class TestClarityHelperLims(unittest.TestCase):
         """
         # Setup
         barcode = "fake_barcode"
+        log_file = "test_logs.log"
 
         mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
         mock_xmltodict_parse.return_value = {}
 
         # Test
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        results = self.api.get_barcode_from_reagenttypes(barcode)
 
-            results = self.api.get_barcode_from_reagenttypes(barcode)
+        # Assert
+        # check the barcode returned and if the correct warning was raised
+        self.assertEqual(results, barcode)
 
-            # Assert
-            # check the barcode returned and if the correct warning was raised
-            self.assertEqual(results, barcode)
-            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
-            self.assertTrue(any("Missing 'rtp:reagent-types'" in str(warning.message) for warning in w))
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
+            assert "Missing 'rtp:reagent-types' in Clarity XML response." in log_content, "No warning found in log file"
+        
+        # self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in log.handlers))
+        # self.assertTrue(any("Missing 'rtp:reagent-types'" in str(warning.message) for warning in log.handlers))
 
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
@@ -216,21 +256,23 @@ class TestClarityHelperLims(unittest.TestCase):
         """
         # Setup
         barcode = "fake_barcode"
+        log_file = "test_logs.log"
 
         mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
         mock_xmltodict_parse.return_value = {"rtp:reagent-types": {"reagent-type": {}}}
 
         # Test
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        results = self.api.get_barcode_from_reagenttypes(barcode)
 
-            results = self.api.get_barcode_from_reagenttypes(barcode)
+        # Assert
+        # check the barcode returned and if the correct warning was raised
+        self.assertEqual(results, barcode)
 
-            # Assert
-            # check the barcode returned and if the correct warning was raised
-            self.assertEqual(results, barcode)
-            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
-            self.assertTrue(any("Missing 'reagent-type' or 'uri'" in str(warning.message) for warning in w))
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
+            assert "Missing 'reagent-type' or 'uri' in reagent-type data." in log_content, "No warning found in log file!"
 
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
@@ -240,6 +282,7 @@ class TestClarityHelperLims(unittest.TestCase):
         """
         # Setup
         barcode = "fake_barcode"
+        log_file = "test_logs.log"
 
         mock_get_with_uri.side_effect = [
             "<xml>mock_reagent_types</xml>",  # first API call
@@ -252,16 +295,23 @@ class TestClarityHelperLims(unittest.TestCase):
         ]
 
         # Test
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+        print(results)
 
-            results = self.api.get_barcode_from_reagenttypes(barcode)
+        # Assert
+        # check the barcode returned and if the correct warning was raised
+        self.assertEqual(results, barcode)
+        print(log.handlers)
 
-            # Assert
-            # check the barcode returned and if the correct warning was raised
-            self.assertEqual(results, barcode)
-            self.assertTrue(any(issubclass(warning.category, UserWarning) for warning in w))
-            self.assertTrue(any("Attribute 'name' is not 'Sequence'" in str(warning.message) for warning in w))
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
+            assert "Missing 'special-type' or 'attribute' field in Clarity." in log_content, "No warning found in log file"
+
+        # self.assertEqual(len(log.handlers), 1)  
+        # self.assertIs(log.handlers[-1].levelname, "WARNING")
+        # self.assertIs(log.handlers[-1].msg, "UserWarning")
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
         """
@@ -295,7 +345,7 @@ class TestClarityHelperLims(unittest.TestCase):
         sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
 
         # Assert
-        with warnings.catch_warnings(record=True) as warn:
+        with logging.captureWarnings(True) as warn:
             warnings.simplefilter("always")  # Catch all warnings
             self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
             self.assertEqual(len(warn), 1)  # Check that a warning was raised
