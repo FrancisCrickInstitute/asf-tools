@@ -5,7 +5,6 @@ Clarity API Child class with helper functions
 import logging
 
 import queue
-import warnings
 import re
 from requests.exceptions import HTTPError
 
@@ -25,14 +24,12 @@ from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 logging.basicConfig(
     level=logging.DEBUG,  # Ensure warnings and above are logged
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("test_logs.log", mode="w"),  # Save logs to a file
-        logging.StreamHandler()  # Print logs to console
-    ]
+    handlers=[logging.FileHandler("test_logs.log", mode="w"), logging.StreamHandler()],  # Save logs to a file  # Print logs to console
 )
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
 
 class ClarityHelperLims(ClarityLims):
     """

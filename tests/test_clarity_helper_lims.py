@@ -5,8 +5,6 @@ Clarity helper API Tests
 import os
 import unittest
 import logging
-import sys
-import warnings
 from unittest.mock import patch
 
 import pytest
@@ -22,6 +20,7 @@ API_TEST_DATA = "tests/data/api/clarity"
 # Get the logger
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
 
 class TestClarityHelperLims(unittest.TestCase):
     """Class for testing the clarity api wrapper"""
@@ -295,7 +294,6 @@ class TestClarityHelperLims(unittest.TestCase):
         for handler in logging.root.handlers[:]:  # Remove existing handlers
             logging.root.removeHandler(handler)
 
-
     @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
     @patch.object(ClarityHelperLimsMock, "get_with_uri")
     def test_clarity_helper_get_barcode_from_reagenttypes_warning_4(self, mock_get_with_uri, mock_xmltodict_parse):
@@ -333,7 +331,6 @@ class TestClarityHelperLims(unittest.TestCase):
 
         logging.shutdown()
 
-
     def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
         """
         Pass a valid input to method
@@ -364,13 +361,19 @@ class TestClarityHelperLims(unittest.TestCase):
 
         # Setup
         sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
+        expected = {}
+        log_file = "test_logs.log"
+
+        # Test
+        results = self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
 
         # Assert
-        with logging.captureWarnings(True) as warn:
-            warnings.simplefilter("always")  # Catch all warnings
-            self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
-            self.assertEqual(len(warn), 1)  # Check that a warning was raised
-            self.assertIs(warn[-1].category, UserWarning)  # Check that it's a Warning
+        self.assertEqual(results, expected)
+
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
 
     def test_clarity_helper_reformat_barcode_to_index_isvalid(self):
         """

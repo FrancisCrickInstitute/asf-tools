@@ -31,7 +31,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertFalse(result)
 
-
     def test_check_pipeline_run_complete_true(self):
         """
         Test function when the pipeline run is complete
@@ -46,7 +45,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertTrue(result)
-
 
     def test_check_ont_sequencing_run_complete_false_nocount(self):
         """
@@ -63,7 +61,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertFalse(result)
 
-
     def test_check_ont_sequencing_run_complete_false_archive(self):
         """
         Test function when the ONT sequencing run is not complete
@@ -78,7 +75,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertFalse(result)
-
 
     def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
         """
@@ -95,7 +91,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertFalse(result)
 
-
     def test_check_ont_sequencing_run_complete_true(self):
         """
         Test function when the ONT sequencing run is complete
@@ -111,7 +106,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertTrue(result)
 
-
     @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_false(self, tmp_path):
         """
@@ -126,7 +120,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertFalse(result)
-
 
     @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
@@ -147,7 +140,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertFalse(result)
-
 
     @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
@@ -174,7 +166,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertTrue(result)
 
-
     @with_temporary_folder
     def test_symlink_to_target_isinvalid_target(self, tmp_path):
         """
@@ -189,7 +180,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             dt.symlink_to_target(valid_path, invalid_path)
-
 
     @with_temporary_folder
     def test_symlink_to_target_isvalid_str(self, tmp_path):
@@ -207,7 +197,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
         self.assertTrue(os.path.islink(run_dir_1))
-
 
     @with_temporary_folder
     def test_symlink_to_target_isvalid_list(self, tmp_path):
@@ -235,7 +224,6 @@ class TestIoDataManagement(unittest.TestCase):
         run_dir_2 = os.path.join(tmp_path2, "run01")
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
-
 
     @with_temporary_folder
     def test_deliver_to_targets_valid(self, tmp_path):
@@ -266,7 +254,6 @@ class TestIoDataManagement(unittest.TestCase):
         self.assertTrue(os.path.islink(run_dir_2))
         self.assertTrue(os.path.islink(run_dir_3))
 
-
     @with_temporary_folder
     def test_deliver_to_targets_no_user(self, tmp_path):
         """
@@ -281,7 +268,6 @@ class TestIoDataManagement(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             dt.deliver_to_targets(basepath_target, tmp_path)
 
-
     @with_temporary_folder
     def test_deliver_to_targets_source_invalid(self, tmp_path):
         """
@@ -295,7 +281,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             dt.deliver_to_targets(basepath_target, tmp_path)
-
 
     @with_temporary_folder
     def test_deliver_to_targets_symlink_overide(self, tmp_path):
@@ -329,7 +314,6 @@ class TestIoDataManagement(unittest.TestCase):
         link = os.readlink(run_dir_1)
         self.assertTrue("/test/path" in link)
 
-
     def test_scan_delivery_state_source_invalid(self):
         """
         Test function when the source path doesn't exist
@@ -344,7 +328,6 @@ class TestIoDataManagement(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             dm.scan_delivery_state(source_dir, target_dir)
 
-
     def test_scan_delivery_state_target_invalid(self):
         """
         Test function when the target path doesn't exist
@@ -358,7 +341,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             dm.scan_delivery_state(source_dir, target_dir)
-
 
     @with_temporary_folder
     def test_scan_delivery_state_all_to_deliver(self, tmp_path):
@@ -379,7 +361,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         self.assertEqual(len(result), 2)
 
-
     @with_temporary_folder
     def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
         """
@@ -399,7 +380,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertEqual(len(result), 1)
-
 
     @with_temporary_folder
     def test_scan_delivery_state_none_to_deliver(self, tmp_path):
@@ -422,7 +402,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         self.assertEqual(len(result), 0)
-
 
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_ont_valid(self, mock_run):
@@ -456,7 +435,6 @@ class TestIoDataManagement(unittest.TestCase):
         }
         self.assertEqual(data, target_dict)
 
-
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_illumina_valid(self, mock_run):
         """
@@ -488,7 +466,6 @@ class TestIoDataManagement(unittest.TestCase):
             "run_06": {"status": "pipeline_pending"},
         }
         self.assertEqual(data, target_dict)
-
 
     @mock.patch("asf_tools.io.data_management.os.walk")
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
@@ -540,7 +517,6 @@ class TestIoDataManagement(unittest.TestCase):
             },
         }
         self.assertEqual(result, expected_result)
-
 
     @with_temporary_folder
     def test_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
@@ -594,7 +570,6 @@ class TestIoDataManagement(unittest.TestCase):
             }
             self.assertEqual(result, expected_result)
 
-
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
     def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
@@ -643,7 +618,6 @@ class TestIoDataManagement(unittest.TestCase):
         }
         assert old_data == expected_results
 
-
     def test_find_stale_directories_noolddir(self):  # pylint: disable=unused-variable
         """
         Test function when the target path is newer than set time
@@ -660,7 +634,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         assert not old_data
 
-
     def test_find_stale_directories_nodirs(self):
         """
         Test function when the target path has no sub-directories
@@ -673,7 +646,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
             dm.find_stale_directories(data_path, 2)
-
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
@@ -710,7 +682,6 @@ class TestIoDataManagement(unittest.TestCase):
         self.assertTrue(os.path.exists(subdir2))
         self.assertFalse(os.path.exists(work_dir1))
         self.assertFalse(os.path.exists(work_dir2))
-
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
@@ -786,7 +757,6 @@ class TestIoDataManagement(unittest.TestCase):
         self.assertTrue(os.path.exists(file_dorado_dir1))
         self.assertFalse(os.path.exists(file_dorado_demux_dir2))
         self.assertFalse(os.path.exists(file_dorado_dir2))
-
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
