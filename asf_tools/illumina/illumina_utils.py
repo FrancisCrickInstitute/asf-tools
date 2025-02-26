@@ -1,12 +1,14 @@
 import csv
 import os
 import re
-import warnings
+import logging
 from datetime import datetime
 from enum import Enum
 from xml.parsers.expat import ExpatError
 
 import xmltodict
+
+log = logging.getLogger(__name__)
 
 
 class IndexMode(Enum):
@@ -524,7 +526,7 @@ class IlluminaUtils:
         for sample_id, indices in sample_index_dict.items():
             # Ensure 'index' value is present
             if "index" not in indices:
-                warnings.warn(f"Index value for '{sample_id}' not found.", UserWarning)
+                log.warning(f"Index value for '{sample_id}' not found.", UserWarning)
                 # pass
             else:
                 # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
@@ -586,6 +588,66 @@ class IlluminaUtils:
                 grouped_samples[key_value].append(sample_id)
 
         return grouped_samples
+
+    def split_by_project_type(self, samples_all_info: dict, project_types_dict: dict) -> dict:
+        """
+        Dynamically categorizes samples based on project type and data analysis type.
+
+        Args:
+            samples_all_info (dict): Dictionary containing metadata for all samples.
+            project_types_dict (dict): Dictionary mapping category names to lists of valid values.
+
+        Returns:
+            dict: A dictionary containing categorized samples for each project type.
+        """
+        # Check inputs are dictionaries
+        if not isinstance(samples_all_info, dict):
+            raise ValueError(f"{samples_all_info} is not a dictionary.")
+
+        if not isinstance(project_types_dict, dict):
+            raise ValueError(f"{project_types_dict} is not a dictionary.")
+
+        # Filter sample_all_info to include only the lane, sample_id and indexing information
+        sample_and_index_dict = self.reformat_barcode(samples_all_info)
+        simplified_samples_dict = {}
+        for sample, metadata in samples_all_info.items():
+            if not isinstance(metadata, dict):
+                log.warning(f"Sample '{sample}' has invalid metadata format. Skipping.")
+                continue
+
+            simplified_samples_dict[sample] = {
+                "Lane": metadata.get("lanes", []),  # Default to empty list if missing
+                "Sample_ID": sample,
+                **sample_and_index_dict.get(sample, {}),
+            }
+
+        # Initialize result dictionary dynamically with empty dictionaries
+        categorized_samples = {category.lower(): {} for category in project_types_dict}
+
+        for sample, info in simplified_samples_dict.items():
+            # Extract project type and data analysis type from the sample info
+            project_type = samples_all_info[sample].get("project_type")
+            data_analysis_type = samples_all_info[sample].get("data_analysis_type")
+
+            if project_type is None and data_analysis_type is None:
+                log.warning(f"'{sample}' has None project_type and None data_analysis_type.")
+                continue
+
+            categorized = False  # Flag to track if the sample was categorized
+
+            # Dynamically check and assign samples to the correct category
+            for category, valid_types in project_types_dict.items():
+                if project_type in valid_types or data_analysis_type in valid_types:
+                    categorized_samples[category.lower()][sample] = simplified_samples_dict[sample]
+                    categorized = True
+                    break  # Stop checking once categorized
+
+            # Handle other/bulk samples separately
+            if not categorized:
+                categorized_samples["other_samples"] = {}
+                categorized_samples["other_samples"][sample] = simplified_samples_dict[sample]
+
+        return categorized_samples
 
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """

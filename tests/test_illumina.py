@@ -341,11 +341,13 @@ class TestIlluminaUtils(unittest.TestCase):
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
             "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"},
             "Sample3": {"barcode": "15 SI-NA-G2 (ATAACCTA-CGGTGAGC-GATCTTAT-TCCGAGCG)"},
+            "Sample4": {"barcode": "GTTCTT"},
         }
         expected_output = {
             "Sample1": {"index": "AAGAAAGTTGTCGGTGTG"},
             "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGGAAT"},
             "Sample3": {"index": "ATAACCTA", "index2": "CGGTGAGC", "index3": "GATCTTAT", "index4": "TCCGAGCG"},
+            "Sample4": {"index": "GTTCTT"},
         }
 
         # Test
@@ -528,6 +530,67 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert result1 == expected1
         assert result2 == expected2
+
+    def test_split_by_project_type_isnone(self):
+
+        # Set up
+        iu = IlluminaUtils()
+        sample_info = {
+            "sample_1": {"none"},
+        }
+        constants_dict = {"constant_1": ["value_1"]}
+        expected_output = {"constant_1": {}}
+
+        # Test
+        results = iu.split_by_project_type(sample_info, constants_dict)
+        print(results)
+
+        # Assert
+        assert results == expected_output
+
+    def test_split_by_project_type_nomatch(self):
+
+        # Set up
+        iu = IlluminaUtils()
+        sample_info = {
+            "sample_1": {"no_project_type": "none", "lanes": "1", "barcode": "BC (ATCG)"},
+        }
+        constants_dict = {"constant_1": ["value_1"]}
+        expected_output = {"constant_1": {}}
+
+        # Test
+        results = iu.split_by_project_type(sample_info, constants_dict)
+        print(results)
+
+        # Assert
+        assert results == expected_output
+
+    def test_split_by_project_type_isvalid(self):
+
+        # Set up
+        iu = IlluminaUtils()
+        sample_info = {
+            "sample_1": {"project_type": "value_1", "lanes": "1", "barcode": "BC (ATCG)"},
+            "sample_2": {"project_type": "value_2", "lanes": "2", "barcode": "OB (ATAA-GGTC)"},
+            "sample_3": {"data_analysis_type": "other_value_2", "lanes": "3", "barcode": "AAAT-ATGC"},
+            "sample_4": {"project_type": "value_4", "lanes": "4", "barcode": "CGTA"},
+        }
+        constants_dict = {"constant_1": ["value_1", "other_value_1"], "CONSTANT_2": ["value_2", "other_value_2"]}
+        expected_output = {
+            "constant_1": {"sample_1": {"Lane": "1", "Sample_ID": "sample_1", "index": "ATCG"}},
+            "constant_2": {
+                "sample_2": {"Lane": "2", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+                "sample_3": {"Lane": "3", "Sample_ID": "sample_3", "index": "AAAT", "index2": "ATGC"},
+            },
+            "other_samples": {"sample_4": {"Lane": "4", "Sample_ID": "sample_4", "index": "CGTA"}},
+        }
+
+        # Test
+        results = iu.split_by_project_type(sample_info, constants_dict)
+        print(results)
+
+        # Assert
+        assert results == expected_output
 
     def test_calculate_overridecycle_values_indexnone(self):
         """
