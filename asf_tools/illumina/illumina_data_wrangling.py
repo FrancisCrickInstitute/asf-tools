@@ -25,13 +25,13 @@ SINGLE_CELL_DATA_ANALYSIS_TYPES = [
     "10X-Multiomics-GEX",
     "10X-Flex",
 ]
-ATAC_PROJECT_TYPES = ["ATAC", "ATAC-Seq", "10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]
+ATAC_PROJECT_TYPES = ["10X ATAC", "10X Multiomics ATAC", "10X-Multiomics-ATAC"]  # do not include bulk samples, so no matches to "ATAC" or "ATAC-Seq"
 ATAC_DATA_ANALYSIS_TYPES = [
     "10X-ATAC",
 ]
 
 
-def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_config_path=None, dlp_sample_file=None):
+def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path, bcl_config_path=None, dlp_sample_file=None):
     """
     Generate Illumina demultiplexing samplesheets.
 
@@ -83,7 +83,7 @@ def generate_illumina_demux_samplesheets(cl, runinfo_path, output_path, bcl_conf
 
     # Obtain sample information and format it as required by `BCLConvert_Data`
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_path)
-    samples_all_info = cl.collect_samplesheet_info(flowcell_id)
+    samples_all_info = clarity_lims.collect_samplesheet_info(flowcell_id)
 
     # Convert barcode value from "BC (ATGC)" to "ATGC". Return original barcode string if the barcode isn't in the "BC (ATGC)" format
     sample_and_index_dict = iu.reformat_barcode(samples_all_info)
