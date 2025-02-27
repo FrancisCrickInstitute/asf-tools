@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
-from asf_tools.illumina.illumina_utils import IlluminaUtils
+from asf_tools.illumina.illumina_utils import count_samples_in_bcl_samplesheet
 
 from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 from .test_io_utils import with_temporary_folder
@@ -58,11 +58,9 @@ class TestIlluminaDemux(unittest.TestCase):
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22NWWGLT3.json")
         tmp_samplesheet_file_path_bulk = os.path.join(tmp_path, "22NWWGLT3_samplesheet_8_8.csv")
         tmp_samplesheet_file_path_general = os.path.join(tmp_path, "22NWWGLT3_samplesheet.csv")
-        # connect to Illumina utils
-        iu = IlluminaUtils()
 
         # Test
-        generate_illumina_demux_samplesheets(self.api, file, tmp_path)
+        generate_illumina_demux_samplesheets(self, self.api, file, tmp_path)
 
         # Assert
         self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))
@@ -84,8 +82,8 @@ class TestIlluminaDemux(unittest.TestCase):
             self.assertTrue("Header" in config_json)
 
         # Check the number of samples for each samplesheet
-        samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
-        samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
+        samples_general = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
+        samples_bulk = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
 
         expected_unique_samples_entries_general = 32
         expected_unique_samples_entries_bulk = 32
@@ -104,8 +102,6 @@ class TestIlluminaDemux(unittest.TestCase):
         # create output files paths
         tmp_bclconfig_file_path = os.path.join(tmp_path, "bcl_config_22T3M3LT3.json")
         tmp_samplesheet_file_path = os.path.join(tmp_path, "22T3M3LT3_samplesheet_singlecell.csv")
-        # connect to Illumina utils
-        iu = IlluminaUtils()
 
         # Test
         generate_illumina_demux_samplesheets(self.api, file, tmp_path)
@@ -125,7 +121,7 @@ class TestIlluminaDemux(unittest.TestCase):
             # print(data)
 
         # Check the number of samples
-        samples_singlecell = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
+        samples_singlecell = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
         expected_unique_samples_entries_singlecell = 136
         assert samples_singlecell == expected_unique_samples_entries_singlecell
 
@@ -138,8 +134,6 @@ class TestIlluminaDemux(unittest.TestCase):
         # Set up
         runinfo_file = "./tests/data/illumina/HWNCWDMXY/RunInfo.xml"
         dlp_file = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
-        # connect to Illumina utils
-        iu = IlluminaUtils()
 
         # create output files paths
         tmp_samplesheet_file_path = os.path.join(tmp_path, "HWNCWDMXY_samplesheet_dlp.csv")
@@ -164,7 +158,7 @@ class TestIlluminaDemux(unittest.TestCase):
             print(data)
 
         # Check the number of samples
-        samples_dlp = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
+        samples_dlp = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path, "Sample_ID")
         expected_unique_samples_entries_dlp = 12
         assert samples_dlp == expected_unique_samples_entries_dlp
 
@@ -175,7 +169,6 @@ class TestIlluminaDemux(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         run_info_path = "./tests/data/illumina/22NWWGLT3/RunInfo.xml"
         mock_sample_info = "./tests/data/api/clarity/mock_data/22NWWGLT3_sample_info_mock.json"
 
@@ -235,10 +228,10 @@ class TestIlluminaDemux(unittest.TestCase):
                 self.assertTrue("Lane,Sample_ID,index,index2" in data)
 
             # Check the number of samples for each samplesheet
-            samples_general = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
-            samples_bulk = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
-            samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
-            samples_atac = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
+            samples_general = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_general, "Sample_ID")
+            samples_bulk = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_bulk, "Sample_ID")
+            samples_sc = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
+            samples_atac = count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
 
             expected_unique_samples_entries_bulk = 27  # 7 samples
             expected_unique_samples_entries_sc = 33  # 8 samples

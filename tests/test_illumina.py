@@ -12,8 +12,32 @@ from xml.parsers.expat import ExpatError
 
 import pytest
 
-from asf_tools.illumina.illumina_utils import IlluminaUtils
-
+from asf_tools.illumina.illumina_utils import (
+    runinfo_xml_to_dict,
+    find_key_recursively,
+    extract_matching_item_from_dict,
+    filter_runinfo,
+    extract_illumina_runid_fromxml,
+    extract_illumina_runid_frompath,
+    extract_cycle_fromxml,
+    extract_cycle_frompath,
+    merge_runinfo_dict_fromfile,
+    reformat_barcode,
+    atac_reformat_barcode,
+    group_samples_by_index_length,
+    group_samples_by_dictkey,
+    split_by_project_type,
+    calculate_overridecycle_values,
+    generate_overridecycle_string,
+    index_distance,
+    minimum_index_distance,
+    dlp_barcode_data_to_dict,
+    generate_bclconfig,
+    count_samples_in_bcl_samplesheet,
+    generate_bcl_samplesheet,
+    merge_dicts,
+    filter_readinfo,
+)
 
 class TestIlluminaUtils(unittest.TestCase):
     """Class for parse_runinfo tests"""
@@ -24,12 +48,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_path = "file_does_not_exist"
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            iu.runinfo_xml_to_dict(invalid_path)
+            runinfo_xml_to_dict(invalid_path)
 
     def test_runinfo_xml_to_dict_isnotxml(self):
         """
@@ -37,12 +60,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_file = "./tests/data/illumina/dummy.txt"
 
         # Test and Assert
         with self.assertRaises(ExpatError):
-            iu.runinfo_xml_to_dict(invalid_file)
+            runinfo_xml_to_dict(invalid_file)
 
     def test_runinfo_xml_to_dict_isinvalid(self):
         """
@@ -50,12 +72,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_file = "./tests/data/illumina/fake_RunInfo.xml"
 
         # Test and Assert
         with self.assertRaises(ExpatError):
-            iu.runinfo_xml_to_dict(invalid_file)
+            runinfo_xml_to_dict(invalid_file)
 
     def test_find_key_recursively_none(self):
         """
@@ -63,11 +84,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.find_key_recursively(None, "None")
+            find_key_recursively(None, "None")
 
     def test_find_key_recursively_emptytarget(self):
         """
@@ -75,13 +95,12 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
-        xml_dict = iu.runinfo_xml_to_dict(file)
+        xml_dict = runinfo_xml_to_dict(file)
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.find_key_recursively(xml_dict, "")
+            find_key_recursively(xml_dict, "")
 
     def test_extract_matching_item_from_dict_returnnone(self):
         """
@@ -89,13 +108,12 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
-        xml_dict = iu.runinfo_xml_to_dict(file)
+        xml_dict = runinfo_xml_to_dict(file)
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.extract_matching_item_from_dict(xml_dict, "info_not_in_file")
+            extract_matching_item_from_dict(xml_dict, "info_not_in_file")
 
     def test_filter_runinfo_machinenotexist(self):
         """
@@ -116,7 +134,6 @@ class TestIlluminaUtils(unittest.TestCase):
             ValueError: If the instrument type does not match any predefined patterns.
         """
         # Set up
-        iu = IlluminaUtils()
         xml_dict = {
             "@Version": "6",
             "Run": {
@@ -134,7 +151,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.filter_runinfo(xml_dict)
+            filter_runinfo(xml_dict)
 
     def test_filter_runinfo_isvalid(self):
         """
@@ -155,7 +172,6 @@ class TestIlluminaUtils(unittest.TestCase):
             AssertionError: If the output does not match the expected dictionary.
         """
         # Set up
-        iu = IlluminaUtils()
         xml_dict = {
             "@Version": "6",
             "Run": {
@@ -201,7 +217,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        run_info = iu.filter_runinfo(xml_dict)
+        run_info = filter_runinfo(xml_dict)
         # print(run_info)
 
         # Assert
@@ -212,12 +228,11 @@ class TestIlluminaUtils(unittest.TestCase):
         Pass a valid XML file and test expected RunID values from the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
         flowcell_runid = "22MKK5LT3"
 
         # Test
-        run_info = iu.extract_illumina_runid_fromxml(file)
+        run_info = extract_illumina_runid_fromxml(file)
         print(run_info)
 
         # Assert
@@ -228,13 +243,12 @@ class TestIlluminaUtils(unittest.TestCase):
         Pass a valid XML file and test expected RunID values from the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
         path = "./tests/data/illumina/"
         file = "RunInfo.xml"
         flowcell_runid = "22MKK5LT3"
 
         # Test
-        run_info = iu.extract_illumina_runid_frompath(path, file)
+        run_info = extract_illumina_runid_frompath(path, file)
         print(run_info)
 
         # Assert
@@ -245,12 +259,11 @@ class TestIlluminaUtils(unittest.TestCase):
         Pass a valid XML file and test expected NumCycle values from the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
         cycle_length = ["151", "10", "10", "151"]
 
         # Test
-        run_info = iu.extract_cycle_fromxml(file)
+        run_info = extract_cycle_fromxml(file)
 
         # Assert
         assert run_info == cycle_length
@@ -260,13 +273,12 @@ class TestIlluminaUtils(unittest.TestCase):
         Pass a valid XML file and test expected RunID values from the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
         path = "./tests/data/illumina/"
         file = "RunInfo.xml"
         cycle_length = ["151", "10", "10", "151"]
 
         # Test
-        run_info = iu.extract_cycle_frompath(path, file)
+        run_info = extract_cycle_frompath(path, file)
 
         # Assert
         assert run_info == cycle_length
@@ -276,7 +288,6 @@ class TestIlluminaUtils(unittest.TestCase):
         Pass a valid XML file and test expected values in the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
         file = "./tests/data/illumina/RunInfo.xml"
 
         current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -296,7 +307,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        filtered_info = iu.merge_runinfo_dict_fromfile(file)
+        filtered_info = merge_runinfo_dict_fromfile(file)
         # print(filtered_info)
 
         # Assert
@@ -308,11 +319,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.reformat_barcode(None)
+            reformat_barcode(None)
 
     def test_reformat_barcode_nobarcode(self):
         """
@@ -320,12 +330,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {"value1": "invalid", "value2": "dictionary"}
         expected = {}
 
         # Test
-        results = iu.reformat_barcode(test_dict)
+        results = reformat_barcode(test_dict)
 
         # Assert
         assert results == expected
@@ -336,7 +345,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
             "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT"},
@@ -351,7 +359,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        results = iu.reformat_barcode(test_dict)
+        results = reformat_barcode(test_dict)
         print(results)
 
         # Assert
@@ -363,11 +371,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.atac_reformat_barcode(None)
+            atac_reformat_barcode(None)
 
     def test_atac_reformat_barcode_nobarcode(self):
         """
@@ -375,12 +382,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {"value1": "invalid", "value2": "dictionary"}
         expected = {}
 
         # Test
-        results = iu.atac_reformat_barcode(test_dict)
+        results = atac_reformat_barcode(test_dict)
 
         # Assert
         assert results == expected
@@ -391,7 +397,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
             "Sample2": {"barcode": "GTTCTT-CTGTGGGGAAT-ATTCTT-CTGTGAAT"},
@@ -404,7 +409,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        results = iu.atac_reformat_barcode(test_dict)
+        results = atac_reformat_barcode(test_dict)
         print(results)
 
         # Assert
@@ -416,11 +421,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.group_samples_by_index_length(None)
+            group_samples_by_index_length(None)
 
     def test_group_samples_by_index_length_isinvalid(self):
         """
@@ -428,18 +432,17 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {"value1": "invalid", "value2": "dictionary"}
 
         # Test
-        results = iu.group_samples_by_index_length(test_dict)
+        results = group_samples_by_index_length(test_dict)
 
         # Assert
         assert results == []
 
         with warnings.catch_warnings(record=True) as warning_list:
             warnings.simplefilter("always")  # Ensure all warnings are caught
-            iu.group_samples_by_index_length(test_dict)
+            group_samples_by_index_length(test_dict)
         self.assertEqual(len(warning_list), 2)
 
         # Check each warning message
@@ -452,7 +455,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         test_dict = {
             "Sample1": {"index": "AAGATAGTGA"},
             "Sample2": {"index": "GTTCTT", "index2": "CTGTGGGAAT"},
@@ -461,7 +463,7 @@ class TestIlluminaUtils(unittest.TestCase):
         expected_output = [{"index_length": (10, 0), "samples": ["Sample1"]}, {"index_length": (6, 10), "samples": ["Sample2", "Sample3"]}]
 
         # Test
-        results = iu.group_samples_by_index_length(test_dict)
+        results = group_samples_by_index_length(test_dict)
 
         # Assert
         assert results == expected_output
@@ -472,11 +474,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.group_samples_by_dictkey(None)
+            group_samples_by_dictkey(None)
 
     def test_group_samples_by_dictkey_isinvalid(self):
         """
@@ -484,12 +485,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         not_a_dict = ["list", "not", "dictionary"]
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.group_samples_by_dictkey(not_a_dict, "key")
+            group_samples_by_dictkey(not_a_dict, "key")
 
     def test_group_samples_by_dictkey_missingkey(self):
         """
@@ -497,12 +497,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         valid_dict = {"sample": {"key1": "value1", "key2": "value2"}}
         expected = {}
 
         # Test
-        result = iu.group_samples_by_dictkey(valid_dict, "missing_key")
+        result = group_samples_by_dictkey(valid_dict, "missing_key")
 
         # Assert
         assert result == expected
@@ -513,7 +512,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         valid_dict1 = {"sample": {"key1": "matching_value"}, "sample2": {"key1": "matching_value"}, "sample3": {"key1": "different_value"}}
         valid_dict2 = {
             "sample3": {"key1": "value", "key2": "matching_value"},
@@ -524,8 +522,8 @@ class TestIlluminaUtils(unittest.TestCase):
         expected2 = {"matching_value": ["sample3", "sample4"]}
 
         # Test
-        result1 = iu.group_samples_by_dictkey(valid_dict1, "key1")
-        result2 = iu.group_samples_by_dictkey(valid_dict2, "key2")
+        result1 = group_samples_by_dictkey(valid_dict1, "key1")
+        result2 = group_samples_by_dictkey(valid_dict2, "key2")
 
         # Assert
         assert result1 == expected1
@@ -537,13 +535,12 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         sample_info = {"sample_1": {None}, "sample_2": None, "sample_3": {"invalid_value"}}
         constants_dict = {"constant_1": ["value_1"]}
         expected_output = {"constant_1": {}, "all_samples": {}}
 
         # Test
-        results = iu.split_by_project_type(sample_info, constants_dict)
+        results = split_by_project_type(sample_info, constants_dict)
 
         # Assert
         assert results == expected_output
@@ -554,7 +551,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         sample_info = {"sample_2": {"project_type": "value_2", "lanes": "1", "barcode": "OB (ATAA-GGTC)"}}
         constants_dict = {"constant_1": None}
@@ -567,7 +563,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        results = iu.split_by_project_type(sample_info, constants_dict)
+        results = split_by_project_type(sample_info, constants_dict)
         print(results)
 
         # Assert
@@ -579,7 +575,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         sample_info = ["not_a_dict"]
         constants_dict = {"constant_1": "value_1"}
 
@@ -590,10 +585,10 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.split_by_project_type(sample_info, constants_dict)
+            split_by_project_type(sample_info, constants_dict)
 
         with self.assertRaises(ValueError):
-            iu.split_by_project_type(sample_info_2, constants_dict_2)
+            split_by_project_type(sample_info_2, constants_dict_2)
 
     def test_split_by_project_type_nomatch(self):
         """
@@ -601,7 +596,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         sample_info = {
             "sample_1": {"no_project_type": "none", "lanes": "1", "barcode": "BC (ATCG)"},
         }
@@ -609,7 +603,7 @@ class TestIlluminaUtils(unittest.TestCase):
         expected_output = {"constant_1": {}, "all_samples": {"sample_1_lane_1": {"Sample_ID": "sample_1", "Lane": "1", "index": "ATCG"}}}
 
         # Test
-        results = iu.split_by_project_type(sample_info, constants_dict)
+        results = split_by_project_type(sample_info, constants_dict)
         print(results)
 
         # Assert
@@ -621,7 +615,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         sample_info = {
             "sample_1": {"project_type": "value_1", "lanes": "1", "barcode": "BC (ATCG)"},
             "sample_2": {"project_type": "value_2", "lanes": ["1", "2"], "barcode": "OB (ATAA-GGTC)"},
@@ -652,7 +645,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        results = iu.split_by_project_type(sample_info, constants_dict)
+        results = split_by_project_type(sample_info, constants_dict)
         print(results)
 
         # Assert
@@ -664,13 +657,12 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("", 10, 8)
+            calculate_overridecycle_values("", 10, 8)
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values(None, 10, 8)
+            calculate_overridecycle_values(None, 10, 8)
 
     def test_calculate_overridecycle_values_integernone(self):
         """
@@ -678,15 +670,14 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("Value", None, 8)
+            calculate_overridecycle_values("Value", None, 8)
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("Value", 10, None)
+            calculate_overridecycle_values("Value", 10, None)
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("Value", 10)
+            calculate_overridecycle_values("Value", 10)
 
     def test_calculate_overridecycle_values_negativeinteger(self):
         """
@@ -694,14 +685,13 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("Value", 10, -8)
+            calculate_overridecycle_values("Value", 10, -8)
 
         with self.assertRaises(TypeError):
-            iu.calculate_overridecycle_values("Value", -10, 8)
+            calculate_overridecycle_values("Value", -10, 8)
 
     def test_calculate_overridecycle_values_negativedifference(self):
         """
@@ -709,11 +699,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.calculate_overridecycle_values("Value", 1, 8)
+            calculate_overridecycle_values("Value", 1, 8)
 
     def test_generate_overridecycle_string_dualindex_isvalid(self):
         """
@@ -721,11 +710,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         expected = "Y151;I8N2;I8N2;Y151"
 
         # Test
-        result = iu.generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcc", 10, 151)
+        result = generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcc", 10, 151)
 
         # Assert
         assert result == expected
@@ -736,13 +724,12 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         expected_1 = "Y151;I8N2;I10;Y151"
         expected_2 = "Y151;I10;I8N2;Y151"
 
         # Test
-        result_1 = iu.generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)
-        result_2 = iu.generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)
+        result_1 = generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)
+        result_2 = generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)
 
         # Assert
         assert result_1 == expected_1
@@ -754,11 +741,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         expected = "N10Y151;I8;N10Y151"
 
         # Test
-        result = iu.generate_overridecycle_string("AATTCCGG", 10, 151)
+        result = generate_overridecycle_string("AATTCCGG", 10, 151)
 
         # Assert
         assert result == expected
@@ -769,20 +755,19 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         seq1 = "AGCT"
         seq2 = "AGCT"
-        self.assertEqual(iu.index_distance(seq1, seq2), 0)
+        self.assertEqual(index_distance(seq1, seq2), 0)
 
         seq3 = "AGCT"
         seq4 = "TCGA"
-        self.assertEqual(iu.index_distance(seq3, seq4), 4)
+        self.assertEqual(index_distance(seq3, seq4), 4)
 
         seq5 = "AGCT"
         seq6 = "TGCT"
-        self.assertEqual(iu.index_distance(seq5, seq6), 1)
+        self.assertEqual(index_distance(seq5, seq6), 1)
 
     def test_minimum_index_distance_isvalid(self):
         """
@@ -790,17 +775,16 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         sequences = ["AGCT", "AGCT", "AGCT"]
-        self.assertEqual(iu.minimum_index_distance(sequences), 0)
+        self.assertEqual(minimum_index_distance(sequences), 0)
 
         sequences = ["AGCT", "TGCA"]
-        self.assertEqual(iu.minimum_index_distance(sequences), 2)
+        self.assertEqual(minimum_index_distance(sequences), 2)
 
         sequences = ["AGGT", "TGCA", "AGCC"]
-        self.assertEqual(iu.minimum_index_distance(sequences), 2)
+        self.assertEqual(minimum_index_distance(sequences), 2)
 
     def test_dlp_barcode_data_to_dict_filenotexists(self):
         """
@@ -808,12 +792,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_path = "file_does_not_exist"
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            iu.dlp_barcode_data_to_dict(invalid_path, "None")
+            dlp_barcode_data_to_dict(invalid_path, "None")
 
     def test_dlp_barcode_data_to_dict_isvalid(self):
         """
@@ -821,7 +804,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         file_path = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
         expected = {
             "General_sample_name_i7_313-i5_313": {
@@ -863,7 +845,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        result = iu.dlp_barcode_data_to_dict(file_path, "General_sample_name")
+        result = dlp_barcode_data_to_dict(file_path, "General_sample_name")
 
         # Assert
         assert result == expected
@@ -874,12 +856,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         fake_list = []
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.generate_bclconfig(fake_list, "flowcell")
+            generate_bclconfig(fake_list, "flowcell")
 
     def test_generate_bclconfig_invalidflowcell(self):
         """
@@ -887,11 +868,10 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.generate_bclconfig("machine", 123)
+            generate_bclconfig("machine", 123)
 
     def test_generate_bclconfig_isvalid(self):
         """
@@ -899,14 +879,13 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         expected = {
             "Header": {"FileFormatVersion": 2, "InstrumentPlatform": "NovaseqX", "RunName": "Flowcell123"},
             "BCLConvert_Settings": {"SoftwareVersion": "4.2.7", "FastqCompressionFormat": "gzip"},
         }
 
         # Test
-        results = iu.generate_bclconfig("NovaseqX", "Flowcell123")
+        results = generate_bclconfig("NovaseqX", "Flowcell123")
 
         # Assert
         assert results == expected
@@ -917,7 +896,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         header_extra = {"FileFormatVersion": 3, "ExtraHeaderField": "TestHeaderValue"}
         bclconvert_extra = {"SoftwareVersion": "4.3.0", "ExtraBCLConvertField": "TestBCLValue"}
         expected = {
@@ -926,7 +904,7 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test
-        results = iu.generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
+        results = generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
 
         # Assert
         assert results == expected
@@ -937,15 +915,14 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_entry = []
         invalid_entry2 = 2
 
         # Test and Assert
         with self.assertRaises(ValueError):
-            iu.count_samples_in_bcl_samplesheet("./", invalid_entry)
+            count_samples_in_bcl_samplesheet("./", invalid_entry)
         with self.assertRaises(ValueError):
-            iu.count_samples_in_bcl_samplesheet("./", invalid_entry2)
+            count_samples_in_bcl_samplesheet("./", invalid_entry2)
 
     def test_count_samples_in_bcl_samplesheet_nofileinput(self):
         """
@@ -953,12 +930,11 @@ class TestIlluminaUtils(unittest.TestCase):
         """
 
         # Set up
-        iu = IlluminaUtils()
         invalid_path = "file_does_not_exist"
 
         # Test and Assert
         with self.assertRaises(FileNotFoundError):
-            iu.count_samples_in_bcl_samplesheet(invalid_path, "string")
+            count_samples_in_bcl_samplesheet(invalid_path, "string")
 
 
 class TestIlluminaUtilsWithFixtures:
@@ -1039,10 +1015,9 @@ class TestIlluminaUtilsWithFixtures:
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test
-        xml_info = iu.runinfo_xml_to_dict(file)
+        xml_info = runinfo_xml_to_dict(file)
         print(xml_info)
 
         # Assert
@@ -1061,10 +1036,9 @@ class TestIlluminaUtilsWithFixtures:
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
-        list_extracted_info = iu.find_key_recursively(dic, "@Id")
+        list_extracted_info = find_key_recursively(dic, "@Id")
 
         # Assert
         assert list_extracted_info == expected_list
@@ -1078,10 +1052,9 @@ class TestIlluminaUtilsWithFixtures:
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Test and Assert
-        list_extracted_info = iu.extract_matching_item_from_dict(list_info, "@Id")
+        list_extracted_info = extract_matching_item_from_dict(list_info, "@Id")
 
         # Assert
         assert list_extracted_info == expected_output
@@ -1109,11 +1082,10 @@ class TestIlluminaUtilsWithFixtures:
         Pass a valid XML file and test expected values in the dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
 
         # Test
-        xml_info = iu.runinfo_xml_to_dict(file)
-        read_info = iu.filter_readinfo(xml_info)
+        xml_info = runinfo_xml_to_dict(file)
+        read_info = filter_readinfo(xml_info)
         # print(xml_info)
 
         # Assert
@@ -1141,10 +1113,9 @@ class TestIlluminaUtilsWithFixtures:
         Pass a two different dictionaries, merge and test expected values in the merged dictionary output
         """
         # Set up
-        iu = IlluminaUtils()
 
         # Test
-        merged_dict = iu.merge_dicts(dict1, dict2, "run_id")
+        merged_dict = merge_dicts(dict1, dict2, "run_id")
 
         # Assert
         assert merged_dict == expected_merged_dict
@@ -1168,11 +1139,10 @@ class TestIlluminaUtilsWithFixtures:
         Check that the csv file is created and contains the correct data
         """
         # Set up
-        iu = IlluminaUtils()
         output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
 
         # Test
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_path)
+        generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_path)
 
         # Assert
         output_file = output_file_path
@@ -1217,12 +1187,11 @@ class TestIlluminaUtilsWithFixtures:
         Check that the csv file does not contain empty or None BCL dictionary values
         """
         # Set up
-        iu = IlluminaUtils()
         output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
         bcl_settings_dict = {}
 
         # Test
-        iu.generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict=bcl_settings_dict, output_file_path=output_file_path)
+        generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict=bcl_settings_dict, output_file_path=output_file_path)
 
         # Assert
         output_file = output_file_path
@@ -1251,7 +1220,6 @@ class TestIlluminaUtilsWithFixtures:
         """
 
         # Set up
-        iu = IlluminaUtils()
         file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
         with open(file_path, "w", encoding="ASCII") as f:
             f.write("[Header],,\n")
@@ -1259,7 +1227,7 @@ class TestIlluminaUtilsWithFixtures:
         expected = None
 
         # Test
-        results = iu.count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
+        results = count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
 
         # Assert
         assert results == expected
@@ -1270,7 +1238,6 @@ class TestIlluminaUtilsWithFixtures:
         """
 
         # Set up
-        iu = IlluminaUtils()
 
         # Create file with content
         file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
@@ -1293,8 +1260,8 @@ class TestIlluminaUtilsWithFixtures:
         expected2 = 3
 
         # Test
-        results = iu.count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
-        results2 = iu.count_samples_in_bcl_samplesheet(file_path2, "Sample_ID")
+        results = count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
+        results2 = count_samples_in_bcl_samplesheet(file_path2, "Sample_ID")
 
         # Assert
         assert results == expected

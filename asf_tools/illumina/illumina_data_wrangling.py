@@ -3,8 +3,20 @@ import logging
 import os
 import warnings
 
-from asf_tools.illumina.illumina_utils import IlluminaUtils
-
+from asf_tools.illumina.illumina_utils import (
+    extract_illumina_runid_fromxml,
+    runinfo_xml_to_dict,
+    filter_runinfo,
+    generate_bclconfig,
+    filter_readinfo,
+    split_by_project_type,
+    dlp_barcode_data_to_dict,
+    generate_bcl_samplesheet,
+    atac_reformat_barcode,
+    group_samples_by_index_length,
+    extract_cycle_fromxml,
+    generate_overridecycle_string,
+)
 
 log = logging.getLogger(__name__)
 
@@ -82,22 +94,19 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
     Returns:
     None
     """
-    # Initialise classes
-    iu = IlluminaUtils()
-
     # Obtain sample information and format it as required by `BCLConvert_Data`
-    flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_path)
+    flowcell_id = extract_illumina_runid_fromxml(runinfo_path)
     samples_all_info = clarity_lims.collect_samplesheet_info(flowcell_id)
 
     # Load RunInfo.xml file and filter out unnecessary information
-    run_info_dict = iu.runinfo_xml_to_dict(runinfo_path)
-    run_info_dict_filt = iu.filter_runinfo(run_info_dict)
+    run_info_dict = runinfo_xml_to_dict(runinfo_path)
+    run_info_dict_filt = filter_runinfo(run_info_dict)
 
     # If no BCL Config file is provided, generate a basic config file with relevant information
     if not bcl_config_path:
         # Generate config json
         machine_type = run_info_dict_filt["machine"]
-        config_json = iu.generate_bclconfig(machine_type, flowcell_id)
+        config_json = generate_bclconfig(machine_type, flowcell_id)
 
         # Save the config json to a file
         bcl_config_path = os.path.join(output_path, "bcl_config_" + flowcell_id + ".json")
@@ -112,8 +121,8 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
     bcl_settings_dict = config_json["BCLConvert_Settings"]
 
     # Obtain read specific information and format it as required by BCLconvert
-    read_info_dict = iu.runinfo_xml_to_dict(runinfo_path)
-    read_info_dict_filt = iu.filter_readinfo(read_info_dict)
+    read_info_dict = runinfo_xml_to_dict(runinfo_path)
+    read_info_dict_filt = filter_readinfo(read_info_dict)
     reads_list = read_info_dict_filt["reads"]
 
     # Convert to dictionary
@@ -130,7 +139,7 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
 
     # Split samples into different workflows based on project type
     samples_categories_dict = {"single_cell": SINGLE_CELL_PROJECT, "atac": ATAC_SC_PROJECT, "dlp": DLP_PROJECT}
-    categorised_sample_dict = iu.split_by_project_type(samples_all_info, samples_categories_dict)
+    categorised_sample_dict = split_by_project_type(samples_all_info, samples_categories_dict)
     # print(categorised_sample_dict)
 
     if "all_samples" in categorised_sample_dict.keys():
@@ -138,19 +147,19 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
         samplesheet_name = f"{flowcell_id}_samplesheet"
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, categorised_sample_dict["all_samples"], samplesheet_path)
+        generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, categorised_sample_dict["all_samples"], samplesheet_path)
 
     # Initiate processing only if samples are present for each workflow
     if "dlp" in categorised_sample_dict.keys() and categorised_sample_dict["dlp"]:
         filtered_dlp_samples = {}
         for sample in categorised_sample_dict["dlp"]:
-            data_dict = iu.dlp_barcode_data_to_dict(dlp_sample_file, sample)
+            data_dict = dlp_barcode_data_to_dict(dlp_sample_file, sample)
             filtered_dlp_samples.update(data_dict)
 
         # Generate samplesheet with the updated settings
         samplesheet_name = samplesheet_name + "_dlp"
         samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_dlp_samples, samplesheet_path)
+        generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_dlp_samples, samplesheet_path)
 
     # This should include 10X/single cell data
     if "single_cell" in categorised_sample_dict.keys() and categorised_sample_dict["single_cell"]:
@@ -170,7 +179,7 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name_sc + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+        generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     # This should include ATAC data
     if "atac" in categorised_sample_dict.keys() and categorised_sample_dict["atac"]:
@@ -186,7 +195,7 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
             if entry["Sample_ID"] in samples_all_info
         }
         print(atac_all_sample_info)
-        new_atac_barcode_info = iu.atac_reformat_barcode(atac_all_sample_info)
+        new_atac_barcode_info = atac_reformat_barcode(atac_all_sample_info)
 
         # Format information according to BCL Convert requirements
         atac_samples_bcldata_dict = {}
@@ -199,11 +208,11 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
 
         # Generate samplesheet with the updated settings
         samplesheet_path = os.path.join(output_path, samplesheet_name_atac + ".csv")
-        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, atac_samples_bcldata_dict, samplesheet_path)
+        generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, atac_samples_bcldata_dict, samplesheet_path)
 
     if "other_samples" in categorised_sample_dict.keys() and categorised_sample_dict["other_samples"]:
         # print(categorised_sample_dict["other_samples"])
-        split_samples_by_indexlength = iu.group_samples_by_index_length(categorised_sample_dict["other_samples"])
+        split_samples_by_indexlength = group_samples_by_index_length(categorised_sample_dict["other_samples"])
         if len(split_samples_by_indexlength) == 0:
             warnings.warn("None of the bulk or 'other samples' have index information", UserWarning)
 
@@ -233,7 +242,7 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
                         split_samples_dict[unique_key] = {**details, "Lane": lane}
 
                 # Obtain the cycle length
-                cycle_length = iu.extract_cycle_fromxml(runinfo_path)
+                cycle_length = extract_cycle_fromxml(runinfo_path)
                 for sample in split_samples_dict.items():
                     index_string = sample[1]["index"]
                     index2_string = sample[1].get("index2", None)
@@ -242,17 +251,17 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
                     index_length_sample_list["index_length"][0] == cycle_length[1] and index_length_sample_list["index_length"][1] == cycle_length[1]
                 ):
                     if index2_string:
-                        override_string = iu.generate_overridecycle_string(
+                        override_string = generate_overridecycle_string(
                             index_string, int(cycle_length[1]), int(cycle_length[0]), index2_string, int(cycle_length[2]), int(cycle_length[3])
                         )
                     else:
-                        override_string = iu.generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
+                        override_string = generate_overridecycle_string(index_string, int(cycle_length[1]), int(cycle_length[0]))
                     bcl_settings_dict["OverrideCycles"] = override_string
 
                 # Generate samplesheet with the updated settings
                 samplesheet_path = os.path.join(output_path, samplesheet_name_bulk + ".csv")
-                iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
+                generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     # # Generate samplesheet with the updated settings
     # samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    # iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)
+    # generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_samples, samplesheet_path)

@@ -7,7 +7,7 @@ import os
 import stat
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.illumina.illumina_utils import IlluminaUtils
+from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
 from asf_tools.io.data_management import DataManagement, DataTypeMode
 from asf_tools.io.utils import list_directory_names
 from asf_tools.nextflow.utils import create_sbatch_header
@@ -166,9 +166,8 @@ class GenDemuxRun:
             sample_dict = api.collect_samplesheet_info(run_name)
         elif mode == DataTypeMode.ILLUMINA:
             # extract illumina RunId/flowcell name, then run check function
-            iu = IlluminaUtils()
             run_dir = os.path.join(self.source_dir, run_name)
-            illumina_run_name = iu.extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
+            illumina_run_name = extract_illumina_runid_frompath(run_dir, "RunInfo.xml")
             sample_dict = api.collect_samplesheet_info(illumina_run_name)
         else:
             sample_dict = api.collect_samplesheet_info(run_name)
