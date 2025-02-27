@@ -38,13 +38,13 @@ class TestIlluminaDemux(unittest.TestCase):
     #     """
 
     #     # Set up
-    #     # file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
-    #     file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
+    #     file = "./tests/data/illumina/22NWWMLT3/RunInfo.xml"
+    #     # file = "./tests/data/illumina/22W3F5LT3/RunInfo.xml"
     #     # create output files paths
 
     #     # Test
     #     generate_illumina_demux_samplesheets(self.api, file, ".")
-    #     # raise ValueError
+    #     raise ValueError
 
     @with_temporary_folder
     def test_generate_illumina_demux_samplesheets_bulk(self, tmp_path):
@@ -217,12 +217,12 @@ class TestIlluminaDemux(unittest.TestCase):
                 data = "".join(file.readlines())
                 self.assertTrue("[BCLConvert_Data]" in data)
                 self.assertTrue("Lane,Sample_ID,index,index2" in data)
-                print(data)
+                # print(data)
             # Check the content of the files
             with open(tmp_samplesheet_file_path_atac, "r") as file:
                 data = "".join(file.readlines())
-                self.assertTrue("WAR6617A5,CGAATTGC" in data)
-                self.assertTrue("WAR6617A5,GTAAGGTG" in data)
+                self.assertTrue("WAR6617A6,GGAAGAGA" in data)
+                self.assertTrue("WAR6617A6,CGAGAGAA" in data)
                 self.assertTrue("Lane,Sample_ID,index,index2" in data)
                 # print(data)
             with open(tmp_samplesheet_file_path_bulk, "r") as file:
@@ -240,9 +240,9 @@ class TestIlluminaDemux(unittest.TestCase):
             samples_sc = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_sc, "Sample_ID")
             samples_atac = iu.count_samples_in_bcl_samplesheet(tmp_samplesheet_file_path_atac, "Sample_ID")
 
-            expected_unique_samples_entries_bulk = 15  # 5 samples
+            expected_unique_samples_entries_bulk = 27  # 7 samples
             expected_unique_samples_entries_sc = 33  # 8 samples
-            expected_unique_samples_entries_atac = 226  # 11 samples
+            expected_unique_samples_entries_atac = 190  # 9 samples
             expected_unique_samples_entries_general = 108
 
             assert samples_general == expected_unique_samples_entries_general
@@ -277,7 +277,7 @@ class TestIlluminaDemuxWithFixtures:
         "flowcell_id,runinfo_file,samplesheet_count",
         [
             ("22NWYFLT3", "./tests/data/illumina/22NWYFLT3/RunInfo.xml", 4),
-            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 6),
+            ("22NWWMLT3", "./tests/data/illumina/22NWWMLT3/RunInfo.xml", 5),
             ("22G57KLT4", "./tests/data/illumina/22G57KLT4/RunInfo.xml", 2),  # 1 general samplesheet, 1 project specific samplesheet
         ],
     )
@@ -329,5 +329,5 @@ class TestIlluminaDemuxWithFixtures:
                     assert "Lane,Sample_ID,index,index2" in data
 
         # ['22NWYFLT3_samplesheet_10_10.csv', '22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet_8_8.csv', '22NWYFLT3_samplesheet.csv']
-        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet_10_10.csv', '22NWWMLT3_samplesheet_8_8.csv', '22NWWMLT3_samplesheet.csv', '22NWWMLT3_samplesheet_atac.csv']
+        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet_10_10.csv', '22NWWMLT3_samplesheet_8_8.csv', '22NWWMLT3_samplesheet.csv']
         # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']

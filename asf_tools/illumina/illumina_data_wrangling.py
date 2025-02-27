@@ -30,6 +30,10 @@ ATAC_DATA_ANALYSIS_TYPES = [
     "10X-ATAC",
 ]
 
+SINGLE_CELL_PROJECT = SINGLE_CELL_PROJECT_TYPES + SINGLE_CELL_DATA_ANALYSIS_TYPES
+ATAC_SC_PROJECT = ATAC_PROJECT_TYPES + ATAC_DATA_ANALYSIS_TYPES
+DLP_PROJECT = ["DLP", "DLPplus"]
+
 
 def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path, bcl_config_path=None, dlp_sample_file=None):
     """
@@ -85,9 +89,6 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
     flowcell_id = iu.extract_illumina_runid_fromxml(runinfo_path)
     samples_all_info = clarity_lims.collect_samplesheet_info(flowcell_id)
 
-    # Convert barcode value from "BC (ATGC)" to "ATGC". Return original barcode string if the barcode isn't in the "BC (ATGC)" format
-    sample_and_index_dict = iu.reformat_barcode(samples_all_info)
-
     # Load RunInfo.xml file and filter out unnecessary information
     run_info_dict = iu.runinfo_xml_to_dict(runinfo_path)
     run_info_dict_filt = iu.filter_runinfo(run_info_dict)
@@ -127,57 +128,22 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
         key_replacements.get(key, key): value for key, value in reads_dict.items()  # Replace key if in key_replacements; otherwise, keep it
     }
 
-    # Subdivide samples into different workflows based on project type
-    dlp_samples = []
-    single_cell_samples = {}
-    atac_samples = {}
-    other_samples = {}
+    # Split samples into different workflows based on project type
+    samples_categories_dict = {"single_cell": SINGLE_CELL_PROJECT, "atac": ATAC_SC_PROJECT, "dlp": DLP_PROJECT}
+    categorised_sample_dict = iu.split_by_project_type(samples_all_info, samples_categories_dict)
+    # print(categorised_sample_dict)
 
-    samples_bcldata_dict = {}
-    for sample in samples_all_info:
-
-        # Add 'Sample_ID' to the dictionary for each sample
-        samples_bcldata_dict[sample] = {
-            "Lane": samples_all_info[sample]["lanes"],
-            "Sample_ID": sample,
-            **(sample_and_index_dict.get(sample, {}) if sample_and_index_dict else {}),
-        }
-
-    for sample in samples_bcldata_dict:
-        project_type = samples_all_info[sample]["project_type"]
-        data_analysis_type = samples_all_info[sample]["data_analysis_type"]
-
-        # Ensure that project_type has a value other than None (ie. not associated with control samples or edge cases)
-        if project_type is None:
-            log.warning(f"'{sample}' have None project_type.")
-        elif project_type in SINGLE_CELL_PROJECT_TYPES or data_analysis_type in SINGLE_CELL_DATA_ANALYSIS_TYPES:
-            single_cell_samples.update({sample: samples_bcldata_dict[sample]})
-        elif project_type in ATAC_PROJECT_TYPES or data_analysis_type in ATAC_DATA_ANALYSIS_TYPES:
-            atac_samples.update({sample: samples_bcldata_dict[sample]})
-        elif "DLP" in project_type or "DLP" in data_analysis_type or "DLPplus" in data_analysis_type:
-            dlp_samples.extend({sample: samples_bcldata_dict[sample]})
-        else:
-            other_samples.update({sample: samples_bcldata_dict[sample]})
-
-    # split samples into multiple entries based on lane values
-    split_samples_general_dict = {}
-    for sample, details in samples_bcldata_dict.items():
-        lanes = details["Lane"]  # Get the list of lanes
-        for lane in lanes:
-            # Create a new key for each unique (sample, lane) combination
-            unique_key = f"{sample}_Lane_{lane}"
-            # Copy the sample details and replace the Lane value with the current lane
-            split_samples_general_dict[unique_key] = {**details, "Lane": lane}
-    # Set up variables required for the samplesheet generation
-    samplesheet_name = f"{flowcell_id}_samplesheet"
-    # Generate samplesheet with the updated settings
-    samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
-    iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_general_dict, samplesheet_path)
+    if "all_samples" in categorised_sample_dict.keys():
+        # Set up variables required for the samplesheet generation
+        samplesheet_name = f"{flowcell_id}_samplesheet"
+        # Generate samplesheet with the updated settings
+        samplesheet_path = os.path.join(output_path, samplesheet_name + ".csv")
+        iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, categorised_sample_dict["all_samples"], samplesheet_path)
 
     # Initiate processing only if samples are present for each workflow
-    if dlp_samples:
+    if "dlp" in categorised_sample_dict.keys() and categorised_sample_dict["dlp"]:
         filtered_dlp_samples = {}
-        for sample in dlp_samples:
+        for sample in categorised_sample_dict["dlp"]:
             data_dict = iu.dlp_barcode_data_to_dict(dlp_sample_file, sample)
             filtered_dlp_samples.update(data_dict)
 
@@ -187,13 +153,14 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, filtered_dlp_samples, samplesheet_path)
 
     # This should include 10X/single cell data
-    if len(single_cell_samples) > 0:
+    if "single_cell" in categorised_sample_dict.keys() and categorised_sample_dict["single_cell"]:
+        # print(categorised_sample_dict["single_cell"].items())
         # All samples are expected to be dual index and one index length
         samplesheet_name_sc = samplesheet_name + "_singlecell"
 
         # split samples into multiple entries based on lane values
         split_samples_dict = {}
-        for sample, details in single_cell_samples.items():
+        for sample, details in categorised_sample_dict["single_cell"].items():
             lanes = details["Lane"]  # Get the list of lanes
             for lane in lanes:
                 # Create a new key for each unique (sample, lane) combination
@@ -206,12 +173,19 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, split_samples_dict, samplesheet_path)
 
     # This should include ATAC data
-    if atac_samples:
+    if "atac" in categorised_sample_dict.keys() and categorised_sample_dict["atac"]:
+        print(categorised_sample_dict["atac"])
         # All samples are expected to be single index and one index length
         samplesheet_name_atac = samplesheet_name + "_atac"
 
         # Subset sample_all_info to include only keys present in atac_sample
-        atac_all_sample_info = {key: samples_all_info[key] for key in atac_samples if key in samples_all_info}
+        # atac_all_sample_info = {key: samples_all_info[key["Sample_ID"]] for key in categorised_sample_dict["atac"] if key["Sample_ID"] in samples_all_info}
+        atac_all_sample_info = {
+            entry["Sample_ID"]: samples_all_info[entry["Sample_ID"]]
+            for key, entry in categorised_sample_dict["atac"].items()
+            if entry["Sample_ID"] in samples_all_info
+        }
+        print(atac_all_sample_info)
         new_atac_barcode_info = iu.atac_reformat_barcode(atac_all_sample_info)
 
         # Format information according to BCL Convert requirements
@@ -227,8 +201,9 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
         samplesheet_path = os.path.join(output_path, samplesheet_name_atac + ".csv")
         iu.generate_bcl_samplesheet(header_dict, reformatted_reads_dict, bcl_settings_dict, atac_samples_bcldata_dict, samplesheet_path)
 
-    if other_samples:
-        split_samples_by_indexlength = iu.group_samples_by_index_length(other_samples)
+    if "other_samples" in categorised_sample_dict.keys() and categorised_sample_dict["other_samples"]:
+        # print(categorised_sample_dict["other_samples"])
+        split_samples_by_indexlength = iu.group_samples_by_index_length(categorised_sample_dict["other_samples"])
         if len(split_samples_by_indexlength) == 0:
             warnings.warn("None of the bulk or 'other samples' have index information", UserWarning)
 
@@ -244,8 +219,8 @@ def generate_illumina_demux_samplesheets(clarity_lims, runinfo_path, output_path
 
                 merge_sample_index_info = {}
                 for sample in index_length_sample_list["samples"]:
-                    if sample in other_samples:
-                        merge_sample_index_info[sample] = other_samples[sample]
+                    if sample in categorised_sample_dict["other_samples"]:
+                        merge_sample_index_info[sample] = categorised_sample_dict["other_samples"][sample]
 
                 # split samples into multiple entries based on lane values
                 split_samples_dict = {}
