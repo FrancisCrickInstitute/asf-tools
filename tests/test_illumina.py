@@ -531,33 +531,47 @@ class TestIlluminaUtils(unittest.TestCase):
         assert result1 == expected1
         assert result2 == expected2
 
-    def test_split_by_project_type_isnone(self):
+    def test_split_by_project_type_sample_isnone(self):
         """
         Pass None to method
         """
 
         # Set up
         iu = IlluminaUtils()
-        sample_info = {
-            "sample_1": {None},
-        }
+        sample_info = {"sample_1": {None}, "sample_2": None, "sample_3": {"invalid_value"}}
         constants_dict = {"constant_1": ["value_1"]}
-        expected_output = {"constant_1": {}}
-
-        sample_info_2 = {
-            "sample_2": {"value_2"},
-        }
-        constants_dict_2 = {"constant_1": None}
-        expected_output_2 = {"constant_1": {}}
+        expected_output = {"constant_1": {}, "all_samples": {}}
 
         # Test
         results = iu.split_by_project_type(sample_info, constants_dict)
-        results_2 = iu.split_by_project_type(sample_info_2, constants_dict_2)
-        print(results_2)
 
         # Assert
         assert results == expected_output
-        assert results_2 == expected_output_2
+
+    def test_split_by_project_type_category_isnone(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+
+        sample_info = {"sample_2": {"project_type": "value_2", "lanes": "1", "barcode": "OB (ATAA-GGTC)"}}
+        constants_dict = {"constant_1": None}
+        expected_output = {
+            "constant_1": {},
+            "other_samples": {
+                "sample_2_lane_1": {"Lane": "1", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+            },
+            "all_samples": {"sample_2_lane_1": {"Lane": "1", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"}},
+        }
+
+        # Test
+        results = iu.split_by_project_type(sample_info, constants_dict)
+        print(results)
+
+        # Assert
+        assert results == expected_output
 
     def test_split_by_project_type_isinvalid(self):
         """
@@ -592,7 +606,7 @@ class TestIlluminaUtils(unittest.TestCase):
             "sample_1": {"no_project_type": "none", "lanes": "1", "barcode": "BC (ATCG)"},
         }
         constants_dict = {"constant_1": ["value_1"]}
-        expected_output = {"constant_1": {}}
+        expected_output = {"constant_1": {}, "all_samples": {"sample_1_lane_1": {"Sample_ID": "sample_1", "Lane": "1", "index": "ATCG"}}}
 
         # Test
         results = iu.split_by_project_type(sample_info, constants_dict)
@@ -610,18 +624,31 @@ class TestIlluminaUtils(unittest.TestCase):
         iu = IlluminaUtils()
         sample_info = {
             "sample_1": {"project_type": "value_1", "lanes": "1", "barcode": "BC (ATCG)"},
-            "sample_2": {"project_type": "value_2", "lanes": "2", "barcode": "OB (ATAA-GGTC)"},
+            "sample_2": {"project_type": "value_2", "lanes": ["1", "2"], "barcode": "OB (ATAA-GGTC)"},
             "sample_3": {"data_analysis_type": "other_value_2", "lanes": "3", "barcode": "AAAT-ATGC"},
             "sample_4": {"project_type": "value_4", "lanes": "4", "barcode": "CGTA"},
+            "sample_5": {"project_type": "value_5", "lanes": "5", "barcode": "GCCA-CCCG"},
         }
         constants_dict = {"constant_1": ["value_1", "other_value_1"], "CONSTANT_2": ["value_2", "other_value_2"]}
         expected_output = {
-            "constant_1": {"sample_1": {"Lane": "1", "Sample_ID": "sample_1", "index": "ATCG"}},
+            "constant_1": {"sample_1_lane_1": {"Lane": "1", "Sample_ID": "sample_1", "index": "ATCG"}},
             "constant_2": {
-                "sample_2": {"Lane": "2", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
-                "sample_3": {"Lane": "3", "Sample_ID": "sample_3", "index": "AAAT", "index2": "ATGC"},
+                "sample_2_lane_1": {"Lane": "1", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+                "sample_2_lane_2": {"Lane": "2", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+                "sample_3_lane_3": {"Lane": "3", "Sample_ID": "sample_3", "index": "AAAT", "index2": "ATGC"},
             },
-            "other_samples": {"sample_4": {"Lane": "4", "Sample_ID": "sample_4", "index": "CGTA"}},
+            "other_samples": {
+                "sample_4_lane_4": {"Lane": "4", "Sample_ID": "sample_4", "index": "CGTA"},
+                "sample_5_lane_5": {"Lane": "5", "Sample_ID": "sample_5", "index": "GCCA", "index2": "CCCG"},
+            },
+            "all_samples": {
+                "sample_1_lane_1": {"Lane": "1", "Sample_ID": "sample_1", "index": "ATCG"},
+                "sample_2_lane_1": {"Lane": "1", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+                "sample_2_lane_2": {"Lane": "2", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"},
+                "sample_3_lane_3": {"Lane": "3", "Sample_ID": "sample_3", "index": "AAAT", "index2": "ATGC"},
+                "sample_4_lane_4": {"Lane": "4", "Sample_ID": "sample_4", "index": "CGTA"},
+                "sample_5_lane_5": {"Lane": "5", "Sample_ID": "sample_5", "index": "GCCA", "index2": "CCCG"},
+            },
         }
 
         # Test

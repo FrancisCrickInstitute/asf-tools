@@ -405,6 +405,10 @@ class IlluminaUtils:
         sample_index_dict = {}
 
         for sample, details in samplesheet_dict.items():
+            # Skip samples without no information
+            if details is None:
+                continue
+
             if "barcode" in details:
                 barcode_info = details["barcode"]
                 barcode_sequence = ""
@@ -607,8 +611,12 @@ class IlluminaUtils:
         if not isinstance(project_types_dict, dict):
             raise ValueError(f"{project_types_dict} is not a dictionary.")
 
-        # Filter sample_all_info to include only the lane, sample_id and indexing information
+        # Filter sample_all_info to include only the lane, sample_id and indexing information in the correct format
+
+        ## convert barcode value from "BC (ATGC)" to "ATGC". Return original barcode string if the barcode isn't in the "BC (ATGC)" format
         sample_and_index_dict = self.reformat_barcode(samples_all_info)
+
+        ## filter dict to only keep sample_id, lane and index information
         simplified_samples_dict = {}
         for sample, metadata in samples_all_info.items():
             if not isinstance(metadata, dict):
@@ -621,13 +629,25 @@ class IlluminaUtils:
                 **sample_and_index_dict.get(sample, {}),
             }
 
-        # Initialize result dictionary dynamically with empty dictionaries
-        categorized_samples = {category.lower(): {} for category in project_types_dict}
+        ## expand the simplified dict so each entry only has 1 lane value
+        expanded_simplified_samples_dict = {}
+        for sample, details in simplified_samples_dict.items():
+            lanes = details["Lane"]  # Get the list of lanes
+            for lane in lanes:
+                # create a new key for each unique (sample, lane) combination
+                unique_key = f"{sample}_lane_{lane}"
+                # copy the sample details and replace the Lane value with the current lane
+                expanded_simplified_samples_dict[unique_key] = {**details, "Lane": lane}
 
-        for sample, _ in simplified_samples_dict.items():
-            # Extract project type and data analysis type from the sample info
-            project_type = samples_all_info[sample].get("project_type")
-            data_analysis_type = samples_all_info[sample].get("data_analysis_type")
+        # Initialize result dictionary dynamically with empty dictionaries for each category
+        categorised_samples = {category.lower(): {} for category in project_types_dict}
+
+        # Categorize samples based on project type or data analysis type
+        for sample, info in expanded_simplified_samples_dict.items():
+            sample_id = info["Sample_ID"]
+            # Extract project type and data analysis type from the full sample info dictionary
+            project_type = samples_all_info[sample_id].get("project_type")
+            data_analysis_type = samples_all_info[sample_id].get("data_analysis_type")
 
             if project_type is None and data_analysis_type is None:
                 log.warning(f"'{sample}' has None project_type and None data_analysis_type.")
@@ -637,17 +657,22 @@ class IlluminaUtils:
 
             # Dynamically check and assign samples to the correct category
             for category, valid_types in project_types_dict.items():
-                if project_type in valid_types or data_analysis_type in valid_types:
-                    categorized_samples[category.lower()][sample] = simplified_samples_dict[sample]
-                    categorized = True
-                    break  # Stop checking once categorized
+                if valid_types is not None:
+                    if project_type in valid_types or data_analysis_type in valid_types:
+                        categorised_samples[category.lower()][sample] = expanded_simplified_samples_dict[sample]
+                        categorized = True
+                        break  # Stop checking once categorized
 
             # Handle other/bulk samples separately
             if not categorized:
-                categorized_samples["other_samples"] = {}
-                categorized_samples["other_samples"][sample] = simplified_samples_dict[sample]
+                if "other_samples" not in categorised_samples:
+                    categorised_samples["other_samples"] = {}
+                categorised_samples["other_samples"][sample] = expanded_simplified_samples_dict[sample]
 
-        return categorized_samples
+        # Add the all the filtered sample information to the general "all_samples" category
+        categorised_samples["all_samples"] = expanded_simplified_samples_dict
+
+        return categorised_samples
 
     def calculate_overridecycle_values(self, index_str: str, runinfo_index_len: int, runinfo_read_len: int):
         """
