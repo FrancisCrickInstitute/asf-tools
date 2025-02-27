@@ -624,7 +624,7 @@ class IlluminaUtils:
         # Initialize result dictionary dynamically with empty dictionaries
         categorized_samples = {category.lower(): {} for category in project_types_dict}
 
-        for sample, info in simplified_samples_dict.items():
+        for sample, _ in simplified_samples_dict.items():
             # Extract project type and data analysis type from the sample info
             project_type = samples_all_info[sample].get("project_type")
             data_analysis_type = samples_all_info[sample].get("data_analysis_type")

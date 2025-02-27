@@ -509,7 +509,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
     def test_group_samples_by_dictkey_isvalid(self):
         """
-        Pass an a valid input dict and key
+        Pass a valid input dict and key
         """
 
         # Set up
@@ -532,23 +532,59 @@ class TestIlluminaUtils(unittest.TestCase):
         assert result2 == expected2
 
     def test_split_by_project_type_isnone(self):
+        """
+        Pass None to method
+        """
 
         # Set up
         iu = IlluminaUtils()
         sample_info = {
-            "sample_1": {"none"},
+            "sample_1": {None},
         }
         constants_dict = {"constant_1": ["value_1"]}
         expected_output = {"constant_1": {}}
 
+        sample_info_2 = {
+            "sample_2": {"value_2"},
+        }
+        constants_dict_2 = {"constant_1": None}
+        expected_output_2 = {"constant_1": {}}
+
         # Test
         results = iu.split_by_project_type(sample_info, constants_dict)
-        print(results)
+        results_2 = iu.split_by_project_type(sample_info_2, constants_dict_2)
+        print(results_2)
 
         # Assert
         assert results == expected_output
+        assert results_2 == expected_output_2
+
+    def test_split_by_project_type_isinvalid(self):
+        """
+        Pass invalid input types to method
+        """
+
+        # Set up
+        iu = IlluminaUtils()
+        sample_info = ["not_a_dict"]
+        constants_dict = {"constant_1": "value_1"}
+
+        sample_info_2 = {
+            "sample_2": "value_2",
+        }
+        constants_dict_2 = "not_a_dict"
+
+        # Test and Assert
+        with self.assertRaises(ValueError):
+            iu.split_by_project_type(sample_info, constants_dict)
+
+        with self.assertRaises(ValueError):
+            iu.split_by_project_type(sample_info_2, constants_dict_2)
 
     def test_split_by_project_type_nomatch(self):
+        """
+        Pass a dict without a "project_type" nor "data_analysis_type" value to method
+        """
 
         # Set up
         iu = IlluminaUtils()
@@ -566,6 +602,9 @@ class TestIlluminaUtils(unittest.TestCase):
         assert results == expected_output
 
     def test_split_by_project_type_isvalid(self):
+        """
+        Pass a valid input dicts to method
+        """
 
         # Set up
         iu = IlluminaUtils()
