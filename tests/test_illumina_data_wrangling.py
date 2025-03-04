@@ -60,7 +60,7 @@ class TestIlluminaDemux(unittest.TestCase):
         tmp_samplesheet_file_path_general = os.path.join(tmp_path, "22NWWGLT3_samplesheet.csv")
 
         # Test
-        generate_illumina_demux_samplesheets(self, self.api, file, tmp_path)
+        generate_illumina_demux_samplesheets(self.api, file, tmp_path)
 
         # Assert
         self.assertTrue(os.path.exists(tmp_samplesheet_file_path_bulk))

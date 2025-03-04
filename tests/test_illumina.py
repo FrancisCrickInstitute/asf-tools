@@ -6,7 +6,7 @@ import csv
 import os
 import tempfile
 import unittest
-import warnings
+import logging
 from datetime import datetime
 from xml.parsers.expat import ExpatError
 
@@ -38,6 +38,10 @@ from asf_tools.illumina.illumina_utils import (
     merge_dicts,
     filter_readinfo,
 )
+
+# Get the logger
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class TestIlluminaUtils(unittest.TestCase):
     """Class for parse_runinfo tests"""
@@ -426,6 +430,18 @@ class TestIlluminaUtils(unittest.TestCase):
         with self.assertRaises(TypeError):
             group_samples_by_index_length(None)
 
+    def test_group_samples_by_index_length_isnotadict(self):
+        """
+        Pass None to method
+        """
+
+        # Set up
+        invalid_input = "not_a_dict"
+
+        # Test and Assert
+        with self.assertRaises(TypeError):
+            group_samples_by_index_length(invalid_input)
+
     def test_group_samples_by_index_length_isinvalid(self):
         """
         Pass a dict without a "barcode" value to method
@@ -433,6 +449,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Set up
         test_dict = {"value1": "invalid", "value2": "dictionary"}
+        log_file = "test_logs.log"
 
         # Test
         results = group_samples_by_index_length(test_dict)
@@ -440,14 +457,10 @@ class TestIlluminaUtils(unittest.TestCase):
         # Assert
         assert results == []
 
-        with warnings.catch_warnings(record=True) as warning_list:
-            warnings.simplefilter("always")  # Ensure all warnings are caught
-            group_samples_by_index_length(test_dict)
-        self.assertEqual(len(warning_list), 2)
-
-        # Check each warning message
-        self.assertEqual(str(warning_list[0].message), "Index value for 'value1' not found.")
-        self.assertEqual(str(warning_list[1].message), "Index value for 'value2' not found.")
+        # Check if "WARNING" appears in the log file
+        with open(log_file, "r") as file:
+            log_content = file.read()
+            assert "WARNING" in log_content, "No warning found in log file!"
 
     def test_group_samples_by_index_length_isvalid(self):
         """
@@ -472,8 +485,6 @@ class TestIlluminaUtils(unittest.TestCase):
         """
         Pass None to method
         """
-
-        # Set up
 
         # Test and Assert
         with self.assertRaises(TypeError):

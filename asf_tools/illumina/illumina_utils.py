@@ -9,6 +9,13 @@ from xml.parsers.expat import ExpatError
 import xmltodict
 
 log = logging.getLogger(__name__)
+logging.basicConfig(
+    filename="logfile.log",  # Name of the log file (stored locally)
+    filemode="w",  # "w" to overwrite each time, use "a" to append
+    level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 
 class IndexMode(Enum):
@@ -540,7 +547,7 @@ def group_samples_by_index_length(sample_index_dict: dict) -> list:
     for sample_id, indices in sample_index_dict.items():
         # Ensure 'index' value is present
         if "index" not in indices:
-            log.warning(f"Index value for '{sample_id}' not found.", UserWarning)
+            log.warning(f"Index value for '{sample_id}' not found.")
             # pass
         else:
             # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
