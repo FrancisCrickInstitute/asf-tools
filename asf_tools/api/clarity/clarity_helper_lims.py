@@ -13,18 +13,10 @@ import xmltodict
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
-# logging.basicConfig(
-#     filename="logfile.log",  # Name of the log file (stored locally)
-#     filemode="w",  # "w" to overwrite each time, use "a" to append
-#     level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
-#     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
-#     datefmt="%Y-%m-%d %H:%M:%S"
-# )
-
 logging.basicConfig(
     level=logging.DEBUG,  # Ensure warnings and above are logged
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("test_logs.log", mode="w"), logging.StreamHandler()],  # Save logs to a file  # Print logs to console
+    handlers=[logging.FileHandler("logfile.log", mode="w"), logging.StreamHandler()],  # Save logs to a file  # Print logs to console
 )
 
 log = logging.getLogger(__name__)
