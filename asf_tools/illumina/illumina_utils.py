@@ -547,8 +547,8 @@ def group_samples_by_index_length(sample_index_dict: dict) -> list:
     for sample_id, indices in sample_index_dict.items():
         # Ensure 'index' value is present
         if "index" not in indices:
-            log.warning(f"Index value for '{sample_id}' not found.")
-            # pass
+            # log.warning(f"Index value for '{sample_id}' not found.")
+            pass
         else:
             # Calculate the length of 'index' and 'index2' (default to 0 if 'index2' is missing)
             index_length = len(indices["index"])

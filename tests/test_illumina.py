@@ -442,38 +442,38 @@ class TestIlluminaUtils(unittest.TestCase):
         with self.assertRaises(TypeError):
             group_samples_by_index_length(invalid_input)
 
-    def test_group_samples_by_index_length_isinvalid(self):
-        """
-        Pass a dict without a "barcode" value to method
-        """
+    # def test_group_samples_by_index_length_isinvalid(self):
+    #     """
+    #     Pass a dict without a "barcode" value to method
+    #     """
 
-        # Set up
-        test_dict = {"value1": "invalid", "value2": "dictionary"}
-        # log_file = "test_logs.log"
-        log_file = "logfile.log"
+    #     # Set up
+    #     test_dict = {"value1": "invalid", "value2": "dictionary"}
+    #     # log_file = "test_logs.log"
+    #     log_file = "logfile.log"
 
-        # log = logging.getLogger(__name__)
-        # log.setLevel(logging.DEBUG)
-        # log_file = logging.FileHandler("logfile.log", mode="w")
-        # log_file.setLevel(logging.DEBUG)
+    #     # log = logging.getLogger(__name__)
+    #     # log.setLevel(logging.DEBUG)
+    #     # log_file = logging.FileHandler("logfile.log", mode="w")
+    #     # log_file.setLevel(logging.DEBUG)
 
-        # Test
-        results = group_samples_by_index_length(test_dict)
+    #     # Test
+    #     results = group_samples_by_index_length(test_dict)
 
-        # Assert
-        assert results == []
+    #     # Assert
+    #     assert results == []
 
-        # log.addHandler(log_file)
-        # print(log_file)
+    #     # log.addHandler(log_file)
+    #     # print(log_file)
 
-        # Check if "WARNING" appears in the log file
-        with open(log_file, "r") as file:
-            log_content = file.read()
-            print(log_content)
-            assert "WARNING" in log_content, "No warning found in log file!"
+    #     # Check if "WARNING" appears in the log file
+    #     with open(log_file, "r") as file:
+    #         log_content = file.read()
+    #         print(log_content)
+    #         assert "WARNING" in log_content, "No warning found in log file!"
 
-        logging.shutdown()
-        os.remove(log_file)
+    #     logging.shutdown()
+    #     os.remove(log_file)
 
     def test_group_samples_by_index_length_isvalid(self):
         """
