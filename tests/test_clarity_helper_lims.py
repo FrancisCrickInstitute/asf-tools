@@ -1,29 +1,25 @@
 """
 Clarity helper API Tests
 """
+
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
-import unittest
-from assertpy import assert_that
-import xmltodict
-
-from unittest.mock import patch
 
 import pytest
-from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
+import xmltodict
+from assertpy import assert_that
+from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub
 
 from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
-from tests.test_io_utils import with_temporary_folder
-
 
 API_TEST_DATA = "tests/data/api/clarity"
 
 
-# Create class level mock API
+# Create class level mock API
 @pytest.fixture(scope="class", autouse=True)
 def mock_clarity_api(request):
     data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
@@ -32,6 +28,7 @@ def mock_clarity_api(request):
     request.cls.api = api
     request.addfinalizer(lambda: api.save_tracked_requests(data_file_path))
     yield api
+
 
 class TestClarityHelperLims:
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
@@ -204,7 +201,10 @@ class TestClarityHelperLims:
         # Setup
         barcode = "fake_barcode"
         custom_xml = ["<xml>mock_reagent_types</xml>", "<xml>mock_reagent_type_details</xml>"]
-        custom_xml_dict = [{"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}}, {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}}]
+        custom_xml_dict = [
+            {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},
+            {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}},
+        ]
         monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml.pop(0))
         monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict.pop(0))
 

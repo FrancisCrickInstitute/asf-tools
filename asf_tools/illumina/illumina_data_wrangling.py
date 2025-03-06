@@ -4,19 +4,20 @@ import os
 import warnings
 
 from asf_tools.illumina.illumina_utils import (
-    extract_illumina_runid_fromxml,
-    runinfo_xml_to_dict,
-    filter_runinfo,
-    generate_bclconfig,
-    filter_readinfo,
-    split_by_project_type,
-    dlp_barcode_data_to_dict,
-    generate_bcl_samplesheet,
     atac_reformat_barcode,
-    group_samples_by_index_length,
+    dlp_barcode_data_to_dict,
     extract_cycle_fromxml,
+    extract_illumina_runid_fromxml,
+    filter_readinfo,
+    filter_runinfo,
+    generate_bcl_samplesheet,
+    generate_bclconfig,
     generate_overridecycle_string,
+    group_samples_by_index_length,
+    runinfo_xml_to_dict,
+    split_by_project_type,
 )
+
 
 log = logging.getLogger(__name__)
 

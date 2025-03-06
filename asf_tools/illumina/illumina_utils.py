@@ -1,12 +1,13 @@
 import csv
+import logging
 import os
 import re
-import logging
 from datetime import datetime
 from enum import Enum
 from xml.parsers.expat import ExpatError
 
 import xmltodict
+
 
 log = logging.getLogger(__name__)
 logging.basicConfig(
@@ -14,7 +15,7 @@ logging.basicConfig(
     filemode="w",  # "w" to overwrite each time, use "a" to append
     level=logging.DEBUG,  # Log INFO and above (INFO, WARNING, ERROR, CRITICAL)
     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
-    datefmt="%Y-%m-%d %H:%M:%S"
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 

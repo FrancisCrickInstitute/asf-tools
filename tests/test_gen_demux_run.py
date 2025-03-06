@@ -6,7 +6,6 @@ Tests for ont gen demux run
 
 import os
 import stat
-import unittest
 from unittest.mock import patch
 
 from asf_tools.io.data_management import DataTypeMode
@@ -21,7 +20,7 @@ TEST_ONT_LIVE_RUN_SOURCE_PATH = "tests/data/ont/live_runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
 
-class TestGenDemuxRun(unittest.TestCase):
+class TestGenDemuxRun:
     """Class for testing the gen_demux_run tools"""
 
     @with_temporary_folder

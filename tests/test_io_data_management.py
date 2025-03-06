@@ -375,7 +375,7 @@ class TestIoDataManagement(unittest.TestCase):
         target_dir = tmp_path
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
 
-        for root,dirs, files in os.walk(tmp_path):
+        for root, dirs, files in os.walk(tmp_path):
             print(dirs, files)
 
         # Test

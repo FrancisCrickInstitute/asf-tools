@@ -3,15 +3,15 @@ Clarity API Child class with helper functions
 """
 
 import logging
-
 import queue
 import re
-from requests.exceptions import HTTPError
 
 import xmltodict
+from requests.exceptions import HTTPError
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
+
 
 logging.basicConfig(
     level=logging.DEBUG,  # Ensure warnings and above are logged

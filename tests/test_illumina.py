@@ -3,45 +3,47 @@ Tests covering the data_transfer module
 """
 
 import csv
+import logging
 import os
 import tempfile
 import unittest
-import logging
 from datetime import datetime
 from xml.parsers.expat import ExpatError
 
 import pytest
 
 from asf_tools.illumina.illumina_utils import (
-    runinfo_xml_to_dict,
-    find_key_recursively,
-    extract_matching_item_from_dict,
-    filter_runinfo,
-    extract_illumina_runid_fromxml,
-    extract_illumina_runid_frompath,
-    extract_cycle_fromxml,
-    extract_cycle_frompath,
-    merge_runinfo_dict_fromfile,
-    reformat_barcode,
     atac_reformat_barcode,
-    group_samples_by_index_length,
-    group_samples_by_dictkey,
-    split_by_project_type,
     calculate_overridecycle_values,
-    generate_overridecycle_string,
-    index_distance,
-    minimum_index_distance,
-    dlp_barcode_data_to_dict,
-    generate_bclconfig,
     count_samples_in_bcl_samplesheet,
-    generate_bcl_samplesheet,
-    merge_dicts,
+    dlp_barcode_data_to_dict,
+    extract_cycle_frompath,
+    extract_cycle_fromxml,
+    extract_illumina_runid_frompath,
+    extract_illumina_runid_fromxml,
+    extract_matching_item_from_dict,
     filter_readinfo,
+    filter_runinfo,
+    find_key_recursively,
+    generate_bcl_samplesheet,
+    generate_bclconfig,
+    generate_overridecycle_string,
+    group_samples_by_dictkey,
+    group_samples_by_index_length,
+    index_distance,
+    merge_dicts,
+    merge_runinfo_dict_fromfile,
+    minimum_index_distance,
+    reformat_barcode,
+    runinfo_xml_to_dict,
+    split_by_project_type,
 )
+
 
 # Get the logger
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
 
 class TestIlluminaUtils(unittest.TestCase):
     """Class for parse_runinfo tests"""
