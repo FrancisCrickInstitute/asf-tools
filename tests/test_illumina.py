@@ -129,8 +129,7 @@ class TestIlluminaUtils:
         }
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            filter_runinfo(xml_dict)
+        assert_that(filter_runinfo).raises(ValueError).when_called_with(xml_dict)
 
     def test_filter_runinfo_isvalid(self):
         """
@@ -242,7 +241,7 @@ class TestIlluminaUtils:
         run_info = extract_cycle_fromxml(file)
 
         # Assert
-        assert run_info == cycle_length
+        assert_that(run_info).is_equal_to(cycle_length)
 
     def test_extract_cycle_frompath(self):
         """
@@ -282,12 +281,8 @@ class TestIlluminaUtils:
             "lane": "8",
         }
 
-        # Test
-        filtered_info = merge_runinfo_dict_fromfile(file)
-        # print(filtered_info)
-
-        # Assert
-        assert filtered_info == expected_dict
+        # Test and Assert
+        assert_that(merge_runinfo_dict_fromfile(file)).is_equal_to(expected_dict)
 
     def test_reformat_barcode_isnone(self):
         # Test and Assert
@@ -306,13 +301,9 @@ class TestIlluminaUtils:
         results = reformat_barcode(test_dict)
 
         # Assert
-        assert results == expected
+        assert_that(results).is_equal_to(expected)
 
     def test_reformat_barcode_isvalid(self):
-        """
-        Pass a valid dict to method
-        """
-
         # Set up
         test_dict = {
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
@@ -327,31 +318,23 @@ class TestIlluminaUtils:
             "Sample4": {"index": "GTTCTT"},
         }
 
-        # Test
-        results = reformat_barcode(test_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(reformat_barcode(test_dict)).is_equal_to(expected_output)
 
     def test_atac_reformat_barcode_isnone(self):
         # Test and Assert
         assert_that(atac_reformat_barcode).raises(TypeError).when_called_with(None)
 
     def test_atac_reformat_barcode_nobarcode(self):
-        """
-        Pass a dict without a "barcode" value to method
-        """
-
         # Set up
         test_dict = {"value1": "invalid", "value2": "dictionary"}
-        expected = {}
+        expected_output = {}
 
         # Test
         results = atac_reformat_barcode(test_dict)
 
         # Assert
-        assert results == expected
+        assert_that(results).is_equal_to(expected_output)
 
     def test_atac_reformat_barcode_isvalid(self):
         """
@@ -385,10 +368,6 @@ class TestIlluminaUtils:
         assert_that(group_samples_by_index_length).raises(TypeError).when_called_with("not_a_dict")
 
     def test_group_samples_by_index_length_isvalid(self):
-        """
-        Pass a valid dict to method
-        """
-
         # Set up
         test_dict = {
             "Sample1": {"index": "AAGATAGTGA"},
@@ -397,11 +376,8 @@ class TestIlluminaUtils:
         }
         expected_output = [{"index_length": (10, 0), "samples": ["Sample1"]}, {"index_length": (6, 10), "samples": ["Sample2", "Sample3"]}]
 
-        # Test
-        results = group_samples_by_index_length(test_dict)
-
-        # Assert
-        assert_that(results).is_equal_to(expected_output)
+        # Test and Assert
+        assert_that(group_samples_by_index_length(test_dict)).is_equal_to(expected_output)
 
     def test_group_samples_by_dictkey_isnone(self):
         # Test and Assert
@@ -416,11 +392,8 @@ class TestIlluminaUtils:
         valid_dict = {"sample": {"key1": "value1", "key2": "value2"}}
         expected_output = {}
 
-        # Test
-        result = group_samples_by_dictkey(valid_dict, "missing_key")
-
-        # Assert
-        assert_that(result).is_equal_to(expected_output)
+        # Test and Assert
+        assert_that(group_samples_by_dictkey(valid_dict, "missing_key")).is_equal_to(expected_output)
 
     def test_group_samples_by_dictkey_isvalid(self):
         # Set up
@@ -433,19 +406,11 @@ class TestIlluminaUtils:
         expected_output1 = {"matching_value": ["sample", "sample2"], "different_value": ["sample3"]}
         expected_output2 = {"matching_value": ["sample3", "sample4"]}
 
-        # Test
-        result1 = group_samples_by_dictkey(valid_dict1, "key1")
-        result2 = group_samples_by_dictkey(valid_dict2, "key2")
-
-        # Assert
-        assert_that(result1).is_equal_to(expected_output1)
-        assert_that(result2).is_equal_to(expected_output2)
+        # Test and Assert
+        assert_that(group_samples_by_dictkey(valid_dict1, "key1")).is_equal_to(expected_output1)
+        assert_that(group_samples_by_dictkey(valid_dict2, "key2")).is_equal_to(expected_output2)
 
     def test_split_by_project_type_sample_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Set up
         sample_info = {"sample_1": {None}, "sample_2": None, "sample_3": {"invalid_value"}}
         constants_dict = {"constant_1": ["value_1"]}
@@ -458,12 +423,7 @@ class TestIlluminaUtils:
         assert_that(results).is_equal_to(expected_output)
 
     def test_split_by_project_type_category_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Set up
-
         sample_info = {"sample_2": {"project_type": "value_2", "lanes": "1", "barcode": "OB (ATAA-GGTC)"}}
         constants_dict = {"constant_1": None}
         expected_output = {
@@ -476,16 +436,11 @@ class TestIlluminaUtils:
 
         # Test
         results = split_by_project_type(sample_info, constants_dict)
-        print(results)
 
         # Assert
         assert_that(results).is_equal_to(expected_output)
 
     def test_split_by_project_type_isinvalid(self):
-        """
-        Pass invalid input types to method
-        """
-
         # Set up
         sample_info = ["not_a_dict"]
         constants_dict = {"constant_1": "value_1"}
@@ -555,19 +510,10 @@ class TestIlluminaUtils:
             },
         }
 
-        # Test
-        results = split_by_project_type(sample_info, constants_dict)
-
-        # Assert
-        assert_that(results).is_equal_to(expected_output)
+        # Test and Assert
+        assert_that(split_by_project_type(sample_info, constants_dict)).is_equal_to(expected_output)
 
     def test_calculate_overridecycle_values_indexnone(self):
-        """
-        Pass empty target string to method
-        """
-
-        # Set up
-
         # Test and Assert
         with self.assertRaises(TypeError):
             calculate_overridecycle_values("", 10, 8)
@@ -575,12 +521,6 @@ class TestIlluminaUtils:
             calculate_overridecycle_values(None, 10, 8)
 
     def test_calculate_overridecycle_values_integernone(self):
-        """
-        Pass empty integer value to method
-        """
-
-        # Set up
-
         # Test and Assert
         with self.assertRaises(TypeError):
             calculate_overridecycle_values("Value", None, 8)
@@ -590,12 +530,6 @@ class TestIlluminaUtils:
             calculate_overridecycle_values("Value", 10)
 
     def test_calculate_overridecycle_values_negativeinteger(self):
-        """
-        Pass a negative integer to method
-        """
-
-        # Set up
-
         # Test and Assert
         with self.assertRaises(TypeError):
             calculate_overridecycle_values("Value", 10, -8)
@@ -604,21 +538,11 @@ class TestIlluminaUtils:
             calculate_overridecycle_values("Value", -10, 8)
 
     def test_calculate_overridecycle_values_negativedifference(self):
-        """
-        Pass a negative integer to method
-        """
-
-        # Set up
-
         # Test and Assert
         with self.assertRaises(ValueError):
             calculate_overridecycle_values("Value", 1, 8)
 
     def test_generate_overridecycle_string_dualindex_isvalid(self):
-        """
-        Pass valid inputs to method
-        """
-
         # Set up
         expected = "Y151;I8N2;I8N2;Y151"
 
@@ -637,64 +561,41 @@ class TestIlluminaUtils:
         expected_1 = "Y151;I8N2;I10;Y151"
         expected_2 = "Y151;I10;I8N2;Y151"
 
-        # Test
-        result_1 = generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)
-        result_2 = generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)
-
-        # Assert
-        assert result_1 == expected_1
-        assert result_2 == expected_2
+        # Test and Assert
+        assert_that(generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)).is_equal_to(expected_1)
+        assert_that(generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)).is_equal_to(expected_2)
 
     def test_generate_overridecycle_string_singleindex_isvalid(self):
-        """
-        Pass valid inputs to method
-        """
-
         # Set up
         expected = "N10Y151;I8;N10Y151"
 
-        # Test
-        result = generate_overridecycle_string("AATTCCGG", 10, 151)
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(generate_overridecycle_string("AATTCCGG", 10, 151)).is_equal_to(expected)
 
     def test_index_distance_isvalid(self):
-        """
-        Pass a valid value to method
-        """
-
-        # Set up
-
         # Test and Assert
         seq1 = "AGCT"
         seq2 = "AGCT"
-        self.assertEqual(index_distance(seq1, seq2), 0)
+        assert_that(index_distance(seq1, seq2)).is_equal_to(0)
 
         seq3 = "AGCT"
         seq4 = "TCGA"
-        self.assertEqual(index_distance(seq3, seq4), 4)
+        assert_that(index_distance(seq3, seq4)).is_equal_to(4)
 
         seq5 = "AGCT"
         seq6 = "TGCT"
-        self.assertEqual(index_distance(seq5, seq6), 1)
+        assert_that(index_distance(seq5, seq6)).is_equal_to(1)
 
     def test_minimum_index_distance_isvalid(self):
-        """
-        Pass a valid value to method
-        """
-
-        # Set up
-
         # Test and Assert
         sequences = ["AGCT", "AGCT", "AGCT"]
-        self.assertEqual(minimum_index_distance(sequences), 0)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(0)
 
         sequences = ["AGCT", "TGCA"]
-        self.assertEqual(minimum_index_distance(sequences), 2)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(2)
 
         sequences = ["AGGT", "TGCA", "AGCC"]
-        self.assertEqual(minimum_index_distance(sequences), 2)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(2)
 
     def test_dlp_barcode_data_to_dict_filenotexists(self):
         # Test and Assert
@@ -702,10 +603,6 @@ class TestIlluminaUtils:
 
 
     def test_dlp_barcode_data_to_dict_isvalid(self):
-        """
-        Pass a valid file to method
-        """
-
         # Set up
         file_path = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
         expected = {
@@ -747,34 +644,19 @@ class TestIlluminaUtils:
             },
         }
 
-        # Test
-        result = dlp_barcode_data_to_dict(file_path, "General_sample_name")
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(dlp_barcode_data_to_dict(file_path, "General_sample_name")).is_equal_to(expected)
 
     def test_generate_bclconfig_invalidmachine(self):
-        """
-        Pass an invalid input as file path to method
-        """
-
         # Set up
         fake_list = []
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            generate_bclconfig(fake_list, "flowcell")
+        assert_that(generate_bclconfig).raises(ValueError).when_called_with(fake_list, "flowcell")
 
     def test_generate_bclconfig_invalidflowcell(self):
-        """
-        Pass an invalid input as file path to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            generate_bclconfig("machine", 123)
+        assert_that(generate_bclconfig).raises(ValueError).when_called_with("machine", 123)
 
     def test_generate_bclconfig_isvalid(self):
         """
@@ -787,11 +669,8 @@ class TestIlluminaUtils:
             "BCLConvert_Settings": {"SoftwareVersion": "4.2.7", "FastqCompressionFormat": "gzip"},
         }
 
-        # Test
-        results = generate_bclconfig("NovaseqX", "Flowcell123")
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(generate_bclconfig("NovaseqX", "Flowcell123")).is_equal_to(expected)
 
     def test_generate_bclconfig_override_and_additional_fields(self):
         """
@@ -806,11 +685,8 @@ class TestIlluminaUtils:
             "BCLConvert_Settings": {"SoftwareVersion": "4.3.0", "FastqCompressionFormat": "gzip", "ExtraBCLConvertField": "TestBCLValue"},
         }
 
-        # Test
-        results = generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)).is_equal_to(expected)
 
     def test_count_samples_in_bcl_samplesheet_isinvalid(self):
         """
