@@ -1,10 +1,13 @@
 """
 Clarity helper API Tests
 """
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
 import unittest
-import logging
+from assertpy import assert_that
+import xmltodict
+
 from unittest.mock import patch
 
 import pytest
@@ -19,115 +22,57 @@ from tests.test_io_utils import with_temporary_folder
 
 API_TEST_DATA = "tests/data/api/clarity"
 
-# Get the logger
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
+# Create class level mock API
+@pytest.fixture(scope="class", autouse=True)
+def mock_clarity_api(request):
+    data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+    api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+    api.load_tracked_requests(data_file_path)
+    request.cls.api = api
+    request.addfinalizer(lambda: api.save_tracked_requests(data_file_path))
+    yield api
 
-class TestClarityHelperLims(unittest.TestCase):
-    """Class for testing the clarity api wrapper"""
-
-    @classmethod
-    def setUpClass(cls):
-        """Setup API connection"""
-        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        cls.api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-        cls.api.load_tracked_requests(data_file_path)
-        cls.data_file_path = data_file_path
-
-    @classmethod
-    def tearDownClass(cls):
-        """Teardown API connection"""
-        cls.api.save_tracked_requests(cls.data_file_path)
-
+class TestClarityHelperLims:
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_artifacts_from_runid(None)
+        assert_that(self.api.get_artifacts_from_runid).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_get_artifacts_from_runid_isinvalid(self):
-        """
-        Pass runid that does not exist
-        """
-
-        # Setup
-        runid = "fake_runid"
-
         # Test and Assert
-        with self.assertRaises(KeyError):
-            self.api.get_artifacts_from_runid(runid)
+        assert_that(self.api.get_artifacts_from_runid).raises(KeyError).when_called_with("fake_runid")
 
     def test_clarity_helper_get_lane_from_runid_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_lane_from_runid(None)
+        assert_that(self.api.get_lane_from_runid).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_get_lane_from_runid_isinvalid(self):
-        """
-        Pass an invalid run_id to method
-        """
-
         # Test and Assert
-        with self.assertRaises(KeyError):
-            self.api.get_lane_from_runid("Fake_runid")
+        assert_that(self.api.get_lane_from_runid).raises(KeyError).when_called_with("Fake_runid")
 
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_samples_from_artifacts(None)
+        assert_that(self.api.get_samples_from_artifacts).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_get_samples_from_artifacts_isinvalid(self):
-        """
-        Pass an artifact that does not exist
-        """
-
         # Setup
         artifacts_list = [Stub(id="TestID", uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST", name=None, limsid="TestID")]
 
         # Test and Assert
-        with self.assertRaises((HTTPError, ConnectionError)):
-            self.api.get_samples_from_artifacts(artifacts_list)
+        assert_that(self.api.get_samples_from_artifacts).raises(ConnectionError).when_called_with(artifacts_list)
 
     def test_clarity_helper_get_check_sample_dropoff_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test
         results = self.api.check_sample_dropoff_info(None)
 
         # Assert
-        assert results is None
+        assert_that(results).is_none()
 
     def test_clarity_helper_get_check_sample_dropoff_isinvalid(self):
-        """
-        Pass real sample IDs and test expected values in the dictionary output
-        """
-
-        # Set up
-        sample = "non_valid"
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.check_sample_dropoff_info(sample)
+        assert_that(self.api.check_sample_dropoff_info).raises(ValueError).when_called_with("non_valid")
 
     def test_clarity_helper_get_check_sample_dropoff_isvalid(self):
-        """
-        Pass real sample IDs and test expected values in the dictionary output
-        """
-
         # Set up
         sample_1 = "GOL5512A6973"  # drop-off sample
         expected_dict_1 = {
@@ -146,206 +91,24 @@ class TestClarityHelperLims(unittest.TestCase):
         get_info_2 = self.api.check_sample_dropoff_info(sample_2)
 
         # Assert
-        assert get_info_1 == expected_dict_1
-        assert get_info_2 == expected_dict_2
+        assert_that(get_info_1).is_equal_to(expected_dict_1)
+        assert_that(get_info_2).is_equal_to(expected_dict_2)
 
     def test_clarity_helper_get_sample_info_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test
         results = self.api.get_sample_info(None)
 
         # Assert
-        assert results is None
+        assert_that(results).is_none()
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test
         results = self.api.get_barcode_from_reagenttypes(None)
 
         # Assert
-        assert results is None
-
-    @with_temporary_folder
-    def test_clarity_helper_get_barcode_from_reagenttypes_isinvalid(self, tmp_path):
-        """
-        Pass a valid input to method
-        """
-        # Setup
-        barcode = "fake_barcode"
-        log_file = os.path.join(tmp_path, "logfile.log")
-        # log = logging.getLogger(__name__)
-        # log.setLevel(logging.DEBUG)
-        log_fh = logging.FileHandler(log_file, encoding="utf-8")
-        log_fh.setLevel(logging.DEBUG)
-        log_fh.setFormatter(logging.Formatter("[%(asctime)s] %(name)-20s [%(levelname)-7s]  %(message)s"))
-        log.addHandler(log_fh)
-
-        # Test
-        results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
-        log_fh.flush()
-
-        # Assert
-        # check the barcode returned and if a warning was raised
-        self.assertEqual(results, barcode)
-
-        self.assertTrue(os.path.exists(log_file))
-        print(log.handlers)
-        # Check if "WARNING" appears in the log file
-        with open(log_file, "r") as file:
-            log_content = file.read()
-            print("here")
-            print(log_content)
-            assert "WARNING" in log_content, "No warning found in log file!"
-
-    # @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
-    # @patch.object(ClarityHelperLimsMock, "get_with_uri")
-    # def test_clarity_helper_get_barcode_from_reagenttypes_warning_1(self, mock_get_with_uri, mock_xmltodict_parse):
-    #     """
-    #     Mock api connection to return the first warning
-    #     """
-    #     # Setup
-    #     barcode = "fake_barcode"
-    #     log = logging.getLogger(__name__)
-    #     log.setLevel(logging.DEBUG)
-    #     log_file = "logfile.log"
-
-    #     # for handler in logging.root.handlers[:]:  # Remove existing handlers
-    #     #     logging.root.removeHandler(handler)
-
-    #     mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
-    #     mock_xmltodict_parse.return_value = {}
-
-    #     # Test
-    #     results = self.api.get_barcode_from_reagenttypes(barcode)
-
-    #     # Assert
-    #     # check the barcode returned and if the correct warning was raised
-    #     self.assertEqual(results, barcode)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         assert "WARNING" in log_content, "No warning found in log file!"
-    #         assert "Missing 'rtp:reagent-types' in Clarity XML response." in log_content, "No warning found in log file"
-
-    #     os.remove(log_file)
-
-    # @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
-    # @patch.object(ClarityHelperLimsMock, "get_with_uri")
-    # def test_clarity_helper_get_barcode_from_reagenttypes_warning_2(self, mock_get_with_uri, mock_xmltodict_parse):
-    #     """
-    #     Mock api connection to return the second warning
-    #     """
-    #     # Setup
-    #     barcode = "fake_barcode"
-    #     log_file = "logfile.log"
-
-    #     mock_get_with_uri.return_value = "<xml>mock_reagent_types</xml>"
-    #     mock_xmltodict_parse.return_value = {"rtp:reagent-types": {"reagent-type": {}}}
-
-    #     # Test
-    #     results = self.api.get_barcode_from_reagenttypes(barcode)
-
-    #     # Assert
-    #     # check the barcode returned and if the correct warning was raised
-    #     self.assertEqual(results, barcode)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         assert "WARNING" in log_content, "No warning found in log file!"
-    #         assert "Missing 'reagent-type' or 'uri' in reagent-type data." in log_content, "No warning found in log file!"
-
-    #     logging.shutdown()
-    #     os.remove(log_file)
-
-    # @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
-    # @patch.object(ClarityHelperLimsMock, "get_with_uri")
-    # def test_clarity_helper_get_barcode_from_reagenttypes_warning_3(self, mock_get_with_uri, mock_xmltodict_parse):
-    #     """
-    #     Mock api connection to return the third warning
-    #     """
-    #     # Setup
-    #     barcode = "fake_barcode"
-    #     log_file = "logfile.log"
-
-    #     mock_get_with_uri.side_effect = [
-    #         "<xml>mock_reagent_types</xml>",  # first API call
-    #         "<xml>mock_reagent_type_details</xml>",  # second API call
-    #     ]
-
-    #     mock_xmltodict_parse.side_effect = [
-    #         {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},  # first parsed XML
-    #         {"rtp:reagent-type": {}},  # second parsed XML
-    #     ]
-
-    #     # Test
-    #     results = self.api.get_barcode_from_reagenttypes(barcode)
-    #     print(results)
-
-    #     # Assert
-    #     # check the barcode returned and if the correct warning was raised
-    #     self.assertEqual(results, barcode)
-    #     print(log.handlers)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         assert "WARNING" in log_content, "No warning found in log file!"
-    #         assert "Missing 'special-type' or 'attribute' field in Clarity." in log_content, "No warning found in log file"
-    #     for handler in logging.root.handlers[:]:  # Remove existing handlers
-    #         logging.root.removeHandler(handler)
-    #     os.remove(log_file)
-
-    # @patch("asf_tools.api.clarity.clarity_lims.xmltodict.parse")
-    # @patch.object(ClarityHelperLimsMock, "get_with_uri")
-    # def test_clarity_helper_get_barcode_from_reagenttypes_warning_4(self, mock_get_with_uri, mock_xmltodict_parse):
-    #     """
-    #     Mock api connection to return the third warning
-    #     """
-    #     # Setup
-    #     barcode = "fake_barcode"
-    #     # log_file = "logfile.log"
-    #     log_file = "logfile.log"
-
-    #     mock_get_with_uri.side_effect = [
-    #         "<xml>mock_reagent_types</xml>",  # first API call
-    #         "<xml>mock_reagent_type_details</xml>",  # second API call
-    #     ]
-
-    #     mock_xmltodict_parse.side_effect = [
-    #         {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},  # first parsed XML
-    #         {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}},  # second parsed XML
-    #     ]
-
-    #     # Test
-    #     results = self.api.get_barcode_from_reagenttypes(barcode)
-    #     print(results)
-
-    #     # Assert
-    #     # check the barcode returned and if the correct warning was raised
-    #     self.assertEqual(results, barcode)
-    #     print(log.handlers)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         assert "WARNING" in log_content, "No warning found in log file!"
-    #         assert "Attribute 'name' is not 'Sequence'." in log_content, "No warning found in log file"
-
-    #     logging.shutdown()
-    #     os.remove(log_file)
+        assert_that(results).is_none()
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
-        """
-        Pass a valid input to method
-        """
         # Setup
         barcode = "N701-N501 (TAAGGCGA-TAGATCGC)"
         results_barcode = "TAAGGCGA-TAGATCGC"
@@ -354,43 +117,13 @@ class TestClarityHelperLims(unittest.TestCase):
         results = self.api.get_barcode_from_reagenttypes(barcode)
 
         # Assert
-        assert results == results_barcode
+        assert_that(results).is_equal_to(results_barcode)
 
     def test_clarity_helper_get_sample_barcode_from_runid_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_sample_barcode_from_runid(None)
-
-    # def test_clarity_helper_reformat_barcode_to_index_novalid_barcodes(self):
-    #     """
-    #     Pass None and an empty barcode to method
-    #     """
-
-    #     # Setup
-    #     sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
-    #     expected = {}
-    #     log_file = "logfile.log"
-
-    #     # Test
-    #     results = self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
-
-    #     # Assert
-    #     self.assertEqual(results, expected)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         assert "WARNING" in log_content, "No warning found in log file!"
+        assert_that(self.api.get_sample_barcode_from_runid).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_reformat_barcode_to_index_isvalid(self):
-        """
-        Pass all different variations of barcode values within the sample info dict
-        """
-
         # Setup
         sample_info = {
             "sample1": {"barcode": None},
@@ -409,38 +142,103 @@ class TestClarityHelperLims(unittest.TestCase):
         result = self.api.reformat_barcode_to_index(sample_info)
 
         # Assert
-        self.assertEqual(result, expected)
+        assert_that(result).is_equal_to(expected)
 
     def test_clarity_helper_collect_samplesheet_info_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.collect_samplesheet_info(None)
+        assert_that(self.api.collect_samplesheet_info).raises(ValueError).when_called_with(None)
 
+    def test_clarity_helper_get_barcode_from_reagenttypes_isinvalid(self, caplog):
+        # Setup
+        barcode = "fake_barcode"
 
-class TestClarityHelperLimsyWithFixtures:
-    """Class for clarity tests with fixtures"""
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
 
-    @pytest.fixture(scope="class")
-    def api(self, request):
-        """Setup API connection"""
-        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        lims = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-        lims.load_tracked_requests(data_file_path)
-        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
-        yield lims
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_1(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = "<xml>mock_reagent_types</xml>"
+        custom_xml_dict = {}
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml)
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict)
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_2(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = "<xml>mock_reagent_types</xml>"
+        custom_xml_dict = {"rtp:reagent-types": {"reagent-type": {}}}
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml)
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict)
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_3(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = ["<xml>mock_reagent_types</xml>", "<xml>mock_reagent_type_details</xml>"]
+        custom_xml_dict = [{"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}}, {"rtp:reagent-type": {}}]
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml.pop(0))
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict.pop(0))
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_4(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = ["<xml>mock_reagent_types</xml>", "<xml>mock_reagent_type_details</xml>"]
+        custom_xml_dict = [{"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}}, {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}}]
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml.pop(0))
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict.pop(0))
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_reformat_barcode_to_index_novalid_barcodes(self, caplog):
+        # Setup
+        sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
+        expected = {}
+
+        # Test
+        results = self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
+
+        # Assert
+        assert_that(results).is_equal_to(expected)
+        assert_that(caplog.text).contains("WARNING")
 
     @pytest.mark.parametrize("runid,expected", [("20240417_1729_1C_PAW45723_05bb74c5", 1), ("20240625_1734_2F_PAW20497_d0c3cbb5", 1)])
-    def test_clarity_helper_get_artifacts_from_runid_valid(self, api, runid, expected):
+    def test_clarity_helper_get_artifacts_from_runid_valid(self, runid, expected):
         """
         Pass real run IDs and test expected number of artifacts back
         """
 
         # Test
-        artifacts = api.get_artifacts_from_runid(runid)
+        artifacts = self.api.get_artifacts_from_runid(runid)
 
         # Assert
         assert len(artifacts) == expected
@@ -585,29 +383,29 @@ class TestClarityHelperLimsyWithFixtures:
             ),
         ],
     )
-    def test_clarity_helper_get_lane_from_runid_isvalid(self, api, run_id, expected):
+    def test_clarity_helper_get_lane_from_runid_isvalid(self, run_id, expected):
         """
         Pass None to method
         """
 
         # Test
-        results = api.get_lane_from_runid(run_id)
+        results = self.api.get_lane_from_runid(run_id)
         print(results)
 
         # Assert
         assert results == expected
 
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [("B_04-0004-S6_DT", 1), ("462-24_MPX-seq", 4)])  # Illumina  # ONT
-    def test_clarity_helper_get_samples_from_artifacts_isvalid(self, api, run_id, expected_sample_quantity):
+    def test_clarity_helper_get_samples_from_artifacts_isvalid(self, run_id, expected_sample_quantity):
         """
         Pass real artifact IDs and test expected number of samples back
         """
 
         # Set up
-        artifact = api.get_artifacts(name=run_id)
+        artifact = self.api.get_artifacts(name=run_id)
 
         # Test
-        get_samples = api.get_samples_from_artifacts(artifact)
+        get_samples = self.api.get_samples_from_artifacts(artifact)
         print(get_samples)
 
         # Assert
@@ -682,17 +480,16 @@ class TestClarityHelperLimsyWithFixtures:
             ),  # Illumina drop off
         ],
     )
-    def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
+    def test_clarity_helper_get_sample_info_isvalid(self, sample_id, expected_dict):
         """
         Pass real sample IDs and test expected values in the dictionary output
         """
 
         # Set up
-        sample = api.get_samples(search_id=sample_id)
+        sample = self.api.get_samples(search_id=sample_id)
 
         # Test
-        get_info = api.get_sample_info(sample.id)
-        print(get_info)
+        get_info = self.api.get_sample_info(sample.id)
 
         # Assert
         assert get_info == expected_dict
@@ -718,17 +515,16 @@ class TestClarityHelperLimsyWithFixtures:
             ),
         ],
     )
-    def test_clarity_helper_get_sample_info_project_notexists(self, api, sample_id, expected_dict):
+    def test_clarity_helper_get_sample_info_project_notexists(self, sample_id, expected_dict):
         """
         Pass real sample IDs and test expected values in the dictionary output
         """
 
         # Set up
-        sample = api.get_samples(search_id=sample_id)
+        sample = self.api.get_samples(search_id=sample_id)
 
         # Test
-        get_info = api.get_sample_info(sample.id)
-        print(get_info)
+        get_info = self.api.get_sample_info(sample.id)
 
         # Assert
         assert get_info == expected_dict
@@ -743,13 +539,13 @@ class TestClarityHelperLimsyWithFixtures:
             ("ASF_A05136-P27", 1),
         ],
     )
-    def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
+    def test_clarity_helper_collect_sample_info_from_runid(self, runid, expected_sample_quantity):
         """
         Pass real run IDs and test expected number of samples stored in the dictionary output
         """
 
         # Test
-        sample_dict = api.collect_sample_info_from_runid(runid)
+        sample_dict = self.api.collect_sample_info_from_runid(runid)
 
         # Assert
         assert len(sample_dict) == expected_sample_quantity
@@ -781,13 +577,13 @@ class TestClarityHelperLimsyWithFixtures:
             ),
         ],
     )
-    def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
+    def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        barcode_dict = api.get_sample_barcode_from_runid(run_id)
+        barcode_dict = self.api.get_sample_barcode_from_runid(run_id)
         # print(barcode_dict)
 
         # Assert
@@ -859,25 +655,25 @@ class TestClarityHelperLimsyWithFixtures:
             ),  # regular barcode
         ],
     )
-    def test_get_sample_custom_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
+    def test_get_sample_custom_barcode_from_runid_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        barcode = api.get_sample_custom_barcode_from_runid(run_id)
+        barcode = self.api.get_sample_custom_barcode_from_runid(run_id)
 
         # Assert
         assert barcode == expected_dict
 
     @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
-    def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, api, sample, expected_barcode):
+    def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, sample, expected_barcode):
         """
         Pass real artifact IDs and test expected number of samples back
         """
 
         # Test
-        results = api.get_sample_custom_barcode_from_sampleid(sample)
+        results = self.api.get_sample_custom_barcode_from_sampleid(sample)
 
         # Assert
         assert results == expected_barcode
@@ -1102,13 +898,13 @@ class TestClarityHelperLimsyWithFixtures:
             ),  # ONT, no barcode info
         ],
     )
-    def test_clarity_helper_collect_samplesheet_info_isvalid(self, api, run_id, expected_dict):
+    def test_clarity_helper_collect_samplesheet_info_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        merged_dict = api.collect_samplesheet_info(run_id)
+        merged_dict = self.api.collect_samplesheet_info(run_id)
         print(merged_dict)
 
         # Assert

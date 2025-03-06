@@ -36,6 +36,7 @@ tests = [
     "pytest-sugar",
     "pytest-profiling",
     "pytest-benchmark",
+    "assertpy"
 ]
 
 [tool.setuptools]

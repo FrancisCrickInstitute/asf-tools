@@ -352,7 +352,6 @@ class ClarityHelperLims(ClarityLims):
         Warns:
             UserWarning: If there are issues accessing the XML data structure or API responses.
         """
-        log.info("here's an info message")
         # Construct URI for reagent types
         base_uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes"
         uri = f"{base_uri}?name={sample_barcode}"
@@ -364,16 +363,13 @@ class ClarityHelperLims(ClarityLims):
         # Validate reagent-types and reagent-type keys
         reagent_types = data_dict.get("rtp:reagent-types")
         if not reagent_types:
-            log.info("here's a first info message")
             log.warning("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.")
             return sample_barcode
 
         reagent_type = reagent_types.get("reagent-type")
         if not reagent_type or "uri" not in reagent_type:
-            log.info("here's a second info message")
             log.warning("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.")
             return sample_barcode
-
         data_dict_uri = reagent_type["uri"]
 
         # Fetch and parse detailed reagent type data
@@ -383,17 +379,14 @@ class ClarityHelperLims(ClarityLims):
         # Validate special-type and attribute keys
         special_type = uri_xml.get("rtp:reagent-type", {}).get("special-type")
         if not special_type or "attribute" not in special_type:
-            log.info("here's a third info message")
             log.warning("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.")
             return sample_barcode
-
         attribute = special_type["attribute"]
 
         # Validate attribute name and value
         if attribute.get("name") == "Sequence":
             return attribute.get("value", "None")
         else:
-            log.info("here's a fourth info message")
             log.warning("Attribute 'name' is not 'Sequence'. Returning fallback barcode.")
             return sample_barcode
 
