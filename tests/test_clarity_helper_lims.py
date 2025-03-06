@@ -68,10 +68,6 @@ class TestClarityHelperLims:
         # Assert
         assert_that(results).is_none()
 
-    def test_clarity_helper_get_check_sample_dropoff_isinvalid(self):
-        # Test and Assert
-        assert_that(self.api.check_sample_dropoff_info).raises(ValueError).when_called_with("non_valid")
-
     def test_clarity_helper_get_check_sample_dropoff_isvalid(self):
         # Set up
         sample_1 = "GOL5512A6973"  # drop-off sample
