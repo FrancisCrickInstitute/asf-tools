@@ -144,10 +144,9 @@ class TestGenDemuxRun:
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
         assert_that(os.path.exists(samplesheet_path_01)).is_true()
 
-    # @patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
-    def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_info, tmp_path):
+    def test_ont_gen_demux_samplesheet_single_sample(self, tmp_path, monkeypatch):
         # Setup
-        mock_collect_samplesheet_info.return_value = {
+        samplesheet_info_return = {
             "sample_01": {
                 "sample_name": "sample_01",
                 "group": "asf",
@@ -160,6 +159,7 @@ class TestGenDemuxRun:
                 "barcode": None,  # Unclassified
             }
         }
+        monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
@@ -176,7 +176,7 @@ class TestGenDemuxRun:
         )
 
         # Assertion
-        self.assertEqual(content, expected_content)
+        assert_that(content).is_equal_to(expected_content)
 
     def test_ont_gen_demux_samplesheet_multi_sample(self, tmp_path, monkeypatch):
         # Setup
