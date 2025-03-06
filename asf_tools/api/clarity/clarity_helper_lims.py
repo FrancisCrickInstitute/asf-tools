@@ -12,16 +12,7 @@ from requests.exceptions import HTTPError
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
 
-
-logging.basicConfig(
-    level=logging.DEBUG,  # Ensure warnings and above are logged
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("logfile.log", mode="w"), logging.StreamHandler()],  # Save logs to a file  # Print logs to console
-)
-
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
 
 class ClarityHelperLims(ClarityLims):
     """
