@@ -263,7 +263,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo \\
+  -profile crick,nemo,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
@@ -312,7 +312,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo \\
+  -profile crick,nemo,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir /path/to/runs/test_run \\
