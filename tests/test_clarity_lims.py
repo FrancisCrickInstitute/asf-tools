@@ -33,40 +33,15 @@ from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
-# # Create class level mock API
-# @pytest.fixture(scope="class", autouse=True)
-# # def mock_credentials_clarity_api(request):
-# #     credentials_file_path = os.path.join(API_TEST_DATA, "test_credentials.toml")
-# #     # api = ClarityLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-# #     api = ClarityLimsMock(credentials_path=credentials_file_path)
-# #     # api.load_tracked_requests(credentials_file_path)
-# #     request.cls.api = api
-# #     request.addfinalizer(lambda: api.save_tracked_requests(credentials_file_path))
-# #     yield api
-# def mock_credentials_clarity_api(request):
-#     """Fixture to set up ClarityLimsMock instance."""
-#     credentials_file_path = os.path.join(API_TEST_DATA, "test_credentials.toml")
-#     api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
-#     request.cls.api = api
-#     request.addfinalizer(lambda: api.save_tracked_requests(credentials_file_path))
-#     yield api
-
-# # def mock_credentials_clarity_api():
-# #     api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
-# #     yield api
-
-# @pytest.fixture(scope="class", autouse=True)
-# def clarity_api():
-#     """Fixture to set up ClarityLims instance."""
-#     clarity_api = ClarityLims()
-#     yield clarity_api
-
+# Create class level mock API
+@pytest.fixture(scope="class", autouse=True)
+def mock_credentials_clarity_api(request):
+    api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+    request.cls.api = api
+    yield api
 
 class TestClarity:
     """Class for testing the clarity api wrapper"""
-
-    def setUp(self):
-        self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
     def test_clarity_api_load_credentials_valid(self):
         """
@@ -128,8 +103,6 @@ class TestClarity:
 
         # Test and Assert
         assert_that(self.api.validate_response).raises(requests.exceptions.HTTPError).when_called_with("https://localhost:8080/api", mock_response)
-        # with self.assertRaises(requests.exceptions.HTTPError):
-        #     self.api.validate_response("https://localhost:8080/api", mock_response)
 
     def test_clarity_api_validate_response_ok(self):
         """
@@ -166,15 +139,6 @@ class TestClarity:
         # Assert
         assert_that(params).is_equal_to({"name": "test", "last-modified": "test2"})
 
-
-class TestClarityWithFixtures:
-    """Class for clarity tests with fixtures"""
-
-    @pytest.fixture(scope="class")
-    def api(self):
-        """Setup API connection"""
-        yield ClarityLims()
-
     @pytest.mark.parametrize(
         "xml_path,outer_key,inner_key,type_name,expected_num",
         [
@@ -200,7 +164,7 @@ class TestClarityWithFixtures:
             xml_content = file.read()
 
         # Test
-        data, next_page = clarity_api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)  # pylint: disable=unused-variable
+        data, next_page = self.api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)  # pylint: disable=unused-variable
 
         # Assert
         assert_that(data).is_length(expected_num)
@@ -232,10 +196,10 @@ class TestClarityWithFixtures:
             xml_content = file.read()
 
         # Test
-        instance = clarity_api.get_single_instance(xml_content, outer_key, type_name)
+        instance = self.api.get_single_instance(xml_content, outer_key, type_name)
 
         # Assert
-        assert instance.id == instance_id
+        assert_that(instance.id).is_equal_to(instance_id)
 
 
 class TestClarityEndpoints:
@@ -284,10 +248,10 @@ class TestClarityEndpoints:
 
         # Assert
         if isinstance(data, list):
-            assert len(data) > 0
-        assert data is not None
+            assert_that(data).is_not_empty()
+        assert_that(data).is_not_none()
         if search_id is not None:
-            assert data.id == search_id
+            assert_that(data.id).is_equal_to(search_id)
 
     def test_clarity_api_get_stub_list_returns_none_invalid(self, api):
         """
@@ -304,10 +268,9 @@ class TestClarityEndpoints:
 
         # Test
         data = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="babs", expand_stubs=False)
-        print(data)
 
         # Assert
-        assert isinstance(data, Stub)
+        assert_that(data).is_instance_of(Stub)
 
     def test_clarity_api_expand_stubs(self, api):
         """
