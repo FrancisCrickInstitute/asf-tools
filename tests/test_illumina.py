@@ -7,12 +7,11 @@ Tests covering the data_transfer module
 import csv
 import logging
 import os
-import tempfile
-import unittest
 from datetime import datetime
 from xml.parsers.expat import ExpatError
 
 import pytest
+from assertpy import assert_that
 
 from asf_tools.illumina.illumina_utils import (
     atac_reformat_barcode,
@@ -42,73 +41,31 @@ from asf_tools.illumina.illumina_utils import (
 )
 
 
-# Get the logger
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
-
-class TestIlluminaUtils(unittest.TestCase):
+class TestIlluminaUtils:
     """Class for parse_runinfo tests"""
 
     def test_runinfo_xml_to_dict_filenotexist(self):
-        """
-        Pass a file that does not exist
-        """
-
-        # Set up
-        invalid_path = "file_does_not_exist"
-
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            runinfo_xml_to_dict(invalid_path)
+        assert_that(runinfo_xml_to_dict).raises(FileNotFoundError).when_called_with("file_does_not_exist")
 
     def test_runinfo_xml_to_dict_isnotxml(self):
-        """
-        Pass a file that is not XML
-        """
-
-        # Set up
-        invalid_file = "./tests/data/illumina/dummy.txt"
-
         # Test and Assert
-        with self.assertRaises(ExpatError):
-            runinfo_xml_to_dict(invalid_file)
+        assert_that(runinfo_xml_to_dict).raises(ExpatError).when_called_with("./tests/data/illumina/dummy.txt")
 
     def test_runinfo_xml_to_dict_isinvalid(self):
         """
         Pass a xml file with compromised content
         """
-
-        # Set up
-        invalid_file = "./tests/data/illumina/fake_RunInfo.xml"
-
         # Test and Assert
-        with self.assertRaises(ExpatError):
-            runinfo_xml_to_dict(invalid_file)
+        assert_that(runinfo_xml_to_dict).raises(ExpatError).when_called_with("./tests/data/illumina/fake_RunInfo.xml")
 
     def test_find_key_recursively_none(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            find_key_recursively(None, "None")
+        assert_that(find_key_recursively).raises(TypeError).when_called_with(None)
 
     def test_find_key_recursively_emptytarget(self):
-        """
-        Pass empty target string to method
-        """
-
-        # Set up
-        file = "./tests/data/illumina/RunInfo.xml"
-        xml_dict = runinfo_xml_to_dict(file)
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            find_key_recursively(xml_dict, "")
+        assert_that(find_key_recursively).raises(ValueError).when_called_with("./tests/data/illumina/RunInfo.xml", "")
 
     def test_extract_matching_item_from_dict_returnnone(self):
         """
@@ -120,8 +77,7 @@ class TestIlluminaUtils(unittest.TestCase):
         xml_dict = runinfo_xml_to_dict(file)
 
         # Test and Assert
-        with self.assertRaises(TypeError):
-            extract_matching_item_from_dict(xml_dict, "info_not_in_file")
+        assert_that(extract_matching_item_from_dict).raises(TypeError).when_called_with(xml_dict, "info_not_in_file")
 
     def test_filter_runinfo_machinenotexist(self):
         """
@@ -134,12 +90,6 @@ class TestIlluminaUtils(unittest.TestCase):
 
         The test ensures that `filter_runinfo` properly handles invalid or unknown
         instrument names by raising the appropriate exception.
-
-        Assertions:
-            - A `ValueError` is raised when the instrument is not recognized.
-
-        Raises:
-            ValueError: If the instrument type does not match any predefined patterns.
         """
         # Set up
         xml_dict = {
@@ -158,27 +108,9 @@ class TestIlluminaUtils(unittest.TestCase):
         }
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            filter_runinfo(xml_dict)
+        assert_that(filter_runinfo).raises(ValueError).when_called_with(xml_dict)
 
     def test_filter_runinfo_isvalid(self):
-        """
-        Tests the `filter_runinfo` method for correct functionality.
-
-        This test method sets up a mock RunInfo dictionary representing an XML structure
-        and verifies that the `filter_runinfo` method processes this input correctly.
-        The test compares the output of `filter_runinfo` against an expected dictionary
-        that includes the current date and time, run ID, instrument, and machine type.
-
-        The test checks that the `filter_runinfo` method correctly identifies the machine
-        type based on the instrument pattern and returns the expected structured dictionary.
-
-        Assertions:
-            - The output of `filter_runinfo` should match the expected dictionary.
-
-        Raises:
-            AssertionError: If the output does not match the expected dictionary.
-        """
         # Set up
         xml_dict = {
             "@Version": "6",
@@ -224,12 +156,8 @@ class TestIlluminaUtils(unittest.TestCase):
             "lane": "8",
         }
 
-        # Test
-        run_info = filter_runinfo(xml_dict)
-        # print(run_info)
-
-        # Assert
-        assert run_info == expected_dict
+        # Test and Assert
+        assert_that(filter_runinfo(xml_dict)).is_equal_to(expected_dict)
 
     def test_extract_illumina_runid_fromxml(self):
         """
@@ -239,12 +167,8 @@ class TestIlluminaUtils(unittest.TestCase):
         file = "./tests/data/illumina/RunInfo.xml"
         flowcell_runid = "22MKK5LT3"
 
-        # Test
-        run_info = extract_illumina_runid_fromxml(file)
-        print(run_info)
-
-        # Assert
-        assert run_info == flowcell_runid
+        # Test and Assert
+        assert_that(extract_illumina_runid_fromxml(file)).is_equal_to(flowcell_runid)
 
     def test_extract_illumina_runid_frompath(self):
         """
@@ -255,46 +179,27 @@ class TestIlluminaUtils(unittest.TestCase):
         file = "RunInfo.xml"
         flowcell_runid = "22MKK5LT3"
 
-        # Test
-        run_info = extract_illumina_runid_frompath(path, file)
-        print(run_info)
+        # Test and Assert
+        assert_that(extract_illumina_runid_frompath(path, file)).is_equal_to(flowcell_runid)
 
-        # Assert
-        assert run_info == flowcell_runid
-
-    def test_extract_cycle_fromxml(self):
-        """
-        Pass a valid XML file and test expected NumCycle values from the dictionary output
-        """
+    def test_extract_cycle_fromxml_isvalid(self):
         # Set up
         file = "./tests/data/illumina/RunInfo.xml"
         cycle_length = ["151", "10", "10", "151"]
 
-        # Test
-        run_info = extract_cycle_fromxml(file)
+        # Test and Assert
+        assert_that(extract_cycle_fromxml(file)).is_equal_to(cycle_length)
 
-        # Assert
-        assert run_info == cycle_length
-
-    def test_extract_cycle_frompath(self):
-        """
-        Pass a valid XML file and test expected RunID values from the dictionary output
-        """
+    def test_extract_cycle_frompath_isvalid(self):
         # Set up
         path = "./tests/data/illumina/"
         file = "RunInfo.xml"
         cycle_length = ["151", "10", "10", "151"]
 
-        # Test
-        run_info = extract_cycle_frompath(path, file)
+        # Test and Assert
+        assert_that(extract_cycle_frompath(path, file)).is_equal_to(cycle_length)
 
-        # Assert
-        assert run_info == cycle_length
-
-    def test_merge_runinfo_dict_fromfile(self):
-        """
-        Pass a valid XML file and test expected values in the dictionary output
-        """
+    def test_merge_runinfo_dict_fromfile_isvalid(self):
         # Set up
         file = "./tests/data/illumina/RunInfo.xml"
 
@@ -314,44 +219,26 @@ class TestIlluminaUtils(unittest.TestCase):
             "lane": "8",
         }
 
-        # Test
-        filtered_info = merge_runinfo_dict_fromfile(file)
-        # print(filtered_info)
-
-        # Assert
-        assert filtered_info == expected_dict
+        # Test and Assert
+        assert_that(merge_runinfo_dict_fromfile(file)).is_equal_to(expected_dict)
 
     def test_reformat_barcode_isnone(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            reformat_barcode(None)
+        assert_that(reformat_barcode).raises(TypeError).when_called_with(None)
 
     def test_reformat_barcode_nobarcode(self):
         """
-        Pass a dict without a "barcode" value to method
+        Pass a dict without the key "barcode" to method
         """
 
         # Set up
         test_dict = {"value1": "invalid", "value2": "dictionary"}
         expected = {}
 
-        # Test
-        results = reformat_barcode(test_dict)
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(reformat_barcode(test_dict)).is_equal_to(expected)
 
     def test_reformat_barcode_isvalid(self):
-        """
-        Pass a valid dict to method
-        """
-
         # Set up
         test_dict = {
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
@@ -366,44 +253,22 @@ class TestIlluminaUtils(unittest.TestCase):
             "Sample4": {"index": "GTTCTT"},
         }
 
-        # Test
-        results = reformat_barcode(test_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(reformat_barcode(test_dict)).is_equal_to(expected_output)
 
     def test_atac_reformat_barcode_isnone(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            atac_reformat_barcode(None)
+        assert_that(atac_reformat_barcode).raises(TypeError).when_called_with(None)
 
     def test_atac_reformat_barcode_nobarcode(self):
-        """
-        Pass a dict without a "barcode" value to method
-        """
-
         # Set up
         test_dict = {"value1": "invalid", "value2": "dictionary"}
-        expected = {}
+        expected_output = {}
 
-        # Test
-        results = atac_reformat_barcode(test_dict)
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(atac_reformat_barcode(test_dict)).is_equal_to(expected_output)
 
     def test_atac_reformat_barcode_isvalid(self):
-        """
-        Pass a valid dict to method
-        """
-
         # Set up
         test_dict = {
             "Sample1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTG)"},
@@ -416,74 +281,18 @@ class TestIlluminaUtils(unittest.TestCase):
             "Sample3": {"index": ["ATAACCTA", "CGGTGAGC", "GATCTTAT", "TCCGAGCG"]},
         }
 
-        # Test
-        results = atac_reformat_barcode(test_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(atac_reformat_barcode(test_dict)).is_equal_to(expected_output)
 
     def test_group_samples_by_index_length_isnone(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            group_samples_by_index_length(None)
+        assert_that(group_samples_by_index_length).raises(TypeError).when_called_with(None)
 
     def test_group_samples_by_index_length_isnotadict(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-        invalid_input = "not_a_dict"
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            group_samples_by_index_length(invalid_input)
-
-    # def test_group_samples_by_index_length_isinvalid(self):
-    #     """
-    #     Pass a dict without a "barcode" value to method
-    #     """
-
-    #     # Set up
-    #     test_dict = {"value1": "invalid", "value2": "dictionary"}
-    #     # log_file = "test_logs.log"
-    #     log_file = "logfile.log"
-
-    #     # log = logging.getLogger(__name__)
-    #     # log.setLevel(logging.DEBUG)
-    #     # log_file = logging.FileHandler("logfile.log", mode="w")
-    #     # log_file.setLevel(logging.DEBUG)
-
-    #     # Test
-    #     results = group_samples_by_index_length(test_dict)
-
-    #     # Assert
-    #     assert results == []
-
-    #     # log.addHandler(log_file)
-    #     # print(log_file)
-
-    #     # Check if "WARNING" appears in the log file
-    #     with open(log_file, "r") as file:
-    #         log_content = file.read()
-    #         print(log_content)
-    #         assert "WARNING" in log_content, "No warning found in log file!"
-
-    #     logging.shutdown()
-    #     os.remove(log_file)
+        assert_that(group_samples_by_index_length).raises(TypeError).when_called_with("not_a_dict")
 
     def test_group_samples_by_index_length_isvalid(self):
-        """
-        Pass a valid dict to method
-        """
-
         # Set up
         test_dict = {
             "Sample1": {"index": "AAGATAGTGA"},
@@ -492,53 +301,26 @@ class TestIlluminaUtils(unittest.TestCase):
         }
         expected_output = [{"index_length": (10, 0), "samples": ["Sample1"]}, {"index_length": (6, 10), "samples": ["Sample2", "Sample3"]}]
 
-        # Test
-        results = group_samples_by_index_length(test_dict)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(group_samples_by_index_length(test_dict)).is_equal_to(expected_output)
 
     def test_group_samples_by_dictkey_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            group_samples_by_dictkey(None)  # pylint: disable=no-value-for-parameter
+        assert_that(group_samples_by_dictkey).raises(TypeError).when_called_with(None)
 
     def test_group_samples_by_dictkey_isinvalid(self):
-        """
-        Pass an invalid input to method
-        """
-
-        # Set up
-        not_a_dict = ["list", "not", "dictionary"]
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            group_samples_by_dictkey(not_a_dict, "key")
+        assert_that(group_samples_by_dictkey).raises(ValueError).when_called_with(["list", "not", "dictionary"], "key")
 
     def test_group_samples_by_dictkey_missingkey(self):
-        """
-        Pass an a key not present in the input dict
-        """
-
         # Set up
         valid_dict = {"sample": {"key1": "value1", "key2": "value2"}}
-        expected = {}
+        expected_output = {}
 
-        # Test
-        result = group_samples_by_dictkey(valid_dict, "missing_key")
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(group_samples_by_dictkey(valid_dict, "missing_key")).is_equal_to(expected_output)
 
     def test_group_samples_by_dictkey_isvalid(self):
-        """
-        Pass a valid input dict and key
-        """
-
         # Set up
         valid_dict1 = {"sample": {"key1": "matching_value"}, "sample2": {"key1": "matching_value"}, "sample3": {"key1": "different_value"}}
         valid_dict2 = {
@@ -546,22 +328,14 @@ class TestIlluminaUtils(unittest.TestCase):
             "sample4": {"key1": "value", "key2": "matching_value"},
             "sample5": {"different_key": "value"},
         }
-        expected1 = {"matching_value": ["sample", "sample2"], "different_value": ["sample3"]}
-        expected2 = {"matching_value": ["sample3", "sample4"]}
+        expected_output1 = {"matching_value": ["sample", "sample2"], "different_value": ["sample3"]}
+        expected_output2 = {"matching_value": ["sample3", "sample4"]}
 
-        # Test
-        result1 = group_samples_by_dictkey(valid_dict1, "key1")
-        result2 = group_samples_by_dictkey(valid_dict2, "key2")
-
-        # Assert
-        assert result1 == expected1
-        assert result2 == expected2
+        # Test and Assert
+        assert_that(group_samples_by_dictkey(valid_dict1, "key1")).is_equal_to(expected_output1)
+        assert_that(group_samples_by_dictkey(valid_dict2, "key2")).is_equal_to(expected_output2)
 
     def test_split_by_project_type_sample_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Set up
         sample_info = {"sample_1": {None}, "sample_2": None, "sample_3": {"invalid_value"}}
         constants_dict = {"constant_1": ["value_1"]}
@@ -571,15 +345,10 @@ class TestIlluminaUtils(unittest.TestCase):
         results = split_by_project_type(sample_info, constants_dict)
 
         # Assert
-        assert results == expected_output
+        assert_that(results).is_equal_to(expected_output)
 
     def test_split_by_project_type_category_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Set up
-
         sample_info = {"sample_2": {"project_type": "value_2", "lanes": "1", "barcode": "OB (ATAA-GGTC)"}}
         constants_dict = {"constant_1": None}
         expected_output = {
@@ -590,18 +359,10 @@ class TestIlluminaUtils(unittest.TestCase):
             "all_samples": {"sample_2_lane_1": {"Lane": "1", "Sample_ID": "sample_2", "index": "ATAA", "index2": "GGTC"}},
         }
 
-        # Test
-        results = split_by_project_type(sample_info, constants_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(split_by_project_type(sample_info, constants_dict)).is_equal_to(expected_output)
 
     def test_split_by_project_type_isinvalid(self):
-        """
-        Pass invalid input types to method
-        """
-
         # Set up
         sample_info = ["not_a_dict"]
         constants_dict = {"constant_1": "value_1"}
@@ -612,11 +373,8 @@ class TestIlluminaUtils(unittest.TestCase):
         constants_dict_2 = "not_a_dict"
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            split_by_project_type(sample_info, constants_dict)
-
-        with self.assertRaises(ValueError):
-            split_by_project_type(sample_info_2, constants_dict_2)
+        assert_that(split_by_project_type).raises(ValueError).when_called_with(sample_info, constants_dict)
+        assert_that(split_by_project_type).raises(ValueError).when_called_with(sample_info_2, constants_dict_2)
 
     def test_split_by_project_type_nomatch(self):
         """
@@ -630,18 +388,10 @@ class TestIlluminaUtils(unittest.TestCase):
         constants_dict = {"constant_1": ["value_1"]}
         expected_output = {"constant_1": {}, "all_samples": {"sample_1_lane_1": {"Sample_ID": "sample_1", "Lane": "1", "index": "ATCG"}}}
 
-        # Test
-        results = split_by_project_type(sample_info, constants_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(split_by_project_type(sample_info, constants_dict)).is_equal_to(expected_output)
 
     def test_split_by_project_type_isvalid(self):
-        """
-        Pass a valid input dicts to method
-        """
-
         # Set up
         sample_info = {
             "sample_1": {"project_type": "value_1", "lanes": "1", "barcode": "BC (ATCG)"},
@@ -672,79 +422,35 @@ class TestIlluminaUtils(unittest.TestCase):
             },
         }
 
-        # Test
-        results = split_by_project_type(sample_info, constants_dict)
-        print(results)
-
-        # Assert
-        assert results == expected_output
+        # Test and Assert
+        assert_that(split_by_project_type(sample_info, constants_dict)).is_equal_to(expected_output)
 
     def test_calculate_overridecycle_values_indexnone(self):
-        """
-        Pass empty target string to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("", 10, 8)
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values(None, 10, 8)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("", 10, 8)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with(None, 10, 8)
 
     def test_calculate_overridecycle_values_integernone(self):
-        """
-        Pass empty integer value to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", None, 8)
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", 10, None)
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", 10)  # pylint: disable=no-value-for-parameter
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("Value", None, 8)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("Value", 10, None)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("Value", 10)
 
     def test_calculate_overridecycle_values_negativeinteger(self):
-        """
-        Pass a negative integer to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", 10, -8)
-
-        with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", -10, 8)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("Value", 10, -8)
+        assert_that(calculate_overridecycle_values).raises(TypeError).when_called_with("Value", -10, 8)
 
     def test_calculate_overridecycle_values_negativedifference(self):
-        """
-        Pass a negative integer to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            calculate_overridecycle_values("Value", 1, 8)
+        assert_that(calculate_overridecycle_values).raises(ValueError).when_called_with("Value", 1, 8)
 
     def test_generate_overridecycle_string_dualindex_isvalid(self):
-        """
-        Pass valid inputs to method
-        """
-
         # Set up
         expected = "Y151;I8N2;I8N2;Y151"
 
-        # Test
-        result = generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcc", 10, 151)
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcc", 10, 151)).is_equal_to(expected)
 
     def test_generate_overridecycle_string_dualindex_nozerovalues(self):
         """
@@ -755,82 +461,47 @@ class TestIlluminaUtils(unittest.TestCase):
         expected_1 = "Y151;I8N2;I10;Y151"
         expected_2 = "Y151;I10;I8N2;Y151"
 
-        # Test
-        result_1 = generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)
-        result_2 = generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)
-
-        # Assert
-        assert result_1 == expected_1
-        assert result_2 == expected_2
+        # Test and Assert
+        assert_that(generate_overridecycle_string("AATTCCGG", 10, 151, "ttaaggcctg", 10, 151)).is_equal_to(expected_1)
+        assert_that(generate_overridecycle_string("AATTCCGGAT", 10, 151, "ttaaggcc", 10, 151)).is_equal_to(expected_2)
 
     def test_generate_overridecycle_string_singleindex_isvalid(self):
-        """
-        Pass valid inputs to method
-        """
-
         # Set up
         expected = "N10Y151;I8;N10Y151"
 
-        # Test
-        result = generate_overridecycle_string("AATTCCGG", 10, 151)
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(generate_overridecycle_string("AATTCCGG", 10, 151)).is_equal_to(expected)
 
     def test_index_distance_isvalid(self):
-        """
-        Pass a valid value to method
-        """
-
-        # Set up
-
         # Test and Assert
         seq1 = "AGCT"
         seq2 = "AGCT"
-        self.assertEqual(index_distance(seq1, seq2), 0)
+        assert_that(index_distance(seq1, seq2)).is_equal_to(0)
 
         seq3 = "AGCT"
         seq4 = "TCGA"
-        self.assertEqual(index_distance(seq3, seq4), 4)
+        assert_that(index_distance(seq3, seq4)).is_equal_to(4)
 
         seq5 = "AGCT"
         seq6 = "TGCT"
-        self.assertEqual(index_distance(seq5, seq6), 1)
+        assert_that(index_distance(seq5, seq6)).is_equal_to(1)
 
     def test_minimum_index_distance_isvalid(self):
-        """
-        Pass a valid value to method
-        """
-
-        # Set up
-
         # Test and Assert
         sequences = ["AGCT", "AGCT", "AGCT"]
-        self.assertEqual(minimum_index_distance(sequences), 0)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(0)
 
         sequences = ["AGCT", "TGCA"]
-        self.assertEqual(minimum_index_distance(sequences), 2)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(2)
 
         sequences = ["AGGT", "TGCA", "AGCC"]
-        self.assertEqual(minimum_index_distance(sequences), 2)
+        assert_that(minimum_index_distance(sequences)).is_equal_to(2)
 
     def test_dlp_barcode_data_to_dict_filenotexists(self):
-        """
-        Pass None to method
-        """
-
-        # Set up
-        invalid_path = "file_does_not_exist"
-
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dlp_barcode_data_to_dict(invalid_path, "None")
+        assert_that(dlp_barcode_data_to_dict).raises(FileNotFoundError).when_called_with("file_does_not_exist", None)
 
     def test_dlp_barcode_data_to_dict_isvalid(self):
-        """
-        Pass a valid file to method
-        """
-
         # Set up
         file_path = "./tests/data/illumina/dlp_barcode_extended_info_testdataset.csv"
         expected = {
@@ -872,57 +543,37 @@ class TestIlluminaUtils(unittest.TestCase):
             },
         }
 
-        # Test
-        result = dlp_barcode_data_to_dict(file_path, "General_sample_name")
-
-        # Assert
-        assert result == expected
+        # Test and Assert
+        assert_that(dlp_barcode_data_to_dict(file_path, "General_sample_name")).is_equal_to(expected)
 
     def test_generate_bclconfig_invalidmachine(self):
-        """
-        Pass an invalid input as file path to method
-        """
-
         # Set up
         fake_list = []
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            generate_bclconfig(fake_list, "flowcell")
+        assert_that(generate_bclconfig).raises(ValueError).when_called_with(fake_list, "flowcell")
 
     def test_generate_bclconfig_invalidflowcell(self):
-        """
-        Pass an invalid input as file path to method
-        """
-
-        # Set up
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            generate_bclconfig("machine", 123)
+        assert_that(generate_bclconfig).raises(ValueError).when_called_with("machine", 123)
 
     def test_generate_bclconfig_isvalid(self):
         """
         Test with only required parameters, no extra fields
         """
-
         # Set up
         expected = {
             "Header": {"FileFormatVersion": 2, "InstrumentPlatform": "NovaseqX", "RunName": "Flowcell123"},
             "BCLConvert_Settings": {"SoftwareVersion": "4.2.7", "FastqCompressionFormat": "gzip"},
         }
 
-        # Test
-        results = generate_bclconfig("NovaseqX", "Flowcell123")
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(generate_bclconfig("NovaseqX", "Flowcell123")).is_equal_to(expected)
 
     def test_generate_bclconfig_override_and_additional_fields(self):
         """
         # Test with both overrides and additional fields
         """
-
         # Set up
         header_extra = {"FileFormatVersion": 3, "ExtraHeaderField": "TestHeaderValue"}
         bclconvert_extra = {"SoftwareVersion": "4.3.0", "ExtraBCLConvertField": "TestBCLValue"}
@@ -931,52 +582,26 @@ class TestIlluminaUtils(unittest.TestCase):
             "BCLConvert_Settings": {"SoftwareVersion": "4.3.0", "FastqCompressionFormat": "gzip", "ExtraBCLConvertField": "TestBCLValue"},
         }
 
-        # Test
-        results = generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
-
-        # Assert
-        assert results == expected
+        # Test and Assert
+        assert_that(
+            generate_bclconfig("NovaseqX", "Flowcell123", header_parameters=header_extra, bclconvert_parameters=bclconvert_extra)
+        ).is_equal_to(expected)
 
     def test_count_samples_in_bcl_samplesheet_isinvalid(self):
-        """
-        Test with invalid input, ie. that is not string
-        """
-
         # Set up
         invalid_entry = []
         invalid_entry2 = 2
 
         # Test and Assert
-        with self.assertRaises(ValueError):
-            count_samples_in_bcl_samplesheet("./", invalid_entry)
-        with self.assertRaises(ValueError):
-            count_samples_in_bcl_samplesheet("./", invalid_entry2)
+        assert_that(count_samples_in_bcl_samplesheet).raises(ValueError).when_called_with("./", invalid_entry)
+        assert_that(count_samples_in_bcl_samplesheet).raises(ValueError).when_called_with("./", invalid_entry2)
 
     def test_count_samples_in_bcl_samplesheet_nofileinput(self):
-        """
-        Pass a file that does not exist
-        """
-
         # Set up
         invalid_path = "file_does_not_exist"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            count_samples_in_bcl_samplesheet(invalid_path, "string")
-
-
-class TestIlluminaUtilsWithFixtures:
-    """Class for IlluminaUtils tests with fixtures"""
-
-    @pytest.fixture(scope="function", autouse=True)
-    def temporary_folder(self):
-        """
-        Function-level fixture that creates a temporary folder for each test.
-        """
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            # Attach to the test instance
-            self.tmp_path = tmpdirname  # pylint: disable=attribute-defined-outside-init
-            yield
+        assert_that(count_samples_in_bcl_samplesheet).raises(FileNotFoundError).when_called_with(invalid_path, "string")
 
     @pytest.mark.parametrize(
         "file,expected_dict",
@@ -1038,18 +663,8 @@ class TestIlluminaUtilsWithFixtures:
         ],
     )
     def test_runinfo_xml_to_dict_isvalid(self, file, expected_dict):
-        """
-        Pass a valid XML file and test expected values in the dictionary output
-        """
-
-        # Set up
-
-        # Test
-        xml_info = runinfo_xml_to_dict(file)
-        print(xml_info)
-
-        # Assert
-        assert xml_info == expected_dict
+        # Test and Assert
+        assert_that(runinfo_xml_to_dict(file)).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize(
         "dic,expected_list",
@@ -1059,33 +674,15 @@ class TestIlluminaUtilsWithFixtures:
         ],
     )
     def test_find_key_recursively_isvalid(self, dic, expected_list):
-        """
-        Pass a valid dictionary from XML file and test expected values in the output list
-        """
-
-        # Set up
-
         # Test and Assert
-        list_extracted_info = find_key_recursively(dic, "@Id")
-
-        # Assert
-        assert list_extracted_info == expected_list
+        assert_that(find_key_recursively(dic, "@Id")).is_equal_to(expected_list)
 
     @pytest.mark.parametrize(
         "list_info,expected_output", [({"run": {"@Id": "20240711_LH00442_0033_A22MKK5LT3"}}, "20240711_LH00442_0033_A22MKK5LT3")]
     )
     def test_extract_matching_item_from_dict_isvalid(self, list_info, expected_output):
-        """
-        Pass a valid dictionary and test expected values in the output
-        """
-
-        # Set up
-
         # Test and Assert
-        list_extracted_info = extract_matching_item_from_dict(list_info, "@Id")
-
-        # Assert
-        assert list_extracted_info == expected_output
+        assert_that(extract_matching_item_from_dict(list_info, "@Id")).is_equal_to(expected_output)
 
     @pytest.mark.parametrize(
         "file,expected_dict",
@@ -1106,18 +703,12 @@ class TestIlluminaUtilsWithFixtures:
         ],
     )
     def test_filter_readinfo_isvalid(self, file, expected_dict):
-        """
-        Pass a valid XML file and test expected values in the dictionary output
-        """
-        # Set up
-
         # Test
         xml_info = runinfo_xml_to_dict(file)
         read_info = filter_readinfo(xml_info)
-        # print(xml_info)
 
         # Assert
-        assert read_info == expected_dict
+        assert_that(read_info).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize(
         "dict1,dict2,expected_merged_dict",
@@ -1137,16 +728,8 @@ class TestIlluminaUtilsWithFixtures:
         ],
     )
     def test_merge_dicts(self, dict1, dict2, expected_merged_dict):
-        """
-        Pass a two different dictionaries, merge and test expected values in the merged dictionary output
-        """
-        # Set up
-
-        # Test
-        merged_dict = merge_dicts(dict1, dict2, "run_id")
-
-        # Assert
-        assert merged_dict == expected_merged_dict
+        # Test and Assert
+        assert_that(merge_dicts(dict1, dict2, "run_id")).is_equal_to(expected_merged_dict)
 
     @pytest.mark.parametrize(
         "header_dict,reads_dict,bcl_settings_dict,bcl_data_dict",
@@ -1162,12 +745,12 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_generate_bcl_samplesheet_valid(self, header_dict, reads_dict, bcl_settings_dict, bcl_data_dict):
+    def test_generate_bcl_samplesheet_valid(self, header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, tmp_path):
         """
         Check that the csv file is created and contains the correct data
         """
         # Set up
-        output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        output_file_path = os.path.join(tmp_path, "test_samplesheet.csv")
 
         # Test
         generate_bcl_samplesheet(header_dict, reads_dict, bcl_settings_dict, bcl_data_dict, output_file_path)
@@ -1210,12 +793,12 @@ class TestIlluminaUtilsWithFixtures:
             )
         ],
     )
-    def test_generate_bcl_samplesheet_nobclvalues(self, header_dict, reads_dict):
+    def test_generate_bcl_samplesheet_nobclvalues(self, header_dict, reads_dict, tmp_path):
         """
         Check that the csv file does not contain empty or None BCL dictionary values
         """
         # Set up
-        output_file_path = os.path.join(self.tmp_path, "test_samplesheet.csv")
+        output_file_path = os.path.join(tmp_path, "test_samplesheet.csv")
         bcl_settings_dict = {}
 
         # Test
@@ -1242,33 +825,24 @@ class TestIlluminaUtilsWithFixtures:
             assert ["[BCLConvert_Settings]"] not in content
             assert ["[BCLConvert_Data]"] not in content
 
-    def test_count_samples_in_bcl_samplesheet_isnone(self):
+    def test_count_samples_in_bcl_samplesheet_isnone(self, tmp_path):
         """
         Pass input string not present in file content
         """
-
         # Set up
-        file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
+        file_path = os.path.join(tmp_path, "test_bcl_samplesheet.csv")
         with open(file_path, "w", encoding="ASCII") as f:
             f.write("[Header],,\n")
             f.write("[FileFormatVersion],2,\n")
         expected = None
 
-        # Test
-        results = count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
+        # Test and Assert
+        assert_that(count_samples_in_bcl_samplesheet(file_path, "Sample_ID")).is_equal_to(expected)
 
-        # Assert
-        assert results == expected
-
-    def test_count_samples_in_bcl_samplesheet_isvalid(self):
-        """
-        Pass a valid input to method
-        """
-
+    def test_count_samples_in_bcl_samplesheet_isvalid(self, tmp_path):
         # Set up
-
         # Create file with content
-        file_path = os.path.join(self.tmp_path, "test_bcl_samplesheet.csv")
+        file_path = os.path.join(tmp_path, "test_bcl_samplesheet.csv")
         with open(file_path, "w", encoding="ASCII") as f:
             f.write("[Header],,\n")
             f.write("[FileFormatVersion],2,\n")
@@ -1278,7 +852,7 @@ class TestIlluminaUtilsWithFixtures:
             f.write("2,WAR6617A1,CGAATTGC,GTAAGGTG\n")
         expected = 2
 
-        file_path2 = os.path.join(self.tmp_path, "test_bcl_samplesheet_2.csv")
+        file_path2 = os.path.join(tmp_path, "test_bcl_samplesheet_2.csv")
         with open(file_path2, "w", encoding="ASCII") as f:
             f.write("[Header],,\n")
             f.write("Lane,Sample_ID,index,index2\n")
@@ -1287,10 +861,6 @@ class TestIlluminaUtilsWithFixtures:
             f.write("2,WAR6617A1,CGAATTGC,GTAAGGTG\n")
         expected2 = 3
 
-        # Test
-        results = count_samples_in_bcl_samplesheet(file_path, "Sample_ID")
-        results2 = count_samples_in_bcl_samplesheet(file_path2, "Sample_ID")
-
-        # Assert
-        assert results == expected
-        assert results2 == expected2
+        # Test and Assert
+        assert_that(count_samples_in_bcl_samplesheet(file_path, "Sample_ID")).is_equal_to(expected)
+        assert_that(count_samples_in_bcl_samplesheet(file_path2, "Sample_ID")).is_equal_to(expected2)

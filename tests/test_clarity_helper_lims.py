@@ -661,7 +661,7 @@ class TestClarityHelperLims:
         barcode = self.api.get_sample_custom_barcode_from_runid(run_id)
 
         # Assert
-        assert barcode == expected_dict
+        assert_that(barcode).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
     def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, sample, expected_barcode):
@@ -673,7 +673,7 @@ class TestClarityHelperLims:
         results = self.api.get_sample_custom_barcode_from_sampleid(sample)
 
         # Assert
-        assert results == expected_barcode
+        assert_that(results).is_equal_to(expected_barcode)
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
@@ -905,4 +905,4 @@ class TestClarityHelperLims:
         print(merged_dict)
 
         # Assert
-        assert merged_dict == expected_dict
+        assert_that(merged_dict).is_equal_to(expected_dict)
