@@ -203,19 +203,20 @@ class TestClarity:
         assert_that(instance.id).is_equal_to(instance_id)
 
 
+# Create class level mock API
+@pytest.fixture(scope="class", autouse=True)
+def mock_endpoints_clarity_api(request):
+    data_file_path = os.path.join(API_TEST_DATA, "mock_data", "data.pkl")
+    lims = ClarityLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+    lims.load_tracked_requests(data_file_path)
+    request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
+    request.cls.lims = lims
+    yield lims
+
 class TestClarityEndpoints:
     """
     Test class for pulling data from API endpoints
     """
-
-    @pytest.fixture(scope="class")
-    def api(self, request):
-        """Setup API connection"""
-        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "data.pkl")
-        lims = ClarityLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-        lims.load_tracked_requests(data_file_path)
-        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
-        yield lims
 
     @pytest.mark.parametrize(
         "func_name,search_id",
@@ -235,13 +236,13 @@ class TestClarityEndpoints:
             ("get_queues", "60"),
         ],
     )
-    def test_clarity_api_get_endpoints(self, api, func_name, search_id):
+    def test_clarity_api_get_endpoints(self, func_name, search_id):
         """
         Test Get against endpoints
         """
 
         # Setup
-        api_func = getattr(api, func_name)
+        api_func = getattr(self.lims, func_name)
 
         # Test
         data = api_func(search_id=search_id)
@@ -254,35 +255,35 @@ class TestClarityEndpoints:
         if search_id is not None:
             assert_that(data.id).is_equal_to(search_id)
 
-    def test_clarity_api_get_stub_list_returns_none_invalid(self, api):
+    def test_clarity_api_get_stub_list_returns_none_invalid(self):
         """
         Test returns none when no results exist
         """
 
         # Test and Assert
-        assert_that(api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="TEST")).is_none()
+        assert_that(self.lims.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="TEST")).is_none()
 
-    def test_clarity_api_get_stub_list_noexpand(self, api):
+    def test_clarity_api_get_stub_list_noexpand(self):
         """
         Test returns single stub no expansion
         """
 
         # Test
-        data = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="babs", expand_stubs=False)
+        data = self.lims.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="babs", expand_stubs=False)
 
         # Assert
         assert_that(data).is_instance_of(Stub)
 
-    def test_clarity_api_expand_stubs(self, api):
+    def test_clarity_api_expand_stubs(self):
         """
         Test expand stubs works
         """
 
         # Setup
-        labs = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab")
+        labs = self.lims.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab")
 
         # Test and Assert
-        assert_that(api.expand_stubs(labs, Lab)).is_length(len(labs))
+        assert_that(self.lims.expand_stubs(labs, Lab)).is_length(len(labs))
 
 
 class TestClarityPrototype(unittest.TestCase):
