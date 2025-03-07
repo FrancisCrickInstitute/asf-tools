@@ -2,6 +2,8 @@
 Clarity API Tests
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 from unittest.mock import Mock

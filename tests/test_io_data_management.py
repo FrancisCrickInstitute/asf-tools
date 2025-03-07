@@ -2,6 +2,8 @@
 Tests for the data transfer class
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 from datetime import datetime, timezone
@@ -130,9 +132,9 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
 
         # create file structure, run not completed
-        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
+        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
         # Test
         result = dm.check_illumina_sequencing_run_complete(tmp_path)

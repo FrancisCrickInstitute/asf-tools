@@ -2,6 +2,8 @@
 Tests for io util functions
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 

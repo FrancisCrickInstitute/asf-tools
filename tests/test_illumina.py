@@ -2,6 +2,8 @@
 Tests covering the data_transfer module
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import csv
 import logging
 import os
@@ -503,7 +505,7 @@ class TestIlluminaUtils(unittest.TestCase):
 
         # Test and Assert
         with self.assertRaises(TypeError):
-            group_samples_by_dictkey(None)
+            group_samples_by_dictkey(None)  # pylint: disable=no-value-for-parameter
 
     def test_group_samples_by_dictkey_isinvalid(self):
         """
@@ -703,7 +705,7 @@ class TestIlluminaUtils(unittest.TestCase):
         with self.assertRaises(TypeError):
             calculate_overridecycle_values("Value", 10, None)
         with self.assertRaises(TypeError):
-            calculate_overridecycle_values("Value", 10)
+            calculate_overridecycle_values("Value", 10)  # pylint: disable=no-value-for-parameter
 
     def test_calculate_overridecycle_values_negativeinteger(self):
         """
