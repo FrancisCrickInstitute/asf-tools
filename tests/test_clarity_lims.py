@@ -25,7 +25,7 @@ from asf_tools.api.clarity.models import (
     Workflow,
 )
 
-from .mocks.clarity_lims_mock import ClarityLimsMock
+from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 
 API_TEST_DATA = "tests/data/api/clarity"

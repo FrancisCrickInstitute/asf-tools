@@ -2,143 +2,409 @@
 Clarity helper API Tests
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
-import unittest
 
 import pytest
+import xmltodict
+from assertpy import assert_that
 from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub
 
-from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
+from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 
 API_TEST_DATA = "tests/data/api/clarity"
 
 
-class TestClarityHelperLims(unittest.TestCase):
-    """Class for testing the clarity api wrapper"""
+# Create class level mock API
+@pytest.fixture(scope="class", autouse=True)
+def mock_clarity_api(request):
+    data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+    api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+    api.load_tracked_requests(data_file_path)
+    request.cls.api = api
+    request.addfinalizer(lambda: api.save_tracked_requests(data_file_path))
+    yield api
 
-    @classmethod
-    def setUpClass(cls):
-        """Setup API connection"""
-        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        cls.api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-        cls.api.load_tracked_requests(data_file_path)
-        cls.data_file_path = data_file_path
 
-    @classmethod
-    def tearDownClass(cls):
-        """Teardown API connection"""
-        cls.api.save_tracked_requests(cls.data_file_path)
-
+class TestClarityHelperLims:
     def test_clarity_helper_get_artifacts_from_runid_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_artifacts_from_runid(None)
+        assert_that(self.api.get_artifacts_from_runid).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_get_artifacts_from_runid_isinvalid(self):
-        """
-        Pass runid that does not exist
-        """
-
-        # Setup
-        runid = "fake_runid"
-
         # Test and Assert
-        with self.assertRaises(KeyError):
-            self.api.get_artifacts_from_runid(runid)
+        assert_that(self.api.get_artifacts_from_runid).raises(KeyError).when_called_with("fake_runid")
+
+    def test_clarity_helper_get_lane_from_runid_isnone(self):
+        # Test and Assert
+        assert_that(self.api.get_lane_from_runid).raises(ValueError).when_called_with(None)
+
+    def test_clarity_helper_get_lane_from_runid_isinvalid(self):
+        # Test and Assert
+        assert_that(self.api.get_lane_from_runid).raises(KeyError).when_called_with("Fake_runid")
 
     def test_clarity_helper_get_samples_from_artifacts_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_samples_from_artifacts(None)
+        assert_that(self.api.get_samples_from_artifacts).raises(ValueError).when_called_with(None)
 
     def test_clarity_helper_get_samples_from_artifacts_isinvalid(self):
-        """
-        Pass an artifact that does not exist
-        """
-
         # Setup
         artifacts_list = [Stub(id="TestID", uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST", name=None, limsid="TestID")]
 
         # Test and Assert
-        with self.assertRaises((HTTPError, ConnectionError)):
+        with pytest.raises(Exception) as excinfo:
             self.api.get_samples_from_artifacts(artifacts_list)
+        assert isinstance(excinfo.value, (ConnectionError, HTTPError))
+
+    def test_clarity_helper_get_check_sample_dropoff_isnone(self):
+        # Test
+        results = self.api.check_sample_dropoff_info(None)
+
+        # Assert
+        assert_that(results).is_none()
+
+    def test_clarity_helper_get_check_sample_dropoff_isvalid(self):
+        # Set up
+        sample_1 = "GOL5512A6973"  # drop-off sample
+        expected_dict_1 = {
+            "Drop-Off Amplicon Size (bp)": "114",
+            "Drop-Off Budget Code": "CC2063",
+            "Drop-Off Lab Name": "saterialea",
+            "Drop-Off Number of Replicates Requested": "2",
+            "Drop-Off Researcher Name": "Silvia Haase",
+        }
+
+        sample_2 = "KAN6921A20"  # regular sample
+        expected_dict_2 = {}
+
+        # Test
+        get_info_1 = self.api.check_sample_dropoff_info(sample_1)
+        get_info_2 = self.api.check_sample_dropoff_info(sample_2)
+
+        # Assert
+        assert_that(get_info_1).is_equal_to(expected_dict_1)
+        assert_that(get_info_2).is_equal_to(expected_dict_2)
 
     def test_clarity_helper_get_sample_info_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test
         results = self.api.get_sample_info(None)
 
         # Assert
-        assert results is None
+        assert_that(results).is_none()
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_isnone(self):
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(None)
+
+        # Assert
+        assert_that(results).is_none()
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
+        # Setup
+        barcode = "N701-N501 (TAAGGCGA-TAGATCGC)"
+        results_barcode = "TAAGGCGA-TAGATCGC"
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(results_barcode)
 
     def test_clarity_helper_get_sample_barcode_from_runid_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.get_sample_barcode_from_runid(None)
+        assert_that(self.api.get_sample_barcode_from_runid).raises(ValueError).when_called_with(None)
+
+    def test_clarity_helper_reformat_barcode_to_index_isvalid(self):
+        # Setup
+        sample_info = {
+            "sample1": {"barcode": None},
+            "sample2": {"barcode": "First Kit (GeneX-YGeneY)"},
+            "sample3": {"project": "Project Info", "barcode": "Second Kit (CTTGTGCT-ACATACAC)"},
+            "sample4": {"barcode": "Random Kit (SingleIndex)"},
+            "sample5": {"info": "No barcode in dict"},
+        }
+        expected = {
+            "sample2": {"index": "GeneX", "index2": "YGeneY"},
+            "sample3": {"index": "CTTGTGCT", "index2": "ACATACAC"},
+            "sample4": {"index": "SingleIndex", "index2": ""},
+        }
+
+        # Test
+        result = self.api.reformat_barcode_to_index(sample_info)
+
+        # Assert
+        assert_that(result).is_equal_to(expected)
 
     def test_clarity_helper_collect_samplesheet_info_isnone(self):
-        """
-        Pass None to method
-        """
-
         # Test and Assert
-        with self.assertRaises(ValueError):
-            self.api.collect_samplesheet_info(None)
+        assert_that(self.api.collect_samplesheet_info).raises(ValueError).when_called_with(None)
 
+    def test_clarity_helper_get_barcode_from_reagenttypes_isinvalid(self, caplog):
+        # Setup
+        barcode = "fake_barcode"
 
-class TestClarityHelperLimsyWithFixtures:
-    """Class for clarity tests with fixtures"""
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)  # Call the function that raises a warning
 
-    @pytest.fixture(scope="class")
-    def api(self, request):
-        """Setup API connection"""
-        data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
-        lims = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
-        lims.load_tracked_requests(data_file_path)
-        request.addfinalizer(lambda: lims.save_tracked_requests(data_file_path))
-        yield lims
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_1(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = "<xml>mock_reagent_types</xml>"
+        custom_xml_dict = {}
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml)
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict)
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_2(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = "<xml>mock_reagent_types</xml>"
+        custom_xml_dict = {"rtp:reagent-types": {"reagent-type": {}}}
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml)
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict)
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_3(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = ["<xml>mock_reagent_types</xml>", "<xml>mock_reagent_type_details</xml>"]
+        custom_xml_dict = [{"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}}, {"rtp:reagent-type": {}}]
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml.pop(0))
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict.pop(0))
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_get_barcode_from_reagenttypes_warning_4(self, caplog, monkeypatch):
+        # Setup
+        barcode = "fake_barcode"
+        custom_xml = ["<xml>mock_reagent_types</xml>", "<xml>mock_reagent_type_details</xml>"]
+        custom_xml_dict = [
+            {"rtp:reagent-types": {"reagent-type": {"uri": "mock_uri"}}},
+            {"rtp:reagent-type": {"special-type": {"attribute": {"name": "InvalidName"}}}},
+        ]
+        monkeypatch.setattr(self.api, "get_with_uri", lambda uri, *args, **kwargs: custom_xml.pop(0))
+        monkeypatch.setattr(xmltodict, "parse", lambda uri, *args, **kwargs: custom_xml_dict.pop(0))
+
+        # Test
+        results = self.api.get_barcode_from_reagenttypes(barcode)
+
+        # Assert
+        assert_that(results).is_equal_to(barcode)
+        assert_that(caplog.text).contains("WARNING")
+
+    def test_clarity_helper_reformat_barcode_to_index_novalid_barcodes(self, caplog):
+        # Setup
+        sample_info = {"sample1": {"barcode": None}, "sample2": {"barcode": ""}, "sample3": {"user": "No user", "barcode": "No Barcode"}}
+        expected = {}
+
+        # Test
+        results = self.api.reformat_barcode_to_index(sample_info)  # Call the function that raises a warning
+
+        # Assert
+        assert_that(results).is_equal_to(expected)
+        assert_that(caplog.text).contains("WARNING")
 
     @pytest.mark.parametrize("runid,expected", [("20240417_1729_1C_PAW45723_05bb74c5", 1), ("20240625_1734_2F_PAW20497_d0c3cbb5", 1)])
-    def test_clarity_helper_get_artifacts_from_runid_valid(self, api, runid, expected):
+    def test_clarity_helper_get_artifacts_from_runid_valid(self, runid, expected):
         """
         Pass real run IDs and test expected number of artifacts back
         """
 
         # Test
-        artifacts = api.get_artifacts_from_runid(runid)
+        artifacts = self.api.get_artifacts_from_runid(runid)
 
         # Assert
         assert len(artifacts) == expected
 
+    @pytest.mark.parametrize(
+        "run_id,expected",
+        [
+            (
+                "HWNT7BBXY",
+                {
+                    "HWNT7BBXY_1": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373229",
+                        "lane": "1",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_2": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373230",
+                        "lane": "2",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_3": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373231",
+                        "lane": "3",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_4": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373232",
+                        "lane": "4",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_5": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373233",
+                        "lane": "5",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_6": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373234",
+                        "lane": "6",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_7": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373235",
+                        "lane": "7",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                    "HWNT7BBXY_8": {
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/2-8373236",
+                        "lane": "8",
+                        "samples": [
+                            "TLG66A2839",
+                            "TLG66A2840",
+                            "TLG66A2841",
+                            "TLG66A2842",
+                            "TLG66A2843",
+                            "TLG66A2844",
+                            "TLG66A2845",
+                            "TLG66A2848",
+                            "TLG66A2849",
+                        ],
+                    },
+                },
+            ),
+            (
+                "ASF_A05136-P27",
+                {
+                    "ASF_A05136-P27_1": {
+                        "samples": ["SKO6875A940"],
+                        "artifact_uri": "https://asf-claritylims.thecrick.org/api/v2/artifacts/SKO6875A940PA1",
+                        "lane": "1",
+                    },
+                },
+            ),
+        ],
+    )
+    def test_clarity_helper_get_lane_from_runid_isvalid(self, run_id, expected):
+        """
+        Pass None to method
+        """
+
+        # Test
+        results = self.api.get_lane_from_runid(run_id)
+        print(results)
+
+        # Assert
+        assert results == expected
+
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [("B_04-0004-S6_DT", 1), ("462-24_MPX-seq", 4)])  # Illumina  # ONT
-    def test_clarity_helper_get_samples_from_artifacts_isvalid(self, api, run_id, expected_sample_quantity):
+    def test_clarity_helper_get_samples_from_artifacts_isvalid(self, run_id, expected_sample_quantity):
         """
         Pass real artifact IDs and test expected number of samples back
         """
 
         # Set up
-        artifact = api.get_artifacts(name=run_id)
+        artifact = self.api.get_artifacts(name=run_id)
 
         # Test
-        get_samples = api.get_samples_from_artifacts(artifact)
+        get_samples = self.api.get_samples_from_artifacts(artifact)
+        print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
@@ -158,6 +424,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "WGS",
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
+                        "library_type": "ONT DNA Ligation",
                     }
                 },
             ),  # ONT
@@ -173,6 +440,7 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "mRNA-Seq from RNA",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "RNA-Seq",
+                        "library_type": "NEBNext_Low_Input_w_NEB_Ultra_II_FS",
                     }
                 },
             ),
@@ -188,22 +456,38 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
+                        "library_type": "Premade",
                     }
                 },
             ),
+            (
+                "GOL5512A6973",
+                {
+                    "GOL5512A6973": {
+                        "sample_name": "CpPRO_input",
+                        "group": "saterialea",
+                        "user": "silvia.haase",
+                        "project_id": "DN19023",
+                        "project_limsid": "GOL5512",
+                        "project_type": "Amplicons",
+                        "reference_genome": "Other",
+                        "data_analysis_type": "None",
+                        "library_type": "Index PCR",
+                    }
+                },
+            ),  # Illumina drop off
         ],
     )
-    def test_clarity_helper_get_sample_info_isvalid(self, api, sample_id, expected_dict):
+    def test_clarity_helper_get_sample_info_isvalid(self, sample_id, expected_dict):
         """
         Pass real sample IDs and test expected values in the dictionary output
         """
 
         # Set up
-        sample = api.get_samples(search_id=sample_id)
+        sample = self.api.get_samples(search_id=sample_id)
 
         # Test
-        get_info = api.get_sample_info(sample.id)
-        print(get_info)
+        get_info = self.api.get_sample_info(sample.id)
 
         # Assert
         assert get_info == expected_dict
@@ -223,22 +507,22 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": None,
                         "reference_genome": None,
                         "data_analysis_type": None,
+                        "library_type": None,
                     }
                 },
             ),
         ],
     )
-    def test_clarity_helper_get_sample_info_project_notexists(self, api, sample_id, expected_dict):
+    def test_clarity_helper_get_sample_info_project_notexists(self, sample_id, expected_dict):
         """
         Pass real sample IDs and test expected values in the dictionary output
         """
 
         # Set up
-        sample = api.get_samples(search_id=sample_id)
+        sample = self.api.get_samples(search_id=sample_id)
 
         # Test
-        get_info = api.get_sample_info(sample.id)
-        print(get_info)
+        get_info = self.api.get_sample_info(sample.id)
 
         # Assert
         assert get_info == expected_dict
@@ -253,13 +537,13 @@ class TestClarityHelperLimsyWithFixtures:
             ("ASF_A05136-P27", 1),
         ],
     )
-    def test_clarity_helper_collect_sample_info_from_runid(self, api, runid, expected_sample_quantity):
+    def test_clarity_helper_collect_sample_info_from_runid(self, runid, expected_sample_quantity):
         """
         Pass real run IDs and test expected number of samples stored in the dictionary output
         """
 
         # Test
-        sample_dict = api.collect_sample_info_from_runid(runid)
+        sample_dict = self.api.collect_sample_info_from_runid(runid)
 
         # Assert
         assert len(sample_dict) == expected_sample_quantity
@@ -270,34 +554,35 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "20240417_1729_1C_PAW45723_05bb74c5",
                 {
-                    "VIV6902A1": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
-                    "VIV6902A2": {"barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"},
-                    "VIV6902A3": {"barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"},
-                    "VIV6902A4": {"barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)"},
+                    "VIV6902A1": {"barcode": "AAGAAAGTTGTCGGTGTCTTTGTG"},
+                    "VIV6902A2": {"barcode": "TCGATTCCGTTTGTAGTCGTCTGT"},
+                    "VIV6902A3": {"barcode": "GAGTCTTGTGTCCCAGTTACCAGG"},
+                    "VIV6902A4": {"barcode": "TTCGGATTCTATCGTGTTTCCCTA"},
                 },
             ),  # ONT
             ("20240625_1734_2F_PAW20497_d0c3cbb5", {}),
             (
                 "20240807_1248_P2S-02348-A_PAW31464_90cccf6c",
                 {
-                    "SWA6667A7": {"barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)"},
-                    "SWA6667A8": {"barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)"},
-                    "SWA6667A37": {"barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)"},
-                    "SWA6667A38": {"barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)"},
-                    "SWA6667A39": {"barcode": "BC05 (CTTGTCCAGGGTTTGTGTAACCTT)"},
-                    "SWA6667A41": {"barcode": "BC06 (TTCTCGCAAAGGCAGAAAGTAGTC)"},
-                    "201C-2072202": {"barcode": "BC07 (GTGTTACCGTGGGAATGAATCCTT)"},
+                    "SWA6667A7": {"barcode": "AAGAAAGTTGTCGGTGTCTTTGTG"},
+                    "SWA6667A8": {"barcode": "TCGATTCCGTTTGTAGTCGTCTGT"},
+                    "SWA6667A37": {"barcode": "GAGTCTTGTGTCCCAGTTACCAGG"},
+                    "SWA6667A38": {"barcode": "TTCGGATTCTATCGTGTTTCCCTA"},
+                    "SWA6667A39": {"barcode": "CTTGTCCAGGGTTTGTGTAACCTT"},
+                    "SWA6667A41": {"barcode": "TTCTCGCAAAGGCAGAAAGTAGTC"},
+                    "201C-2072202": {"barcode": "GTGTTACCGTGGGAATGAATCCTT"},
                 },
             ),
         ],
     )
-    def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
+    def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        barcode_dict = api.get_sample_barcode_from_runid(run_id)
+        barcode_dict = self.api.get_sample_barcode_from_runid(run_id)
+        # print(barcode_dict)
 
         # Assert
         assert barcode_dict == expected_dict
@@ -308,56 +593,56 @@ class TestClarityHelperLimsyWithFixtures:
             (
                 "22G2JFLT4",
                 {
-                    "SOA6876A276": {"barcode": "32307 AGL IP7_85 and IP5_435 (AGACCAAT-AACTCCGG)"},
-                    "SOA6876A277": {"barcode": "28501 AGL IP7_75 and IP5_469 (ACCAAGAT-ATTGGTCT)"},
-                    "SOA6876A278": {"barcode": "10824 AGL IP7_29 and IP5_456 (ACTCTTGG-AGCTCCAA)"},
-                    "SOA6876A279": {"barcode": "70456 AGL IP7_184 and IP5_568 (CGTTCGCT-AGCGAACG)"},
-                    "SOA6876A280": {"barcode": "55832 AGL IP7_146 and IP5_536 (CGTAGATC-CAATTGCA)"},
-                    "SOA6876A281": {"barcode": "61953 AGL IP7_162 and IP5_513 (TGGTCCTG-TAACGAAG)"},
-                    "SOA6876A282": {"barcode": "48877 AGL IP7_128 and IP5_493 (AGCAAGGC-GCCGTCCG)"},
-                    "SOA6876A283": {"barcode": "60014 AGL IP7_157 and IP5_494 (TGGTTGAC-TCTGACTG)"},
-                    "SOA6876A284": {"barcode": "20386 AGL IP7_54 and IP5_418 (TGCTCTTC-AGGTCGGA)"},
-                    "SOA6876A285": {"barcode": "15828 AGL IP7_42 and IP5_468 (ATAATGGT-AGGTAGTT)"},
-                    "SOA6876A286": {"barcode": "24256 AGL IP7_64 and IP5_448 (TCAGTTAA-TTAACTGA)"},
-                    "SOA6876A287": {"barcode": "22351 AGL IP7_59 and IP5_463 (CCGGCGAC-TTCTAATG)"},
-                    "SOA6876A288": {"barcode": "8463 AGL IP7_23 and IP5_399 (GGCTTGAA-TTGACTAT)"},
-                    "SOA6876A289": {"barcode": "3483 AGL IP7_10 and IP5_411 (GGCCTCCT-AATCGCAT)"},
-                    "SOA6876A290": {"barcode": "25369 AGL IP7_67 and IP5_409 (CTATTCAT-AAGAGCGC)"},
-                    "SOA6876A291": {"barcode": "32656 AGL IP7_86 and IP5_400 (TCTACTAC-GTTAGCCG)"},
-                    "SOA6876A292": {"barcode": "25038 AGL IP7_66 and IP5_462 (ACCTTATT-AGGCGTCG)"},
-                    "SOA6876A293": {"barcode": "4290 AGL IP7_12 and IP5_450 (ACTGCAAG-AATAAGGT)"},
-                    "SOA6876A294": {"barcode": "6234 AGL IP7_17 and IP5_474 (TCGTTCGA-CCGCTAAC)"},
-                    "SOA6876A295": {"barcode": "38188 AGL IP7_100 and IP5_556 (CGCAAGCT-GAGCCTCC)"},
-                    "SOA6876A296": {"barcode": "62326 AGL IP7_163 and IP5_502 (GTTCAATA-GGAGCCAA)"},
-                    "SOA6876A297": {"barcode": "72319 AGL IP7_189 and IP5_511 (CCTTCAGG-CGCCAGTT)"},
-                    "SOA6876A298": {"barcode": "49340 AGL IP7_129 and IP5_572 (CTTCGTTA-CTTGAGTT)"},
-                    "SOA6876A299": {"barcode": "44672 AGL IP7_117 and IP5_512 (CTGGATAA-GCCTTGCT)"},
-                    "SOA6876A300": {"barcode": "66624 AGL IP7_174 and IP5_576 (GATCTTCC-TTGCGGAC)"},
-                    "SOA6876A301": {"barcode": "57393 AGL IP7_150 and IP5_561 (AGGCAAGG-ATTAATCC)"},
-                    "SOA6876A302": {"barcode": "50791 AGL IP7_133 and IP5_487 (CGGAATCA-TGCTTCGC)"},
-                    "SOA6876A303": {"barcode": "47410 AGL IP7_124 and IP5_562 (TGACGAAC-AATGCAAT)"},
-                    "SOA6876A304": {"barcode": "6999 AGL IP7_19 and IP5_471 (TCCTCCGC-CTAGGACC)"},
-                    "SOA6876A305": {"barcode": "13844 AGL IP7_37 and IP5_404 (ACTCCGCG-GTCGCGAA)"},
-                    "SOA6876A306": {"barcode": "7688 AGL IP7_21 and IP5_392 (CTCTGATG-CAATGGAT)"},
-                    "SOA6876A307": {"barcode": "21130 AGL IP7_56 and IP5_394 (GCTCTGCT-AGGAGGCC)"},
-                    "SOA6876A308": {"barcode": "55479 AGL IP7_145 and IP5_567 (TCAGGCGA-GATAAGTA)"},
-                    "SOA6876A309": {"barcode": "54249 AGL IP7_142 and IP5_489 (ACTATATA-ACTTACGG)"},
-                    "SOA6876A310": {"barcode": "46568 AGL IP7_122 and IP5_488 (GAACCGTT-AATCCGTC)"},
-                    "SOA6876A311": {"barcode": "44266 AGL IP7_116 and IP5_490 (GGCAGCCG-AAGGTTAT)"},
-                    "SOA6876A312": {"barcode": "53531 AGL IP7_140 and IP5_539 (AGCGGCAA-AGCAGGAG)"},
-                    "SOA6876A313": {"barcode": "42791 AGL IP7_112 and IP5_551 (TGACTCAA-CGGAACTT)"},
-                    "SOA6876A314": {"barcode": "49644 AGL IP7_130 and IP5_492 (GCATGGCG-CGACGTTA)"},
-                    "SOA6876A315": {"barcode": "55078 AGL IP7_144 and IP5_550 (AAGTTGGA-CGACGGCT)"},
-                    "SOA6876A316": {"barcode": "25797 AGL IP7_68 and IP5_453 (CGACGTAG-TGAGATCA)"},
-                    "SOA6876A317": {"barcode": "8879 AGL IP7_24 and IP5_431 (TCCGTATA-ATGCTTCT)"},
-                    "SOA6876A318": {"barcode": "1950 AGL IP7_6 and IP5_414 (CCATATAG-CGGTTCCA)"},
-                    "SOA6876A319": {"barcode": "30776 AGL IP7_81 and IP5_440 (CTGCTCGT-AGCAGAGC)"},
+                    "SOA6876A276": {"barcode": "AGACCAAT-AACTCCGG"},
+                    "SOA6876A277": {"barcode": "ACCAAGAT-ATTGGTCT"},
+                    "SOA6876A278": {"barcode": "ACTCTTGG-AGCTCCAA"},
+                    "SOA6876A279": {"barcode": "CGTTCGCT-AGCGAACG"},
+                    "SOA6876A280": {"barcode": "CGTAGATC-CAATTGCA"},
+                    "SOA6876A281": {"barcode": "TGGTCCTG-TAACGAAG"},
+                    "SOA6876A282": {"barcode": "AGCAAGGC-GCCGTCCG"},
+                    "SOA6876A283": {"barcode": "TGGTTGAC-TCTGACTG"},
+                    "SOA6876A284": {"barcode": "TGCTCTTC-AGGTCGGA"},
+                    "SOA6876A285": {"barcode": "ATAATGGT-AGGTAGTT"},
+                    "SOA6876A286": {"barcode": "TCAGTTAA-TTAACTGA"},
+                    "SOA6876A287": {"barcode": "CCGGCGAC-TTCTAATG"},
+                    "SOA6876A288": {"barcode": "GGCTTGAA-TTGACTAT"},
+                    "SOA6876A289": {"barcode": "GGCCTCCT-AATCGCAT"},
+                    "SOA6876A290": {"barcode": "CTATTCAT-AAGAGCGC"},
+                    "SOA6876A291": {"barcode": "TCTACTAC-GTTAGCCG"},
+                    "SOA6876A292": {"barcode": "ACCTTATT-AGGCGTCG"},
+                    "SOA6876A293": {"barcode": "ACTGCAAG-AATAAGGT"},
+                    "SOA6876A294": {"barcode": "TCGTTCGA-CCGCTAAC"},
+                    "SOA6876A295": {"barcode": "CGCAAGCT-GAGCCTCC"},
+                    "SOA6876A296": {"barcode": "GTTCAATA-GGAGCCAA"},
+                    "SOA6876A297": {"barcode": "CCTTCAGG-CGCCAGTT"},
+                    "SOA6876A298": {"barcode": "CTTCGTTA-CTTGAGTT"},
+                    "SOA6876A299": {"barcode": "CTGGATAA-GCCTTGCT"},
+                    "SOA6876A300": {"barcode": "GATCTTCC-TTGCGGAC"},
+                    "SOA6876A301": {"barcode": "AGGCAAGG-ATTAATCC"},
+                    "SOA6876A302": {"barcode": "CGGAATCA-TGCTTCGC"},
+                    "SOA6876A303": {"barcode": "TGACGAAC-AATGCAAT"},
+                    "SOA6876A304": {"barcode": "TCCTCCGC-CTAGGACC"},
+                    "SOA6876A305": {"barcode": "ACTCCGCG-GTCGCGAA"},
+                    "SOA6876A306": {"barcode": "CTCTGATG-CAATGGAT"},
+                    "SOA6876A307": {"barcode": "GCTCTGCT-AGGAGGCC"},
+                    "SOA6876A308": {"barcode": "TCAGGCGA-GATAAGTA"},
+                    "SOA6876A309": {"barcode": "ACTATATA-ACTTACGG"},
+                    "SOA6876A310": {"barcode": "GAACCGTT-AATCCGTC"},
+                    "SOA6876A311": {"barcode": "GGCAGCCG-AAGGTTAT"},
+                    "SOA6876A312": {"barcode": "AGCGGCAA-AGCAGGAG"},
+                    "SOA6876A313": {"barcode": "TGACTCAA-CGGAACTT"},
+                    "SOA6876A314": {"barcode": "GCATGGCG-CGACGTTA"},
+                    "SOA6876A315": {"barcode": "AAGTTGGA-CGACGGCT"},
+                    "SOA6876A316": {"barcode": "CGACGTAG-TGAGATCA"},
+                    "SOA6876A317": {"barcode": "TCCGTATA-ATGCTTCT"},
+                    "SOA6876A318": {"barcode": "CCATATAG-CGGTTCCA"},
+                    "SOA6876A319": {"barcode": "CTGCTCGT-AGCAGAGC"},
                 },
             ),  # custom barcode
             (
                 "ASF_A05136-P27",
                 {
-                    "SKO6875A940": {"barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)"},
+                    "SKO6875A940": {"barcode": "ACTCCGCG-TAGTCGTT"},
                 },
             ),  # custom barcode
             (
@@ -368,16 +653,28 @@ class TestClarityHelperLimsyWithFixtures:
             ),  # regular barcode
         ],
     )
-    def test_get_sample_custom_barcode_from_runid_isvalid(self, api, run_id, expected_dict):
+    def test_get_sample_custom_barcode_from_runid_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        barcode = api.get_sample_custom_barcode_from_runid(run_id)
+        barcode = self.api.get_sample_custom_barcode_from_runid(run_id)
 
         # Assert
         assert barcode == expected_dict
+
+    @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
+    def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, sample, expected_barcode):
+        """
+        Pass real artifact IDs and test expected number of samples back
+        """
+
+        # Test
+        results = self.api.get_sample_custom_barcode_from_sampleid(sample)
+
+        # Assert
+        assert results == expected_barcode
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
@@ -386,7 +683,7 @@ class TestClarityHelperLimsyWithFixtures:
                 "20240417_1729_1C_PAW45723_05bb74c5",
                 {
                     "VIV6902A1": {
-                        "barcode": "BC01 (AAGAAAGTTGTCGGTGTCTTTGTG)",
+                        "barcode": "AAGAAAGTTGTCGGTGTCTTTGTG",
                         "sample_name": "BR1_D0",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -395,9 +692,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
+                        "lanes": ["1"],
                     },
                     "VIV6902A2": {
-                        "barcode": "BC02 (TCGATTCCGTTTGTAGTCGTCTGT)",
+                        "barcode": "TCGATTCCGTTTGTAGTCGTCTGT",
                         "sample_name": "BR1_D7",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -406,9 +705,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
+                        "lanes": ["1"],
                     },
                     "VIV6902A3": {
-                        "barcode": "BC03 (GAGTCTTGTGTCCCAGTTACCAGG)",
+                        "barcode": "GAGTCTTGTGTCCCAGTTACCAGG",
                         "sample_name": "BR2_D0",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -417,9 +718,11 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
+                        "lanes": ["1"],
                     },
                     "VIV6902A4": {
-                        "barcode": "BC04 (TTCGGATTCTATCGTGTTTCCCTA)",
+                        "barcode": "TTCGGATTCTATCGTGTTTCCCTA",
                         "sample_name": "BR2_D7",
                         "group": "vanwervenf",
                         "user": "claudia.vivori",
@@ -428,6 +731,8 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Mus musculus",
                         "data_analysis_type": "None",
+                        "library_type": "Oxford Nanopore",
+                        "lanes": ["1"],
                     },
                 },
             ),  # ONT
@@ -443,7 +748,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 40 H05 (CTGAGCCA)",
+                        "barcode": "CTGAGCCA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2840": {
                         "project_limsid": "TLG66",
@@ -454,7 +761,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 41 A06 (AGCCATGC)",
+                        "barcode": "AGCCATGC",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2841": {
                         "sample_name": "L_LTX877_MR_T1_FR5",
@@ -465,7 +774,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "Whole Exome",
                         "project_type": "WES",
-                        "barcode": "SXT 42 B06 (GTACGCAA)",
+                        "barcode": "GTACGCAA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2842": {
                         "project_limsid": "TLG66",
@@ -476,7 +787,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 43 C06 (AGTACAAG)",
+                        "barcode": "AGTACAAG",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2843": {
                         "project_limsid": "TLG66",
@@ -487,7 +800,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 44 D06 (ACATTGGC)",
+                        "barcode": "ACATTGGC",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2844": {
                         "project_limsid": "TLG66",
@@ -498,7 +813,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 45 E06 (ATTGAGGA)",
+                        "barcode": "ATTGAGGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2845": {
                         "project_limsid": "TLG66",
@@ -509,7 +826,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 46 F06 (GTCGTAGA)",
+                        "barcode": "GTCGTAGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2848": {
                         "project_limsid": "TLG66",
@@ -520,7 +839,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 03 C01 (AACGTGAT)",
+                        "barcode": "AACGTGAT",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                     "TLG66A2849": {
                         "project_limsid": "TLG66",
@@ -531,7 +852,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "user": "tracerx.tlg",
                         "project_id": "TRACERx_Lung",
                         "project_type": "WES",
-                        "barcode": "SXT 04 D01 (CACTTCGA)",
+                        "barcode": "CACTTCGA",
+                        "library_type": "SureSelectXT Human All Exon V5plus",
+                        "lanes": ["1", "2", "3", "4", "5", "6", "7", "8"],
                     },
                 },
             ),  # Illumina
@@ -547,7 +870,9 @@ class TestClarityHelperLimsyWithFixtures:
                         "project_type": "Other",
                         "reference_genome": "Other",
                         "data_analysis_type": "None",
-                        "barcode": "13869 AGL IP7_37 and IP5_429 (ACTCCGCG-TAGTCGTT)",
+                        "barcode": "ACTCCGCG-TAGTCGTT",
+                        "library_type": "Premade",
+                        "lanes": ["1"],
                     },
                 },
             ),  # Illumina, custom barcode
@@ -564,18 +889,20 @@ class TestClarityHelperLimsyWithFixtures:
                         "reference_genome": "Homo sapiens",
                         "data_analysis_type": "None",
                         "barcode": "",
+                        "library_type": "ONT DNA Ligation",
+                        "lanes": ["1"],
                     }
                 },
             ),  # ONT, no barcode info
         ],
     )
-    def test_clarity_helper_collect_samplesheet_info_isvalid(self, api, run_id, expected_dict):
+    def test_clarity_helper_collect_samplesheet_info_isvalid(self, run_id, expected_dict):
         """
         Pass real run_id and test expected values in the dictionary output
         """
 
         # Test
-        merged_dict = api.collect_samplesheet_info(run_id)
+        merged_dict = self.api.collect_samplesheet_info(run_id)
         print(merged_dict)
 
         # Assert

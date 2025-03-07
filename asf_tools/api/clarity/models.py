@@ -242,6 +242,11 @@ class Sample(ClarityBaseModel):
         return values
 
 
+class Reagenttype(ClarityBaseModel):
+    name: str
+    uri: str
+
+
 class Input(ClarityBaseModel):
     limsid: str
     uri: str
