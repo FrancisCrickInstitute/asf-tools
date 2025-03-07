@@ -60,12 +60,15 @@ class DataManagement:
             return False
 
         # read single integer from pod5_count.txt
+        pod5_expected_max = -1
         with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
-            pod5_expected_max = int(f.readline().strip())
-            log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
+            file_contents = f.readline().strip()
+            if file_contents.isdigit():
+                pod5_expected_max = int(file_contents)
+                log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
 
         # find all the pod5 files in any subdirectory of the run_dir and get max
-        pod5_numbers = []
+        pod5_numbers = [0]
         for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
             for file in files:
                 if file.endswith(".pod5"):
