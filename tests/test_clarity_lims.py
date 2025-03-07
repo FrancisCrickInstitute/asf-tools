@@ -1,17 +1,16 @@
 """
 Clarity API Tests
 """
-# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
 import unittest
-from assertpy import assert_that
 from unittest.mock import Mock
 
 import pytest
 import requests
+from assertpy import assert_that
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import (
@@ -33,12 +32,14 @@ from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
-# Create class level mock API
+
+# Create class level mock API
 @pytest.fixture(scope="class", autouse=True)
 def mock_credentials_clarity_api(request):
     api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
     request.cls.api = api
     yield api
+
 
 class TestClarity:
     """Class for testing the clarity api wrapper"""
