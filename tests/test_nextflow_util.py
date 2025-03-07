@@ -2,6 +2,8 @@
 Tests for nextflow util functions
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import unittest
 
 from asf_tools.nextflow.utils import NEXTFLOW_VERSION, SINGULARITY_VERSION, create_sbatch_header

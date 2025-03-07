@@ -6,12 +6,14 @@ Tests for ont gen demux run
 
 import os
 import stat
+
 from assertpy import assert_that
 
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.data_management import DataTypeMode
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 from asf_tools.nextflow.utils import create_sbatch_header
-from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
+
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_LIVE_RUN_SOURCE_PATH = "tests/data/ont/live_runs"
@@ -261,7 +263,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo \\
+  -profile crick,nemo,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
@@ -269,7 +271,6 @@ nextflow run /path/to/pipeline \\
 """
         result = instance.create_ont_sbatch_text(run_name, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
-
 
     def test_create_sbatch_with_parse_pos(self):
         # Create an instance of the class with required attributes
@@ -311,7 +312,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo \\
+  -profile crick,nemo,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir /path/to/runs/test_run \\

@@ -30,11 +30,11 @@ We are currently utilizing the following Cellranger applications based on the sp
 - **Cellranger Arc:** For multiomic analyses.
 
 The `Cellranger mkfastq` utility serves a broader purpose in preparing fastq files.
-Other specific applications such as `cellranger count`, `cellranger-dna CNV`, and `cellranger-atac count` are selected based on the sample type.  
+Other specific applications such as `cellranger count`,`cellranger-dna CNV`, and `cellranger-atac count` are selected based on the sample type.
 10X-Arc data are currently being processed by Cellranger-arc mkfastq, but no follow up _cellranger-arc_ or _cellranger-arc count_. Instead, samples are processed in two separate steps, once with standard `cellranger` (it looks for the data type 10X-Multiomics-GEX) and once with `cellranger-atac` (it looks for the data type 10X-Multiomics-ATAC).
 
 ## 3. Do We Need Different Cellranger Types?
-Yes, for now.   
+Yes, for now.
 
 Currently, the kits for **Cellranger DNA** have been discontinued, eliminating the need for its inclusion in our new pipeline. However, we will still need to run the following:
 - **Standard Cellranger** (potentially upgraded to the latest version 8.0)
@@ -42,16 +42,16 @@ Currently, the kits for **Cellranger DNA** have been discontinued, eliminating t
   - 10X-3prime-nuclei
   - 10X-Multiomics-GEX
 - **CellRanger ATAC**
-   - 10X-ATAC
-   - 10X-Multiomics-ATAC
+  - 10X-ATAC
+  - 10X-Multiomics-ATAC
 - 10X-Arc
 
 Additionally, we will need to incorporate **Cellranger Multi** and **Cellranger VDJ** as alternatives to the **Cellranger Count** into our new pipeline.
 
 ## 4. Can the standard CellRanger handle ATAC Projects?
 "Cellranger provides a comprehensive suite of analysis pipelines designed for 10X Genomics Chromium single-cell data, which includes sample demultiplexing, barcode processing, gene counting, and feature barcode analysis." cit. [Cellranger Documentation](https://github.com/10XGenomics/cellranger?tab=readme-ov-file).
-It appears that **ATAC projects** are currently not explicitly supported in the latest version. 
-However, the latest update was designed to handle NovaSeqX data types better. The current advice for the processing of new ATAC projects is to use run standard _CellRanger_ for demultiplexing, followed by _cellranger-atac_. This is different from legacy since _cellranger-atac_ is not used for both demultiplexing and count. The Cellranger developers have expressed no interest in updating the _cellranger-atac_ pipeline aat any time soon. For more information, click [here](https://kb.10xgenomics.com/hc/en-us/articles/26367321866125-How-do-I-generate-single-cell-ATAC-or-multiome-ATAC-FASTQ-files-from-NextSeq-or-NovaSeq-X) 
+It appears that **ATAC projects** are currently not explicitly supported in the latest version.
+However, the latest update was designed to handle NovaSeqX data types better. The current advice for the processing of new ATAC projects is to use run standard _CellRanger_ for demultiplexing, followed by _cellranger-atac_. This is different from legacy since _cellranger-atac_ is not used for both demultiplexing and count. The Cellranger developers have expressed no interest in updating the _cellranger-atac_ pipeline aat any time soon. For more information, click [here](https://kb.10xgenomics.com/hc/en-us/articles/26367321866125-How-do-I-generate-single-cell-ATAC-or-multiome-ATAC-FASTQ-files-from-NextSeq-or-NovaSeq-X)
 
 
 ## 5. Software Required prior to CellRanger run
@@ -63,8 +63,8 @@ To prepare the data for Cellranger, the following tool is necessary:
 ## 6. Follow-Up Software
 After running Cellranger, it is recommend to use the following software for further data analysis:
 - **Cellranger count** for counting reads and generating gene expression matrices.
-- **Cellranger multi** 
-- **Cellranger vdj** 
+- **Cellranger multi**
+- **Cellranger vdj**
 - **FastQC:** for assessing the quality of sequencing data.
 - **Fastq Screen:** to check for contamination in fastq files.
 - **MultiQC:** for aggregating and visualizing multiple quality control reports.

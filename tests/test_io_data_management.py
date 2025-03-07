@@ -2,6 +2,8 @@
 Tests for the data transfer class
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 from datetime import datetime, timezone
@@ -9,7 +11,6 @@ from unittest import mock
 from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-
 from tests.utils import with_temporary_folder
 
 
@@ -131,9 +132,9 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
 
         # create file structure, run not completed
-        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
+        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
         # Test
         result = dm.check_illumina_sequencing_run_complete(tmp_path)
@@ -151,14 +152,14 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
 
         # create file structure, run completed
-        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
+        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
         xml_content = """<?xml version="1.0" encoding="utf-8"?>
             <RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
             <RunStatus>RunCompleted</RunStatus>
             </RunCompletionStatus>"""
-        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)
+        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)  # pylint: disable=consider-using-with
 
         # Test
         result = dm.check_illumina_sequencing_run_complete(tmp_path)
@@ -375,7 +376,7 @@ class TestIoDataManagement(unittest.TestCase):
         target_dir = tmp_path
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
 
-        for root, dirs, files in os.walk(tmp_path):
+        for _, dirs, files in os.walk(tmp_path):
             print(dirs, files)
 
         # Test

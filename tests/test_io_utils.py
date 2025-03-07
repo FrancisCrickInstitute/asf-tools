@@ -2,11 +2,12 @@
 Tests for io util functions
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 
 from asf_tools.io.utils import DeleteMode, check_file_exist, delete_all_items, list_directory_names
-
 from tests.utils import with_temporary_folder
 
 

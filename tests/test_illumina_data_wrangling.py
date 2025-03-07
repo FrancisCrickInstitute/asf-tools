@@ -1,3 +1,10 @@
+"""
+Illumina data wrangling tests
+"""
+
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
+
 import json
 import os
 import tempfile
@@ -8,7 +15,6 @@ import pytest
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 from asf_tools.illumina.illumina_utils import count_samples_in_bcl_samplesheet
-
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 from tests.utils import with_temporary_folder
 
@@ -183,9 +189,9 @@ class TestIlluminaDemux(unittest.TestCase):
         # Load the content of the JSON file into the 'info' variable
         with open(mock_sample_info, "r") as json_file:
             json_info = json.load(json_file)
-        with mock.patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims") as MockClarityHelperLims:
+        with mock.patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims") as mock_lims:
             # Create a mock instance of ClarityHelperLims
-            mock_cl = MockClarityHelperLims.return_value
+            mock_cl = mock_lims.return_value
             mock_cl.collect_samplesheet_info.return_value = json_info
 
             # Test
@@ -276,7 +282,8 @@ class TestIlluminaDemuxWithFixtures:
     )
     def test_generate_illumina_demux_samplesheets_withfixtures(self, api, flowcell_id, runinfo_file, samplesheet_count):
         """
-        Pass real runs with a mix of samples with different project types and/or index length. Check that a samplesheet are generated, how many and their content
+        Pass real runs with a mix of samples with different project types and/or index length.
+        Check that a samplesheet are generated, how many and their content
         """
         # Set up
         # create output files paths
@@ -320,7 +327,3 @@ class TestIlluminaDemuxWithFixtures:
                     assert "Lane,Sample_ID,index" in data
                 else:
                     assert "Lane,Sample_ID,index,index2" in data
-
-        # ['22NWYFLT3_samplesheet_10_10.csv', '22NWYFLT3_samplesheet_6_0.csv', '22NWYFLT3_samplesheet_8_8.csv', '22NWYFLT3_samplesheet.csv']
-        # ['22NWWMLT3_samplesheet_singlecell.csv', '22NWWMLT3_samplesheet_6_0.csv', '22NWWMLT3_samplesheet_10_10.csv', '22NWWMLT3_samplesheet_8_8.csv', '22NWWMLT3_samplesheet.csv']
-        # ['22G57KLT4_samplesheet.csv', '22G57KLT4_samplesheet_8_8.csv']
