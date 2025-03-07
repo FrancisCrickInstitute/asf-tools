@@ -2,6 +2,8 @@
 Clarity API Tests
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 import unittest
 from unittest.mock import Mock
@@ -24,8 +26,7 @@ from asf_tools.api.clarity.models import (
     Stub,
     Workflow,
 )
-
-from .mocks.clarity_lims_mock import ClarityLimsMock
+from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 
 API_TEST_DATA = "tests/data/api/clarity"

@@ -2,6 +2,8 @@
 Primary CLI Tests
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import tempfile
 import unittest
 

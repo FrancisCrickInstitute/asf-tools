@@ -4,6 +4,7 @@ Helper functions for data management
 
 import logging
 import os
+import re
 import subprocess
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -50,7 +51,31 @@ class DataManagement:
         Args:
         - run_dir (str): Path to the run directory.
         """
-        return check_file_exist(run_dir, "sequencing_summary*")
+        # check for pod5 count file
+        if not check_file_exist(run_dir, "pod5_count.txt"):
+            return False
+
+        # check for sequencing summary file
+        if not check_file_exist(run_dir, "sequencing_summary*"):
+            return False
+
+        # read single integer from pod5_count.txt
+        with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
+            pod5_expected_max = int(f.readline().strip())
+            log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
+
+        # find all the pod5 files in any subdirectory of the run_dir and get max
+        pod5_numbers = []
+        for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
+            for file in files:
+                if file.endswith(".pod5"):
+                    match = re.search(r"_(\d+)\.pod5", file)
+                    if match:
+                        pod5_numbers.append(int(match.group(1)))
+        pod5_max = max(pod5_numbers)
+        log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
+
+        return pod5_max == pod5_expected_max
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
@@ -240,7 +265,7 @@ class DataManagement:
                 # Find the group, user, project_id, run_id
                 if len(split_path) == 7:
                     split_path = split_path[2:]
-                    group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
+                    group, user, genomics_stp, project_id, run_id = split_path  # pylint: disable=unused-variable
 
                     # build target path
                     target_path = os.path.join(target_dir, *split_path)
@@ -486,6 +511,7 @@ class DataManagement:
 
         # Detect folders older than N months
         stale_folders = self.find_stale_directories(path, months)
+        print(stale_folders)
 
         # For each run folder in dict, detect and delete "work" dir
         for key in stale_folders:  # pylint: disable=C0206
