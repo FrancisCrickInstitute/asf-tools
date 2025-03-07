@@ -2,18 +2,17 @@
 Tests for ont gen demux run
 """
 
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
 import stat
-import unittest
-from unittest.mock import patch
 
+from assertpy import assert_that
+
+from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.data_management import DataTypeMode
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 from asf_tools.nextflow.utils import create_sbatch_header
-
-from .utils import with_temporary_folder
 
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
@@ -21,10 +20,7 @@ TEST_ONT_LIVE_RUN_SOURCE_PATH = "tests/data/ont/live_runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 
 
-class TestGenDemuxRun(unittest.TestCase):
-    """Class for testing the gen_demux_run tools"""
-
-    @with_temporary_folder
+class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
         # Setup
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
@@ -38,12 +34,11 @@ class TestGenDemuxRun(unittest.TestCase):
         run_dir_3 = os.path.join(tmp_path, "run03")
         run_dir_4 = os.path.join(tmp_path, "run04")
 
-        self.assertTrue(os.path.exists(run_dir_1))
-        self.assertTrue(os.path.exists(run_dir_2))
-        self.assertFalse(os.path.exists(run_dir_3))
-        self.assertFalse(os.path.exists(run_dir_4))
+        assert_that(os.path.exists(run_dir_1)).is_true()
+        assert_that(os.path.exists(run_dir_2)).is_true()
+        assert_that(os.path.exists(run_dir_3)).is_false()
+        assert_that(os.path.exists(run_dir_4)).is_false()
 
-    @with_temporary_folder
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
         test = GenDemuxRun(
@@ -57,11 +52,10 @@ class TestGenDemuxRun(unittest.TestCase):
         run_dir_1 = os.path.join(tmp_path, "run01")
         run_dir_2 = os.path.join(tmp_path, "run02")
 
-        self.assertFalse(os.path.exists(run_dir_1))
-        self.assertTrue(os.path.exists(run_dir_2))
+        assert_that(os.path.exists(run_dir_1)).is_false()
+        assert_that(os.path.exists(run_dir_2)).is_true()
 
-    @with_temporary_folder
-    def test_ont_gen_demux_run_sbatch_file(self, tmp_path):
+    def test_ont_gen_demux_run_sbatch_file_norm(self, tmp_path):
         # Setup
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False)
 
@@ -70,20 +64,17 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
-
-        self.assertTrue(os.path.exists(sbatch_path_01))
+        assert_that(os.path.exists(sbatch_path_01)).is_true()
 
         with open(sbatch_path_01, "r", encoding="UTF-8") as file:
             script_txt = "".join(file.readlines())
 
-        print(script_txt)
-        self.assertTrue("nextflow run" in script_txt)
-        self.assertTrue('export NXF_HOME=".nextflow"' in script_txt)
-        self.assertTrue('export NXF_WORK="work"' in script_txt)
-        self.assertTrue('export NXF_SINGULARITY_CACHEDIR="sing"' in script_txt)
-        self.assertTrue(f'--run_dir {os.path.join("runs", "run01")}' in script_txt)
+        assert_that(script_txt).contains("nextflow run")
+        assert_that(script_txt).contains('export NXF_HOME=".nextflow"')
+        assert_that(script_txt).contains('export NXF_WORK="work"')
+        assert_that(script_txt).contains('export NXF_SINGULARITY_CACHEDIR="sing"')
+        assert_that(script_txt).contains(f'--run_dir {os.path.join("runs", "run01")}')
 
-    @with_temporary_folder
     def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
         # Setup
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
@@ -93,16 +84,13 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
-
-        self.assertTrue(os.path.exists(samplesheet_path_01))
+        assert_that(os.path.exists(samplesheet_path_01)).is_true()
 
         with open(samplesheet_path_01, "r", encoding="UTF-8") as file:
             script_txt = "".join(file.readlines())
 
-        print(script_txt)
-        self.assertTrue("unclassified" in script_txt)
+        assert_that(script_txt).contains("unclassified")
 
-    @with_temporary_folder
     def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         # Setup
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
@@ -116,9 +104,8 @@ class TestGenDemuxRun(unittest.TestCase):
         file_permissions = stat.S_IMODE(file_status.st_mode)
         executable = bool(file_permissions & os.X_OK)
 
-        self.assertTrue(executable)
+        assert_that(executable).is_true()
 
-    @with_temporary_folder
     def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
         # Setup
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False)
@@ -128,16 +115,13 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
-
-        self.assertTrue(os.path.exists(sbatch_path_01))
+        assert_that(os.path.exists(sbatch_path_01)).is_true()
 
         with open(sbatch_path_01, "r", encoding="UTF-8") as file:
             script_txt = "".join(file.readlines())
 
-        print(script_txt)
-        self.assertFalse("NXF_HOME" in script_txt)
+        assert_that(script_txt).does_not_contain("NXF_HOME")
 
-    @with_temporary_folder
     def test_ont_gen_demux_samplesheet_only(self, tmp_path):
         # Setup
         test = GenDemuxRun(
@@ -160,14 +144,11 @@ class TestGenDemuxRun(unittest.TestCase):
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
+        assert_that(os.path.exists(samplesheet_path_01)).is_true()
 
-        self.assertTrue(os.path.exists(samplesheet_path_01))
-
-    @patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
-    @with_temporary_folder
-    def test_ont_gen_demux_samplesheet_single_sample(self, mock_collect_samplesheet_info, tmp_path):
+    def test_ont_gen_demux_samplesheet_single_sample(self, tmp_path, monkeypatch):
         # Setup
-        mock_collect_samplesheet_info.return_value = {
+        samplesheet_info_return = {
             "sample_01": {
                 "sample_name": "sample_01",
                 "group": "asf",
@@ -180,6 +161,7 @@ class TestGenDemuxRun(unittest.TestCase):
                 "barcode": None,  # Unclassified
             }
         }
+        monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
@@ -196,13 +178,11 @@ class TestGenDemuxRun(unittest.TestCase):
         )
 
         # Assertion
-        self.assertEqual(content, expected_content)
+        assert_that(content).is_equal_to(expected_content)
 
-    @patch("asf_tools.api.clarity.clarity_helper_lims.ClarityHelperLims.collect_samplesheet_info")
-    @with_temporary_folder
-    def test_ont_gen_demux_samplesheet_multi_sample(self, mock_collect_samplesheet_info, tmp_path):
+    def test_ont_gen_demux_samplesheet_multi_sample(self, tmp_path, monkeypatch):
         # Setup
-        mock_collect_samplesheet_info.return_value = {
+        samplesheet_info_return = {
             "sample_01": {
                 "sample_name": "sample_01",
                 "group": "asf",
@@ -226,6 +206,7 @@ class TestGenDemuxRun(unittest.TestCase):
                 "barcode": "barcode02",  # Barcoded
             },
         }
+        monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
         test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
@@ -235,7 +216,6 @@ class TestGenDemuxRun(unittest.TestCase):
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
         with open(samplesheet_path, "r", encoding="UTF-8") as f:
             content = f.read()
-
         expected_content = (
             "id,sample_name,group,user,project_id,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n"
             "sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,,no_analysis,barcode01\n"
@@ -243,7 +223,7 @@ class TestGenDemuxRun(unittest.TestCase):
         )
 
         # Assertion
-        self.assertEqual(content, expected_content)
+        assert_that(content).is_equal_to(expected_content)
 
     def test_create_sbatch_without_parse_pos(self):
         # Create an instance of the class with required attributes
@@ -266,32 +246,31 @@ class TestGenDemuxRun(unittest.TestCase):
         # Expected output without parse_pos
         expected_output = f"""#!/bin/sh
 
-    #SBATCH --partition=ncpu
-    #SBATCH --job-name=asf_nanopore_demux_{run_name}
-    #SBATCH --mem=4G
-    #SBATCH -n 1
-    #SBATCH --time=168:00:00
-    #SBATCH --output=run.o
-    #SBATCH --error=run.o
-    #SBATCH --res=asf
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_{run_name}
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=168:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+#SBATCH --res=asf
 
-    {create_sbatch_header("20.10.0")}
+{create_sbatch_header("20.10.0")}
 
-    export NXF_HOME="/path/to/cache"
-    export NXF_WORK="/path/to/work"
-    export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
+export NXF_HOME="/path/to/cache"
+export NXF_WORK="/path/to/work"
+export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
-    nextflow run /path/to/pipeline \\
-    -resume \\
-    -profile crick,nemo \\
-    --monochrome_logs \\
-    --samplesheet ./samplesheet.csv \\
-    --run_dir {os.path.join('/path/to/runs', run_name)} \\
-    --dorado_model sup
-    """
+nextflow run /path/to/pipeline \\
+  -resume \\
+  -profile crick,nemo,genomics \\
+  --monochrome_logs \\
+  --samplesheet ./samplesheet.csv \\
+  --run_dir {os.path.join('/path/to/runs', run_name)} \\
+  --dorado_model sup
+"""
         result = instance.create_ont_sbatch_text(run_name, parse_pos)
-        print(result)
-        self.assertEqual(result.strip(), expected_output.strip())
+        assert_that(result.strip()).is_equal_to(expected_output.strip())
 
     def test_create_sbatch_with_parse_pos(self):
         # Create an instance of the class with required attributes
@@ -307,69 +286,41 @@ class TestGenDemuxRun(unittest.TestCase):
             use_api=False,
             nextflow_version="20.10.0",
         )
-
         run_name = "test_run"
-        parse_pos = 2  # Parse position is set
-
-        #     # Expected output with parse_pos
-        #     expected_output = f"""#!/bin/sh
-
-        # #SBATCH --partition=ncpu
-        # #SBATCH --job-name=asf_nanopore_demux_{run_name}
-        # #SBATCH --mem=4G
-        # #SBATCH -n 1
-        # #SBATCH --time=168:00:00
-        # #SBATCH --output=run.o
-        # #SBATCH --error=run.o
-        # #SBATCH --res=asf
-
-        # {create_sbatch_header("20.10.0")}
-
-        # export NXF_HOME="/path/to/cache"
-        # export NXF_WORK="/path/to/work"
-        # export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
-
-        # nextflow run /path/to/pipeline \\
-        # -resume \\
-        # -profile crick,nemo \\
-        # --monochrome_logs \\
-        # --samplesheet ./samplesheet.csv \\
-        # --run_dir {os.path.join('/path/to/runs', run_name)} \\
-        # --dorado_model sup \\
-        # --dorado_bc_parse_pos {parse_pos}
-        # """
+        parse_pos = 2
 
         # Expected output with parse_pos
-        expected_output = f"""#!/bin/sh
+        expected_output = """#!/bin/sh
 
-            #SBATCH --partition=ncpu
-            #SBATCH --job-name=asf_nanopore_demux_test_run
-            #SBATCH --mem=4G
-            #SBATCH -n 1
-            #SBATCH --time=168:00:00
-            #SBATCH --output=run.o
-            #SBATCH --error=run.o
-            #SBATCH --res=asf
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_test_run
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=168:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+#SBATCH --res=asf
 
-            ml purge
-            ml Nextflow/20.10.0
-            ml Singularity/3.6.4
+ml purge
+ml Nextflow/20.10.0
+ml Singularity/3.6.4
 
-            export NXF_HOME="/path/to/cache"
-            export NXF_WORK="/path/to/work"
-            export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
-            nextflow run /path/to/pipeline \\
-            -resume \\
-            -profile crick,nemo \\
-            --monochrome_logs \\
-            --samplesheet ./samplesheet.csv \\
-            --run_dir {'/path/to/runs/test_run'} \\
-            --dorado_model sup \\
-            --dorado_bc_parse_pos 2
-            """
+export NXF_HOME="/path/to/cache"
+export NXF_WORK="/path/to/work"
+export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
+
+nextflow run /path/to/pipeline \\
+  -resume \\
+  -profile crick,nemo,genomics \\
+  --monochrome_logs \\
+  --samplesheet ./samplesheet.csv \\
+  --run_dir /path/to/runs/test_run \\
+  --dorado_model sup \\
+  --dorado_bc_parse_pos 2
+
+"""
 
         result = instance.create_ont_sbatch_text(run_name, parse_pos)
         print(result)
-        assert result.strip() == expected_output.strip()
-        # self.assertEqual(result.strip(), expected_output.strip())
+        assert_that(result.strip()).is_equal_to(expected_output.strip())

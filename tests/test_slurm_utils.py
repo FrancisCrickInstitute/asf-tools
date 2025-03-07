@@ -1,3 +1,9 @@
+"""
+Test the Slurm utils
+"""
+
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import unittest
 from unittest.mock import MagicMock, patch
 

@@ -11,7 +11,7 @@ def split_by_project_type(self, samples_all_info, constants_dict):
 ### Constants Dictionary Structure
 ```python
 constants_dict = {
-    "CONSTANT_NAME": [list of values], 
+    "CONSTANT_NAME": [list of values],
     "SINGLE_CELL_PROJECT_TYPES": [list of values],
     "ATAC_PROJECT_TYPES": [list of values],
     "DLP": [list of values],
@@ -107,7 +107,7 @@ Each category requires its own subprocess.
 ### Required Subprocesses
 We need to create **four subprocesses**:
 
- 1️⃣ **DLP Processing**
+**DLP Processing**
 **Required Inputs:**
 - `filtered_dlp_samples`
 - `dlp_sample_file`
@@ -117,7 +117,7 @@ We need to create **four subprocesses**:
 - `reformatted_reads_dict`
 - `bcl_settings_dict`
 
- 2️⃣ **Single Cell Processing**
+ **Single Cell Processing**
 **Required Inputs:**
 - `filtered_single_cell_samples`
 - `samplesheet_name`
@@ -126,7 +126,7 @@ We need to create **four subprocesses**:
 - `reformatted_reads_dict`
 - `bcl_settings_dict`
 
- 3️⃣ **ATAC Processing**
+**ATAC Processing**
 **Required Inputs:**
 - `filtered_atac_samples`
 - `original_sample_info` (for all ATAC samples)
@@ -136,7 +136,7 @@ We need to create **four subprocesses**:
 - `reformatted_reads_dict`
 - `bcl_settings_dict`
 
- 4️⃣ **Other Samples Processing**
+**Other Samples Processing**
 **Required Inputs:**
 - `filtered_other_samples`
 - `flowcell_id`
@@ -157,7 +157,7 @@ An alternative approach is that each subprocess returns only the values that dif
 For example:
 
 ```python
-for info in processed_atac_sample_list: 
+for info in processed_atac_sample_list:
     for category, category_data in category_list:
         generate_bcl_samplesheet(category_data, unchanged_input_values)
 ```
