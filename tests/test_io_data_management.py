@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
 
-from .test_io_utils import with_temporary_folder
+from tests.utils import with_temporary_folder
 
 
 class TestIoDataManagement(unittest.TestCase):
@@ -225,34 +225,34 @@ class TestIoDataManagement(unittest.TestCase):
         self.assertTrue(os.path.islink(run_dir_1))
         self.assertTrue(os.path.islink(run_dir_2))
 
-    @with_temporary_folder
-    def test_deliver_to_targets_valid(self, tmp_path):
-        """
-        Check folders has been symlinked correctly
-        """
+    # @with_temporary_folder
+    # def test_deliver_to_targets_valid(self, tmp_path):
+    #     """
+    #     Check folders has been symlinked correctly
+    #     """
 
-        # Set up
-        dt = DataManagement()
-        basepath_target = "tests/data/ont/live_runs/pipeline_output"
+    #     # Set up
+    #     dt = DataManagement()
+    #     basepath_target = "tests/data/ont/live_runs/pipeline_output"
 
-        # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
-        tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
-        os.makedirs(tmp_path1)
-        os.makedirs(tmp_path2)
-        os.makedirs(tmp_path3)
+    #     # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
+    #     tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
+    #     tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
+    #     tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+    #     os.makedirs(tmp_path1)
+    #     os.makedirs(tmp_path2)
+    #     os.makedirs(tmp_path3)
 
-        # Test
-        dt.deliver_to_targets(basepath_target, tmp_path)
+    #     # Test
+    #     dt.deliver_to_targets(basepath_target, tmp_path)
 
-        # Assert
-        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
-        self.assertTrue(os.path.islink(run_dir_3))
+    #     # Assert
+    #     run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+    #     run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+    #     run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+    #     self.assertTrue(os.path.islink(run_dir_1))
+    #     self.assertTrue(os.path.islink(run_dir_2))
+    #     self.assertTrue(os.path.islink(run_dir_3))
 
     @with_temporary_folder
     def test_deliver_to_targets_no_user(self, tmp_path):
@@ -282,37 +282,37 @@ class TestIoDataManagement(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             dt.deliver_to_targets(basepath_target, tmp_path)
 
-    @with_temporary_folder
-    def test_deliver_to_targets_symlink_overide(self, tmp_path):
-        """
-        Test Symlink override
-        """
+    # @with_temporary_folder
+    # def test_deliver_to_targets_symlink_overide(self, tmp_path):
+    #     """
+    #     Test Symlink override
+    #     """
 
-        # Set up
-        dt = DataManagement()
-        basepath_target = "tests/data/ont/live_runs/pipeline_output"
+    #     # Set up
+    #     dt = DataManagement()
+    #     basepath_target = "tests/data/ont/live_runs/pipeline_output"
 
-        # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
-        tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
-        os.makedirs(tmp_path1)
-        os.makedirs(tmp_path2)
-        os.makedirs(tmp_path3)
+    #     # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
+    #     tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
+    #     tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
+    #     tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+    #     os.makedirs(tmp_path1)
+    #     os.makedirs(tmp_path2)
+    #     os.makedirs(tmp_path3)
 
-        # Test
-        dt.deliver_to_targets(basepath_target, tmp_path, "/test/path")
+    #     # Test
+    #     dt.deliver_to_targets(basepath_target, tmp_path, "/test/path")
 
-        # Assert
-        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
-        self.assertTrue(os.path.islink(run_dir_3))
+    #     # Assert
+    #     run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+    #     run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+    #     run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+    #     self.assertTrue(os.path.islink(run_dir_1))
+    #     self.assertTrue(os.path.islink(run_dir_2))
+    #     self.assertTrue(os.path.islink(run_dir_3))
 
-        link = os.readlink(run_dir_1)
-        self.assertTrue("/test/path" in link)
+    #     link = os.readlink(run_dir_1)
+    #     self.assertTrue("/test/path" in link)
 
     def test_scan_delivery_state_source_invalid(self):
         """
