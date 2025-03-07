@@ -265,7 +265,7 @@ class DataManagement:
                 # Find the group, user, project_id, run_id
                 if len(split_path) == 7:
                     split_path = split_path[2:]
-                    group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
+                    group, user, genomics_stp, project_id, run_id = split_path  # pylint: disable=unused-variable
 
                     # build target path
                     target_path = os.path.join(target_dir, *split_path)
