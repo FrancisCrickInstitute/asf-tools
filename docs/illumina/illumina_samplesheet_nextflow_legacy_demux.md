@@ -25,13 +25,13 @@ The `reformat_samplesheet` function ensures that the provided sample sheet is pr
 4. **Generating output:**
   - The main reformatted sample sheet, `ReformattedSampleSheet.csv`, is generated.
   - Additional files (`tenX_samplesheet.tenx.csv`, `tenX_samplesheet.ATACtenx.csv`, etc.) are created for 10X data, ensuring compatibility with CellRanger.
-  - Empty rows or problematic rows are removed, ensuring that only valid samples proceed to sequencing. All these samples are stored into a separate samplesheet. 
+  - Empty rows or problematic rows are removed, ensuring that only valid samples proceed to sequencing. All these samples are stored into a separate samplesheet.
 -  A text file (`true.bcl2fastq.txt` or `false.bcl2fastq.txt`) is created to signal whether `bcl2fastq` is needed.
 ## 2. **Check samplesheet (`check_samplesheet`)**
 1. **Identifying indexing type:**
 
     - Lanes with one samples are removed.
-    -  Check for mixed indexing (single and dual index in the same lane). 
+    -  Check for mixed indexing (single and dual index in the same lane).
     - Fail if mixed indexing is found (ie. `samplesheet_check = "fail"`).
   - Check for index length consistency across lanes and for index length discrepancies within lanes
   - Write results (“pass” or “fail”) into a text file.
@@ -47,14 +47,14 @@ The `create_falseSS.py` script is used to identify and remove problematic sample
 
 2. **Identifying indexing type:**
   - The function checks whether the samplesheet contains a mix of single and dual indexes:
-     - Single-index samples are identified by the absence of an `index2` value.
-     - Dual-index samples are identified when both `index` and `index2` are present.
+    - Single-index samples are identified by the absence of an `index2` value.
+    - Dual-index samples are identified when both `index` and `index2` are present.
   - New columns (`index1_len` and `index2_len`) are added to track the lengths of the indexes.
 
 3. **Lane-specific index length validation:**
   - For each lane, the function calculates the maximum index length. All samples in the lane are then compared against this maximum:
-   - Single-index samples in dual-index lanes are flagged as problematic.
-   - Samples with index lengths shorter than the maximum in their lane are also flagged.
+     - Single-index samples in dual-index lanes are flagged as problematic.
+     - Samples with index lengths shorter than the maximum in their lane are also flagged.
   - Samples with indexing issues are dropped from the final samplesheet, and their indices are logged in the `problem_samples_list.txt` file.
   - If all samples in the sheet are deemed problematic, the pipeline exits with an error message indicating an empty sample sheet.
 
@@ -66,12 +66,12 @@ The `create_falseSS.py` script is used to identify and remove problematic sample
 At this stage in the pipeline, the processing of bulk, 10X, and problematic samples diverges into distinct paths:
 
 - **Bulk Samples**: These samples are directed to the `bcl2fastq_default` process.
-  
+
 - **Problematic Samples**: Samples identified as problematic (i.e., those listed in `fake_samplesheet.csv` that return a `fail` during the `check_samplesheet` step) are processed through the following steps:
   - `bcl2fastq_problem_SS`
   - `parse_jsonfile`
   - `recheck_samplesheet`
-  
+
 - **10X Samples**: These samples proceed to the following processes:
   - `cellRangerMkFastQ`
   - `cellRangerMoveFqs`

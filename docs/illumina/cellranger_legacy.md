@@ -30,7 +30,7 @@ We are currently utilizing the following Cellranger applications based on the sp
 - **Cellranger Arc:** For multiomic analyses.
 
 The `Cellranger mkfastq` utility serves a broader purpose in preparing fastq files.
-Other specific applications such as `cellranger count`,`cellranger-dna CNV`, and `cellranger-atac count` are selected based on the sample type.  
+Other specific applications such as `cellranger count`,`cellranger-dna CNV`, and `cellranger-atac count` are selected based on the sample type.
 10X-Arc data are currently being processed by Cellranger-arc mkfastq, but no follow up _cellranger-arc_ or _cellranger-arc count_. Instead, samples are processed in two separate steps, once with standard `cellranger` (it looks for the data type 10X-Multiomics-GEX) and once with `cellranger-atac` (it looks for the data type 10X-Multiomics-ATAC).
 
 ## 3. Do We Need Different Cellranger Types?
