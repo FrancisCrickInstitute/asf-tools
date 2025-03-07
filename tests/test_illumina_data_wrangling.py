@@ -8,7 +8,6 @@ import pytest
 
 from asf_tools.illumina.illumina_data_wrangling import generate_illumina_demux_samplesheets
 from asf_tools.illumina.illumina_utils import count_samples_in_bcl_samplesheet
-
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 from tests.utils import with_temporary_folder
 

@@ -24,7 +24,6 @@ from asf_tools.api.clarity.models import (
     Stub,
     Workflow,
 )
-
 from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 

@@ -9,7 +9,6 @@ from unittest import mock
 from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-
 from tests.utils import with_temporary_folder
 
 

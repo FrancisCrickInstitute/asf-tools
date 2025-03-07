@@ -12,7 +12,6 @@ from assertpy import assert_that
 from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub
-
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 
