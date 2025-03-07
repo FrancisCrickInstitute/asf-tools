@@ -53,8 +53,8 @@ The `create_falseSS.py` script is used to identify and remove problematic sample
 
 3. **Lane-specific index length validation:**
   - For each lane, the function calculates the maximum index length. All samples in the lane are then compared against this maximum:
-     - Single-index samples in dual-index lanes are flagged as problematic.
-     - Samples with index lengths shorter than the maximum in their lane are also flagged.
+    - Single-index samples in dual-index lanes are flagged as problematic.
+    - Samples with index lengths shorter than the maximum in their lane are also flagged.
   - Samples with indexing issues are dropped from the final samplesheet, and their indices are logged in the `problem_samples_list.txt` file.
   - If all samples in the sheet are deemed problematic, the pipeline exits with an error message indicating an empty sample sheet.
 
