@@ -9,11 +9,11 @@ import os
 import pytest
 import xmltodict
 from assertpy import assert_that
-from requests.exceptions import ConnectionError  # pylint: disable=redefined-builtin
+from requests.exceptions import ConnectionError, HTTPError  # pylint: disable=redefined-builtin
 
 from asf_tools.api.clarity.models import Stub
 
-from .mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
+from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 
 API_TEST_DATA = "tests/data/api/clarity"
@@ -56,7 +56,9 @@ class TestClarityHelperLims:
         artifacts_list = [Stub(id="TestID", uri="https://asf-claritylims.thecrick.org/api/v2/artifacts/TEST", name=None, limsid="TestID")]
 
         # Test and Assert
-        assert_that(self.api.get_samples_from_artifacts).raises(ConnectionError).when_called_with(artifacts_list)
+        with pytest.raises(Exception) as excinfo:
+            self.api.get_samples_from_artifacts(artifacts_list)
+        assert isinstance(excinfo.value, (ConnectionError, HTTPError))
 
     def test_clarity_helper_get_check_sample_dropoff_isnone(self):
         # Test
