@@ -1,11 +1,13 @@
 """
 Clarity API Tests
 """
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
 import unittest
+from assertpy import assert_that
 from unittest.mock import Mock
 
 import pytest
@@ -31,28 +33,40 @@ from tests.mocks.clarity_lims_mock import ClarityLimsMock
 
 API_TEST_DATA = "tests/data/api/clarity"
 
+# # Create class level mock API
+# @pytest.fixture(scope="class", autouse=True)
+# # def mock_credentials_clarity_api(request):
+# #     credentials_file_path = os.path.join(API_TEST_DATA, "test_credentials.toml")
+# #     # api = ClarityLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+# #     api = ClarityLimsMock(credentials_path=credentials_file_path)
+# #     # api.load_tracked_requests(credentials_file_path)
+# #     request.cls.api = api
+# #     request.addfinalizer(lambda: api.save_tracked_requests(credentials_file_path))
+# #     yield api
+# def mock_credentials_clarity_api(request):
+#     """Fixture to set up ClarityLimsMock instance."""
+#     credentials_file_path = os.path.join(API_TEST_DATA, "test_credentials.toml")
+#     api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+#     request.cls.api = api
+#     request.addfinalizer(lambda: api.save_tracked_requests(credentials_file_path))
+#     yield api
 
-class TestClarity(unittest.TestCase):
+# # def mock_credentials_clarity_api():
+# #     api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
+# #     yield api
+
+# @pytest.fixture(scope="class", autouse=True)
+# def clarity_api():
+#     """Fixture to set up ClarityLims instance."""
+#     clarity_api = ClarityLims()
+#     yield clarity_api
+
+
+class TestClarity:
     """Class for testing the clarity api wrapper"""
 
     def setUp(self):
         self.api = ClarityLimsMock(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
-
-    # def test_clarity_missing_credentials(self):
-    #     """
-    #     Test missing credentials
-    #     """
-
-    #     # Setup
-    #     fake_file = "fake_file.toml"
-
-    #     # Test and Assert
-    #     with patch("os.path.exists", return_value=False):
-    #         with self.assertWarns(UserWarning) as warning_context:
-    #             ClarityLimsMock(credentials_path=fake_file)
-
-    #         # Verify the warning message
-    #         self.assertEqual(str(warning_context.warning), f"{fake_file} not found.")
 
     def test_clarity_api_load_credentials_valid(self):
         """
@@ -63,10 +77,10 @@ class TestClarity(unittest.TestCase):
         credentials = self.api.load_credentials(os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
         # Assert
-        self.assertTrue("clarity" in credentials)
-        self.assertEqual(credentials["clarity"]["baseuri"], "https://localhost:8080")
-        self.assertEqual(credentials["clarity"]["username"], "test")
-        self.assertEqual(credentials["clarity"]["password"], "password")
+        assert_that(credentials).contains("clarity")
+        assert_that(credentials["clarity"]["baseuri"]).is_equal_to("https://localhost:8080")
+        assert_that(credentials["clarity"]["username"]).is_equal_to("test")
+        assert_that(credentials["clarity"]["password"]).is_equal_to("password")
 
     def test_clarity_api_init_check_loaded_credentials(self):
         """
@@ -77,9 +91,9 @@ class TestClarity(unittest.TestCase):
         api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"))
 
         # Assert
-        self.assertEqual(api.baseuri, "https://localhost:8080")
-        self.assertEqual(api.username, "test")
-        self.assertEqual(api.password, "password")
+        assert_that(api.baseuri).is_equal_to("https://localhost:8080")
+        assert_that(api.username).is_equal_to("test")
+        assert_that(api.password).is_equal_to("password")
 
     def test_clarity_api_init_check_overide_credentials(self):
         """
@@ -90,20 +104,17 @@ class TestClarity(unittest.TestCase):
         api = ClarityLims(credentials_path=os.path.join(API_TEST_DATA, "test_credentials.toml"), baseuri="test1", username="test2", password="test3")
 
         # Assert
-        self.assertEqual(api.baseuri, "test1")
-        self.assertEqual(api.username, "test2")
-        self.assertEqual(api.password, "test3")
+        assert_that(api.baseuri).is_equal_to("test1")
+        assert_that(api.username).is_equal_to("test2")
+        assert_that(api.password).is_equal_to("test3")
 
     def test_clarity_api_construct_uri_endpoint(self):
         """
         Test construct URI endpoint
         """
 
-        # Test
-        uri = self.api.construct_uri("test")
-
-        # Assert
-        self.assertEqual(uri, "https://localhost:8080/api/v2/test")
+        # Test and Assert
+        assert_that(self.api.construct_uri("test")).is_equal_to("https://localhost:8080/api/v2/test")
 
     def test_clarity_api_validate_response_error(self):
         """
@@ -116,8 +127,9 @@ class TestClarity(unittest.TestCase):
         mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<exc:exception xmlns:exc="http://genologics.com/ri/exception">\n    <message>Not found</message>\n</exc:exception>\n'  # pylint: disable=line-too-long
 
         # Test and Assert
-        with self.assertRaises(requests.exceptions.HTTPError):
-            self.api.validate_response("https://localhost:8080/api", mock_response)
+        assert_that(self.api.validate_response).raises(requests.exceptions.HTTPError).when_called_with("https://localhost:8080/api", mock_response)
+        # with self.assertRaises(requests.exceptions.HTTPError):
+        #     self.api.validate_response("https://localhost:8080/api", mock_response)
 
     def test_clarity_api_validate_response_ok(self):
         """
@@ -129,11 +141,8 @@ class TestClarity(unittest.TestCase):
         mock_response.status_code = 200
         mock_response.content = b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
 
-        # Test
-        result = self.api.validate_response("https://localhost:8080/api", mock_response)
-
-        # Assert
-        self.assertTrue(result)
+        # Test and Assert
+        assert_that(self.api.validate_response("https://localhost:8080/api", mock_response)).is_true()
 
     def test_clarity_api_get_params_from_args_with_none(self):
         """
@@ -144,7 +153,7 @@ class TestClarity(unittest.TestCase):
         params = self.api.get_params_from_args(name="test", param1=None, param2=None)
 
         # Assert
-        self.assertDictEqual({"name": "test"}, params)
+        assert_that(params).is_equal_to({"name": "test"})
 
     def test_clarity_api_get_params_from_args_with_underscore(self):
         """
@@ -155,7 +164,7 @@ class TestClarity(unittest.TestCase):
         params = self.api.get_params_from_args(name="test", param1=None, param2=None, last_modified="test2")
 
         # Assert
-        self.assertDictEqual({"name": "test", "last-modified": "test2"}, params)
+        assert_that(params).is_equal_to({"name": "test", "last-modified": "test2"})
 
 
 class TestClarityWithFixtures:
@@ -180,7 +189,7 @@ class TestClarityWithFixtures:
         ],
     )
     def test_clarity_api_get_single_page_instances(
-        self, api, xml_path, outer_key, inner_key, type_name, expected_num
+        self, xml_path, outer_key, inner_key, type_name, expected_num
     ):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
@@ -191,10 +200,10 @@ class TestClarityWithFixtures:
             xml_content = file.read()
 
         # Test
-        data, next_page = api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)  # pylint: disable=unused-variable
+        data, next_page = clarity_api.get_single_page_instances(xml_content, outer_key, inner_key, type_name)  # pylint: disable=unused-variable
 
         # Assert
-        assert len(data) == expected_num
+        assert_that(data).is_length(expected_num)
 
     @pytest.mark.parametrize(
         "xml_path,outer_key,type_name,instance_id",
@@ -213,7 +222,7 @@ class TestClarityWithFixtures:
             ("queue_step.xml", "que:queue", QueueStep, "60"),
         ],
     )
-    def test_clarity_api_get_instance(self, api, xml_path, outer_key, type_name, instance_id):  # pylint: disable=too-many-positional-arguments
+    def test_clarity_api_get_instance(self, xml_path, outer_key, type_name, instance_id):  # pylint: disable=too-many-positional-arguments
         """
         Test instance construction
         """
@@ -223,10 +232,7 @@ class TestClarityWithFixtures:
             xml_content = file.read()
 
         # Test
-        instance = api.get_single_instance(xml_content, outer_key, type_name)
-
-        # print(instance)
-        # raise ValueError
+        instance = clarity_api.get_single_instance(xml_content, outer_key, type_name)
 
         # Assert
         assert instance.id == instance_id
@@ -288,11 +294,8 @@ class TestClarityEndpoints:
         Test returns none when no results exist
         """
 
-        # Test
-        data = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="TEST")
-
-        # Assert
-        assert data is None
+        # Test and Assert
+        assert_that(api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab", name="TEST")).is_none()
 
     def test_clarity_api_get_stub_list_noexpand(self, api):
         """
@@ -314,11 +317,8 @@ class TestClarityEndpoints:
         # Setup
         labs = api.get_stub_list(Lab, Stub, "labs", "lab:labs", "lab")
 
-        # Test
-        expanded = api.expand_stubs(labs, Lab)
-
-        # Assert
-        assert len(labs) == len(expanded)
+        # Test and Assert
+        assert_that(api.expand_stubs(labs, Lab)).is_length(len(labs))
 
 
 class TestClarityPrototype(unittest.TestCase):
