@@ -5,7 +5,6 @@ Tests covering the data_transfer module
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import csv
-import logging
 import os
 from datetime import datetime
 from xml.parsers.expat import ExpatError
