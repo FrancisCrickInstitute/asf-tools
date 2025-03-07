@@ -6,15 +6,15 @@ Tests for the data transfer class
 
 import os
 import unittest
+from assertpy import assert_that
 from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-from tests.utils import with_temporary_folder
 
 
-class TestIoDataManagement(unittest.TestCase):
+class TestIoDataManagement:
     """Class for testing the data management tools"""
 
     def test_check_pipeline_run_complete_false(self):
@@ -26,11 +26,8 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/runs/run01"
 
-        # Test
-        result = dm.check_pipeline_run_complete(run_dir)
-
-        # Assert
-        self.assertFalse(result)
+        # Test and Assert
+        assert_that(dm.check_pipeline_run_complete(run_dir)).is_false()
 
     def test_check_pipeline_run_complete_true(self):
         """
@@ -41,11 +38,8 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
 
-        # Test
-        result = dm.check_pipeline_run_complete(run_dir)
-
-        # Assert
-        self.assertTrue(result)
+        # Test and Assert
+        assert_that(dm.check_pipeline_run_complete(run_dir)).is_true()
 
     def test_check_ont_sequencing_run_complete_false_nocount(self):
         """
@@ -56,11 +50,8 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/runs/run04"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
-
-        # Assert
-        self.assertFalse(result)
+        # Test and Assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
 
     def test_check_ont_sequencing_run_complete_false_archive(self):
         """
@@ -71,11 +62,8 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/runs/run03"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
-
-        # Assert
-        self.assertFalse(result)
+        # Test and Assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
 
     def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
         """
@@ -86,11 +74,8 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/runs/run05"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
-
-        # Assert
-        self.assertFalse(result)
+        # Test and assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
 
     def test_check_ont_sequencing_run_complete_true(self):
         """
@@ -101,13 +86,9 @@ class TestIoDataManagement(unittest.TestCase):
         dm = DataManagement()
         run_dir = "tests/data/ont/runs/run01"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
+        # Test and Assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_true()
 
-        # Assert
-        self.assertTrue(result)
-
-    @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_false(self, tmp_path):
         """
         Test function when the Illumina sequencing run is not complete
@@ -116,13 +97,9 @@ class TestIoDataManagement(unittest.TestCase):
         # Set up
         dm = DataManagement()
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_false()
 
-        # Assert
-        self.assertFalse(result)
-
-    @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
         """
         Test function when the Illumina sequencing run is complete
@@ -136,13 +113,9 @@ class TestIoDataManagement(unittest.TestCase):
         open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
         open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_false()
 
-        # Assert
-        self.assertFalse(result)
-
-    @with_temporary_folder
     def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
         """
         Test function when the Illumina sequencing run is complete
@@ -161,13 +134,9 @@ class TestIoDataManagement(unittest.TestCase):
             </RunCompletionStatus>"""
         open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)  # pylint: disable=consider-using-with
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_true()
 
-        # Assert
-        self.assertTrue(result)
-
-    @with_temporary_folder
     def test_symlink_to_target_isinvalid_target(self, tmp_path):
         """
         Check existence of target path
@@ -179,10 +148,8 @@ class TestIoDataManagement(unittest.TestCase):
         invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dt.symlink_to_target(valid_path, invalid_path)
+        assert_that(dt.symlink_to_target).raises(FileNotFoundError).when_called_with(valid_path, invalid_path)
 
-    @with_temporary_folder
     def test_symlink_to_target_isvalid_str(self, tmp_path):
         """
         Check folder has been symlinked correctly
@@ -197,9 +164,8 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
-        self.assertTrue(os.path.islink(run_dir_1))
+        assert_that(os.path.islink(run_dir_1)).is_true()
 
-    @with_temporary_folder
     def test_symlink_to_target_isvalid_list(self, tmp_path):
         """
         Check folder has been symlinked correctly
@@ -223,8 +189,8 @@ class TestIoDataManagement(unittest.TestCase):
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "run01")
         run_dir_2 = os.path.join(tmp_path2, "run01")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
 
     # @with_temporary_folder
     # def test_deliver_to_targets_valid(self, tmp_path):
@@ -255,7 +221,6 @@ class TestIoDataManagement(unittest.TestCase):
     #     self.assertTrue(os.path.islink(run_dir_2))
     #     self.assertTrue(os.path.islink(run_dir_3))
 
-    @with_temporary_folder
     def test_deliver_to_targets_no_user(self, tmp_path):
         """
         Test function when the user path doesn't exist
@@ -266,10 +231,8 @@ class TestIoDataManagement(unittest.TestCase):
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dt.deliver_to_targets(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path)
 
-    @with_temporary_folder
     def test_deliver_to_targets_source_invalid(self, tmp_path):
         """
         Test function when the user path doesn't exist
@@ -280,8 +243,7 @@ class TestIoDataManagement(unittest.TestCase):
         basepath_target = "fake/path/"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dt.deliver_to_targets(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path)
 
     # @with_temporary_folder
     # def test_deliver_to_targets_symlink_overide(self, tmp_path):
@@ -326,8 +288,7 @@ class TestIoDataManagement(unittest.TestCase):
         target_dir = "tests/data/ont/live_runs/pipeline_output"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.scan_delivery_state(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir)
 
     def test_scan_delivery_state_target_invalid(self):
         """
@@ -340,15 +301,9 @@ class TestIoDataManagement(unittest.TestCase):
         target_dir = "fake/path/"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.scan_delivery_state(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir)
 
-    @with_temporary_folder
     def test_scan_delivery_state_all_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
@@ -356,18 +311,10 @@ class TestIoDataManagement(unittest.TestCase):
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
+        # Test and Assert
+        assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_length(2)
 
-        # Assert
-        self.assertEqual(len(result), 2)
-
-    @with_temporary_folder
     def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
@@ -379,19 +326,11 @@ class TestIoDataManagement(unittest.TestCase):
         for _, dirs, files in os.walk(tmp_path):
             print(dirs, files)
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
-        print(result)
+        # Test and Assert
+        results = dm.scan_delivery_state(source_dir, target_dir)
+        assert_that(results).is_length(1)
 
-        # Assert
-        self.assertEqual(len(result), 1)
-
-    @with_temporary_folder
     def test_scan_delivery_state_none_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
@@ -401,19 +340,11 @@ class TestIoDataManagement(unittest.TestCase):
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
         dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path)
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
-        print(result)
-
-        # Assert
-        self.assertEqual(len(result), 0)
+        # Test and Assert
+        assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_empty()
 
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_ont_valid(self, mock_run):
-        """
-        Test scan run state with a valid configuration
-        """
-
         # Set up
         dm = DataManagement()
         raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
@@ -427,7 +358,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Test
         data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
-        print(data)
 
         # Assert
         target_dict = {
@@ -438,14 +368,10 @@ class TestIoDataManagement(unittest.TestCase):
             "run_05": {"status": "sequencing_complete"},
             "run_06": {"status": "sequencing_in_progress"},
         }
-        self.assertEqual(data, target_dict)
+        assert_that(data).is_equal_to(target_dict)
 
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_illumina_valid(self, mock_run):
-        """
-        Test scan run state with a valid configuration
-        """
-
         # Set up
         dm = DataManagement()
         raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
@@ -459,7 +385,6 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Test
         data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_illumina_demux_")
-        print(data)
 
         # Assert
         target_dict = {
@@ -470,13 +395,12 @@ class TestIoDataManagement(unittest.TestCase):
             "run_05": {"status": "sequencing_complete"},
             "run_06": {"status": "pipeline_pending"},
         }
-        self.assertEqual(data, target_dict)
+        assert_that(data).is_equal_to(target_dict)
 
     @mock.patch("asf_tools.io.data_management.os.walk")
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.check_file_exist")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
     def test_find_stale_directories_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk, tmp_path):
         """
         Test function when the with mocked, older paths
@@ -503,7 +427,7 @@ class TestIoDataManagement(unittest.TestCase):
 
         # Test
         dm = DataManagement()
-        result = dm.find_stale_directories(tmp_path, 2)
+        result = dm.find_stale_directories(tmp_path, 2) 
 
         # Assert the result
 
@@ -521,9 +445,8 @@ class TestIoDataManagement(unittest.TestCase):
                 "last_modified_m": "2024-06-15 00:00:00+00:00",
             },
         }
-        self.assertEqual(result, expected_result)
+        assert_that(result).is_equal_to(expected_result)
 
-    @with_temporary_folder
     def test_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
         """
         Test function with directories that have files affecting the modification time.
@@ -573,7 +496,7 @@ class TestIoDataManagement(unittest.TestCase):
                     "last_modified_m": "2024-06-15 00:00:00+00:00",
                 },
             }
-            self.assertEqual(result, expected_result)
+            assert_that(result).is_equal_to(expected_result)
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
@@ -592,7 +515,6 @@ class TestIoDataManagement(unittest.TestCase):
         # Test
         dm = DataManagement()
         old_data = dm.find_stale_directories("tests/data/ont/runs", 2)
-        print(old_data)
 
         # Assert
         expected_results = {
@@ -621,7 +543,7 @@ class TestIoDataManagement(unittest.TestCase):
                 "last_modified_m": "2024-06-15 00:00:00+00:00",
             },
         }
-        assert old_data == expected_results
+        assert_that(old_data).is_equal_to(expected_results)
 
     def test_find_stale_directories_noolddir(self):  # pylint: disable=unused-variable
         """
@@ -637,7 +559,8 @@ class TestIoDataManagement(unittest.TestCase):
         old_data = dm.find_stale_directories(data_path, 1000)
 
         # Assert
-        assert not old_data
+        assert_that(old_data).is_empty()
+        # assert not old_data
 
     def test_find_stale_directories_nodirs(self):
         """
@@ -649,12 +572,10 @@ class TestIoDataManagement(unittest.TestCase):
         data_path = "invalid/test/path"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.find_stale_directories(data_path, 2)
+        assert_that(dm.find_stale_directories).raises(FileNotFoundError).when_called_with(data_path, 2)
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
     def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
         """
         Test function with directories that have a mock editing time.
@@ -683,10 +604,10 @@ class TestIoDataManagement(unittest.TestCase):
         dm.clean_pipeline_output(tmp_path, 2)
 
         # Assert
-        self.assertTrue(os.path.exists(subdir1))
-        self.assertTrue(os.path.exists(subdir2))
-        self.assertFalse(os.path.exists(work_dir1))
-        self.assertFalse(os.path.exists(work_dir2))
+        assert_that(os.path.exists(subdir1)).is_true()
+        assert_that(os.path.exists(subdir2)).is_true()
+        assert_that(os.path.exists(work_dir1)).is_false()
+        assert_that(os.path.exists(work_dir2)).is_false()
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
@@ -725,8 +646,8 @@ class TestIoDataManagement(unittest.TestCase):
             with open(file_dorado_demux_dir1, "w", encoding="utf-8"):
                 pass
         # check files have been created correctly
-        self.assertTrue(os.path.isfile(file_dorado_dir1))
-        self.assertTrue(os.path.isfile(file_dorado_demux_dir1))
+        assert_that(os.path.isfile(file_dorado_dir1)).is_true()
+        assert_that(os.path.isfile(file_dorado_demux_dir1)).is_true()
 
         # create dorado dir structure for 1-sample run
         file_path2 = "tests/data/ont/runs/run02"
@@ -743,8 +664,8 @@ class TestIoDataManagement(unittest.TestCase):
             with open(file_dorado_demux_dir2, "w", encoding="utf-8"):
                 pass
         # check files have been created correctly
-        self.assertTrue(os.path.isfile(file_dorado_dir2))
-        self.assertTrue(os.path.isfile(file_dorado_demux_dir2))
+        assert_that(os.path.isfile(file_dorado_dir2)).is_true()
+        assert_that(os.path.isfile(file_dorado_demux_dir2)).is_true()
 
         # set up mock structure
         fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
@@ -756,16 +677,15 @@ class TestIoDataManagement(unittest.TestCase):
         dm.clean_pipeline_output(data_path, 2, DataTypeMode.ONT)
 
         # Assert
-        self.assertTrue(os.path.exists(dorado_dir1))
-        self.assertTrue(os.path.exists(dorado_dir2))
-        self.assertTrue(os.path.exists(file_dorado_demux_dir1))
-        self.assertTrue(os.path.exists(file_dorado_dir1))
-        self.assertFalse(os.path.exists(file_dorado_demux_dir2))
-        self.assertFalse(os.path.exists(file_dorado_dir2))
+        assert_that(os.path.exists(dorado_dir1)).is_true()
+        assert_that(os.path.exists(dorado_dir2)).is_true()
+        assert_that(os.path.exists(file_dorado_demux_dir1)).is_true()
+        assert_that(os.path.exists(file_dorado_dir1)).is_true()
+        assert_that(os.path.exists(file_dorado_demux_dir2)).is_false()
+        assert_that(os.path.exists(file_dorado_dir2)).is_false()
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
     def test_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime, tmp_path):
         """
         Test function with directories that have a mock editing time.
@@ -785,5 +705,4 @@ class TestIoDataManagement(unittest.TestCase):
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.clean_pipeline_output(tmp_path, 2, DataTypeMode.ONT)
+        assert_that(dm.clean_pipeline_output).raises(FileNotFoundError).when_called_with(tmp_path, 2, DataTypeMode.ONT)
