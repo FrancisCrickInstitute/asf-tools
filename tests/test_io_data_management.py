@@ -191,34 +191,33 @@ class TestIoDataManagement:
         assert_that(os.path.islink(run_dir_1)).is_true()
         assert_that(os.path.islink(run_dir_2)).is_true()
 
-    # @with_temporary_folder
-    # def test_deliver_to_targets_valid(self, tmp_path):
-    #     """
-    #     Check folders has been symlinked correctly
-    #     """
+    def test_deliver_to_targets_valid(self, tmp_path):
+        """
+        Check folders has been symlinked correctly
+        """
 
-    #     # Set up
-    #     dt = DataManagement()
-    #     basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        # Set up
+        dt = DataManagement()
+        basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
-    #     # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
-    #     tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-    #     tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-    #     tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
-    #     os.makedirs(tmp_path1)
-    #     os.makedirs(tmp_path2)
-    #     os.makedirs(tmp_path3)
+        tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
+        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
+        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        os.makedirs(tmp_path1)
+        os.makedirs(tmp_path2)
+        os.makedirs(tmp_path3)
 
-    #     # Test
-    #     dt.deliver_to_targets(basepath_target, tmp_path)
+        # Test
+        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list)
 
-    #     # Assert
-    #     run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-    #     run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-    #     run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-    #     self.assertTrue(os.path.islink(run_dir_1))
-    #     self.assertTrue(os.path.islink(run_dir_2))
-    #     self.assertTrue(os.path.islink(run_dir_3))
+        # Assert
+        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
+        assert_that(os.path.islink(run_dir_3)).is_true()
 
     def test_deliver_to_targets_no_user(self, tmp_path):
         """
@@ -244,37 +243,37 @@ class TestIoDataManagement:
         # Test and Assert
         assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path)
 
-    # @with_temporary_folder
-    # def test_deliver_to_targets_symlink_overide(self, tmp_path):
-    #     """
-    #     Test Symlink override
-    #     """
+    def test_deliver_to_targets_symlink_overide(self, tmp_path):
+        """
+        Test Symlink override
+        """
 
-    #     # Set up
-    #     dt = DataManagement()
-    #     basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        # Set up
+        dt = DataManagement()
+        basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
-    #     # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
-    #     tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-    #     tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-    #     tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
-    #     os.makedirs(tmp_path1)
-    #     os.makedirs(tmp_path2)
-    #     os.makedirs(tmp_path3)
+        # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
+        tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
+        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
+        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        os.makedirs(tmp_path1)
+        os.makedirs(tmp_path2)
+        os.makedirs(tmp_path3)
 
-    #     # Test
-    #     dt.deliver_to_targets(basepath_target, tmp_path, "/test/path")
+        # Test
+        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list, "/test/path")
 
-    #     # Assert
-    #     run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-    #     run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-    #     run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-    #     self.assertTrue(os.path.islink(run_dir_1))
-    #     self.assertTrue(os.path.islink(run_dir_2))
-    #     self.assertTrue(os.path.islink(run_dir_3))
+        # Assert
+        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
+        assert_that(os.path.islink(run_dir_3)).is_true()
 
-    #     link = os.readlink(run_dir_1)
-    #     self.assertTrue("/test/path" in link)
+        link = os.readlink(run_dir_1)
+        assert_that(link).contains("/test/path")
 
     def test_scan_delivery_state_source_invalid(self):
         """
@@ -320,7 +319,8 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
+        core_name_list = ["asf", "genomics-stp"]
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", core_name_list, tmp_path)
 
         for _, dirs, files in os.walk(tmp_path):
             print(dirs, files)
@@ -336,8 +336,9 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", str(tmp_path))
-        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", str(tmp_path))
+        core_name_list = ["asf", "genomics-stp"]
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
+        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path, core_name_list)
 
         # Test and Assert
         assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_empty()

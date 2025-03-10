@@ -146,7 +146,7 @@ class DataManagement:
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str, symlink_host_base_path: str = None):
+    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str, core_name_options: list, symlink_host_base_path: str = None):
         """
         Recursively collects subdirectories from `data_path`, collects info based on the path structure,
         and creates symlinks to `symlink_data_basepath`.
@@ -188,9 +188,19 @@ class DataManagement:
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
-                    if not os.path.exists(project_path):
+                    found_core_name = None
+                    for core_dir in core_name_options:
+                        print(core_dir)
+                        project_path = os.path.join(permissions_path, info_dict["user"], core_dir, info_dict["project_id"])
+                        if os.path.exists(project_path):
+                            found_core_name = core_dir
+                            print(found_core_name)
+                            break
+                    if found_core_name is None:
+                        found_core_name = "genomics-stp"
+                        project_path = os.path.join(permissions_path, info_dict["user"], found_core_name, info_dict["project_id"])
                         os.makedirs(project_path, exist_ok=True)
+                    # print(found_core_name)
 
                     # Override symlink path if host provided to deal with symlink paths in containers
                     if symlink_host_base_path is not None:
@@ -201,10 +211,11 @@ class DataManagement:
                             "grouped",
                             info_dict["group"],
                             info_dict["user"],
-                            "asf",
+                            found_core_name,
                             info_dict["project_id"],
                             info_dict["run_id"],
                         )
+                    print(source_path_to_runid)
 
                     # symlink data to target path
                     self.symlink_to_target(source_path_to_runid, project_path)
