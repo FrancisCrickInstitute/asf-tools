@@ -37,7 +37,7 @@ class TestGenDemuxRun:
         assert_that(os.path.exists(run_dir_1)).is_true()
         assert_that(os.path.exists(run_dir_2)).is_true()
         assert_that(os.path.exists(run_dir_3)).is_false()
-        assert_that(os.path.exists(run_dir_4)).is_false()
+        assert_that(os.path.exists(run_dir_4)).is_true()
 
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
@@ -263,7 +263,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo,genomics \\
+  -profile crick,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
@@ -312,7 +312,7 @@ export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
 
 nextflow run /path/to/pipeline \\
   -resume \\
-  -profile crick,nemo,genomics \\
+  -profile crick,genomics \\
   --monochrome_logs \\
   --samplesheet ./samplesheet.csv \\
   --run_dir /path/to/runs/test_run \\

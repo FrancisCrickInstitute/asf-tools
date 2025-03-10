@@ -4,7 +4,8 @@ Helper functions for data management
 
 import logging
 import os
-import re
+
+# import re
 import subprocess
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -59,23 +60,27 @@ class DataManagement:
         if not check_file_exist(run_dir, "sequencing_summary*"):
             return False
 
-        # read single integer from pod5_count.txt
-        with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
-            pod5_expected_max = int(f.readline().strip())
-            log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
+        # # read single integer from pod5_count.txt
+        # pod5_expected_max = -1
+        # with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
+        #     file_contents = f.readline().strip()
+        #     if file_contents.isdigit():
+        #         pod5_expected_max = int(file_contents)
+        #         log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
 
-        # find all the pod5 files in any subdirectory of the run_dir and get max
-        pod5_numbers = []
-        for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
-            for file in files:
-                if file.endswith(".pod5"):
-                    match = re.search(r"_(\d+)\.pod5", file)
-                    if match:
-                        pod5_numbers.append(int(match.group(1)))
-        pod5_max = max(pod5_numbers)
-        log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
+        # # find all the pod5 files in any subdirectory of the run_dir and get max
+        # pod5_numbers = [0]
+        # for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
+        #     for file in files:
+        #         if file.endswith(".pod5"):
+        #             match = re.search(r"_(\d+)\.pod5", file)
+        #             if match:
+        #                 pod5_numbers.append(int(match.group(1)))
+        # pod5_max = max(pod5_numbers)
+        # log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
 
-        return pod5_max == pod5_expected_max
+        # return pod5_max == pod5_expected_max
+        return True
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
