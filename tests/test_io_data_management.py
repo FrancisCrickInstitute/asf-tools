@@ -5,7 +5,6 @@ Tests for the data transfer class
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
-import unittest
 from assertpy import assert_that
 from datetime import datetime, timezone
 from unittest import mock
@@ -337,8 +336,12 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
-        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path)
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", str(tmp_path))
+        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", str(tmp_path))
+        print(os.listdir(tmp_path))
+        print(tmp_path)
+        print(dm.scan_delivery_state(source_dir, target_dir))
+        # raise ValueError
 
         # Test and Assert
         assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_empty()
@@ -574,9 +577,10 @@ class TestIoDataManagement:
         # Test and Assert
         assert_that(dm.find_stale_directories).raises(FileNotFoundError).when_called_with(data_path, 2)
 
-    @mock.patch("asf_tools.io.data_management.os.path.getmtime")
-    @mock.patch("asf_tools.io.data_management.datetime")
-    def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
+    # @mock.patch("asf_tools.io.data_management.os.path.getmtime")
+    # @mock.patch("asf_tools.io.data_management.datetime")
+    # def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
+    def test_clean_pipeline_output_workdir_valid(self, tmp_path, monkeypatch):
         """
         Test function with directories that have a mock editing time.
         Creates work directories and checks correct deletion of work dir.
@@ -596,14 +600,39 @@ class TestIoDataManagement:
 
         # set up mock structure
         fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
-        mock_datetime.now.return_value = fixed_current_time
-        mock_datetime.fromtimestamp = datetime.fromtimestamp
-        mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
+        # mock_datetime.now.return_value = fixed_current_time
+        # mock_datetime.fromtimestamp = lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc)
+        # print(mock_datetime.fromtimestamp)
+        # mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
+
+        # monkeypatch.setattr("asf_tools.io.data_management.datetime", datetime)  # Ensure the module uses the patched datetime
+        # monkeypatch.setattr(datetime, "now", lambda: fixed_current_time)
+        # monkeypatch.setattr(datetime, "fromtimestamp", lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc))
+
+        # # Mock `os.path.getmtime`
+        # monkeypatch.setattr("os.path.getmtime", lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp())
+
+        monkeypatch.setattr("asf_tools.io.data_management.datetime", fixed_current_time)  # Ensure the module uses the patched datetime
+        monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc))
+        monkeypatch.setattr("asf_tools.io.data_management.os.path.getmtime", lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc))
+
+        # old_timestamp = datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
+
+        # # Monkeypatch `datetime.now` inside `asf_tools.io.data_management`
+        # monkeypatch.setattr("asf_tools.io.data_management.datetime.now", classmethod(lambda cls: fixed_current_time))
+        # monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", classmethod(lambda cls, ts, tz=timezone.utc: datetime.fromtimestamp(ts, tz=tz)))
+
+        # # Monkeypatch `datetime.fromtimestamp`
+        # monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", lambda ts, tz=timezone.utc: datetime.fromtimestamp(ts, tz=tz))
+
+        # # Monkeypatch `os.path.getmtime`
+        # monkeypatch.setattr("os.path.getmtime", lambda path: old_timestamp)
 
         # Test
         dm.clean_pipeline_output(tmp_path, 2)
 
         # Assert
+        print(os.listdir(subdir1))
         assert_that(os.path.exists(subdir1)).is_true()
         assert_that(os.path.exists(subdir2)).is_true()
         assert_that(os.path.exists(work_dir1)).is_false()
