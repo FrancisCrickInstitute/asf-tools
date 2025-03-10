@@ -338,10 +338,6 @@ class TestIoDataManagement:
         target_dir = tmp_path
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", str(tmp_path))
         dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", str(tmp_path))
-        print(os.listdir(tmp_path))
-        print(tmp_path)
-        print(dm.scan_delivery_state(source_dir, target_dir))
-        # raise ValueError
 
         # Test and Assert
         assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_empty()
