@@ -45,9 +45,9 @@ class TestIoDataManagement:
         Test function when the ONT sequencing run is not complete
         """
 
-        # Set up
-        dm = DataManagement()
-        run_dir = "tests/data/ont/runs/run04"
+    #     # Set up
+    #     dm = DataManagement()
+    #     run_dir = "tests/data/ont/runs/run04"
 
         # Test and Assert
         assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
