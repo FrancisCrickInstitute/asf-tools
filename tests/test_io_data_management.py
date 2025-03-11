@@ -45,9 +45,9 @@ class TestIoDataManagement:
         Test function when the ONT sequencing run is not complete
         """
 
-    #     # Set up
-    #     dm = DataManagement()
-    #     run_dir = "tests/data/ont/runs/run04"
+        # Set up
+        dm = DataManagement()
+        run_dir = "tests/data/ont/runs/run04"
 
         # Test and Assert
         assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
@@ -159,7 +159,7 @@ class TestIoDataManagement:
         data_path = "tests/data/ont/runs/run01/"
 
         # Test
-        dt.symlink_to_target(data_path, tmp_path)
+        dt.symlink_to_target(data_path, str(tmp_path))
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -204,20 +204,24 @@ class TestIoDataManagement:
         tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
         tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
         tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        tmp_path4 = os.path.join(tmp_path2, "asf", "RN20066")
         os.makedirs(tmp_path1)
         os.makedirs(tmp_path2)
         os.makedirs(tmp_path3)
+        os.makedirs(tmp_path4)
 
         # Test
         dt.deliver_to_targets(basepath_target, tmp_path, core_name_list)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "AA20643", "201008_K00371_0409_BHHY7WAAAA")
         run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_4 = os.path.join(tmp_path4, "201008_K00371_0409_BHHY7WBBXY")
         assert_that(os.path.islink(run_dir_1)).is_true()
         assert_that(os.path.islink(run_dir_2)).is_true()
         assert_that(os.path.islink(run_dir_3)).is_true()
+        assert_that(os.path.islink(run_dir_4)).is_true()
 
     def test_deliver_to_targets_no_user(self, tmp_path):
         """
@@ -227,21 +231,24 @@ class TestIoDataManagement:
         # Set up
         dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path, core_name_list)
 
     def test_deliver_to_targets_source_invalid(self, tmp_path):
         """
-        Test function when the user path doesn't exist
+        Test function with different invalid inputs doesn't exist
         """
 
         # Set up
         dt = DataManagement()
-        basepath_target = "fake/path/"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with("invalid/path", tmp_path, core_name_list)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", "invalid/path", core_name_list)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", tmp_path, "core_name_list")
 
     def test_deliver_to_targets_symlink_overide(self, tmp_path):
         """
@@ -253,10 +260,10 @@ class TestIoDataManagement:
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
         core_name_list = ["asf", "genomics-stp"]
 
-        # tmp_path = "/Users/elezia/dev/test_data/asf-tools/pytest"
         tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez", "asf", "RN20066")
+        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt", "genomics-stp", "SC19230")
+
         os.makedirs(tmp_path1)
         os.makedirs(tmp_path2)
         os.makedirs(tmp_path3)
@@ -266,8 +273,8 @@ class TestIoDataManagement:
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_3 = os.path.join(tmp_path3, "201008_K00371_0409_BHHY7WBBXY")
         assert_that(os.path.islink(run_dir_1)).is_true()
         assert_that(os.path.islink(run_dir_2)).is_true()
         assert_that(os.path.islink(run_dir_3)).is_true()
@@ -284,9 +291,10 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "fake/path/"
         target_dir = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir, core_name_list)
 
     def test_scan_delivery_state_target_invalid(self):
         """
@@ -297,9 +305,10 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "tests/data/ont/runs/run01"
         target_dir = "fake/path/"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir, core_name_list)
 
     def test_scan_delivery_state_all_to_deliver(self, tmp_path):
         # Set up
@@ -308,9 +317,10 @@ class TestIoDataManagement:
         dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_length(2)
+        assert_that(dm.scan_delivery_state(source_dir, target_dir, core_name_list)).is_length(2)
 
     def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
         # Set up
@@ -320,13 +330,14 @@ class TestIoDataManagement:
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
         core_name_list = ["asf", "genomics-stp"]
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", core_name_list, tmp_path)
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
 
         for _, dirs, files in os.walk(tmp_path):
             print(dirs, files)
 
         # Test and Assert
-        results = dm.scan_delivery_state(source_dir, target_dir)
+        results = dm.scan_delivery_state(source_dir, target_dir, core_name_list)
+        # print(results)
         assert_that(results).is_length(1)
 
     def test_scan_delivery_state_none_to_deliver(self, tmp_path):
@@ -339,9 +350,10 @@ class TestIoDataManagement:
         core_name_list = ["asf", "genomics-stp"]
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
         dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path, core_name_list)
+        print(os.listdir(os.path.join(tmp_path, "swantonc", 'joe.bloggs')))
 
         # Test and Assert
-        assert_that(dm.scan_delivery_state(source_dir, target_dir)).is_empty()
+        assert_that(dm.scan_delivery_state(source_dir, target_dir, core_name_list)).is_empty()
 
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_ont_valid(self, mock_run):
@@ -350,6 +362,7 @@ class TestIoDataManagement:
         raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
         run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
         target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+        core_name_list = ["asf", "genomics-stp"]
         mode = DataTypeMode.ONT
 
         with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
@@ -357,7 +370,7 @@ class TestIoDataManagement:
         mock_run.return_value = MagicMock(stdout=mock_output)
 
         # Test
-        data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
+        data = dm.scan_run_state(raw_dir, run_dir, target_dir, core_name_list, mode, "scan", "asf_nanopore_demux_")
 
         # Assert
         target_dict = {
@@ -377,6 +390,7 @@ class TestIoDataManagement:
         raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
         run_dir = "tests/data/illumina/end_to_end_example/illumina_run"
         target_dir = "tests/data/illumina/end_to_end_example/illumina_delivery"
+        core_name_list = ["asf", "genomics-stp"]
         mode = DataTypeMode.ILLUMINA
 
         with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
@@ -384,7 +398,7 @@ class TestIoDataManagement:
         mock_run.return_value = MagicMock(stdout=mock_output)
 
         # Test
-        data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_illumina_demux_")
+        data = dm.scan_run_state(raw_dir, run_dir, target_dir, core_name_list, mode, "scan", "asf_illumina_demux_")
 
         # Assert
         target_dict = {

@@ -118,8 +118,8 @@ class DataManagement:
         - subprocess.CalledProcessError: If the subprocess command fails.
 
         Example usage:
-        transfer_data('/path/to/source', '/path/to/destination')
-        transfer_data('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
+        symlink_to_target('/path/to/source', '/path/to/destination')
+        symlink_to_target('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
         """
 
         # Check if source paths exists - commented out as I need to be able to symlink to non-existent paths
@@ -190,17 +190,14 @@ class DataManagement:
                 if os.path.exists(permissions_path):
                     found_core_name = None
                     for core_dir in core_name_options:
-                        print(core_dir)
                         project_path = os.path.join(permissions_path, info_dict["user"], core_dir, info_dict["project_id"])
                         if os.path.exists(project_path):
                             found_core_name = core_dir
-                            print(found_core_name)
                             break
                     if found_core_name is None:
                         found_core_name = "genomics-stp"
                         project_path = os.path.join(permissions_path, info_dict["user"], found_core_name, info_dict["project_id"])
                         os.makedirs(project_path, exist_ok=True)
-                    # print(found_core_name)
 
                     # Override symlink path if host provided to deal with symlink paths in containers
                     if symlink_host_base_path is not None:
@@ -215,7 +212,6 @@ class DataManagement:
                             info_dict["project_id"],
                             info_dict["run_id"],
                         )
-                    print(source_path_to_runid)
 
                     # symlink data to target path
                     self.symlink_to_target(source_path_to_runid, project_path)
@@ -226,7 +222,7 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def scan_delivery_state(self, source_dir: str, target_dir: str) -> dict:
+    def scan_delivery_state(self, source_dir: str, target_dir: str, core_dirname_list: list) -> dict:
         """
         Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
@@ -288,15 +284,21 @@ class DataManagement:
 
                     # Check if the target path exists as a symlink
                     if not os.path.islink(target_path):
-                        deliverable_runs[split_path[-1]] = {
-                            "source": complete_run,
-                            "target": target_dir,
-                            "group": group,
-                            "user": user,
-                            "project_id": project_id,
-                        }
-                    else:
-                        log.debug(f"Symlink already exists for {relative_path}")
+                        for core_name in core_dirname_list:
+                            genomics_stp = core_name
+                            target_path = os.path.join(target_dir, group, user, genomics_stp, project_id, run_id)
+                            if os.path.islink(target_path):
+                                break
+                        if not os.path.islink(target_path):
+                            deliverable_runs[split_path[-1]] = {
+                                "source": complete_run,
+                                "target": target_dir,
+                                "group": group,
+                                "user": user,
+                                "project_id": project_id,
+                            }
+                        else:
+                            log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
 
@@ -305,6 +307,7 @@ class DataManagement:
         raw_dir: str,
         run_dir: str,
         target_dir: str,
+        core_dirname_list: list,
         mode: DataTypeMode,
         slurm_user: str = None,
         job_name_suffix: str = None,
@@ -388,7 +391,7 @@ class DataManagement:
                 run_info[entry]["status"] = status
 
         # scan for delivery state
-        deliverable_runs = self.scan_delivery_state(run_dir, target_dir)
+        deliverable_runs = self.scan_delivery_state(run_dir, target_dir, core_dirname_list)
 
         # Scan for delivery state
         for run_id, info in run_info.items():
