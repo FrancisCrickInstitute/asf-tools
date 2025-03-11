@@ -5,7 +5,7 @@ Tests for the Storage Interface module.
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
 import os
-import unittest
+from assertpy import assert_that
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -13,7 +13,7 @@ import pytest
 from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 
 
-class TestStorageInterface(unittest.TestCase):
+class TestStorageInterface():
 
     @patch("os.listdir")
     def test_storage_mock_list_directory_local(self, mock_listdir):
@@ -21,7 +21,7 @@ class TestStorageInterface(unittest.TestCase):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
         result = storage_interface.list_directory("/some/local/path")
         mock_listdir.assert_called_once_with("/some/local/path")
-        self.assertEqual(result, ["file1.txt", "file2.txt", "dir1"])
+        assert_that(result).is_equal_to(["file1.txt", "file2.txt", "dir1"])
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_list_directory_nemo(self, MockConnection):
@@ -39,7 +39,7 @@ class TestStorageInterface(unittest.TestCase):
         result = storage_interface.list_directory("~")
 
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
-        self.assertEqual(result, [".", "..", "test_file.txt", "link"])
+        assert_that(result).is_equal_to([".", "..", "test_file.txt", "link"])
 
     @patch("os.path.exists")
     def test_storage_mock_exists_local(self, mock_exists):
@@ -47,7 +47,7 @@ class TestStorageInterface(unittest.TestCase):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
         result = storage_interface.exists("/some/local/path")
         mock_exists.assert_called_once_with("/some/local/path")
-        self.assertTrue(result)
+        assert_that(result).is_true()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_exists_nemo(self, MockConnection):
@@ -59,7 +59,7 @@ class TestStorageInterface(unittest.TestCase):
         result = storage_interface.exists("~")
 
         MockConnection().run.assert_called_once_with("test -e ~", hide=True)
-        self.assertTrue(result)
+        assert_that(result).is_true()
 
     @patch("subprocess.run")
     def test_storage_mock_run_command_local(self, mock_run):
@@ -67,7 +67,7 @@ class TestStorageInterface(unittest.TestCase):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
         result = storage_interface.run_command("ls -las")
         mock_run.assert_called_once_with("ls -las", shell=True, check=True)
-        self.assertIsNotNone(result)
+        assert_that(result).is_not_none()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_run_command_nemo(self, MockConnection):
@@ -80,8 +80,8 @@ class TestStorageInterface(unittest.TestCase):
         stdout, stderr = storage_interface.run_command("ls -las")
 
         MockConnection().run.assert_called_once_with("ls -las", hide=True)
-        self.assertEqual(stdout, "command output")
-        self.assertEqual(stderr, "error output")
+        assert_that(stdout).is_equal_to("command output")
+        assert_that(stderr).is_equal_to("error output")
 
     @patch("os.listdir")
     @patch("os.path.isdir")
@@ -91,7 +91,7 @@ class TestStorageInterface(unittest.TestCase):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
         result = storage_interface.list_directories_with_links("/some/local/path")
         mock_listdir.assert_called_once_with("/some/local/path")
-        self.assertEqual(result, ["dir1", "dir2", "link_to_dir"])
+        assert_that(result).is_equal_to(["dir1", "dir2", "link_to_dir"])
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_list_directories_with_links_nemo(self, MockConnection):
@@ -108,7 +108,7 @@ class TestStorageInterface(unittest.TestCase):
         result = storage_interface.list_directories_with_links("~")
 
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
-        self.assertEqual(result, ["dir1", "dir2", "link_to_dir"])
+        assert_that(result).is_equal_to(["dir1", "dir2", "link_to_dir"])
 
     @patch("os.path.exists")
     @patch("asf_tools.io.utils.check_file_exist")
@@ -131,7 +131,7 @@ class TestStorageInterface(unittest.TestCase):
         result = storage_interface.exists_with_pattern("/home/user", "test_file.txt")
 
         MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
-        self.assertTrue(result)
+        assert_that(result).is_true()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_make_dirs_nemo(self, MockConnection):
@@ -155,21 +155,20 @@ class TestStorageInterface(unittest.TestCase):
         content = storage_interface.read_file("/some/path/to/file.txt")
 
         MockConnection().run.assert_called_once_with("cat /some/path/to/file.txt", hide=True)
-        self.assertEqual(content, "file content")
+        assert_that(content).is_equal_to("file content")
 
     def test_storage_parse_permission_string(self):
         storage_interface = StorageInterface(InterfaceType.LOCAL)
 
         perm, numeric_perm = storage_interface.parse_permission_string("rwxr-xr--")
-        self.assertEqual(perm, 0o754)
-        self.assertEqual(numeric_perm, "754")
+        assert_that(perm).is_equal_to(0o754)
+        assert_that(numeric_perm).is_equal_to("754")
 
         perm, numeric_perm = storage_interface.parse_permission_string("rw-rw-r--")
-        self.assertEqual(perm, 0o664)
-        self.assertEqual(numeric_perm, "664")
+        assert_that(perm).is_equal_to(0o664)
+        assert_that(numeric_perm).is_equal_to("664")
 
-        with self.assertRaises(ValueError):
-            storage_interface.parse_permission_string("invalid")
+        assert_that(storage_interface.parse_permission_string).raises(ValueError).when_called_with("invalid")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_chmod_nemo(self, MockConnection):
@@ -183,19 +182,13 @@ class TestStorageInterface(unittest.TestCase):
         storage_interface.chmod("/some/path/to/file.txt", "rwxr-xr--")
         mock_chmod.assert_called_once_with("/some/path/to/file.txt", 0o754)
 
-
-class TestStorageInterfaceIntegrationTests(unittest.TestCase):
-
     @pytest.mark.only_run_with_direct_target
     def test_storage_integration_list_directory_local(self):
         # Init
         storage_interface = StorageInterface(InterfaceType.LOCAL)
 
-        # Test
-        result = storage_interface.list_directory("./tests/data")
-
-        # Assert
-        self.assertTrue("illumina" in result)
+        # Test and assert
+        assert_that(storage_interface.list_directory("./tests/data")).contains("illumina")
 
     @pytest.mark.only_run_with_direct_target
     def test_storage_integration_list_directory_remote(self):
@@ -204,8 +197,5 @@ class TestStorageInterfaceIntegrationTests(unittest.TestCase):
         storage_interface = StorageInterface(InterfaceType.NEMO, host="login007.nemo.thecrick.org", user="svc-asf-seq", key_file=key_path)
         print(key_path)
 
-        # Test
-        result = storage_interface.list_directory(".")
-
-        # Assert
-        self.assertTrue("working" in result)
+        # Test and assert 
+        assert_that(storage_interface.list_directory(".")).contains("working")
