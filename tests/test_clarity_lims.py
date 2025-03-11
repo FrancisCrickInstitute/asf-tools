@@ -213,6 +213,7 @@ def mock_endpoints_clarity_api(request):
     request.cls.lims = lims
     yield lims
 
+
 class TestClarityEndpoints:
     """
     Test class for pulling data from API endpoints

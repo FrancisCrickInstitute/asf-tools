@@ -5,10 +5,11 @@ Tests for the data transfer class
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import os
-from assertpy import assert_that
 from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import MagicMock, patch
+
+from assertpy import assert_that
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
 
@@ -350,7 +351,7 @@ class TestIoDataManagement:
         core_name_list = ["asf", "genomics-stp"]
         dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
         dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path, core_name_list)
-        print(os.listdir(os.path.join(tmp_path, "swantonc", 'joe.bloggs')))
+        print(os.listdir(os.path.join(tmp_path, "swantonc", "joe.bloggs")))
 
         # Test and Assert
         assert_that(dm.scan_delivery_state(source_dir, target_dir, core_name_list)).is_empty()
@@ -441,7 +442,7 @@ class TestIoDataManagement:
 
         # Test
         dm = DataManagement()
-        result = dm.find_stale_directories(tmp_path, 2) 
+        result = dm.find_stale_directories(tmp_path, 2)
 
         # Assert the result
 
