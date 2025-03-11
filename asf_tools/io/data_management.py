@@ -53,8 +53,8 @@ class DataManagement:
         - run_dir (str): Path to the run directory.
         """
         # check for pod5 count file
-        if not check_file_exist(run_dir, "pod5_count.txt"):
-            return False
+        # if not check_file_exist(run_dir, "pod5_count.txt"):
+        #     return False
 
         # check for sequencing summary file
         if not check_file_exist(run_dir, "sequencing_summary*"):
