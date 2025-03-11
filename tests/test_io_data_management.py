@@ -588,10 +588,9 @@ class TestIoDataManagement:
         # Test and Assert
         assert_that(dm.find_stale_directories).raises(FileNotFoundError).when_called_with(data_path, 2)
 
-    # @mock.patch("asf_tools.io.data_management.os.path.getmtime")
-    # @mock.patch("asf_tools.io.data_management.datetime")
-    # def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
-    def test_clean_pipeline_output_workdir_valid(self, tmp_path, monkeypatch):
+    @mock.patch("asf_tools.io.data_management.os.path.getmtime")
+    @mock.patch("asf_tools.io.data_management.datetime")
+    def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
         """
         Test function with directories that have a mock editing time.
         Creates work directories and checks correct deletion of work dir.
@@ -611,39 +610,14 @@ class TestIoDataManagement:
 
         # set up mock structure
         fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
-        # mock_datetime.now.return_value = fixed_current_time
-        # mock_datetime.fromtimestamp = lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc)
-        # print(mock_datetime.fromtimestamp)
-        # mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
-
-        # monkeypatch.setattr("asf_tools.io.data_management.datetime", datetime)  # Ensure the module uses the patched datetime
-        # monkeypatch.setattr(datetime, "now", lambda: fixed_current_time)
-        # monkeypatch.setattr(datetime, "fromtimestamp", lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc))
-
-        # # Mock `os.path.getmtime`
-        # monkeypatch.setattr("os.path.getmtime", lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp())
-
-        monkeypatch.setattr("asf_tools.io.data_management.datetime", fixed_current_time)  # Ensure the module uses the patched datetime
-        monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", lambda ts: datetime.fromtimestamp(ts, tz=timezone.utc))
-        monkeypatch.setattr("asf_tools.io.data_management.os.path.getmtime", lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc))
-
-        # old_timestamp = datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
-
-        # # Monkeypatch `datetime.now` inside `asf_tools.io.data_management`
-        # monkeypatch.setattr("asf_tools.io.data_management.datetime.now", classmethod(lambda cls: fixed_current_time))
-        # monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", classmethod(lambda cls, ts, tz=timezone.utc: datetime.fromtimestamp(ts, tz=tz)))
-
-        # # Monkeypatch `datetime.fromtimestamp`
-        # monkeypatch.setattr("asf_tools.io.data_management.datetime.fromtimestamp", lambda ts, tz=timezone.utc: datetime.fromtimestamp(ts, tz=tz))
-
-        # # Monkeypatch `os.path.getmtime`
-        # monkeypatch.setattr("os.path.getmtime", lambda path: old_timestamp)
+        mock_datetime.now.return_value = fixed_current_time
+        mock_datetime.fromtimestamp = datetime.fromtimestamp
+        mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test
-        dm.clean_pipeline_output(tmp_path, 2)
+        dm.clean_pipeline_output(str(tmp_path), 1)
 
         # Assert
-        print(os.listdir(subdir1))
         assert_that(os.path.exists(subdir1)).is_true()
         assert_that(os.path.exists(subdir2)).is_true()
         assert_that(os.path.exists(work_dir1)).is_false()
@@ -745,4 +719,4 @@ class TestIoDataManagement:
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test and Assert
-        assert_that(dm.clean_pipeline_output).raises(FileNotFoundError).when_called_with(tmp_path, 2, DataTypeMode.ONT)
+        assert_that(dm.clean_pipeline_output).raises(FileNotFoundError).when_called_with(str(tmp_path), 2, DataTypeMode.ONT)
