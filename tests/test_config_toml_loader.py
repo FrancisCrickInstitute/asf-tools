@@ -5,15 +5,15 @@ Tests for the toml_loader module.
 # pylint: disable=missing-function-docstring,missing-class-docstring
 
 import os
-from assertpy import assert_that
 from unittest.mock import mock_open, patch
 
 import toml
+from assertpy import assert_that
 
 from asf_tools.config.toml_loader import load_toml_file
 
 
-class TestTomlLoader():
+class TestTomlLoader:
 
     def test_load_toml_file_with_file_path(self):
         mock_data = {"key": "value"}

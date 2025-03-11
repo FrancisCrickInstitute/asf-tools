@@ -5,9 +5,9 @@ Primary CLI Tests
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
 import tempfile
+
 import pytest
 from assertpy import assert_that
-
 from click.testing import CliRunner
 
 import asf_tools.__main__

@@ -4,8 +4,9 @@ Test the Slurm utils
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
-from assertpy import assert_that
 from unittest.mock import MagicMock, patch
+
+from assertpy import assert_that
 
 from asf_tools.slurm.utils import get_job_status
 

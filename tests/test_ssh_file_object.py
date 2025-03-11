@@ -4,8 +4,9 @@ Tests for ssh FileObject.
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
-from assertpy import assert_that
 from datetime import datetime
+
+from assertpy import assert_that
 
 from asf_tools.ssh.file_object import FileObject, FileType
 

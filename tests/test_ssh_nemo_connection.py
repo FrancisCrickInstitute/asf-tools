@@ -4,8 +4,9 @@ Tests for the Nemo module.
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
-from assertpy import assert_that
 from unittest.mock import MagicMock, patch
+
+from assertpy import assert_that
 
 from asf_tools.ssh.nemo import Nemo
 

@@ -5,15 +5,15 @@ Tests for the Storage Interface module.
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
 import os
-from assertpy import assert_that
 from unittest.mock import MagicMock, patch
 
 import pytest
+from assertpy import assert_that
 
 from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 
 
-class TestStorageInterface():
+class TestStorageInterface:
 
     @patch("os.listdir")
     def test_storage_mock_list_directory_local(self, mock_listdir):
@@ -197,5 +197,5 @@ class TestStorageInterface():
         storage_interface = StorageInterface(InterfaceType.NEMO, host="login007.nemo.thecrick.org", user="svc-asf-seq", key_file=key_path)
         print(key_path)
 
-        # Test and assert 
+        # Test and assert
         assert_that(storage_interface.list_directory(".")).contains("working")
