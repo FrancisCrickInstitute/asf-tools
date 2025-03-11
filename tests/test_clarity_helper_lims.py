@@ -60,11 +60,8 @@ class TestClarityHelperLims:
         assert isinstance(excinfo.value, (ConnectionError, HTTPError))
 
     def test_clarity_helper_get_check_sample_dropoff_isnone(self):
-        # Test
-        results = self.api.check_sample_dropoff_info(None)
-
-        # Assert
-        assert_that(results).is_none()
+        # Test and assert
+        assert_that(self.api.check_sample_dropoff_info(None)).is_none()
 
     def test_clarity_helper_get_check_sample_dropoff_isvalid(self):
         # Set up
@@ -89,29 +86,20 @@ class TestClarityHelperLims:
         assert_that(get_info_2).is_equal_to(expected_dict_2)
 
     def test_clarity_helper_get_sample_info_isnone(self):
-        # Test
-        results = self.api.get_sample_info(None)
-
-        # Assert
-        assert_that(results).is_none()
+        # Test and assert
+        assert_that(self.api.get_sample_info(None)).is_none()
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isnone(self):
-        # Test
-        results = self.api.get_barcode_from_reagenttypes(None)
-
-        # Assert
-        assert_that(results).is_none()
+        # Test and assert
+        assert_that(self.api.get_barcode_from_reagenttypes(None)).is_none()
 
     def test_clarity_helper_get_barcode_from_reagenttypes_isvalid(self):
         # Setup
         barcode = "N701-N501 (TAAGGCGA-TAGATCGC)"
         results_barcode = "TAAGGCGA-TAGATCGC"
 
-        # Test
-        results = self.api.get_barcode_from_reagenttypes(barcode)
-
-        # Assert
-        assert_that(results).is_equal_to(results_barcode)
+        # Test and assert
+        assert_that(self.api.get_barcode_from_reagenttypes(barcode)).is_equal_to(results_barcode)
 
     def test_clarity_helper_get_sample_barcode_from_runid_isnone(self):
         # Test and Assert
@@ -381,16 +369,8 @@ class TestClarityHelperLims:
         ],
     )
     def test_clarity_helper_get_lane_from_runid_isvalid(self, run_id, expected):
-        """
-        Pass None to method
-        """
-
-        # Test
-        results = self.api.get_lane_from_runid(run_id)
-        print(results)
-
-        # Assert
-        assert results == expected
+        # Test and assert
+        assert_that(self.api.get_lane_from_runid(run_id)).is_equal_to(expected)
 
     @pytest.mark.parametrize("run_id,expected_sample_quantity", [("B_04-0004-S6_DT", 1), ("462-24_MPX-seq", 4)])  # Illumina  # ONT
     def test_clarity_helper_get_samples_from_artifacts_isvalid(self, run_id, expected_sample_quantity):
@@ -403,7 +383,6 @@ class TestClarityHelperLims:
 
         # Test
         get_samples = self.api.get_samples_from_artifacts(artifact)
-        print(get_samples)
 
         # Assert
         assert len(get_samples) == expected_sample_quantity
@@ -485,11 +464,8 @@ class TestClarityHelperLims:
         # Set up
         sample = self.api.get_samples(search_id=sample_id)
 
-        # Test
-        get_info = self.api.get_sample_info(sample.id)
-
-        # Assert
-        assert get_info == expected_dict
+        # Test and assert
+        assert_that(self.api.get_sample_info(sample.id)).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize(
         "sample_id,expected_dict",
@@ -520,11 +496,8 @@ class TestClarityHelperLims:
         # Set up
         sample = self.api.get_samples(search_id=sample_id)
 
-        # Test
-        get_info = self.api.get_sample_info(sample.id)
-
-        # Assert
-        assert get_info == expected_dict
+        # Test and Assert
+        assert_that(self.api.get_sample_info(sample.id)).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize(
         "runid,expected_sample_quantity",
@@ -575,16 +548,8 @@ class TestClarityHelperLims:
         ],
     )
     def test_clarity_helper_get_sample_barcode_from_runid_isvalid(self, run_id, expected_dict):
-        """
-        Pass real run_id and test expected values in the dictionary output
-        """
-
-        # Test
-        barcode_dict = self.api.get_sample_barcode_from_runid(run_id)
-        # print(barcode_dict)
-
-        # Assert
-        assert barcode_dict == expected_dict
+        # Test and assert
+        assert_that(self.api.get_sample_barcode_from_runid(run_id)).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
@@ -653,27 +618,13 @@ class TestClarityHelperLims:
         ],
     )
     def test_get_sample_custom_barcode_from_runid_isvalid(self, run_id, expected_dict):
-        """
-        Pass real run_id and test expected values in the dictionary output
-        """
-
-        # Test
-        barcode = self.api.get_sample_custom_barcode_from_runid(run_id)
-
-        # Assert
-        assert_that(barcode).is_equal_to(expected_dict)
+        # Test and assert
+        assert_that(self.api.get_sample_custom_barcode_from_runid(run_id)).is_equal_to(expected_dict)
 
     @pytest.mark.parametrize("sample,expected_barcode", [("SKO6875A940", "ACTCCGCG-TAGTCGTT"), ("KAN6921A20", "")])  # Illumina  # ONT
     def test_clarity_helper_get_sample_custom_barcode_from_sampleid_isvalid(self, sample, expected_barcode):
-        """
-        Pass real artifact IDs and test expected number of samples back
-        """
-
-        # Test
-        results = self.api.get_sample_custom_barcode_from_sampleid(sample)
-
-        # Assert
-        assert_that(results).is_equal_to(expected_barcode)
+        # Test and assert
+        assert_that(self.api.get_sample_custom_barcode_from_sampleid(sample)).is_equal_to(expected_barcode)
 
     @pytest.mark.parametrize(
         "run_id,expected_dict",
@@ -896,13 +847,5 @@ class TestClarityHelperLims:
         ],
     )
     def test_clarity_helper_collect_samplesheet_info_isvalid(self, run_id, expected_dict):
-        """
-        Pass real run_id and test expected values in the dictionary output
-        """
-
-        # Test
-        merged_dict = self.api.collect_samplesheet_info(run_id)
-        print(merged_dict)
-
-        # Assert
-        assert_that(merged_dict).is_equal_to(expected_dict)
+        # Test and assert
+        assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
