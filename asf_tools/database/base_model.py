@@ -4,7 +4,9 @@ Base Model for SQLAlchemy ORM
 
 from sqlalchemy.orm import declarative_base
 
+
 Base = declarative_base()
+
 
 class BaseModel(Base):
     """
@@ -13,6 +15,7 @@ class BaseModel(Base):
     - Provides `created_at` timestamps.
     - `to_dict()` method for dictionary conversion.
     """
+
     __abstract__ = True  # Prevents table creation for this base class
 
     def to_dict(self):
