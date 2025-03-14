@@ -3,6 +3,7 @@ Postgres Database connection manager.
 """
 
 from contextlib import contextmanager
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -13,10 +14,12 @@ def construct_postgres_url(user: str, password: str, host: str, port: int, db: s
     """
     return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
+
 class Database:
     """
     Postgres Database connection manager.
     """
+
     def __init__(self, db_url: str, pool_size: int = 10, max_overflow: int = 20, echo: bool = False):
 
         # SQLite does not support pooling (in memory test database)

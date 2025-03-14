@@ -3,14 +3,16 @@ This module contains CRUD operations for an sqlacademy database.
 """
 
 import logging
-from typing import Type, TypeVar, List, Optional, Dict, Any
-from sqlalchemy import text, select
+from typing import Any, Dict, List, Optional, Type, TypeVar
+
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
 
 class DatabaseCrud:
     """
