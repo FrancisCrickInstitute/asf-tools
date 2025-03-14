@@ -432,6 +432,74 @@ def scan_run_state(  # pylint: disable=too-many-positional-arguments
         table.add_row(run_id, state_text)
     stdout.print(table)
 
+# asf-tools ont upload-report
+@pipeline.command("upload-report")
+@click.pass_context
+@click.option(
+    "--data-file",
+    type=click.Path(exists=True),
+    required=True,
+    help="Pickle data file to upload",
+)
+@click.option(
+    "--run-id",
+    required=True,
+    help="Run id of the data file",
+)
+@click.option(
+    "--report-type",
+    required=True,
+    help="The report type",
+)
+@click.option(
+    "--upload-table",
+    required=True,
+    help="Target data delivery directory",
+)
+def upload_report(  # pylint: disable=too-many-positional-arguments
+    ctx,  # pylint: disable=W0613
+    data_file,
+    run_id,
+    report_type,
+    upload_table,):
+    """
+    Scans the state ONT sequencing runs
+    """
+    from asf_tools.config.toml_loader import load_toml_file  # pylint: disable=C0415
+    from asf_tools.database.db import Database, construct_postgres_url  # pylint: disable=C0415
+    from asf_tools.database.crud import DatabaseCrud  # pylint: disable=C0415
+
+    log.info(f"Uploading report for {run_id} to {upload_table}")
+
+    # Load config
+    config = load_toml_file()
+    db_host = config["database"]["automation_prod"]["host"]
+    db_port = config["database"]["automation_prod"]["port"]
+    db_name = config["database"]["automation_prod"]["database"]
+    db_user = config["database"]["automation_prod"]["username"]
+    db_pass = config["database"]["automation_prod"]["password"]
+    db_suffix = config["database"]["automation_prod"]["table_suffix"]
+
+    # Init DB
+    db = Database(construct_postgres_url(db_user, db_pass, db_host, db_port, db_name))
+    crud = DatabaseCrud(table_name=f"{upload_table}_{db_suffix}")
+
+    # Load data
+    with open(data_file, "rb") as f:
+        binary_data = f.read()
+
+    # Check if the run exists and upload
+    with db.db_session() as db:
+        run = crud.get_simple(db, "id", run_id, as_dict=True)
+
+        if len(run) == 0:
+            crud.create(db, {"id": run_id, "type": report_type, "data": binary_data})
+            log.info(f"Run {run_id} not found in {upload_table}, creating new entry")
+        else:
+            crud.update(db, run_id, {"id": run_id, "type": report_type, "data": binary_data})
+            log.info(f"Run {run_id} found in {upload_table}, updating entry")
+
+    log.info("Upload complete")
 
 # Main script is being run - launch the CLI
 if __name__ == "__main__":
