@@ -112,7 +112,7 @@ class DatabaseCrud:
             db.execute(query, obj_in)
             db.commit()
 
-    def update(self, db: Session, obj_id: int, obj_in: Dict[str, Any]) -> None:
+    def update(self, db: Session, obj_id: str, obj_in: Dict[str, Any]) -> None:
         """
         Update a record in the database.
         - Supports both ORM and raw SQL.
