@@ -20,6 +20,8 @@ dependencies = [
     "pydantic",
     "questionary",
     "fabric",
+    "sqlalchemy",
+    "psycopg2",
 ]
 scripts = { "asf-tools" = "asf_tools.__main__:run_asf_tools" }
 
