@@ -849,3 +849,16 @@ class TestClarityHelperLims:
     def test_clarity_helper_collect_samplesheet_info_isvalid(self, run_id, expected_dict):
         # Test and assert
         assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
+
+    def test_clarity_helper_get_pipeline_params(self):
+        # Set up
+        # project_id = "DN24086"
+        project_id = "KAN6921" # ONT
+
+        # project_id = "TLG66" # Illumina
+
+        # Test
+        results = self.api.get_pipeline_params(project_id)
+        print(results)
+
+        raise ValueError

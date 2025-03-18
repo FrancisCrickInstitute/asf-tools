@@ -706,3 +706,25 @@ class ClarityHelperLims(ClarityLims):
 # Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
 # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
 # 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+
+    def get_pipeline_params(self, project_id: str) -> dict:
+        proj_info = self.get_projects(search_id=project_id)
+
+        pipeline_params = {}
+        for field in proj_info.udf_fields:
+            # print(field)
+            # if "pipeline params" in field.name.lower():
+            if "pipeline" in field.name.lower():
+                print(field)
+                if "," in field.value:
+                    key_value_pairs = field.value.split(',')
+                else:
+                    key_value_pairs = field.value
+
+                param_dict = {}
+                for pair in key_value_pairs:
+                    key, value = pair.split(':')
+                    param_dict[key.strip()] = value.strip()
+                pipeline_params[field.name] = param_dict
+
+        return pipeline_params
