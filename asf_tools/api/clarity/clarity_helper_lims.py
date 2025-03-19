@@ -712,18 +712,14 @@ class ClarityHelperLims(ClarityLims):
 
         pipeline_params = {}
         for field in proj_info.udf_fields:
-            # print(field)
-            # if "pipeline params" in field.name.lower():
-            if "pipeline" in field.name.lower():
-                print(field)
-                if "," in field.value:
-                    key_value_pairs = field.value.split(',')
-                else:
-                    key_value_pairs = field.value
+            if "pipeline params" in field.name.lower():
+                key_value_pairs = []
+                key_value_pairs = field.value.split(',') if ',' in field.value else [field.value]
 
                 param_dict = {}
                 for pair in key_value_pairs:
-                    key, value = pair.split(':')
+                    print(pair)
+                    key, value = pair.split('=')
                     param_dict[key.strip()] = value.strip()
                 pipeline_params[field.name] = param_dict
 

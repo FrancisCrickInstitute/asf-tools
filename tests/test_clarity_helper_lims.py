@@ -850,7 +850,8 @@ class TestClarityHelperLims:
         # Test and assert
         assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
 
-    def test_clarity_helper_get_pipeline_params(self):
+    @pytest.mark.parametrize("project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True"}})])  # Illumina  # ONT
+    def test_clarity_helper_get_pipeline_params(self, project_id, expected_dict):
         # Set up
         # project_id = "DN24086"
         project_id = "KAN6921" # ONT
@@ -861,4 +862,5 @@ class TestClarityHelperLims:
         results = self.api.get_pipeline_params(project_id)
         print(results)
 
-        raise ValueError
+        assert_that(results).is_equal_to(expected_dict)
+        # raise ValueError
