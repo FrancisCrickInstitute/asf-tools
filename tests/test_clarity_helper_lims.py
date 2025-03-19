@@ -850,17 +850,14 @@ class TestClarityHelperLims:
         # Test and assert
         assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
 
-    @pytest.mark.parametrize("project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True"}})])  # Illumina  # ONT
+    @pytest.mark.parametrize("project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}})])
     def test_clarity_helper_get_pipeline_params(self, project_id, expected_dict):
         # Set up
-        # project_id = "DN24086"
-        project_id = "KAN6921" # ONT
-
-        # project_id = "TLG66" # Illumina
+        # del self.api.tracked_requests["https://asf-claritylims.thecrick.org/api/v2/projects/KAN6921"]
+        # project_limsid = "DN24086"
 
         # Test
         results = self.api.get_pipeline_params(project_id)
         print(results)
 
         assert_that(results).is_equal_to(expected_dict)
-        # raise ValueError
