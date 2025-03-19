@@ -863,3 +863,15 @@ class TestClarityHelperLims:
 
         # Assert
         assert_that(results).is_equal_to(expected_dict)
+
+    def test_clarity_helper_get_pipeline_params_sepvalue_invalid(self, caplog):
+        # Set up
+        project_id = "KAN6921"
+        pipeline_params_field_name = "pipeline params"
+        sep_value = ":"
+
+        # Test
+        self.api.get_pipeline_params(project_id, pipeline_params_field_name, sep_value)
+
+        # Assert
+        assert_that(caplog.text).contains("WARNING")
