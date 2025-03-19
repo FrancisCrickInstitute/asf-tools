@@ -396,7 +396,7 @@ class TestClarityHelperLims:
                     "KAN6921A20": {
                         "sample_name": "99-005-0496_98-290_bp",
                         "group": "swantonc",
-                        "user": "nnennaya.kanu",
+                        "user": "clare.puttick",
                         "project_id": "DN24086",
                         "project_limsid": "KAN6921",
                         "project_type": "WGS",
@@ -832,7 +832,7 @@ class TestClarityHelperLims:
                     "KAN6921A20": {
                         "sample_name": "99-005-0496_98-290_bp",
                         "group": "swantonc",
-                        "user": "nnennaya.kanu",
+                        "user": "clare.puttick",
                         "project_id": "DN24086",
                         "project_limsid": "KAN6921",
                         "project_type": "WGS",
@@ -850,14 +850,16 @@ class TestClarityHelperLims:
         # Test and assert
         assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
 
-    @pytest.mark.parametrize("project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}})])
-    def test_clarity_helper_get_pipeline_params(self, project_id, expected_dict):
+    @pytest.mark.parametrize(
+        "project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}), ("TLG66", {})]
+    )
+    def test_clarity_helper_get_pipeline_params_isvalid(self, project_id, expected_dict):
         # Set up
-        # del self.api.tracked_requests["https://asf-claritylims.thecrick.org/api/v2/projects/KAN6921"]
-        # project_limsid = "DN24086"
+        pipeline_params_field_name = "pipeline params"
+        sep_value = "="
 
         # Test
-        results = self.api.get_pipeline_params(project_id)
-        print(results)
+        results = self.api.get_pipeline_params(project_id, pipeline_params_field_name, sep_value)
 
+        # Assert
         assert_that(results).is_equal_to(expected_dict)
