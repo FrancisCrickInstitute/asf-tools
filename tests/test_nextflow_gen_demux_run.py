@@ -225,6 +225,53 @@ class TestGenDemuxRun:
         # Assertion
         assert_that(content).is_equal_to(expected_content)
 
+    def test_ont_gen_demux_run_extract_pipeline_params_isvalid(self, tmp_path):
+
+        # Setup
+        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
+        samplesheet_path_2 = os.path.join(tmp_path, "samplesheet2.csv")
+
+        with open(samplesheet_path, "w", encoding="UTF-8") as file:
+            file.write("id,project_id,project_limsid\n")
+            file.write("sample_01,KAN6921,no_lims_proj\n")
+
+        with open(samplesheet_path_2, "w", encoding="UTF-8") as file:
+            file.write("id,group,user,project_id\n")
+            file.write("sample_01,asf,no_name,SKO6875\n")
+
+        expected_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
+        expected_dict_2 = {}
+
+        # Test
+        results = GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)
+        results_2 = GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path_2)
+
+        # Assert
+        assert_that(results).is_equal_to(expected_dict)
+        assert_that(results_2).is_equal_to(expected_dict_2)
+
+    def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path):
+
+        # Setup
+        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
+        with open(samplesheet_path, "w", encoding="UTF-8") as file:
+            file.write("id,project_id,project_limsid\n")
+            file.write("sample_01,no_proj,no_lims_proj\n")
+
+        # Test and Assert
+        assert_that(GenDemuxRun.extract_pipeline_params).raises(Exception).when_called_with(self, ClarityHelperLims(), samplesheet_path)
+
+    def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
+
+        # Setup
+        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
+        with open(samplesheet_path, "w", encoding="UTF-8") as file:
+            file.write("id,sample_name,group,user,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+            file.write("sample_01,sample_01,asf,no_name,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
+
+        # Test and Assert
+        assert_that(GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)).is_equal_to({})
+
     def test_create_sbatch_without_parse_pos(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(

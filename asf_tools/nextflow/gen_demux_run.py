@@ -5,6 +5,7 @@ Function class for managing CLI operation
 import logging
 import os
 import stat
+import csv
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
@@ -108,6 +109,9 @@ class GenDemuxRun:
         Per run processing
         """
 
+        # Init
+        cl = ClarityHelperLims()
+
         log.info(f"Processing: {run_name}")
         sample_count = 0
 
@@ -127,7 +131,7 @@ class GenDemuxRun:
                 file.write("sample_01,sample_01,asf,no_name,no_proj,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
         if self.use_api is True:
             # Get samplesheet from API
-            sample_dict = self.get_samplesheet(run_name, mode)
+            sample_dict = self.get_samplesheet(cl, run_name, mode)
 
             # Write samplesheet
             sample_count, samplesheet = self.create_samplesheet(sample_dict)
@@ -145,8 +149,11 @@ class GenDemuxRun:
             if sample_count > 1:
                 bc_parse_pos = 2
 
+            # Extract pipeline parameters
+            pipeline_params = self.extract_pipeline_params(cl, samplesheet_path)
+
             # Create sbatch script
-            sbatch_script = self.create_ont_sbatch_text(run_name, bc_parse_pos)
+            sbatch_script = self.create_ont_sbatch_text(run_name, pipeline_params, bc_parse_pos)
             sbatch_script_path = os.path.join(folder_path, "run_script.sh")
             with open(sbatch_script_path, "w", encoding="UTF-8") as file:
                 file.write(sbatch_script)
@@ -154,12 +161,11 @@ class GenDemuxRun:
             # Set 777 for the run script
             os.chmod(sbatch_script_path, PERM777)
 
-    def get_samplesheet(self, run_name: str, mode: DataTypeMode) -> dict:
+    def get_samplesheet(self, api, run_name: str, mode: DataTypeMode) -> dict:
         """
         Get samplesheet from API
         """
         # Get samplesheet from API
-        api = ClarityHelperLims()
 
         # Check mode and set the appropriate check function
         if mode == DataTypeMode.ONT:
@@ -195,7 +201,26 @@ class GenDemuxRun:
 
         return count, samplesheet
 
-    def create_ont_sbatch_text(self, run_name: str, parse_pos: int = -1) -> str:
+    def extract_pipeline_params(self, api, samplesheet_csv) -> dict:
+        """
+        Extracts the first project IDs from a CSV file and retrieves the corresponding pipeline parameters.
+        """
+        params_dict = {}
+        with open(samplesheet_csv, mode="r", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+
+            # Check there's a column for "project_id"
+            if "project_id" not in reader.fieldnames:
+                return params_dict
+
+            # Extract the first project ID
+            first_row = next(reader, None)
+            proj_id = first_row["project_id"]
+            params_dict = api.get_pipeline_params(proj_id, "pipeline params", "=")
+
+        return params_dict
+
+    def create_ont_sbatch_text(self, run_name: str, pipeline_params_dict: dict, parse_pos: int = -1) -> str:
         """Creates an sbatch script from a template and returns the text
 
         Returns:
@@ -235,6 +260,13 @@ nextflow run {self.pipeline_dir} \\
   --samplesheet ./samplesheet.csv \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
   --dorado_model sup"""
+        # Add pipeline params
+        if pipeline_params_dict is not None:
+            print(pipeline_params_dict)
+            for param in pipeline_params_dict:
+                for key, value in param.items():
+                    bash_script += f"  --{key} {value}\n"
+
         # Add parse pos if it is not -1
         if parse_pos != -1:
             bash_script += f" \\\n  --dorado_bc_parse_pos {parse_pos}\n"
