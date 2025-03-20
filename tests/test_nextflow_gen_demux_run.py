@@ -250,7 +250,7 @@ class TestGenDemuxRun:
         assert_that(results).is_equal_to(expected_dict)
         assert_that(results_2).is_equal_to(expected_dict_2)
 
-    def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path):
+    def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path, caplog):
 
         # Setup
         samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
@@ -259,7 +259,8 @@ class TestGenDemuxRun:
             file.write("sample_01,no_proj,no_lims_proj\n")
 
         # Test and Assert
-        assert_that(GenDemuxRun.extract_pipeline_params).raises(Exception).when_called_with(self, ClarityHelperLims(), samplesheet_path)
+        GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)
+        assert_that(caplog.text).contains("WARNING")
 
     def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
 

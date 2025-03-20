@@ -728,22 +728,25 @@ class ClarityHelperLims(ClarityLims):
             ValueError: If the provided project_id is None or invalid.
             KeyError: If the project_id does not exist in the system.
         """
-        proj_info = self.get_projects(search_id=project_id)
-
         pipeline_params = {}
-        for field in proj_info.udf_fields:
-            if pipeline_params_field_name in field.name.lower():
-                key_value_pairs = []
-                key_value_pairs = field.value.split(",") if "," in field.value else [field.value]
+        try:
+            proj_info = self.get_projects(search_id=project_id)
 
-                param_values_dict = {}
-                for pair in key_value_pairs:
-                    if sep_value in pair:
-                        key, value = pair.split(sep_value)
-                        param_values_dict[key.strip()] = value.strip()
-                    else:
-                        log.warning(f'Missing saparator value in "{pair}" parameter. Returning as NA.')
-                        param_values_dict[pair.strip()] = "NA"
-                pipeline_params[field.name] = param_values_dict
+            for field in proj_info.udf_fields:
+                if pipeline_params_field_name in field.name.lower():
+                    key_value_pairs = []
+                    key_value_pairs = field.value.split(",") if "," in field.value else [field.value]
+
+                    param_values_dict = {}
+                    for pair in key_value_pairs:
+                        if sep_value in pair:
+                            key, value = pair.split(sep_value)
+                            param_values_dict[key.strip()] = value.strip()
+                        else:
+                            log.warning(f'Missing saparator value in "{pair}" parameter. Returning as NA.')
+                            param_values_dict[pair.strip()] = "NA"
+                    pipeline_params[field.name] = param_values_dict
+        except HTTPError:
+            log.warning(f"Project {project_id} not found.")
 
         return pipeline_params
