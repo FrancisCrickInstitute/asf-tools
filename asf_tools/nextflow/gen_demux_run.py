@@ -261,26 +261,6 @@ nextflow run {self.pipeline_dir} \\
   --run_dir {os.path.join(self.runs_dir, run_name)} \\
   --dorado_model sup"""
         # Add pipeline params
-
-        # first_param = True
-        # if pipeline_params_dict:
-        #     # for param in pipeline_params_dict:
-        #     #     for key, value in pipeline_params_dict[param].items():
-        #     #         bash_script += f" \\\n  --{key} {value} \n"
-        # # if pipeline_params_dict:
-        # #     bash_script_lines = [
-        # #         f"  --{key} {value}"
-        # #         for param in pipeline_params_dict.values()
-        # #         for key, value in param.items()
-        # #     ]
-        # #     bash_script += " \\\n".join(bash_script_lines) + "\n"
-        #     for param in pipeline_params_dict.values():
-        #         for key, value in param.items():
-        #             if first_param:
-        #                 bash_script += " \\"  # Add the backslash only for the first key-value pair
-        #                 first_param = False
-        #             bash_script += f"\n  --{key} {value} \\"
-
         if pipeline_params_dict:
             param_lines = [f"  --{key} {value}" for param in pipeline_params_dict.values() for key, value in param.items()]
 
@@ -292,8 +272,6 @@ nextflow run {self.pipeline_dir} \\
         if parse_pos != -1:
             bash_script += f" \\\n  --dorado_bc_parse_pos {parse_pos}\n"
 
-        # if not pipeline_params_dict and parse_pos == -1:
         bash_script += "\n"
 
-        print(bash_script)
         return bash_script
