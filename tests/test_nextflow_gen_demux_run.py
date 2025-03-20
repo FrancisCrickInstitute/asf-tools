@@ -424,7 +424,7 @@ nextflow run /path/to/pipeline \\
         result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
 
-    def test_create_sbatch_with_pipelineparams(self):
+    def test_create_sbatch_with_pipelineparams_with_parse_pos(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(
             source_dir="/path/to/source",
