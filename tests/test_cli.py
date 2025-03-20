@@ -22,7 +22,7 @@ TEST_DELIVERY_SOURCE_PATH = "tests/data/ont/live_runs/pipeline_output"
 
 
 @pytest.fixture(scope="class", autouse=True)
-def setUp(request):
+def set_up(request):
     request.cls.runner = CliRunner()
     request.cls.tmp_dir = tempfile.mkdtemp()
 
