@@ -273,6 +273,56 @@ class TestGenDemuxRun:
         # Test and Assert
         assert_that(GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)).is_equal_to({})
 
+    def test_create_sbatch_with_pipelineparams(self):
+        # Create an instance of the class with required attributes
+        instance = GenDemuxRun(
+            source_dir="/path/to/source",
+            target_dir="/path/to/target",
+            mode="ONT",
+            pipeline_dir="/path/to/pipeline",
+            nextflow_cache="/path/to/cache",
+            nextflow_work="/path/to/work",
+            container_cache="/path/to/container_cache",
+            runs_dir="/path/to/runs",
+            use_api=False,
+            nextflow_version="20.10.0",
+        )
+
+        run_name = "test_run"
+        pipeline_params_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
+        parse_pos = -1  # No parse position
+
+        # Expected output without parse_pos
+        expected_output = f"""#!/bin/sh
+
+#SBATCH --partition=ncpu
+#SBATCH --job-name=asf_nanopore_demux_{run_name}
+#SBATCH --mem=4G
+#SBATCH -n 1
+#SBATCH --time=168:00:00
+#SBATCH --output=run.o
+#SBATCH --error=run.o
+#SBATCH --res=asf
+
+{create_sbatch_header("20.10.0")}
+
+export NXF_HOME="/path/to/cache"
+export NXF_WORK="/path/to/work"
+export NXF_SINGULARITY_CACHEDIR="/path/to/container_cache"
+
+nextflow run /path/to/pipeline \\
+  -resume \\
+  -profile crick,genomics \\
+  --monochrome_logs \\
+  --samplesheet ./samplesheet.csv \\
+  --run_dir {os.path.join('/path/to/runs', run_name)} \\
+  --dorado_model sup \\
+  --output_raw True \\
+  --output_bam True
+"""
+        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
+        assert_that(result.strip()).is_equal_to(expected_output.strip())
+
     def test_create_sbatch_without_parse_pos(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(
@@ -289,6 +339,7 @@ class TestGenDemuxRun:
         )
 
         run_name = "test_run"
+        pipeline_params_dict = {}
         parse_pos = -1  # No parse position
 
         # Expected output without parse_pos
@@ -317,7 +368,7 @@ nextflow run /path/to/pipeline \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
   --dorado_model sup
 """
-        result = instance.create_ont_sbatch_text(run_name, parse_pos)
+        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
 
     def test_create_sbatch_with_parse_pos(self):
@@ -335,6 +386,7 @@ nextflow run /path/to/pipeline \\
             nextflow_version="20.10.0",
         )
         run_name = "test_run"
+        pipeline_params_dict = {}
         parse_pos = 2
 
         # Expected output with parse_pos
@@ -369,6 +421,5 @@ nextflow run /path/to/pipeline \\
 
 """
 
-        result = instance.create_ont_sbatch_text(run_name, parse_pos)
-        print(result)
+        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
