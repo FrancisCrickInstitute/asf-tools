@@ -466,8 +466,8 @@ def upload_report(  # pylint: disable=too-many-positional-arguments
     Scans the state ONT sequencing runs
     """
     from asf_tools.config.toml_loader import load_toml_file  # pylint: disable=C0415
-    from asf_tools.database.db import Database, construct_postgres_url  # pylint: disable=C0415
     from asf_tools.database.crud import DatabaseCrud  # pylint: disable=C0415
+    from asf_tools.database.db import Database, construct_postgres_url  # pylint: disable=C0415
 
     log.info(f"Uploading report for {run_id} to {upload_table}")
 

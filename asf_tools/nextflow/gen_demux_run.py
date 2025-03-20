@@ -2,10 +2,10 @@
 Function class for managing CLI operation
 """
 
+import csv
 import logging
 import os
 import stat
-import csv
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath

@@ -742,7 +742,7 @@ class ClarityHelperLims(ClarityLims):
                         key, value = pair.split(sep_value)
                         param_values_dict[key.strip()] = value.strip()
                     else:
-                        log.warning(f'Missing saparator value in \"{pair}\" parameter. Returning as NA.')
+                        log.warning(f'Missing saparator value in "{pair}" parameter. Returning as NA.')
                         param_values_dict[pair.strip()] = "NA"
                 pipeline_params[field.name] = param_values_dict
 
