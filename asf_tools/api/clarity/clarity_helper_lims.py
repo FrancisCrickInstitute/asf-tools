@@ -706,9 +706,9 @@ class ClarityHelperLims(ClarityLims):
     # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
     # 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
 
-    def get_pipeline_params(self, project_id: str, pipeline_params_field_name: str, sep_value: str) -> dict:
+    def get_pipeline_params(self, project_name: str, pipeline_params_field_name: str, sep_value: str) -> dict:
         """
-        Retrieve pipeline parameters for a given project ID.
+        Retrieve pipeline parameters for a given project Name.
 
         This method fetches the project information associated with the specified project ID,
         extracts user-defined fields (UDFs) that contain pipeline parameters, and parses these
@@ -716,7 +716,7 @@ class ClarityHelperLims(ClarityLims):
         "key=value", and multiple parameters are separated by commas.
 
         Args:
-            project_id (str): The unique identifier for the project whose pipeline parameters are to be retrieved.
+            project_name (str): The identifier for the project whose pipeline parameters are to be retrieved.
             pipeline_params_field_name (str): The name of the UDF field containing pipeline parameters.
             sep_value (str): The separator used to split key-value pairs in the pipeline parameters.
 
@@ -725,12 +725,12 @@ class ClarityHelperLims(ClarityLims):
                 and the value is another dictionary containing the parsed key-value pairs of the parameters.
 
         Raises:
-            ValueError: If the provided project_id is None or invalid.
-            KeyError: If the project_id does not exist in the system.
+            ValueError: If the provided project_name is None or invalid.
+            KeyError: If the project_name does not exist in the system.
         """
         pipeline_params = {}
         try:
-            proj_info = self.get_projects(search_id=project_id)
+            proj_info = self.get_projects(name=project_name)
 
             for field in proj_info.udf_fields:
                 if pipeline_params_field_name in field.name.lower():
@@ -747,6 +747,6 @@ class ClarityHelperLims(ClarityLims):
                             param_values_dict[pair.strip()] = "NA"
                     pipeline_params[field.name] = param_values_dict
         except HTTPError:
-            log.warning(f"Project {project_id} not found.")
+            log.warning(f"Project {project_name} not found.")
 
         return pipeline_params
