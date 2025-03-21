@@ -396,7 +396,7 @@ class TestClarityHelperLims:
                     "KAN6921A20": {
                         "sample_name": "99-005-0496_98-290_bp",
                         "group": "swantonc",
-                        "user": "nnennaya.kanu",
+                        "user": "clare.puttick",
                         "project_id": "DN24086",
                         "project_limsid": "KAN6921",
                         "project_type": "WGS",
@@ -832,7 +832,7 @@ class TestClarityHelperLims:
                     "KAN6921A20": {
                         "sample_name": "99-005-0496_98-290_bp",
                         "group": "swantonc",
-                        "user": "nnennaya.kanu",
+                        "user": "clare.puttick",
                         "project_id": "DN24086",
                         "project_limsid": "KAN6921",
                         "project_type": "WGS",
@@ -849,3 +849,29 @@ class TestClarityHelperLims:
     def test_clarity_helper_collect_samplesheet_info_isvalid(self, run_id, expected_dict):
         # Test and assert
         assert_that(self.api.collect_samplesheet_info(run_id)).is_equal_to(expected_dict)
+
+    @pytest.mark.parametrize(
+        "project_id,expected_dict", [("KAN6921", {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}), ("TLG66", {})]
+    )
+    def test_clarity_helper_get_pipeline_params_isvalid(self, project_id, expected_dict):
+        # Set up
+        pipeline_params_field_name = "pipeline params"
+        sep_value = "="
+
+        # Test
+        results = self.api.get_pipeline_params(project_id, pipeline_params_field_name, sep_value)
+
+        # Assert
+        assert_that(results).is_equal_to(expected_dict)
+
+    def test_clarity_helper_get_pipeline_params_sepvalue_invalid(self, caplog):
+        # Set up
+        project_id = "KAN6921"
+        pipeline_params_field_name = "pipeline params"
+        sep_value = ":"
+
+        # Test
+        self.api.get_pipeline_params(project_id, pipeline_params_field_name, sep_value)
+
+        # Assert
+        assert_that(caplog.text).contains("WARNING")
