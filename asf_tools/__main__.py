@@ -221,8 +221,10 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
     """
     # from nf_core.modules import ModuleInstall
     from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
+    from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims  # pylint: disable=C0415
 
     try:
+        api = ClarityHelperLims()
         function = GenDemuxRun(
             source_dir,
             target_dir,
@@ -233,6 +235,7 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
             container_cache,
             runs_dir,
             use_api,
+            api,
             contains,
             samplesheet_only,
             nextflow_version,
@@ -299,7 +302,8 @@ def deliver_to_targets(
         # Interactivly scan for delivery targets
         scan_result = dm.scan_delivery_state(
             source_dir,
-            target_dir
+            target_dir,
+            ["asf", "genomics-stp"],
         )
 
         # If no runs are found, exit

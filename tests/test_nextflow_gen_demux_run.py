@@ -6,6 +6,7 @@ Tests for ont gen demux run
 
 import os
 import stat
+import pytest
 
 from assertpy import assert_that
 
@@ -13,17 +14,30 @@ from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.data_management import DataTypeMode
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 from asf_tools.nextflow.utils import create_sbatch_header
+from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
 
 TEST_ONT_RUN_SOURCE_PATH = "tests/data/ont/runs"
 TEST_ONT_LIVE_RUN_SOURCE_PATH = "tests/data/ont/live_runs"
 TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
+API_TEST_DATA = "tests/data/api/clarity"
+
+
+# Create class level mock API
+@pytest.fixture(scope="class", autouse=True)
+def mock_clarity_api(request):
+    data_file_path = os.path.join(API_TEST_DATA, "mock_data", "helper-data.pkl")
+    api = ClarityHelperLimsMock(baseuri="https://asf-claritylims.thecrick.org")
+    api.load_tracked_requests(data_file_path)
+    request.cls.api = api
+    request.addfinalizer(lambda: api.save_tracked_requests(data_file_path))
+    yield api
 
 
 class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
 
         # Test
         test.cli_run()
@@ -42,8 +56,7 @@ class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
         test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, contains="run02"
-        )
+            TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, "run02", False, None)
 
         # Test
         test.cli_run()
@@ -57,7 +70,7 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_norm(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False, self.api, None, False, None)
 
         # Test
         test.cli_run()
@@ -77,7 +90,7 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
 
         # Test
         test.cli_run()
@@ -93,7 +106,7 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
 
         # Test
         test.cli_run()
@@ -108,7 +121,7 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False, self.api, None, False, None)
 
         # Test
         test.cli_run()
@@ -134,7 +147,10 @@ class TestGenDemuxRun:
             "work",
             "runs",
             False,
-            samplesheet_only=True,
+            self.api,
+            None,
+            True,
+            None
         )
 
         os.makedirs(os.path.join(tmp_path, "run01"))
@@ -164,7 +180,7 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True, self.api, None, False, None)
         test.cli_run()
 
         # Setup Assertion
@@ -209,7 +225,7 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True)
+        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True, self.api, None, False, None)
         test.cli_run()
 
         # Setup Assertion
@@ -243,8 +259,8 @@ class TestGenDemuxRun:
         expected_dict_2 = {}
 
         # Test
-        results = GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)
-        results_2 = GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path_2)
+        results = GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
+        results_2 = GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path_2)
 
         # Assert
         assert_that(results).is_equal_to(expected_dict)
@@ -259,7 +275,7 @@ class TestGenDemuxRun:
             file.write("sample_01,no_proj,no_lims_proj\n")
 
         # Test and Assert
-        GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)
+        GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
         assert_that(caplog.text).contains("WARNING")
 
     def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
@@ -271,7 +287,7 @@ class TestGenDemuxRun:
             file.write("sample_01,sample_01,asf,no_name,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
 
         # Test and Assert
-        assert_that(GenDemuxRun.extract_pipeline_params(self, ClarityHelperLims(), samplesheet_path)).is_equal_to({})
+        assert_that(GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)).is_equal_to({})
 
     def test_create_sbatch_with_pipelineparams(self):
         # Create an instance of the class with required attributes
@@ -285,6 +301,9 @@ class TestGenDemuxRun:
             container_cache="/path/to/container_cache",
             runs_dir="/path/to/runs",
             use_api=False,
+            api=self.api,
+            contains=None,
+            samplesheet_only=False,
             nextflow_version="20.10.0",
         )
 
@@ -335,6 +354,9 @@ nextflow run /path/to/pipeline \\
             container_cache="/path/to/container_cache",
             runs_dir="/path/to/runs",
             use_api=False,
+            api=self.api,
+            contains=None,
+            samplesheet_only=False,
             nextflow_version="20.10.0",
         )
 
@@ -383,6 +405,9 @@ nextflow run /path/to/pipeline \\
             container_cache="/path/to/container_cache",
             runs_dir="/path/to/runs",
             use_api=False,
+            api=self.api,
+            contains=None,
+            samplesheet_only=False,
             nextflow_version="20.10.0",
         )
         run_name = "test_run"
@@ -436,6 +461,9 @@ nextflow run /path/to/pipeline \\
             container_cache="/path/to/container_cache",
             runs_dir="/path/to/runs",
             use_api=False,
+            api=self.api,
+            contains=None,
+            samplesheet_only=False,
             nextflow_version="20.10.0",
         )
 
