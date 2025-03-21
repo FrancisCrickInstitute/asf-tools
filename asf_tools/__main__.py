@@ -220,8 +220,8 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
     Create run directory for the ONT demux pipeline
     """
     # from nf_core.modules import ModuleInstall
-    from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
     from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims  # pylint: disable=C0415
+    from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
 
     try:
         api = ClarityHelperLims()

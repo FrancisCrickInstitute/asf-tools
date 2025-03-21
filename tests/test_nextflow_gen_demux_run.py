@@ -6,8 +6,8 @@ Tests for ont gen demux run
 
 import os
 import stat
-import pytest
 
+import pytest
 from assertpy import assert_that
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
@@ -37,7 +37,21 @@ def mock_clarity_api(request):
 class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            ".nextflow",
+            "sing",
+            "work",
+            "runs",
+            False,
+            self.api,
+            None,
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -56,7 +70,20 @@ class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
         test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, "run02", False, None)
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            ".nextflow",
+            "sing",
+            "work",
+            "runs",
+            False,
+            self.api,
+            "run02",
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -70,7 +97,21 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_norm(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "work", "sing", "runs", False, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            ".nextflow",
+            "work",
+            "sing",
+            "runs",
+            False,
+            self.api,
+            None,
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -90,7 +131,21 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            ".nextflow",
+            "sing",
+            "work",
+            "runs",
+            False,
+            self.api,
+            None,
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -106,7 +161,21 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, ".nextflow", "sing", "work", "runs", False, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            ".nextflow",
+            "sing",
+            "work",
+            "runs",
+            False,
+            self.api,
+            None,
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -121,7 +190,21 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
         # Setup
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", False, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            "",
+            "work",
+            "sing",
+            "runs",
+            False,
+            self.api,
+            None,
+            False,
+            None,
+        )
 
         # Test
         test.cli_run()
@@ -150,7 +233,7 @@ class TestGenDemuxRun:
             self.api,
             None,
             True,
-            None
+            None,
         )
 
         os.makedirs(os.path.join(tmp_path, "run01"))
@@ -180,7 +263,21 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            "",
+            "work",
+            "sing",
+            "runs",
+            True,
+            self.api,
+            None,
+            False,
+            None,
+        )
         test.cli_run()
 
         # Setup Assertion
@@ -225,7 +322,21 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(TEST_ONT_RUN_SOURCE_PATH, tmp_path, DataTypeMode.ONT, TEST_ONT_PIPELINE_PATH, "", "work", "sing", "runs", True, self.api, None, False, None)
+        test = GenDemuxRun(
+            TEST_ONT_RUN_SOURCE_PATH,
+            tmp_path,
+            DataTypeMode.ONT,
+            TEST_ONT_PIPELINE_PATH,
+            "",
+            "work",
+            "sing",
+            "runs",
+            True,
+            self.api,
+            None,
+            False,
+            None,
+        )
         test.cli_run()
 
         # Setup Assertion
