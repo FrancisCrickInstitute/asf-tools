@@ -408,6 +408,7 @@ def scan_run_state(  # pylint: disable=too-many-positional-arguments
         raw_dir,
         run_dir,
         target_dir,
+        ["asf", "genomics-stp"],
         DataTypeMode(mode),
         slurm_user,
         job_prefix,
