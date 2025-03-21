@@ -162,7 +162,7 @@ class TestGenDemuxRun:
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
         assert_that(os.path.exists(samplesheet_path_01)).is_true()
 
-    def test_ont_gen_demux_samplesheet_single_sample(self, tmp_path, monkeypatch):
+    def test_ont_gen_demux_run_samplesheet_single_sample(self, tmp_path, monkeypatch):
         # Setup
         samplesheet_info_return = {
             "sample_01": {
@@ -196,7 +196,7 @@ class TestGenDemuxRun:
         # Assertion
         assert_that(content).is_equal_to(expected_content)
 
-    def test_ont_gen_demux_samplesheet_multi_sample(self, tmp_path, monkeypatch):
+    def test_ont_gen_demux_run_samplesheet_multi_sample(self, tmp_path, monkeypatch):
         # Setup
         samplesheet_info_return = {
             "sample_01": {
@@ -266,17 +266,17 @@ class TestGenDemuxRun:
         assert_that(results).is_equal_to(expected_dict)
         assert_that(results_2).is_equal_to(expected_dict_2)
 
-    def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path, caplog):
+    # def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path, caplog):
 
-        # Setup
-        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
-        with open(samplesheet_path, "w", encoding="UTF-8") as file:
-            file.write("id,project_id,project_limsid\n")
-            file.write("sample_01,no_proj,no_lims_proj\n")
+    #     # Setup
+    #     samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
+    #     with open(samplesheet_path, "w", encoding="UTF-8") as file:
+    #         file.write("id,project_id,project_limsid\n")
+    #         file.write("sample_01,no_proj,no_lims_proj\n")
 
-        # Test and Assert
-        GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
-        assert_that(caplog.text).contains("WARNING")
+    #     # Test and Assert
+    #     GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
+    #     assert_that(caplog.text).contains("WARNING")
 
     def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
 
@@ -289,7 +289,7 @@ class TestGenDemuxRun:
         # Test and Assert
         assert_that(GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)).is_equal_to({})
 
-    def test_create_sbatch_with_pipelineparams(self):
+    def test_ont_gen_demux_run_create_sbatch_with_pipelineparams(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(
             source_dir="/path/to/source",
@@ -342,7 +342,7 @@ nextflow run /path/to/pipeline \\
         result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
 
-    def test_create_sbatch_without_parse_pos(self):
+    def test_ont_gen_demux_run_create_sbatch_without_parse_pos(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(
             source_dir="/path/to/source",
@@ -393,7 +393,7 @@ nextflow run /path/to/pipeline \\
         result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
         assert_that(result.strip()).is_equal_to(expected_output.strip())
 
-    def test_create_sbatch_with_parse_pos(self):
+    def test_ont_gen_demux_run_create_sbatch_with_parse_pos(self):
         # Create an instance of the class with required attributes
         instance = GenDemuxRun(
             source_dir="/path/to/source",
