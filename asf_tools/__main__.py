@@ -296,6 +296,7 @@ def deliver_to_targets(
         dm.deliver_to_targets(
             source_dir,
             target_dir,
+            ["asf", "genomics-stp"],
             host_delivery_folder
         )
     else:
@@ -343,6 +344,7 @@ def deliver_to_targets(
                     dm.deliver_to_targets(
                         os.path.join(source_dir, result, "results", "grouped"),
                         target_dir,
+                        ["asf", "genomics-stp"],
                         host_delivery_folder
                     )
 
