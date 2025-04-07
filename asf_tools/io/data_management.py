@@ -208,7 +208,7 @@ class DataManagement:
                             "grouped",
                             info_dict["group"],
                             info_dict["user"],
-                            found_core_name,
+                            "genomics-stp",
                             info_dict["project_id"],
                             info_dict["run_id"],
                         )
