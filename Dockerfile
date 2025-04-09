@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11
 
 LABEL authors="chris.cheshire@crick.ac.uk"
 
@@ -7,7 +7,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         gcc \
         libpq-dev \
-        python3-dev \
         build-essential \
         && pip install --upgrade pip \
         && rm -rf /var/lib/apt/lists/*
