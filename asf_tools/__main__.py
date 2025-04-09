@@ -463,12 +463,19 @@ def scan_run_state(  # pylint: disable=too-many-positional-arguments
     required=True,
     help="Target data delivery directory",
 )
+@click.option(
+    "--table_overide",
+    required=False,
+    help="Override the table suffix",
+)
+
 def upload_report(  # pylint: disable=too-many-positional-arguments
     ctx,  # pylint: disable=W0613
     data_file,
     run_id,
     report_type,
-    upload_table,):
+    upload_table,
+    table_overide):
     """
     Scans the state ONT sequencing runs
     """
@@ -486,6 +493,10 @@ def upload_report(  # pylint: disable=too-many-positional-arguments
     db_user = config["database"]["automation_prod"]["username"]
     db_pass = config["database"]["automation_prod"]["password"]
     db_suffix = config["database"]["automation_prod"]["table_suffix"]
+
+    if table_overide:
+        db_suffix = table_overide
+    log.info(f"Using table suffix {db_suffix}")
 
     # Init DB
     db = Database(construct_postgres_url(db_user, db_pass, db_host, db_port, db_name))
