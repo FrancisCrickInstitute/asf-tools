@@ -1,18 +1,25 @@
-FROM python:3.11
+FROM python:3.11-slim
+
 LABEL authors="chris.cheshire@crick.ac.uk"
 
-# Update pip to latest version
-RUN python -m pip install --upgrade pip
+# Install system dependencies required for psycopg2 and general builds
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+        python3-dev \
+        build-essential \
+        && pip install --upgrade pip \
+        && rm -rf /var/lib/apt/lists/*
 
-# Add thesource files to the image
+# Copy source files
 COPY . /usr/src/asf_tools
 WORKDIR /usr/src/asf_tools
 
 # Update version
-RUN pip install toml
-RUN python update_version.py
+RUN pip install toml && python update_version.py
 
-# Install program
+# Install package (build + deps)
 RUN pip install .
 
 CMD ["bash"]
