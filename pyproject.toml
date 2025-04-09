@@ -21,7 +21,7 @@ dependencies = [
     "questionary",
     "fabric",
     "sqlalchemy",
-    "psycopg2",
+    "psycopg2-binary",
 ]
 scripts = { "asf-tools" = "asf_tools.__main__:run_asf_tools" }
 
@@ -33,7 +33,8 @@ dev = [
     "black",
     "isort",
     "pylint",
-    "ruff"
+    "ruff",
+    "psycopg2"
 ]
 tests = [
     "pytest",
