@@ -360,11 +360,11 @@ class TestGenDemuxRun:
 
         with open(samplesheet_path, "w", encoding="UTF-8") as file:
             file.write("id,project_id,project_limsid\n")
-            file.write("sample_01,KAN6921,no_lims_proj\n")
+            file.write("sample_01,DN24086,no_lims_proj\n")
 
         with open(samplesheet_path_2, "w", encoding="UTF-8") as file:
             file.write("id,group,user,project_id\n")
-            file.write("sample_01,asf,no_name,SKO6875\n")
+            file.write("sample_01,asf,no_name,PM24043\n")
 
         expected_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
         expected_dict_2 = {}

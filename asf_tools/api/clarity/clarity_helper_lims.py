@@ -731,6 +731,8 @@ class ClarityHelperLims(ClarityLims):
         pipeline_params = {}
         try:
             proj_info = self.get_projects(name=project_name)
+            if proj_info is None:
+                raise ValueError("Project not found")
 
             for field in proj_info.udf_fields:
                 if pipeline_params_field_name in field.name.lower():
@@ -747,6 +749,8 @@ class ClarityHelperLims(ClarityLims):
                             param_values_dict[pair.strip()] = "NA"
                     pipeline_params[field.name] = param_values_dict
         except HTTPError:
+            log.warning(f"Project {project_name} not found.")
+        except ValueError:
             log.warning(f"Project {project_name} not found.")
 
         return pipeline_params
