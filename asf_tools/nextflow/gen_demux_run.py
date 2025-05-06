@@ -36,6 +36,7 @@ class GenDemuxRun:
         contains,
         samplesheet_only,
         nextflow_version,
+        file_system: InterfaceType,
     ) -> None:
         self.source_dir = source_dir
         self.target_dir = target_dir

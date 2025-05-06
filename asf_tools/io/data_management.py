@@ -84,7 +84,8 @@ class DataManagement:
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
-        Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
+        Check if an Illumina run has completed data transfer by checking for the presence of the 
+        `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
 
         Args:
         - run_dir (str): Path to the run directory.
@@ -93,7 +94,8 @@ class DataManagement:
         - bool: True if the run directory is complete, False otherwise.
         """
         completed_files = ["RTAComplete.txt", "RunCompletionStatus.xml", "CopyComplete.txt"]
-        file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+        # file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+        file_exists = all(self.storage_interface.exists(os.path.join(run_dir, file)) for file in completed_files)
 
         if file_exists:
             completed_file = os.path.join(run_dir, "RunCompletionStatus.xml")

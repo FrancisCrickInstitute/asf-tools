@@ -12,6 +12,7 @@ from assertpy import assert_that
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.data_management import DataTypeMode
+from asf_tools.io.storage_interface import InterfaceType
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 from asf_tools.nextflow.utils import create_sbatch_header
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
@@ -51,10 +52,11 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -83,10 +85,11 @@ class TestGenDemuxRun:
             "run02",
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -111,10 +114,11 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -145,10 +149,11 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -175,10 +180,11 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         run_file = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -204,10 +210,11 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -234,12 +241,13 @@ class TestGenDemuxRun:
             None,
             True,
             None,
+            InterfaceType.LOCAL,
         )
 
         os.makedirs(os.path.join(tmp_path, "run01"))
 
         # Test
-        test.cli_run()
+        test.run()
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -277,8 +285,9 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
-        test.cli_run()
+        test.run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -336,8 +345,9 @@ class TestGenDemuxRun:
             None,
             False,
             None,
+            InterfaceType.LOCAL,
         )
-        test.cli_run()
+        test.run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -416,6 +426,7 @@ class TestGenDemuxRun:
             contains=None,
             samplesheet_only=False,
             nextflow_version="20.10.0",
+            file_system=InterfaceType.LOCAL,
         )
 
         run_name = "test_run"
@@ -469,6 +480,7 @@ nextflow run /path/to/pipeline \\
             contains=None,
             samplesheet_only=False,
             nextflow_version="20.10.0",
+            file_system=InterfaceType.LOCAL,
         )
 
         run_name = "test_run"
@@ -520,6 +532,7 @@ nextflow run /path/to/pipeline \\
             contains=None,
             samplesheet_only=False,
             nextflow_version="20.10.0",
+            file_system=InterfaceType.LOCAL,
         )
         run_name = "test_run"
         pipeline_params_dict = {}
@@ -576,6 +589,7 @@ nextflow run /path/to/pipeline \\
             contains=None,
             samplesheet_only=False,
             nextflow_version="20.10.0",
+            file_system=InterfaceType.LOCAL,
         )
 
         run_name = "test_run"
