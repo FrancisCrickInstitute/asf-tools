@@ -4,6 +4,8 @@ Helper functions for data management
 
 import logging
 import os
+
+# import re
 import subprocess
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -54,6 +56,32 @@ class DataManagement:
         """
         return self.storage_interface.exists_with_pattern(run_dir, "sequencing_summary*")
 
+        # check for pod5 count file
+        # if not check_file_exist(run_dir, "pod5_count.txt"):
+        #     return False
+
+        # # read single integer from pod5_count.txt
+        # pod5_expected_max = -1
+        # with open(os.path.join(run_dir, "pod5_count.txt"), "r", encoding="UTF-8") as f:
+        #     file_contents = f.readline().strip()
+        #     if file_contents.isdigit():
+        #         pod5_expected_max = int(file_contents)
+        #         log.debug(f"{run_dir} - pod5_expected_max: {pod5_expected_max}")
+
+        # # find all the pod5 files in any subdirectory of the run_dir and get max
+        # pod5_numbers = [0]
+        # for root, dirs, files in os.walk(run_dir):  # pylint: disable=unused-variable
+        #     for file in files:
+        #         if file.endswith(".pod5"):
+        #             match = re.search(r"_(\d+)\.pod5", file)
+        #             if match:
+        #                 pod5_numbers.append(int(match.group(1)))
+        # pod5_max = max(pod5_numbers)
+        # log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
+
+        # return pod5_max == pod5_expected_max
+        # return True
+
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
         Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
@@ -90,8 +118,8 @@ class DataManagement:
         - subprocess.CalledProcessError: If the subprocess command fails.
 
         Example usage:
-        transfer_data('/path/to/source', '/path/to/destination')
-        transfer_data('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
+        symlink_to_target('/path/to/source', '/path/to/destination')
+        symlink_to_target('/path/to/source', ['/path/to/dest1', '/path/to/dest2'])
         """
 
         # Check if source paths exists - commented out as I need to be able to symlink to non-existent paths
@@ -118,7 +146,7 @@ class DataManagement:
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
-    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str, symlink_host_base_path: str = None):
+    def deliver_to_targets(self, data_path: str, symlink_data_basepath: str, core_name_options: list, symlink_host_base_path: str = None):
         """
         Recursively collects subdirectories from `data_path`, collects info based on the path structure,
         and creates symlinks to `symlink_data_basepath`.
@@ -160,8 +188,15 @@ class DataManagement:
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
                 if os.path.exists(permissions_path):
-                    project_path = os.path.join(permissions_path, info_dict["user"], "asf", info_dict["project_id"])
-                    if not os.path.exists(project_path):
+                    found_core_name = None
+                    for core_dir in core_name_options:
+                        project_path = os.path.join(permissions_path, info_dict["user"], core_dir, info_dict["project_id"])
+                        if os.path.exists(project_path):
+                            found_core_name = core_dir
+                            break
+                    if found_core_name is None:
+                        found_core_name = "genomics-stp"
+                        project_path = os.path.join(permissions_path, info_dict["user"], found_core_name, info_dict["project_id"])
                         os.makedirs(project_path, exist_ok=True)
 
                     # Override symlink path if host provided to deal with symlink paths in containers
@@ -173,7 +208,7 @@ class DataManagement:
                             "grouped",
                             info_dict["group"],
                             info_dict["user"],
-                            "asf",
+                            "genomics-stp",
                             info_dict["project_id"],
                             info_dict["run_id"],
                         )
@@ -187,7 +222,7 @@ class DataManagement:
             raise FileNotFoundError(f"{user_path_not_exist} does not exist.")
         return True
 
-    def scan_delivery_state(self, source_dir: str, target_dir: str) -> dict:
+    def scan_delivery_state(self, source_dir: str, target_dir: str, core_dirname_list: list) -> dict:
         """
         Scans the given source directory for completed pipeline runs and checks
         if corresponding symlinks exist in the target directory. Returns a dictionary
@@ -242,22 +277,28 @@ class DataManagement:
                 # Find the group, user, project_id, run_id
                 if len(split_path) == 7:
                     split_path = split_path[2:]
-                    group, user, asf, project_id, run_id = split_path  # pylint: disable=unused-variable
+                    group, user, genomics_stp, project_id, run_id = split_path  # pylint: disable=unused-variable
 
                     # build target path
                     target_path = os.path.join(target_dir, *split_path)
 
                     # Check if the target path exists as a symlink
                     if not os.path.islink(target_path):
-                        deliverable_runs[split_path[-1]] = {
-                            "source": complete_run,
-                            "target": target_dir,
-                            "group": group,
-                            "user": user,
-                            "project_id": project_id,
-                        }
-                    else:
-                        log.debug(f"Symlink already exists for {relative_path}")
+                        for core_name in core_dirname_list:
+                            genomics_stp = core_name
+                            target_path = os.path.join(target_dir, group, user, genomics_stp, project_id, run_id)
+                            if os.path.islink(target_path):
+                                break
+                        if not os.path.islink(target_path):
+                            deliverable_runs[split_path[-1]] = {
+                                "source": complete_run,
+                                "target": target_dir,
+                                "group": group,
+                                "user": user,
+                                "project_id": project_id,
+                            }
+                        else:
+                            log.debug(f"Symlink already exists for {relative_path}")
 
         return deliverable_runs
 
@@ -266,6 +307,7 @@ class DataManagement:
         raw_dir: str,
         run_dir: str,
         target_dir: str,
+        core_dirname_list: list,
         mode: DataTypeMode,
         slurm_user: str = None,
         job_name_suffix: str = None,
@@ -349,7 +391,7 @@ class DataManagement:
                 run_info[entry]["status"] = status
 
         # scan for delivery state
-        deliverable_runs = self.scan_delivery_state(run_dir, target_dir)
+        deliverable_runs = self.scan_delivery_state(run_dir, target_dir, core_dirname_list)
 
         # Scan for delivery state
         for run_id, info in run_info.items():
@@ -441,8 +483,7 @@ class DataManagement:
 
         # Walk through the directory tree and extract paths older than the threshold, which haven't already been archived
         stale_folders = {}
-        for root, dirs, files in os.walk(path):  # pylint: disable=unused-variable
-
+        for root, dirs, _ in os.walk(path):
             if root == path:
                 for dir_name in dirs:
                     dir_path = os.path.join(root, dir_name)

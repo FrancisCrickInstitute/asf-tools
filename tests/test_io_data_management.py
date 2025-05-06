@@ -2,198 +2,177 @@
 Tests for the data transfer class
 """
 
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
+
 import os
 from datetime import datetime, timezone
-import unittest
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
+from assertpy import assert_that
+
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-from asf_tools.io.storage_interface import InterfaceType, StorageInterface
-
-from tests.utils import with_temporary_folder
 
 
-class TestDataManagement(unittest.TestCase):
-    def test_datamgr_check_pipeline_run_complete_false(self):
+class TestIoDataManagement:
+    """Class for testing the data management tools"""
+
+    def test_check_pipeline_run_complete_false(self):
         """
         Test function when the pipeline run is not complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         run_dir = "tests/data/ont/runs/run01"
 
-        # Test
-        result = dm.check_pipeline_run_complete(run_dir)
+        # Test and Assert
+        assert_that(dm.check_pipeline_run_complete(run_dir)).is_false()
 
-        # Assert
-        self.assertFalse(result)
-
-
-    def test_datamgr_check_pipeline_run_complete_true(self):
+    def test_check_pipeline_run_complete_true(self):
         """
         Test function when the pipeline run is complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
 
-        # Test
-        result = dm.check_pipeline_run_complete(run_dir)
+        # Test and Assert
+        assert_that(dm.check_pipeline_run_complete(run_dir)).is_true()
 
-        # Assert
-        self.assertTrue(result)
+    # def test_check_ont_sequencing_run_complete_false_nocount(self):
+    #     """
+    #     Test function when the ONT sequencing run is not complete
+    #     """
 
+    #     # Set up
+    #     dm = DataManagement()
+    #     run_dir = "tests/data/ont/runs/run04"
 
-    def test_datamgr_check_ont_sequencing_run_complete_false(self):
+    #     # Test and Assert
+    #     assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
+
+    def test_check_ont_sequencing_run_complete_false_archive(self):
         """
         Test function when the ONT sequencing run is not complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         run_dir = "tests/data/ont/runs/run03"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
+        # Test and Assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
 
-        # Assert
-        self.assertFalse(result)
+    # def test_check_ont_sequencing_run_complete_false_incomplete_transfer(self):
+    #     """
+    #     Test function when the ONT sequencing run is not complete
+    #     """
 
+    #     # Set up
+    #     dm = DataManagement()
+    #     run_dir = "tests/data/ont/runs/run05"
 
-    def test_datamgr_check_ont_sequencing_run_complete_true(self):
+    #     # Test and assert
+    #     assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_false()
+
+    def test_check_ont_sequencing_run_complete_true(self):
         """
         Test function when the ONT sequencing run is complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         run_dir = "tests/data/ont/runs/run01"
 
-        # Test
-        result = dm.check_ont_sequencing_run_complete(run_dir)
+        # Test and Assert
+        assert_that(dm.check_ont_sequencing_run_complete(run_dir)).is_true()
 
-        # Assert
-        self.assertTrue(result)
-
-
-    @with_temporary_folder
-    def test_datamgr_check_illumina_sequencing_run_complete_false(self, tmp_path):
+    def test_check_illumina_sequencing_run_complete_false(self, tmp_path):
         """
         Test function when the Illumina sequencing run is not complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_false()
 
-        # Assert
-        self.assertFalse(result)
-
-
-    @with_temporary_folder
-    def test_datamgr_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
+    def test_check_illumina_sequencing_run_complete_fileincomplete(self, tmp_path):
         """
         Test function when the Illumina sequencing run is complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
         # create file structure, run not completed
-        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
+        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_false()
 
-        # Assert
-        self.assertFalse(result)
-
-
-    @with_temporary_folder
-    def test_datamgr_check_illumina_sequencing_run_complete_true(self, tmp_path):
+    def test_check_illumina_sequencing_run_complete_true(self, tmp_path):
         """
         Test function when the Illumina sequencing run is complete
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
         # create file structure, run completed
-        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()
-        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()
+        open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
+        open(os.path.join(tmp_path, "CopyComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
 
         xml_content = """<?xml version="1.0" encoding="utf-8"?>
             <RunCompletionStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
             <RunStatus>RunCompleted</RunStatus>
             </RunCompletionStatus>"""
-        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)
+        open(os.path.join(tmp_path, "RunCompletionStatus.xml"), "w", encoding="utf-8").write(xml_content)  # pylint: disable=consider-using-with
 
-        # Test
-        result = dm.check_illumina_sequencing_run_complete(tmp_path)
+        # Test and Assert
+        assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_true()
 
-        # Assert
-        self.assertTrue(result)
-
-
-    @with_temporary_folder
-    def test_datamgr_symlink_to_target_isinvalid_target(self, tmp_path):
+    def test_symlink_to_target_isinvalid_target(self, tmp_path):
         """
         Check existence of target path
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         valid_path = "./tests/data/ont/runs/run01"
         invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.symlink_to_target(valid_path, invalid_path)
+        assert_that(dt.symlink_to_target).raises(FileNotFoundError).when_called_with(valid_path, invalid_path)
 
-
-    @with_temporary_folder
-    def test_datamgr_symlink_to_target_isvalid_str(self, tmp_path):
+    def test_symlink_to_target_isvalid_str(self, tmp_path):
         """
         Check folder has been symlinked correctly
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         data_path = "tests/data/ont/runs/run01/"
 
         # Test
-        dm.symlink_to_target(data_path, tmp_path)
+        dt.symlink_to_target(data_path, str(tmp_path))
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
-        self.assertTrue(os.path.islink(run_dir_1))
+        assert_that(os.path.islink(run_dir_1)).is_true()
 
-
-    @with_temporary_folder
-    def test_datamgr_symlink_to_target_isvalid_list(self, tmp_path):
+    def test_symlink_to_target_isvalid_list(self, tmp_path):
         """
         Check folder has been symlinked correctly
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         data_path = "tests/data/ont/runs/run01/"
 
         # Create list of temporary paths
@@ -205,222 +184,186 @@ class TestDataManagement(unittest.TestCase):
         os.makedirs(tmp_path2, exist_ok=True)
 
         # Test
-        dm.symlink_to_target(data_path, tmp_paths)
+        dt.symlink_to_target(data_path, tmp_paths)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "run01")
         run_dir_2 = os.path.join(tmp_path2, "run01")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
 
-
-    @with_temporary_folder
-    def test_datamgr_deliver_to_targets_valid(self, tmp_path):
+    def test_deliver_to_targets_valid(self, tmp_path):
         """
         Check folders has been symlinked correctly
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
-        # tmp_path = "/Users/elezia/dev/test_datamgr_data/asf-tools/pytest"
         tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
         tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
         tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        tmp_path4 = os.path.join(tmp_path2, "asf", "RN20066")
         os.makedirs(tmp_path1)
         os.makedirs(tmp_path2)
         os.makedirs(tmp_path3)
+        os.makedirs(tmp_path4)
 
         # Test
-        dm.deliver_to_targets(basepath_target, tmp_path)
+        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list)
 
         # Assert
-        run_dir_1 = os.path.join(tmp_path1, "asf", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "asf", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_3 = os.path.join(tmp_path3, "asf", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
-        self.assertTrue(os.path.islink(run_dir_3))
+        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "genomics-stp", "AA20643", "201008_K00371_0409_BHHY7WAAAA")
+        run_dir_3 = os.path.join(tmp_path3, "genomics-stp", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_4 = os.path.join(tmp_path4, "201008_K00371_0409_BHHY7WBBXY")
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
+        assert_that(os.path.islink(run_dir_3)).is_true()
+        assert_that(os.path.islink(run_dir_4)).is_true()
 
-
-    @with_temporary_folder
-    def test_datamgr_deliver_to_targets_no_user(self, tmp_path):
+    def test_deliver_to_targets_no_user(self, tmp_path):
         """
         Test function when the user path doesn't exist
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.deliver_to_targets(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path, core_name_list)
 
-
-    @with_temporary_folder
-    def test_datamgr_deliver_to_targets_source_invalid(self, tmp_path):
+    def test_deliver_to_targets_source_invalid(self, tmp_path):
         """
-        Test function when the user path doesn't exist
+        Test function with different invalid inputs doesn't exist
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
-        basepath_target = "fake/path/"
+        dt = DataManagement()
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.deliver_to_targets(basepath_target, tmp_path)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with("invalid/path", tmp_path, core_name_list)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", "invalid/path", core_name_list)
+        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", tmp_path, "core_name_list")
 
-
-    @with_temporary_folder
-    def test_datamgr_deliver_to_targets_symlink_overide(self, tmp_path):
+    def test_deliver_to_targets_symlink_overide(self, tmp_path):
         """
         Test Symlink override
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dt = DataManagement()
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
-        # tmp_path = "/Users/elezia/dev/test_datamgr_data/asf-tools/pytest"
         tmp_path1 = os.path.join(tmp_path, "swantonc", "nnennaya.kanu")
-        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez")
-        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt")
+        tmp_path2 = os.path.join(tmp_path, "ogarraa", "marisol.alvarez-martinez", "asf", "RN20066")
+        tmp_path3 = os.path.join(tmp_path, "ogarraa", "richard.hewitt", "genomics-stp", "SC19230")
+
         os.makedirs(tmp_path1)
         os.makedirs(tmp_path2)
         os.makedirs(tmp_path3)
 
         # Test
-        dm.deliver_to_targets(basepath_target, tmp_path, "/test/path")
+        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list, "/test/path")
 
         # Assert
-        run_dir_1 = os.path.join(tmp_path1, "asf", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_2 = os.path.join(tmp_path2, "asf", "RN20066", "201008_K00371_0409_BHHY7WBBXY")
-        run_dir_3 = os.path.join(tmp_path3, "asf", "SC19230", "201008_K00371_0409_BHHY7WBBXY")
-        self.assertTrue(os.path.islink(run_dir_1))
-        self.assertTrue(os.path.islink(run_dir_2))
-        self.assertTrue(os.path.islink(run_dir_3))
+        run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_2 = os.path.join(tmp_path2, "201008_K00371_0409_BHHY7WBBXY")
+        run_dir_3 = os.path.join(tmp_path3, "201008_K00371_0409_BHHY7WBBXY")
+        assert_that(os.path.islink(run_dir_1)).is_true()
+        assert_that(os.path.islink(run_dir_2)).is_true()
+        assert_that(os.path.islink(run_dir_3)).is_true()
 
         link = os.readlink(run_dir_1)
-        self.assertTrue("/test/path" in link)
+        assert_that(link).contains("/test/path")
 
-
-    def test_datamgr_scan_delivery_state_source_invalid(self):
+    def test_scan_delivery_state_source_invalid(self):
         """
         Test function when the source path doesn't exist
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         source_dir = "fake/path/"
         target_dir = "tests/data/ont/live_runs/pipeline_output"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.scan_delivery_state(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir, core_name_list)
 
-
-    def test_datamgr_scan_delivery_state_target_invalid(self):
+    def test_scan_delivery_state_target_invalid(self):
         """
         Test function when the target path doesn't exist
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         source_dir = "tests/data/ont/runs/run01"
         target_dir = "fake/path/"
+        core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.scan_delivery_state(source_dir, target_dir)
+        assert_that(dm.scan_delivery_state).raises(FileNotFoundError).when_called_with(source_dir, target_dir, core_name_list)
 
-
-    @with_temporary_folder
-    def test_datamgr_scan_delivery_state_all_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
+    def test_scan_delivery_state_all_to_deliver(self, tmp_path):
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
+        core_name_list = ["asf", "genomics-stp"]
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
+        # Test and Assert
+        assert_that(dm.scan_delivery_state(source_dir, target_dir, core_name_list)).is_length(2)
 
-        # Assert
-        self.assertEqual(len(result), 2)
-
-
-    @with_temporary_folder
-    def test_datamgr_scan_delivery_state_partial_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
+    def test_scan_delivery_state_partial_to_deliver(self, tmp_path):
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
+        core_name_list = ["asf", "genomics-stp"]
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
+        for _, dirs, files in os.walk(tmp_path):
+            print(dirs, files)
 
-        # Assert
-        self.assertEqual(len(result), 1)
+        # Test and Assert
+        results = dm.scan_delivery_state(source_dir, target_dir, core_name_list)
+        # print(results)
+        assert_that(results).is_length(1)
 
-
-    @with_temporary_folder
-    def test_datamgr_scan_delivery_state_none_to_deliver(self, tmp_path):
-        """
-        Test function when all data is to be delivered
-        """
-
+    def test_scan_delivery_state_none_to_deliver(self, tmp_path):
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
-        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path)
-        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path)
+        core_name_list = ["asf", "genomics-stp"]
+        dm.deliver_to_targets(source_dir + "/complete_run_01/results/grouped", tmp_path, core_name_list)
+        dm.deliver_to_targets(source_dir + "/complete_run_02/results/grouped", tmp_path, core_name_list)
+        print(os.listdir(os.path.join(tmp_path, "swantonc", "joe.bloggs")))
 
-        # Test
-        result = dm.scan_delivery_state(source_dir, target_dir)
-
-        # Assert
-        self.assertEqual(len(result), 0)
-
+        # Test and Assert
+        assert_that(dm.scan_delivery_state(source_dir, target_dir, core_name_list)).is_empty()
 
     @patch("asf_tools.slurm.utils.subprocess.run")
-    def test_datamgr_scan_run_state_ont_valid(self, mock_run):
-        """
-        Test scan run state with a valid configuration
-        """
-
+    def test_scan_run_state_ont_valid(self, mock_run):
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
         run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
         target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
+        core_name_list = ["asf", "genomics-stp"]
         mode = DataTypeMode.ONT
 
         with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
@@ -428,7 +371,7 @@ class TestDataManagement(unittest.TestCase):
         mock_run.return_value = MagicMock(stdout=mock_output)
 
         # Test
-        data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_nanopore_demux_")
+        data = dm.scan_run_state(raw_dir, run_dir, target_dir, core_name_list, mode, "scan", "asf_nanopore_demux_")
 
         # Assert
         target_dict = {
@@ -439,21 +382,16 @@ class TestDataManagement(unittest.TestCase):
             "run_05": {"status": "sequencing_complete"},
             "run_06": {"status": "sequencing_in_progress"},
         }
-        self.assertEqual(data, target_dict)
-
+        assert_that(data).is_equal_to(target_dict)
 
     @patch("asf_tools.slurm.utils.subprocess.run")
-    def test_datamgr_scan_run_state_illumina_valid(self, mock_run):
-        """
-        Test scan run state with a valid configuration
-        """
-
+    def test_scan_run_state_illumina_valid(self, mock_run):
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
         run_dir = "tests/data/illumina/end_to_end_example/illumina_run"
         target_dir = "tests/data/illumina/end_to_end_example/illumina_delivery"
+        core_name_list = ["asf", "genomics-stp"]
         mode = DataTypeMode.ILLUMINA
 
         with open("tests/data/slurm/squeue/fake_job_report.txt", "r", encoding="UTF-8") as file:
@@ -461,7 +399,7 @@ class TestDataManagement(unittest.TestCase):
         mock_run.return_value = MagicMock(stdout=mock_output)
 
         # Test
-        data = dm.scan_run_state(raw_dir, run_dir, target_dir, mode, "scan", "asf_illumina_demux_")
+        data = dm.scan_run_state(raw_dir, run_dir, target_dir, core_name_list, mode, "scan", "asf_illumina_demux_")
 
         # Assert
         target_dict = {
@@ -472,15 +410,13 @@ class TestDataManagement(unittest.TestCase):
             "run_05": {"status": "sequencing_complete"},
             "run_06": {"status": "pipeline_pending"},
         }
-        self.assertEqual(data, target_dict)
-
+        assert_that(data).is_equal_to(target_dict)
 
     @mock.patch("asf_tools.io.data_management.os.walk")
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.check_file_exist")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
-    def test_datamgr_find_stale_directories_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk, tmp_path):
+    def test_find_stale_directories_valid(self, mock_datetime, mock_check_file_exist, mock_getmtime, mock_walk, tmp_path):
         """
         Test function when the with mocked, older paths
         """
@@ -505,8 +441,7 @@ class TestDataManagement(unittest.TestCase):
         mock_check_file_exist.side_effect = lambda path, flag: False
 
         # Test
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         result = dm.find_stale_directories(tmp_path, 2)
 
         # Assert the result
@@ -525,11 +460,9 @@ class TestDataManagement(unittest.TestCase):
                 "last_modified_m": "2024-06-15 00:00:00+00:00",
             },
         }
-        self.assertEqual(result, expected_result)
+        assert_that(result).is_equal_to(expected_result)
 
-
-    @with_temporary_folder
-    def test_datamgr_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
+    def test_find_stale_directories_with_modified_files_in_dir(self, tmp_path):
         """
         Test function with directories that have files affecting the modification time.
         This test uses a temporary folder and mocks editing times.
@@ -566,8 +499,7 @@ class TestDataManagement(unittest.TestCase):
             mock_check_file_exist.side_effect = lambda path, flag: False
 
             # Test
-            storage_interface = StorageInterface(InterfaceType.LOCAL)
-            dm = DataManagement(storage_interface)
+            dm = DataManagement()
             result = dm.find_stale_directories(tmp_path, 2)
 
             # Assert the result
@@ -579,12 +511,11 @@ class TestDataManagement(unittest.TestCase):
                     "last_modified_m": "2024-06-15 00:00:00+00:00",
                 },
             }
-            self.assertEqual(result, expected_result)
-
+            assert_that(result).is_equal_to(expected_result)
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    def test_datamgr_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
+    def test_find_stale_directories_with_archived_dirs(self, mock_datetime, mock_getmtime):  # pylint: disable=unused-variable
         """
         Test function with real directories and return all dirs except those with an "archive_readme.txt" file
         This test uses real folders and mocks editing times.
@@ -597,10 +528,8 @@ class TestDataManagement(unittest.TestCase):
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         old_data = dm.find_stale_directories("tests/data/ont/runs", 2)
-        print(old_data)
 
         # Assert
         expected_results = {
@@ -616,18 +545,28 @@ class TestDataManagement(unittest.TestCase):
                 "last_modified_h": "June 15, 2024, 00:00:00 UTC",
                 "last_modified_m": "2024-06-15 00:00:00+00:00",
             },
+            "run04": {
+                "path": "tests/data/ont/runs/run04",
+                "days_since_modified": 61,
+                "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+                "last_modified_m": "2024-06-15 00:00:00+00:00",
+            },
+            "run05": {
+                "path": "tests/data/ont/runs/run05",
+                "days_since_modified": 61,
+                "last_modified_h": "June 15, 2024, 00:00:00 UTC",
+                "last_modified_m": "2024-06-15 00:00:00+00:00",
+            },
         }
-        assert old_data == expected_results
+        assert_that(old_data).is_equal_to(expected_results)
 
-
-    def test_datamgr_find_stale_directories_noolddir(self):  # pylint: disable=unused-variable
+    def test_find_stale_directories_noolddir(self):  # pylint: disable=unused-variable
         """
         Test function when the target path is newer than set time
         """
 
         # Set up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         data_path = "tests/data/ont/runs"
 
         # Test
@@ -635,35 +574,30 @@ class TestDataManagement(unittest.TestCase):
         old_data = dm.find_stale_directories(data_path, 1000)
 
         # Assert
-        assert not old_data
+        assert_that(old_data).is_empty()
+        # assert not old_data
 
-
-    def test_datamgr_find_stale_directories_nodirs(self):
+    def test_find_stale_directories_nodirs(self):
         """
         Test function when the target path has no sub-directories
         """
 
         # Set Up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
         data_path = "invalid/test/path"
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.find_stale_directories(data_path, 2)
-
+        assert_that(dm.find_stale_directories).raises(FileNotFoundError).when_called_with(data_path, 2)
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
-    def test_datamgr_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
+    def test_clean_pipeline_output_workdir_valid(self, mock_datetime, mock_getmtime, tmp_path):
         """
         Test function with directories that have a mock editing time.
         Creates work directories and checks correct deletion of work dir.
         """
         # Set Up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
         # create work dir structure
         subdir1 = os.path.join(tmp_path, "dir1")
@@ -682,25 +616,23 @@ class TestDataManagement(unittest.TestCase):
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test
-        dm.clean_pipeline_output(tmp_path, 2)
+        dm.clean_pipeline_output(str(tmp_path), 1)
 
         # Assert
-        self.assertTrue(os.path.exists(subdir1))
-        self.assertTrue(os.path.exists(subdir2))
-        self.assertFalse(os.path.exists(work_dir1))
-        self.assertFalse(os.path.exists(work_dir2))
-
+        assert_that(os.path.exists(subdir1)).is_true()
+        assert_that(os.path.exists(subdir2)).is_true()
+        assert_that(os.path.exists(work_dir1)).is_false()
+        assert_that(os.path.exists(work_dir2)).is_false()
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    def test_datamgr_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmtime):
+    def test_clean_pipeline_output_doradofiles_valid(self, mock_datetime, mock_getmtime):
         """
         Test function with directories that have a mock editing time.
         Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
         """
         # Set Up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
         # create work dir structure
         data_path = "tests/data/ont/runs"
@@ -729,8 +661,8 @@ class TestDataManagement(unittest.TestCase):
             with open(file_dorado_demux_dir1, "w", encoding="utf-8"):
                 pass
         # check files have been created correctly
-        self.assertTrue(os.path.isfile(file_dorado_dir1))
-        self.assertTrue(os.path.isfile(file_dorado_demux_dir1))
+        assert_that(os.path.isfile(file_dorado_dir1)).is_true()
+        assert_that(os.path.isfile(file_dorado_demux_dir1)).is_true()
 
         # create dorado dir structure for 1-sample run
         file_path2 = "tests/data/ont/runs/run02"
@@ -747,8 +679,8 @@ class TestDataManagement(unittest.TestCase):
             with open(file_dorado_demux_dir2, "w", encoding="utf-8"):
                 pass
         # check files have been created correctly
-        self.assertTrue(os.path.isfile(file_dorado_dir2))
-        self.assertTrue(os.path.isfile(file_dorado_demux_dir2))
+        assert_that(os.path.isfile(file_dorado_dir2)).is_true()
+        assert_that(os.path.isfile(file_dorado_demux_dir2)).is_true()
 
         # set up mock structure
         fixed_current_time = datetime(2024, 8, 15, tzinfo=timezone.utc)
@@ -760,25 +692,22 @@ class TestDataManagement(unittest.TestCase):
         dm.clean_pipeline_output(data_path, 2, DataTypeMode.ONT)
 
         # Assert
-        self.assertTrue(os.path.exists(dorado_dir1))
-        self.assertTrue(os.path.exists(dorado_dir2))
-        self.assertTrue(os.path.exists(file_dorado_demux_dir1))
-        self.assertTrue(os.path.exists(file_dorado_dir1))
-        self.assertFalse(os.path.exists(file_dorado_demux_dir2))
-        self.assertFalse(os.path.exists(file_dorado_dir2))
-
+        assert_that(os.path.exists(dorado_dir1)).is_true()
+        assert_that(os.path.exists(dorado_dir2)).is_true()
+        assert_that(os.path.exists(file_dorado_demux_dir1)).is_true()
+        assert_that(os.path.exists(file_dorado_dir1)).is_true()
+        assert_that(os.path.exists(file_dorado_demux_dir2)).is_false()
+        assert_that(os.path.exists(file_dorado_dir2)).is_false()
 
     @mock.patch("asf_tools.io.data_management.os.path.getmtime")
     @mock.patch("asf_tools.io.data_management.datetime")
-    @with_temporary_folder
-    def test_datamgr_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime, tmp_path):
+    def test_clean_pipeline_output_nosamplesheet(self, mock_datetime, mock_getmtime, tmp_path):
         """
         Test function with directories that have a mock editing time.
         Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
         """
         # Set Up
-        storage_interface = StorageInterface(InterfaceType.LOCAL)
-        dm = DataManagement(storage_interface)
+        dm = DataManagement()
 
         # create work dir structure
         work_dir = os.path.join(tmp_path, "work")
@@ -791,5 +720,4 @@ class TestDataManagement(unittest.TestCase):
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test and Assert
-        with self.assertRaises(FileNotFoundError):
-            dm.clean_pipeline_output(tmp_path, 2, DataTypeMode.ONT)
+        assert_that(dm.clean_pipeline_output).raises(FileNotFoundError).when_called_with(str(tmp_path), 2, DataTypeMode.ONT)
