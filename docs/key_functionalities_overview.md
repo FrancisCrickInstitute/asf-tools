@@ -3,6 +3,7 @@
 ## Modes
 - __DataTypeMode__ is in `io/data_management.py`. Useful when selecting between GENERAL, ONT or ILLUMINA mode.
 - __DeleteMode__ is in `io/utils.py`. Useful for the `delete_all_items` function. Can be used to either select all files in a directory, or the directory tree.
+- __IndexMode__ is in `illumina/illumina_utils.py`. Useful for the process_sample_sheet function.
 
 ## Run ID
 - __ONT__: can be extracted from the folder name
@@ -30,6 +31,8 @@ Has minimal filtering/processing of the output.
 __Run ID__ can be extracted in 2 ways, depending on the input:
 - _RunInfo.xml_ file -> `extract_illumina_runid_fromxml` function in `illumina/illumina_utils.py`
 - _path_ to the raw data -> `extract_illumina_runid_frompath` function, also in `illumina/illumina_utils.py`
+__BCL Convert__ related functionalities
+- _`generate_overridecycle_string`_ -> function in `illumina/illumina_utils.py`, useful when index length is smaller than specified in the RunInfo.xml file. Assumes that: index_length < runinfo_specified_length.
 
 # Running pipelines
 - __main.py__ <br>

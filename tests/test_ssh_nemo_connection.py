@@ -4,36 +4,36 @@ Tests for the Nemo module.
 
 # pylint: disable=missing-function-docstring,missing-class-docstring,invalid-name
 
-import unittest
 from unittest.mock import MagicMock, patch
+
+from assertpy import assert_that
 
 from asf_tools.ssh.nemo import Nemo
 
 
-class TestNemoConnection(unittest.TestCase):
+class TestNemoConnection:
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_init_with_key_file(self, MockConnection):
         nemo = Nemo(host="login.nemo.thecrick.org", user="svc-asf-seq", key_file="/path/to/key")
         MockConnection.assert_called_once_with(host="login.nemo.thecrick.org", user="svc-asf-seq", connect_kwargs={"key_filename": "/path/to/key"})
-        self.assertIsNotNone(nemo.connection)
+        assert_that(nemo.connection).is_not_none()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_init_with_password(self, MockConnection):
         nemo = Nemo(host="login.nemo.thecrick.org", user="svc-asf-seq", password="password")
         MockConnection.assert_called_once_with(host="login.nemo.thecrick.org", user="svc-asf-seq", connect_kwargs={"password": "password"})
-        self.assertIsNotNone(nemo.connection)
+        assert_that(nemo.connection).is_not_none()
 
     def test_nemo_init_without_key_or_password(self):
-        with self.assertRaises(ValueError):
-            Nemo(host="login.nemo.thecrick.org", user="svc-asf-seq")
+        assert_that(Nemo).raises(ValueError).when_called_with(host="login.nemo.thecrick.org", user="svc-asf-seq")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_disconnect(self, MockConnection):
         nemo = Nemo(host="login.nemo.thecrick.org", user="svc-asf-seq", password="password")
         nemo.disconnect()
         MockConnection().close.assert_called_once()
-        self.assertIsNone(nemo.connection)
+        assert_that(nemo.connection).is_none()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_run_command(self, MockConnection):
@@ -46,8 +46,8 @@ class TestNemoConnection(unittest.TestCase):
         stdout, stderr = nemo.run_command("ls -las")
 
         MockConnection().run.assert_called_once_with("ls -las", hide=True)
-        self.assertEqual(stdout, "command output")
-        self.assertEqual(stderr, "error output")
+        assert_that(stdout).is_equal_to("command output")
+        assert_that(stderr).is_equal_to("error output")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_list_directory_objects(self, MockConnection):
@@ -65,12 +65,12 @@ class TestNemoConnection(unittest.TestCase):
         files = nemo.list_directory_objects("~")
 
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
-        self.assertEqual(len(files), 4)
-        self.assertEqual(files[0].name, ".")
-        self.assertEqual(files[1].name, "..")
-        self.assertEqual(files[2].name, "test_file.txt")
-        self.assertEqual(files[3].name, "link")
-        self.assertEqual(files[3].link_target, "target")
+        assert_that(files).is_length(4)
+        assert_that(files[0].name).is_equal_to(".")
+        assert_that(files[1].name).is_equal_to("..")
+        assert_that(files[2].name).is_equal_to("test_file.txt")
+        assert_that(files[3].name).is_equal_to("link")
+        assert_that(files[3].link_target).is_equal_to("target")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_list_directory(self, MockConnection):
@@ -88,11 +88,11 @@ class TestNemoConnection(unittest.TestCase):
         files = nemo.list_directory("~")
 
         MockConnection().run.assert_called_once_with("cd ~ && ls -la --time-style=long-iso", hide=True)
-        self.assertEqual(len(files), 4)
-        self.assertEqual(files[0], ".")
-        self.assertEqual(files[1], "..")
-        self.assertEqual(files[2], "test_file.txt")
-        self.assertEqual(files[3], "link")
+        assert_that(files).is_length(4)
+        assert_that(files[0]).is_equal_to(".")
+        assert_that(files[1]).is_equal_to("..")
+        assert_that(files[2]).is_equal_to("test_file.txt")
+        assert_that(files[3]).is_equal_to("link")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_exists(self, MockConnection):
@@ -104,7 +104,7 @@ class TestNemoConnection(unittest.TestCase):
         result = nemo.exists("~")
 
         MockConnection().run.assert_called_once_with("test -e ~", hide=True)
-        self.assertTrue(result)
+        assert_that(result).is_true()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_exists_with_pattern(self, MockConnection):
@@ -116,7 +116,7 @@ class TestNemoConnection(unittest.TestCase):
         result = nemo.exists_with_pattern("/home/user", "test_file.txt")
 
         MockConnection().run.assert_called_once_with("find /home/user -maxdepth 1 -name 'test_file.txt'", hide=True)
-        self.assertTrue(result)
+        assert_that(result).is_true()
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_make_dirs(self, MockConnection):
@@ -140,7 +140,7 @@ class TestNemoConnection(unittest.TestCase):
         content = nemo.read_file("/some/path/to/file.txt")
 
         MockConnection().run.assert_called_once_with("cat /some/path/to/file.txt", hide=True)
-        self.assertEqual(content, "file content")
+        assert_that(content).is_equal_to("file content")
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_chmod(self, MockConnection):

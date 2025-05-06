@@ -2,9 +2,12 @@
 Primary CLI Tests
 """
 
-import tempfile
-import unittest
+# pylint: disable=missing-function-docstring,missing-class-docstring,no-member
 
+import tempfile
+
+import pytest
+from assertpy import assert_that
 from click.testing import CliRunner
 
 import asf_tools.__main__
@@ -18,12 +21,14 @@ TEST_ONT_PIPELINE_PATH = "tests/data/ont/nanopore_demux_pipeline"
 TEST_DELIVERY_SOURCE_PATH = "tests/data/ont/live_runs/pipeline_output"
 
 
-class TestCli(unittest.TestCase):
-    """Class for testing the command line interface"""
+@pytest.fixture(scope="class", autouse=True)
+def set_up(request):
+    request.cls.runner = CliRunner()
+    request.cls.tmp_dir = tempfile.mkdtemp()
 
-    def setUp(self):
-        self.runner = CliRunner()
-        self.tmp_dir = tempfile.mkdtemp()
+
+class TestCli:
+    """Class for testing the command line interface"""
 
     def assemble_params(self, params):
         """Assemble a dictionary of parameters into a list of arguments for the cli"""
@@ -47,15 +52,15 @@ class TestCli(unittest.TestCase):
 
         result = self.invoke_cli(["--help"])
 
-        assert result.exit_code == 0
-        assert "Show this message and exit." in result.output
+        assert_that(result.exit_code).is_equal_to(0)
+        assert_that("Show this message and exit." in result.output)
 
     def test_cli_command_incorrect(self):
         """Test the main launch function with an unrecognised subcommand"""
 
         result = self.invoke_cli(["foo"])
 
-        self.assertTrue(result.exit_code == 2)
+        assert_that(result.exit_code).is_equal_to(2)
 
     # @mock.patch("asf_tools.nextflow.gen_demux_run.GenDemuxRun", autospec=True)
     # def test_cli_command_pipeline_ont_gen_demux_run(self, mock_obj):

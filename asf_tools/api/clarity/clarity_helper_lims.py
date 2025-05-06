@@ -4,7 +4,10 @@ Clarity API Child class with helper functions
 
 import logging
 import queue
-import warnings
+import re
+
+import xmltodict
+from requests.exceptions import HTTPError
 
 from asf_tools.api.clarity.clarity_lims import ClarityLims
 from asf_tools.api.clarity.models import Artifact, Lab, Process, Sample
@@ -62,6 +65,57 @@ class ClarityHelperLims(ClarityLims):
         run_artifacts = run_containers.placements
         return run_artifacts
 
+    def get_lane_from_runid(self, run_id: str) -> dict:
+        """
+        Retrieve a dictionary mapping artifact URIs to lane information for a given run ID.
+
+        This method checks if the specified run ID exists within the Clarity system
+        and retrieves the associated artifact placements. Each placement entry's lane
+        information is extracted from the 'value' field: if a colon (:) is present, only
+        the part before the colon is kept; otherwise, the full value is returned as-is.
+
+        Args:
+            run_id (str): The unique identifier for the run whose artifact placements
+                        are to be retrieved.
+
+        Returns:
+            dict: A dictionary where each key is an artifact URI, and the value is
+                another dictionary with a 'lane' key, containing either the lane ID
+                or the full value if no colon is present.
+
+        Raises:
+            ValueError: If the provided run_id is None or empty.
+            KeyError: If the specified run_id does not exist in the Clarity system.
+        """
+        if run_id is None:
+            raise ValueError("run_id is None")
+
+        # Check that the run ID exists in clarity
+        run_containers = self.get_containers(name=run_id)
+        if run_containers is None:
+            raise KeyError("run_id does not exist")
+
+        placement_list = run_containers.placements
+        lane_artifacts = {}
+        # Extract lane value, its corresponding samples and assign them to the corresponding artifact
+        for entry in placement_list:
+            lane = entry.value.split(":")[0]
+            name = run_id + "_" + str(lane)
+            lane_artifacts[name] = {"artifact_uri": entry.uri, "lane": lane, "samples": []}
+
+            # Extract sample limsid for each artifact
+            artifact = self.expand_stub(entry, expansion_type=Artifact)
+            sample_stubs = artifact.samples
+            samples = self.expand_stubs(sample_stubs, expansion_type=Sample)
+
+            sample_list = []
+            for entry in samples:
+                ids = entry.id
+                sample_list.append(ids if ids else None)
+
+            lane_artifacts[name]["samples"] = sample_list
+        return lane_artifacts
+
     def get_samples_from_artifacts(self, artifacts_list: list) -> list:
         """
         Retrieve a list of unique samples from a given list of artifacts.
@@ -87,11 +141,55 @@ class ClarityHelperLims(ClarityLims):
         values = self.expand_stubs(artifacts_list, expansion_type=Artifact)
         for value_item in values:
             run_samples = value_item.samples
+            if not isinstance(run_samples, list):
+                raise TypeError("run_samples should be a list of sample objects")
+
+            # Append each sample to the sample_list
             sample_list.extend(run_samples)
 
         # Make the entries in sample_list unique
         unique_sample_list = list({obj.limsid: obj for obj in sample_list}.values())
+
         return unique_sample_list
+
+    def check_sample_dropoff_info(self, sample_id: str) -> bool:
+        """
+        Check if a sample has been assigned drop-off information.
+
+        This method retrieves the sample information for the given sample ID and checks if the sample
+        has any drop-off entries within the sample UDFs fields. If such fields are found,
+        their names and values are returned in a dictionary.
+
+        Args:
+            sample_id (str): The unique identifier for the sample to be checked.
+
+        Returns:
+            dict: A dictionary containing the drop-off information for the sample, where the keys are
+                the names of the UDF fields and the values are the corresponding field values.
+                If the sample has no drop-off information, an empty dictionary is returned.
+                If the sample_id is None, None is returned.
+
+        Raises:
+            ValueError: If the provided sample_id is None.
+        """
+        if sample_id is None:
+            return None
+
+        try:
+            # Expand sample stub
+            sample = self.get_samples(search_id=sample_id)
+
+            dropoff_sample_info = {}
+            # Check if the sample has a drop-off field and return values if it does
+            for entry in sample.udf_fields:
+                entry_name = entry.name
+                entry_value = entry.value
+
+                if "Drop-Off" in entry_name:
+                    dropoff_sample_info[entry_name] = entry_value
+            return dropoff_sample_info
+        except HTTPError:
+            raise ValueError("Sample not found")
 
     def get_sample_info(self, sample: str) -> dict:
         """
@@ -107,13 +205,13 @@ class ClarityHelperLims(ClarityLims):
         Returns:
             dict: A dictionary containing detailed information about the sample, including:
                 - sample_name (str): The name of the sample.
+                - sample_id (str): The unique identifier for the sample.
                 - group (str): The lab group associated with the sample.
                 - user (str): The user associated with the sample.
                 - project_id (str): The project ID associated with the sample.
                 - project_type (str or None): The project type associated with the sample.
                 - reference_genome (str or None): The reference genome associated with the sample.
                 - data_analysis_type (str or None): The data analysis pipeline associated with the sample.
-
 
         Raises:
             ValueError: If the provided sample is None.
@@ -136,27 +234,42 @@ class ClarityHelperLims(ClarityLims):
             project_type = next((item.value for item in project.udf_fields if item.name == "Project Type"), None)
             reference_genome = next((item.value for item in project.udf_fields if item.name == "Reference Genome"), None)
             data_analysis_type = next((item.value for item in project.udf_fields if item.name == "Data Analysis Pipeline"), None)
+            library_type = next((item.value for item in project.udf_fields if item.name == "Library Type"), None)
         else:
             project_name = None
             project_limsid = None
             project_type = None
             reference_genome = None
             data_analysis_type = None
+            library_type = None
 
         # Get the submitter details
-        if sample_project:
-            user = self.get_researchers(search_id=project.researcher.id)
-        else:
-            user = self.get_researchers(search_id=sample.submitter.id)
+        lab_name = None
+        user_fullname = None
 
-        # these get the submitter, not the scientist, info
-        user_firstname = user.first_name
-        user_lastname = user.last_name
-        user_fullname = (user_firstname + "." + user_lastname).lower()
+        # first check if the sample has drop-off information
+        dropoff_info = self.check_sample_dropoff_info(sample_id)
+        if "Drop-Off Lab Name" in dropoff_info:
+            lab_name = dropoff_info["Drop-Off Lab Name"]
+        if "Drop-Off Researcher Name" in dropoff_info:
+            dropoff_user_fullname = dropoff_info["Drop-Off Researcher Name"]
+            user_fullname = dropoff_user_fullname.lower().replace(" ", ".")
 
-        # Get the lab details
-        lab = self.expand_stub(user.lab, expansion_type=Lab)
-        lab_name = lab.name
+        # if no drop-off information, get the submitter details from the project information
+        if not dropoff_info:
+            if sample_project:
+                user = self.get_researchers(search_id=project.researcher.id)
+            else:
+                user = self.get_researchers(search_id=sample.submitter.id)
+
+            # these get the submitter, not the scientist, info
+            user_firstname = user.first_name
+            user_lastname = user.last_name
+            user_fullname = (user_firstname + "." + user_lastname).lower()
+
+            # Get the lab details
+            lab = self.expand_stub(user.lab, expansion_type=Lab)
+            lab_name = lab.name
 
         # Store obtained information in a dictionary
         sample_info = {}
@@ -169,6 +282,7 @@ class ClarityHelperLims(ClarityLims):
             "project_type": project_type,
             "reference_genome": reference_genome,
             "data_analysis_type": data_analysis_type,
+            "library_type": library_type,
         }
 
         return sample_info
@@ -214,6 +328,94 @@ class ClarityHelperLims(ClarityLims):
                 sample_info.update(info)
         return sample_info
 
+    def get_barcode_from_reagenttypes(self, sample_barcode: str) -> str:
+        """
+        Fetches and processes barcode information for a given sample.
+
+        This function retrieves reagent type data and parses it to extract a barcode
+        value if the 'Sequence' attribute is present. If not, it returns the given
+        sample barcode as a fallback.
+
+        Args:
+            sample_barcode (str): The sample's barcode to use as a fallback.
+
+        Returns:
+            str: The extracted barcode value or the provided sample barcode as a fallback.
+
+        Warns:
+            UserWarning: If there are issues accessing the XML data structure or API responses.
+        """
+        # Construct URI for reagent types
+        base_uri = "https://asf-claritylims.thecrick.org/api/v2/reagenttypes"
+        uri = f"{base_uri}?name={sample_barcode}"
+
+        # Fetch and parse reagent type data
+        xml_data = self.get_with_uri(uri)
+        data_dict = xmltodict.parse(xml_data, process_namespaces=False, attr_prefix="")
+
+        # Validate reagent-types and reagent-type keys
+        reagent_types = data_dict.get("rtp:reagent-types")
+        if not reagent_types:
+            log.warning("Missing 'rtp:reagent-types' in Clarity XML response. Returning fallback barcode.")
+            return sample_barcode
+
+        reagent_type = reagent_types.get("reagent-type")
+        if not reagent_type or "uri" not in reagent_type:
+            log.warning("Missing 'reagent-type' or 'uri' in reagent-type data. Returning fallback barcode.")
+            return sample_barcode
+        data_dict_uri = reagent_type["uri"]
+
+        # Fetch and parse detailed reagent type data
+        xml_uri = self.get_with_uri(data_dict_uri)
+        uri_xml = xmltodict.parse(xml_uri, process_namespaces=False, attr_prefix="")
+
+        # Validate special-type and attribute keys
+        special_type = uri_xml.get("rtp:reagent-type", {}).get("special-type")
+        if not special_type or "attribute" not in special_type:
+            log.warning("Missing 'special-type' or 'attribute' field in Clarity. Returning fallback barcode.")
+            return sample_barcode
+        attribute = special_type["attribute"]
+
+        # Validate attribute name and value
+        if attribute.get("name") == "Sequence":
+            return attribute.get("value", "None")
+        else:
+            log.warning("Attribute 'name' is not 'Sequence'. Returning fallback barcode.")
+            return sample_barcode
+
+    def get_sample_custom_barcode_from_sampleid(self, sample_id: str) -> str:
+        """
+        Retrieve the custom barcode associated with a specific sample ID.
+
+        This method retrieves information about the sample identified by the given sample ID,
+        extracts the associated artifact, and determines the custom barcode. The barcode is
+        retrieved from either the reagent labels of the artifact or a UDF field named "Index."
+        If a reagent label is found, the barcode is processed through reagent type information.
+
+        Args:
+            sample_id (str): The unique identifier of the sample for which the custom barcode is to be retrieved.
+
+        Returns:
+            str: The custom barcode associated with the specified sample.
+
+        Raises:
+            ValueError: If the provided sample ID is None or invalid.
+            KeyError: If required keys (e.g., artifact ID or UDF field) are missing in the system data.
+        """
+
+        # Extract barcodes
+        info = self.get_samples(search_id=sample_id)
+        artifact_uri = self.get_artifacts(search_id=info.artifact.id)
+        reagent_barcode = ""
+        if artifact_uri.reagent_labels:
+            reagent = artifact_uri.reagent_labels[0]
+            reagent_barcode = self.get_barcode_from_reagenttypes(reagent)
+        else:
+            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+        reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
+
+        return reagent_barcode_from_reagenttypes
+
     def get_sample_barcode_from_runid(self, run_id: str) -> dict:
         """
         Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
@@ -239,12 +441,24 @@ class ClarityHelperLims(ClarityLims):
             ValueError: If the provided run_id is None or invalid.
             ValueError: If the initial process is None.
         """
-        artifacts_list = self.get_artifacts_from_runid(run_id)
+        # Extract parent_process information from each artifact of the original pooled samples artifacts
+        pools_list = self.get_artifacts_from_runid(run_id)
+        pools_list_expanded = self.expand_stubs(pools_list, expansion_type=Artifact)
 
-        # Extract parent_process information from each artifact
-        artifacts_list = self.expand_stubs(artifacts_list, expansion_type=Artifact)
+        # Extract sample names and the corresponding Library Type value associated with the pool artifacts
+        pool_sample_dict = {}
+        for process in pools_list_expanded:
+            for sample in process.samples:
+                sample = self.expand_stub(sample, expansion_type=Sample)
+                library_type = next((item.value for item in sample.udf_fields if item.name == "Library Type"), None)
+                pool_sample_dict[sample.id] = {"library_type": library_type}
+
+        non_pooled_sample_list = []
+        sample_barcode_match = {}
+
+        # Collect a list of all the initial parent processes required for initiating the binary search tree
         initial_parent_process_list = []
-        initial_parent_process_list.extend(artifact.parent_process for artifact in artifacts_list if artifact.parent_process is not None)
+        initial_parent_process_list.extend(artifact.parent_process for artifact in pools_list_expanded if artifact.parent_process is not None)
         initial_process = self.expand_stubs(initial_parent_process_list, expansion_type=Process)
 
         if initial_process is None:
@@ -256,7 +470,6 @@ class ClarityHelperLims(ClarityLims):
         for item in initial_process:
             process_queue.put(item)
 
-        sample_barcode_match = {}
         # Loop through parent process until the "T Custom Indexing"
         while process_queue.qsize() > 0:
             process = process_queue.get()
@@ -266,13 +479,33 @@ class ClarityHelperLims(ClarityLims):
             visited_processes.add(process.id)
 
             if process.process_type.name != "T Custom Indexing":
-                # Add parent processes to the stack for further processing
                 for input_output in process.input_output_map:
                     if input_output.output.output_type == "Analyte":
-                        parent_process = input_output.input.parent_process
-                        if parent_process:
-                            parent_process = self.expand_stub(parent_process, expansion_type=Process)
-                            process_queue.put(parent_process)
+
+                        # Obtain a list of the samples being processed at this step
+                        input_stub_expand = self.expand_stub(input_output.input, expansion_type=Artifact)
+                        sample_stud = input_stub_expand.samples
+                        sample_list = []
+                        for sample in sample_stud:
+                            sample_list.append(sample.id)
+
+                        # For each sample in each artifact, check if it is also present in the original pooled samples
+                        for sample in sample_list:
+                            if sample in pool_sample_dict:
+                                # Filter for samples that do not have premade libraries
+                                if pool_sample_dict[sample]["library_type"] != "Premade":
+                                    # Add parent processes to the stack for further processing
+                                    parent_process = input_output.input.parent_process
+                                    if parent_process:
+                                        parent_process = self.expand_stub(parent_process, expansion_type=Process)
+                                        process_queue.put(parent_process)
+                                else:
+                                    # Process premade sample barcodes as custom
+                                    barcode_from_sampleid = self.get_sample_custom_barcode_from_sampleid(sample)
+                                    sample_barcode_match[sample] = {"barcode": barcode_from_sampleid}
+                            else:
+                                non_pooled_sample_list.append(sample)
+                                continue  # Skip to the next sample
             else:
                 # Extract barcode information and store it in "sample_barcode_match"
                 for input_output in process.input_output_map:
@@ -280,9 +513,10 @@ class ClarityHelperLims(ClarityLims):
                         output_expanded = self.expand_stub(input_output.output, expansion_type=Artifact)
                         sample_stub = output_expanded.samples[0]
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
-                        sample_name = sample_info.id
+                        sample_name = sample_info.limsid
                         reagent_barcode = output_expanded.reagent_labels[0]
-                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
+                        reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
+                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
 
         return sample_barcode_match
 
@@ -315,11 +549,84 @@ class ClarityHelperLims(ClarityLims):
         sample_barcode = {}
         for sample_id in sample_list:
             info = self.get_samples(search_id=sample_id.id)
-            sample_name = info.id
-            reagent_barcode = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
-            sample_barcode[sample_name] = {"barcode": reagent_barcode}
+            sample_name = info.limsid
+            artifact_uri = self.get_artifacts(search_id=info.artifact.id)
+            if artifact_uri.reagent_labels:
+                reagent = artifact_uri.reagent_labels[0]
+                reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent)
+                sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+            else:
+                reagent_barcode_from_sample = next((entry.value for entry in info.udf_fields if entry.name == "Index"), "")
+                reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode_from_sample)
+                sample_barcode[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
 
         return sample_barcode
+
+    def reformat_barcode_to_index(self, barcode_dict: dict) -> dict:
+        """
+        Extract a mapping of indices from sample barcodes.
+
+        This function processes a dictionary of samples and extracts the index
+        values from the barcode information located within parentheses. For each
+        sample, it retrieves the barcode and determines the index and index2 values
+        based on a regex pattern: letters followed by any character, then more letters.
+        If no match is found, 'index' will be set to the entire section inside the
+        parentheses, and 'index2' will be an empty string. If no valid barcodes are found,
+        a warning is logged.
+
+        Args:
+            sample_info (dict): A dictionary where each key is a sample ID
+                (str), and the value is another dictionary containing sample metadata,
+                including a 'barcode' key.
+
+        Returns:
+            dict: A dictionary where each key is a sample ID (str), and the value
+                is another dictionary containing:
+                    - "index": The extracted index value (str) from the barcode.
+                    - "index2": The extracted index2 value (str), or an empty string
+                    if no dash was found.
+
+        Raises:
+            UserWarning: If no valid barcode values are found in the provided samples.
+        """
+        extracted_info = {}
+        has_valid_barcodes = False  # Track whether we find any valid barcodes
+
+        # Define the regex pattern
+        pattern = r"([a-zA-Z]+)([^\w\s]+)([a-zA-Z]+)"
+
+        for sample_id, sample_data in barcode_dict.items():
+            # Get the barcode string
+            barcode = sample_data.get("barcode", "")
+
+            if barcode is None:
+                # Treat None as a blank string
+                barcode = ""
+
+            # Extract the sequence inside the parentheses
+            if "(" in barcode and ")" in barcode:
+                barcode_section = barcode.split("(")[-1].split(")")[0]
+
+                # Search for the regex pattern
+                match = re.search(pattern, barcode_section)
+
+                # Check if a match was found (ie. Split the section at the dash "-")
+                if match:
+                    index, separator, index2 = match.groups()  # pylint: disable=unused-variable
+                else:
+                    # If no match, assign the whole section to index and keep index2 empty
+                    index, index2 = barcode_section, ""
+
+                # Assign the extracted values to a new dictionary
+                extracted_info[sample_id] = {"index": index, "index2": index2}
+
+                has_valid_barcodes = True  # Mark that we found a valid barcode
+
+        # Check if no barcodes were processed and raise a warning
+        if not has_valid_barcodes:
+            log.warning("No valid barcode values found in the provided samples.")
+
+        return extracted_info
 
     def collect_samplesheet_info(self, run_id: str) -> dict:
         """
@@ -354,75 +661,96 @@ class ClarityHelperLims(ClarityLims):
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
         barcode_info = self.get_sample_barcode_from_runid(run_id)
+        lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:
             barcode_info = self.get_sample_custom_barcode_from_runid(run_id)
 
-        # Merge dictionaries using sample names as keys
-        merged_dict = sample_metadata
-        for key, value in barcode_info.items():
-            for sub_key, sub_value in value.items():
-                if key in merged_dict:
-                    merged_dict[key][sub_key] = sub_value
+        # Check that all samples have barcode information, add it if missing
+        for sample in sample_metadata:
+            if sample not in barcode_info:
+                barcode_from_sample_id = self.get_sample_custom_barcode_from_sampleid(sample)
+                barcode_info[sample] = {"barcode": barcode_from_sample_id}
+
+        # Initialize an empty dictionary for the final merged output
+        merged_dict = {}
+
+        # Loop through each sample in sample_metadata
+        for sample_id, sample_data in sample_metadata.items():
+            # Start with the sample data as a base
+            merged_dict[sample_id] = sample_data.copy()
+
+            # Add barcode information if available
+            if sample_id in barcode_info:
+                merged_dict[sample_id].update(barcode_info[sample_id])
+
+            # Initialize an empty list to store lane numbers
+            merged_dict[sample_id]["lanes"] = []
+
+        # Loop through lanes in lane_info to add lane numbers
+        for lane_id, lane_data in lane_info.items():  # pylint: disable=unused-variable
+            lane_number = lane_data["lane"]
+
+            # Add each sample's lane number to the "lanes" list
+            for sample_id in lane_data["samples"]:
+                if sample_id in merged_dict:
+                    # Append the lane number if it hasn't been added already
+                    if lane_number not in merged_dict[sample_id]["lanes"]:
+                        merged_dict[sample_id]["lanes"].append(lane_number)
 
         return merged_dict
 
     # currently index,index2 and Index_ID is all merged into "barcode"
     # this is the header created by the perl scripts:
     # Lane,Sample_ID,User_Sample_Name,index,index2,Index_ID,Sample_Project,Project_limsid,User,Lab,ReferenceGenome,DataAnalysisType
-    # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,CTAAGGTC,TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
+    # 1,TLG66A2880,U_LTX1369_BS_GL,CTAAGGTC,,SXT 51 C07 (CTAAGGTC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
     # 1,TLG66A2881,U_LTX1369_SU_T1-R1,CGACACAC,,SXT 52 D07 (CGACACAC),TRACERx_Lung,TLG66,tracerx.tlg,swantonc,Homo sapiens,Whole Exome
 
-    def extract_value_from_text(self, text: str, keyword: str) -> str:
-        """Helper to extract value after a keyword with cleanup."""
-        if text is None:
-            raise ValueError("text input is None")
-
-        if keyword is None:
-            raise ValueError("keyword input is None")
-
-        if keyword in text:
-            extracted = text.split(keyword, 1)[1]
-            return extracted.lstrip(": ").strip()
-        return None
-
-    def extract_value_from_project_field(self, project_id: str, field: str, value: str) -> str:
+    def get_pipeline_params(self, project_name: str, pipeline_params_field_name: str, sep_value: str) -> dict:
         """
-        Extracts the value following the keyword in a project's field value.
+        Retrieve pipeline parameters for a given project Name.
+
+        This method fetches the project information associated with the specified project ID,
+        extracts user-defined fields (UDFs) that contain pipeline parameters, and parses these
+        parameters into a dictionary. Each pipeline parameter is expected to be in the format
+        "key=value", and multiple parameters are separated by commas.
 
         Args:
-            project (str): The identifier to search for the project.
-            field (str): The name of the field to search for in the project.
-            value (str): The keyword to search within the field's value.
+            project_name (str): The identifier for the project whose pipeline parameters are to be retrieved.
+            pipeline_params_field_name (str): The name of the UDF field containing pipeline parameters.
+            sep_value (str): The separator used to split key-value pairs in the pipeline parameters.
 
         Returns:
-            Optional[str]: The extracted value following the keyword, with any leading ":" or space removed, or None if not found.
+            dict: A dictionary where each key is the name of the UDF field containing pipeline parameters,
+                and the value is another dictionary containing the parsed key-value pairs of the parameters.
+
+        Raises:
+            ValueError: If the provided project_name is None or invalid.
+            KeyError: If the project_name does not exist in the system.
         """
-        if project_id is None:
-            raise ValueError("project_id is None")
+        pipeline_params = {}
+        try:
+            proj_info = self.get_projects(name=project_name)
+            if proj_info is None:
+                raise ValueError("Project not found")
 
-        if field is None:
-            raise ValueError("field input is None")
+            for field in proj_info.udf_fields:
+                if pipeline_params_field_name in field.name.lower():
+                    key_value_pairs = []
+                    key_value_pairs = field.value.split(",") if "," in field.value else [field.value]
 
-        if value is None:
-            raise ValueError("value input is None")
+                    param_values_dict = {}
+                    for pair in key_value_pairs:
+                        if sep_value in pair:
+                            key, value = pair.split(sep_value)
+                            param_values_dict[key.strip()] = value.strip()
+                        else:
+                            log.warning(f'Missing saparator value in "{pair}" parameter. Returning as NA.')
+                            param_values_dict[pair.strip()] = "NA"
+                    pipeline_params[field.name] = param_values_dict
+        except HTTPError:
+            log.warning(f"Project {project_name} not found.")
+        except ValueError:
+            log.warning(f"Project {project_name} not found.")
 
-        projects = self.get_projects(search_id=project_id)
-
-        # Check for the field in the project's main attributes
-        field_value = getattr(projects, field, None)
-        if isinstance(field_value, str):
-            result = self.extract_value_from_text(field_value, value)
-            if result:
-                return result
-
-        # Check for the field inside udf_fields
-        if projects.udf_fields:
-            for udf in projects.udf_fields:
-                if udf.name == field:
-                    result = self.extract_value_from_text(udf.value, value)
-                    if result:
-                        return result
-        else:
-            warnings.warn(f"{field} not found in project {project_id}.")
-            return None
+        return pipeline_params
