@@ -19,7 +19,11 @@ log = logging.getLogger()
 
 
 class DataTypeMode(Enum):
-    """Enum with mode options for clean_pipeline_output"""
+    """
+    - GENERAL: General mode, applicable for all sequencing types.
+    - ONT: Oxford Nanopore Technology (ONT) sequencing data.
+    - ILLUMINA: Illumina sequencing data.
+    """
 
     GENERAL = "general"
     ONT = "ont"
