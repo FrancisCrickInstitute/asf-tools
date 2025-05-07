@@ -12,7 +12,7 @@ from assertpy import assert_that
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.io.data_management import DataTypeMode
-from asf_tools.io.storage_interface import InterfaceType
+from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 from asf_tools.nextflow.gen_demux_run import GenDemuxRun
 from asf_tools.nextflow.utils import create_sbatch_header
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
@@ -380,12 +380,25 @@ class TestGenDemuxRun:
         expected_dict_2 = {}
 
         # Test
-        results = GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
-        results_2 = GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path_2)
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        results = GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path)
+        results_2 = GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path_2)
 
         # Assert
         assert_that(results).is_equal_to(expected_dict)
         assert_that(results_2).is_equal_to(expected_dict_2)
+
+    def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
+
+        # Setup
+        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
+        with open(samplesheet_path, "w", encoding="UTF-8") as file:
+            file.write("id,sample_name,group,user,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
+            file.write("sample_01,sample_01,asf,no_name,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
+
+        # Test and Assert
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        assert_that(GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path)).is_equal_to({})
 
     def test_ont_gen_demux_check_runs_no_cli(self, tmp_path):
         # Setup
@@ -423,17 +436,6 @@ class TestGenDemuxRun:
     #     # Test and Assert
     #     GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)
     #     assert_that(caplog.text).contains("WARNING")
-
-    def test_ont_gen_demux_run_extract_pipeline_params_invalid_projectid(self, tmp_path):
-
-        # Setup
-        samplesheet_path = os.path.join(tmp_path, "samplesheet.csv")
-        with open(samplesheet_path, "w", encoding="UTF-8") as file:
-            file.write("id,sample_name,group,user,project_limsid,project_type,reference_genome,data_analysis_type,barcode\n")
-            file.write("sample_01,sample_01,asf,no_name,no_lims_proj,no_type,no_ref,no_analysis,unclassified\n")
-
-        # Test and Assert
-        assert_that(GenDemuxRun.extract_pipeline_params(self, self.api, samplesheet_path)).is_equal_to({})
 
     def test_ont_gen_demux_run_create_sbatch_with_pipelineparams(self):
         # Create an instance of the class with required attributes
