@@ -3,9 +3,9 @@ Function class for managing CLI operation
 """
 
 import csv
+import io
 import logging
 import os
-import io
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
@@ -236,7 +236,7 @@ class GenDemuxRun:
         """
         params_dict = {}
 
-        # Read the file
+        # Read the file
         sample_sheet = storage_interface.read_file(samplesheet_csv)
         reader = csv.DictReader(io.StringIO(sample_sheet))
 
