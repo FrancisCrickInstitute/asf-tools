@@ -3,17 +3,19 @@ Function class for managing CLI operation
 """
 
 import csv
+import io
 import logging
 import os
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-from asf_tools.io.storage_interface import StorageInterface, InterfaceType
+from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 from asf_tools.nextflow.utils import create_sbatch_header
 
 
 log = logging.getLogger(__name__)
+
 
 class GenDemuxRun:
     """
@@ -55,7 +57,6 @@ class GenDemuxRun:
 
         self.storage_interface = StorageInterface(self.file_system)
         self.data_mgr = DataManagement(self.storage_interface)
-
 
     def run(self):
         """
@@ -109,7 +110,7 @@ class GenDemuxRun:
 
         return dir_diff
 
-    def check_runs_no_cli(self, max_date = None):
+    def check_runs_no_cli(self, max_date=None):
         log.info("Scanning run folder for new sequencing runs")
 
         # Pull list of directory names
@@ -179,7 +180,7 @@ class GenDemuxRun:
             # Extract pipeline parameters
             pipeline_params = None
             if self.use_api is True:
-                pipeline_params = self.extract_pipeline_params(api, samplesheet_path)
+                pipeline_params = self.extract_pipeline_params(api, self.storage_interface, samplesheet_path)
 
             # Create sbatch script
             sbatch_script = self.create_ont_sbatch_text(run_name, pipeline_params, bc_parse_pos)
@@ -229,22 +230,24 @@ class GenDemuxRun:
 
         return count, samplesheet
 
-    def extract_pipeline_params(self, api, samplesheet_csv) -> dict:
+    def extract_pipeline_params(self, api, storage_interface, samplesheet_csv) -> dict:
         """
         Extracts the first project IDs from a CSV file and retrieves the corresponding pipeline parameters.
         """
         params_dict = {}
-        with open(samplesheet_csv, mode="r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
 
-            # Check there's a column for "project_id"
-            if "project_id" not in reader.fieldnames:
-                return params_dict
+        # Read the file
+        sample_sheet = storage_interface.read_file(samplesheet_csv)
+        reader = csv.DictReader(io.StringIO(sample_sheet))
 
-            # Extract the first project ID
-            first_row = next(reader, None)
-            proj_id = first_row["project_id"]
-            params_dict = api.get_pipeline_params(proj_id, "pipeline params", "=")
+        # Check there's a column for "project_id"
+        if "project_id" not in reader.fieldnames:
+            return params_dict
+
+        # Extract the first project ID
+        first_row = next(reader, None)
+        proj_id = first_row["project_id"]
+        params_dict = api.get_pipeline_params(proj_id, "pipeline params", "=")
 
         return params_dict
 

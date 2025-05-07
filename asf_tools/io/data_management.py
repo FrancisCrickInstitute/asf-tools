@@ -34,6 +34,7 @@ class DataManagement:
     """
     Helper functions for data management
     """
+
     def __init__(self, storage_interface):
         self.storage_interface = storage_interface
 
@@ -88,7 +89,7 @@ class DataManagement:
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
-        Check if an Illumina run has completed data transfer by checking for the presence of the 
+        Check if an Illumina run has completed data transfer by checking for the presence of the
         `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
 
         Args:
