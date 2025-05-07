@@ -376,7 +376,7 @@ class TestGenDemuxRun:
             file.write("id,group,user,project_id\n")
             file.write("sample_01,asf,no_name,PM24043\n")
 
-        expected_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
+        expected_dict = {"Demux Pipeline Params": {"output_raw": "True"}}
         expected_dict_2 = {}
 
         # Test

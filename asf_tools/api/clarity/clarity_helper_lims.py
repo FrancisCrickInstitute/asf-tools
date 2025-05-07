@@ -737,7 +737,7 @@ class ClarityHelperLims(ClarityLims):
             for field in proj_info.udf_fields:
                 if pipeline_params_field_name in field.name.lower():
                     key_value_pairs = []
-                    key_value_pairs = field.value.split(",") if "," in field.value else [field.value]
+                    key_value_pairs = field.value.split(";") if ";" in field.value else [field.value]
 
                     param_values_dict = {}
                     for pair in key_value_pairs:
