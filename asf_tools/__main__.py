@@ -19,6 +19,7 @@ from rich.text import Text
 
 import asf_tools
 from asf_tools.io.data_management import DataTypeMode
+from asf_tools.io.storage_interface import StorageInterface, InterfaceType
 
 
 # Set up logging as the root logger
@@ -239,8 +240,9 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
             contains,
             samplesheet_only,
             nextflow_version,
+            InterfaceType.LOCAL,
         )
-        exit_status = function.cli_run()
+        exit_status = function.run()
         if not exit_status:
             sys.exit(1)
     except (UserWarning, LookupError) as e:
@@ -290,7 +292,7 @@ def deliver_to_targets(
     """  # pylint: disable=too-many-positional-arguments
     from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
-    dm = DataManagement()
+    dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
     if interactive is False:
         # Take the source / target literally and deliver
         dm.deliver_to_targets(
@@ -405,7 +407,7 @@ def scan_run_state(  # pylint: disable=too-many-positional-arguments
     from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
 
     # Scan for run id states
-    dm = DataManagement()
+    dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
     scan_result = dm.scan_run_state(
         raw_dir,
         run_dir,

@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, patch
 from assertpy import assert_that
 
 from asf_tools.io.data_management import DataManagement, DataTypeMode
+from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 
 
 class TestIoDataManagement:
@@ -23,7 +24,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         run_dir = "tests/data/ont/runs/run01"
 
         # Test and Assert
@@ -35,7 +36,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         run_dir = "tests/data/ont/complete_pipeline_outputs/complete_run_01"
 
         # Test and Assert
@@ -59,7 +60,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         run_dir = "tests/data/ont/runs/run03"
 
         # Test and Assert
@@ -83,7 +84,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         run_dir = "tests/data/ont/runs/run01"
 
         # Test and Assert
@@ -95,7 +96,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # Test and Assert
         assert_that(dm.check_illumina_sequencing_run_complete(tmp_path)).is_false()
@@ -106,7 +107,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # create file structure, run not completed
         open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
@@ -122,7 +123,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # create file structure, run completed
         open(os.path.join(tmp_path, "RTAComplete.txt"), "w", encoding="utf-8").close()  # pylint: disable=consider-using-with
@@ -143,12 +144,12 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         valid_path = "./tests/data/ont/runs/run01"
         invalid_path = os.path.join(tmp_path, "invalid")
 
         # Test and Assert
-        assert_that(dt.symlink_to_target).raises(FileNotFoundError).when_called_with(valid_path, invalid_path)
+        assert_that(dm.symlink_to_target).raises(FileNotFoundError).when_called_with(valid_path, invalid_path)
 
     def test_symlink_to_target_isvalid_str(self, tmp_path):
         """
@@ -156,11 +157,11 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         data_path = "tests/data/ont/runs/run01/"
 
         # Test
-        dt.symlink_to_target(data_path, str(tmp_path))
+        dm.symlink_to_target(data_path, str(tmp_path))
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -172,7 +173,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         data_path = "tests/data/ont/runs/run01/"
 
         # Create list of temporary paths
@@ -184,7 +185,7 @@ class TestIoDataManagement:
         os.makedirs(tmp_path2, exist_ok=True)
 
         # Test
-        dt.symlink_to_target(data_path, tmp_paths)
+        dm.symlink_to_target(data_path, tmp_paths)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "run01")
@@ -198,7 +199,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
         core_name_list = ["asf", "genomics-stp"]
 
@@ -212,7 +213,7 @@ class TestIoDataManagement:
         os.makedirs(tmp_path4)
 
         # Test
-        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list)
+        dm.deliver_to_targets(basepath_target, tmp_path, core_name_list)
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
@@ -230,12 +231,12 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
         core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path, core_name_list)
+        assert_that(dm.deliver_to_targets).raises(FileNotFoundError).when_called_with(basepath_target, tmp_path, core_name_list)
 
     def test_deliver_to_targets_source_invalid(self, tmp_path):
         """
@@ -243,13 +244,13 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         core_name_list = ["asf", "genomics-stp"]
 
         # Test and Assert
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with("invalid/path", tmp_path, core_name_list)
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", "invalid/path", core_name_list)
-        assert_that(dt.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", tmp_path, "core_name_list")
+        assert_that(dm.deliver_to_targets).raises(FileNotFoundError).when_called_with("invalid/path", tmp_path, core_name_list)
+        assert_that(dm.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", "invalid/path", core_name_list)
+        assert_that(dm.deliver_to_targets).raises(FileNotFoundError).when_called_with(".", tmp_path, "core_name_list")
 
     def test_deliver_to_targets_symlink_overide(self, tmp_path):
         """
@@ -257,7 +258,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dt = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         basepath_target = "tests/data/ont/live_runs/pipeline_output"
         core_name_list = ["asf", "genomics-stp"]
 
@@ -270,7 +271,7 @@ class TestIoDataManagement:
         os.makedirs(tmp_path3)
 
         # Test
-        dt.deliver_to_targets(basepath_target, tmp_path, core_name_list, "/test/path")
+        dm.deliver_to_targets(basepath_target, tmp_path, core_name_list, "/test/path")
 
         # Assert
         run_dir_1 = os.path.join(tmp_path1, "genomics-stp", "DN20049", "201008_K00371_0409_BHHY7WBBXY")
@@ -289,7 +290,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         source_dir = "fake/path/"
         target_dir = "tests/data/ont/live_runs/pipeline_output"
         core_name_list = ["asf", "genomics-stp"]
@@ -303,7 +304,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         source_dir = "tests/data/ont/runs/run01"
         target_dir = "fake/path/"
         core_name_list = ["asf", "genomics-stp"]
@@ -315,7 +316,7 @@ class TestIoDataManagement:
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
         core_name_list = ["asf", "genomics-stp"]
@@ -327,7 +328,7 @@ class TestIoDataManagement:
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
         core_name_list = ["asf", "genomics-stp"]
@@ -345,7 +346,7 @@ class TestIoDataManagement:
         # Set up
         tmp_path1 = os.path.join(tmp_path, "swantonc")
         os.makedirs(tmp_path1)
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         source_dir = "tests/data/ont/complete_pipeline_outputs"
         target_dir = tmp_path
         core_name_list = ["asf", "genomics-stp"]
@@ -359,7 +360,7 @@ class TestIoDataManagement:
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_ont_valid(self, mock_run):
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         raw_dir = "tests/data/ont/end_to_end_example/01_ont_raw"
         run_dir = "tests/data/ont/end_to_end_example/02_ont_run"
         target_dir = "tests/data/ont/end_to_end_example/03_ont_delivery"
@@ -387,7 +388,7 @@ class TestIoDataManagement:
     @patch("asf_tools.slurm.utils.subprocess.run")
     def test_scan_run_state_illumina_valid(self, mock_run):
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         raw_dir = "tests/data/illumina/end_to_end_example/illumina_raw"
         run_dir = "tests/data/illumina/end_to_end_example/illumina_run"
         target_dir = "tests/data/illumina/end_to_end_example/illumina_delivery"
@@ -441,7 +442,7 @@ class TestIoDataManagement:
         mock_check_file_exist.side_effect = lambda path, flag: False
 
         # Test
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         result = dm.find_stale_directories(tmp_path, 2)
 
         # Assert the result
@@ -499,7 +500,7 @@ class TestIoDataManagement:
             mock_check_file_exist.side_effect = lambda path, flag: False
 
             # Test
-            dm = DataManagement()
+            dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
             result = dm.find_stale_directories(tmp_path, 2)
 
             # Assert the result
@@ -528,7 +529,7 @@ class TestIoDataManagement:
         mock_getmtime.side_effect = lambda path: datetime(2024, 6, 15, tzinfo=timezone.utc).timestamp()
 
         # Test
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         old_data = dm.find_stale_directories("tests/data/ont/runs", 2)
 
         # Assert
@@ -566,7 +567,7 @@ class TestIoDataManagement:
         """
 
         # Set up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         data_path = "tests/data/ont/runs"
 
         # Test
@@ -583,7 +584,7 @@ class TestIoDataManagement:
         """
 
         # Set Up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
         data_path = "invalid/test/path"
 
         # Test and Assert
@@ -597,7 +598,7 @@ class TestIoDataManagement:
         Creates work directories and checks correct deletion of work dir.
         """
         # Set Up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # create work dir structure
         subdir1 = os.path.join(tmp_path, "dir1")
@@ -632,7 +633,7 @@ class TestIoDataManagement:
         Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
         """
         # Set Up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # create work dir structure
         data_path = "tests/data/ont/runs"
@@ -707,7 +708,7 @@ class TestIoDataManagement:
         Creates work dir, dorado dir structure, files within these folders and checks correct deletion of files.
         """
         # Set Up
-        dm = DataManagement()
+        dm = DataManagement(StorageInterface(InterfaceType.LOCAL))
 
         # create work dir structure
         work_dir = os.path.join(tmp_path, "work")
