@@ -128,7 +128,7 @@ class TestNemoConnection:
     def test_nemo_write_file(self, MockConnection):
         nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
         nemo.write_file("/some/path/to/file.txt", "file content")
-        MockConnection().run.assert_called_once_with('echo "file content" > /some/path/to/file.txt', hide=True)
+        MockConnection().run.assert_called_once_with("cat <<'EOF' > /some/path/to/file.txt\nfile content\nEOF", hide=True)
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_nemo_read_file(self, MockConnection):
@@ -147,6 +147,18 @@ class TestNemoConnection:
         nemo = Nemo(host="login.nemo.thecrick.org", user="user", password="password")
         nemo.chmod("/some/path/to/file.txt", "755")
         MockConnection().run.assert_called_once_with("chmod 755 /some/path/to/file.txt", hide=True)
+
+    # def test_nemo_memory_key(self):
+    #     # Load key from file into memory
+    #     with open("/Users/cheshic/.ssh/nemo_rsa", "r") as key_file:
+    #         key_data = key_file.read()
+
+    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_string=key_data)
+    #     test = nemo.exists_with_pattern(".", ".v*")
+    #     print(test)
+
+    #     raise NotImplementedError("Test not implemented")
+
 
     # def test_nemo_dev(self):
     #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
