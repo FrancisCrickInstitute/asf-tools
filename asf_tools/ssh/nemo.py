@@ -172,7 +172,8 @@ class Nemo:
         :param path: The path of the file to write.
         :param content: The content to write to the file.
         """
-        self.connection.run(f'echo "{content}" > {path}', hide=True)
+        # self.connection.run(f'echo "{content}" > {path}', hide=True)
+        self.connection.run(f"cat <<'EOF' > {path}\n{content}\nEOF", hide=True)
 
     def read_file(self, path: str) -> str:
         """
