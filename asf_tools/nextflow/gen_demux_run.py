@@ -180,7 +180,7 @@ class GenDemuxRun:
             # Extract pipeline parameters
             pipeline_params = None
             if self.use_api is True:
-                pipeline_params = self.extract_pipeline_params(api, samplesheet_path)
+                pipeline_params = self.extract_pipeline_params(api, self.storage_interface, samplesheet_path)
 
             # Create sbatch script
             sbatch_script = self.create_ont_sbatch_text(run_name, pipeline_params, bc_parse_pos)
