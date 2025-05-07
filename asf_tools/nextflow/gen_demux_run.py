@@ -5,6 +5,7 @@ Function class for managing CLI operation
 import csv
 import logging
 import os
+import io
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
@@ -229,22 +230,24 @@ class GenDemuxRun:
 
         return count, samplesheet
 
-    def extract_pipeline_params(self, api, samplesheet_csv) -> dict:
+    def extract_pipeline_params(self, api, storage_interface, samplesheet_csv) -> dict:
         """
         Extracts the first project IDs from a CSV file and retrieves the corresponding pipeline parameters.
         """
         params_dict = {}
-        with open(samplesheet_csv, mode="r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
 
-            # Check there's a column for "project_id"
-            if "project_id" not in reader.fieldnames:
-                return params_dict
+        # Read the file
+        sample_sheet = storage_interface.read_file(samplesheet_csv)
+        reader = csv.DictReader(io.StringIO(sample_sheet))
 
-            # Extract the first project ID
-            first_row = next(reader, None)
-            proj_id = first_row["project_id"]
-            params_dict = api.get_pipeline_params(proj_id, "pipeline params", "=")
+        # Check there's a column for "project_id"
+        if "project_id" not in reader.fieldnames:
+            return params_dict
+
+        # Extract the first project ID
+        first_row = next(reader, None)
+        proj_id = first_row["project_id"]
+        params_dict = api.get_pipeline_params(proj_id, "pipeline params", "=")
 
         return params_dict
 
