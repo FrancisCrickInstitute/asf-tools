@@ -18,7 +18,7 @@ class Nemo:
     Establish an SSH connection to nemo and run commands.
     """
 
-    def __init__(self, host, user, key_file=None, password=None):
+    def __init__(self, host=None, user=None, key_file=None, password=None):
         """
         Initialize the Nemo connection.
 
