@@ -159,7 +159,6 @@ class TestNemoConnection:
 
     #     raise NotImplementedError("Test not implemented")
 
-
     # def test_nemo_dev(self):
     #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
     #     test = nemo.exists_with_pattern(".", ".v*")
