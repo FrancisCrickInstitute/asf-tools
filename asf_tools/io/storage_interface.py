@@ -61,7 +61,7 @@ class StorageInterface:
         elif self.interface_type == InterfaceType.NEMO:
             return self.interface.list_directory(path)
 
-    def list_directories_with_links(self, path):
+    def list_directories_with_links(self, path: str, max_date=None):
         """
         List directories and their symbolic links.
 
@@ -73,6 +73,8 @@ class StorageInterface:
             return list_directory_names(path)
         elif self.interface_type == InterfaceType.NEMO:
             dir_objs = self.interface.list_directory_objects(path)
+            if max_date:
+                dir_objs = [obj for obj in dir_objs if obj.last_modified >= max_date]
             for obj in dir_objs:
                 if obj.type == FileType.FOLDER:
                     dirlist.append(obj.name)
