@@ -387,6 +387,32 @@ class TestGenDemuxRun:
         assert_that(results).is_equal_to(expected_dict)
         assert_that(results_2).is_equal_to(expected_dict_2)
 
+    def test_ont_gen_demux_check_runs_no_cli(self, tmp_path):
+        # Setup
+        test = GenDemuxRun(
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            mode=DataTypeMode.ONT,
+            pipeline_dir=None,
+            nextflow_cache=None,
+            nextflow_work=None,
+            container_cache=None,
+            runs_dir=None,
+            use_api=False,
+            api=None,
+            contains=None,
+            samplesheet_only=False,
+            nextflow_version=None,
+            file_system=InterfaceType.LOCAL,
+        )
+
+        # Test
+        result = test.check_runs_no_cli()
+
+
+        # Assert
+        assert_that(result).is_equal_to(["run01", "run02", "run04", "run05"])
+
     # def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path, caplog):
 
     #     # Setup

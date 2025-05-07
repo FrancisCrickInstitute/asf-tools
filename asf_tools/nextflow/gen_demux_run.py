@@ -23,19 +23,19 @@ class GenDemuxRun:
 
     def __init__(
         self,
-        source_dir,
-        target_dir,
-        mode,
-        pipeline_dir,
-        nextflow_cache,
-        nextflow_work,
-        container_cache,
-        runs_dir,
-        use_api,
-        api,
-        contains,
-        samplesheet_only,
-        nextflow_version,
+        source_dir: str,
+        target_dir: str,
+        mode: DataTypeMode,
+        pipeline_dir: str,
+        nextflow_cache: str,
+        nextflow_work: str,
+        container_cache: str,
+        runs_dir: str,
+        use_api: bool,
+        api: ClarityHelperLims,
+        contains: str,
+        samplesheet_only: bool,
+        nextflow_version: str,
         file_system: InterfaceType,
     ) -> None:
         self.source_dir = source_dir
@@ -77,8 +77,7 @@ class GenDemuxRun:
 
         return 0
 
-
-    def check_runs(self):
+    def check_runs(self) -> list:
         # Pull list of directory names
         source_dir_names = set(self.storage_interface.list_directories_with_links(self.source_dir))
         target_dir_names = set(self.storage_interface.list_directories_with_links(self.target_dir))
@@ -110,6 +109,31 @@ class GenDemuxRun:
 
         return dir_diff
 
+    def check_runs_no_cli(self, max_date = None):
+        log.info("Scanning run folder for new sequencing runs")
+
+        # Pull list of directory names
+        source_dir_names = set(self.storage_interface.list_directories_with_links(self.source_dir, max_date))
+        target_dir_names = set(self.storage_interface.list_directories_with_links(self.target_dir))
+
+        # Check for source dir_names that are not in target_dir_names
+        dir_diff = source_dir_names - target_dir_names
+
+        # Sort the list of directory names
+        dir_diff = sorted(dir_diff)
+
+        # Check for a sequencing_summary file in source directory to show that the run is completed
+        completed_runs = []
+        for run_name in dir_diff:
+            run_dir = os.path.join(self.source_dir, run_name)
+            completed_file_exists = self.data_mgr.check_ont_sequencing_run_complete(run_dir)
+            if completed_file_exists:
+                completed_runs.append(run_name)
+            else:
+                log.debug(f"Skipping {run_name}: no summary file detected, run not completed.")
+        log.info(f"Found {len(completed_runs)} completed runs")
+
+        return completed_runs
 
     def process_run(self, api: ClarityHelperLims, run_name: str, mode: DataTypeMode):
         """
