@@ -2,8 +2,10 @@
 Establish an SSH connection to nemo and run commands.
 """
 
+import io
 import logging
 
+import paramiko
 from fabric import Connection
 from invoke.exceptions import UnexpectedExit
 
@@ -18,7 +20,7 @@ class Nemo:
     Establish an SSH connection to nemo and run commands.
     """
 
-    def __init__(self, host=None, user=None, key_file=None, password=None):
+    def __init__(self, host=None, user=None, key_file=None, key_string=None, password=None):
         """
         Initialize the Nemo connection.
 
@@ -38,7 +40,9 @@ class Nemo:
         connect_kwargs = {}
 
         # Check if key or password is provided
-        if self.key_file:
+        if key_string:
+            connect_kwargs["pkey"] = self._parse_private_key(key_string)
+        elif self.key_file:
             connect_kwargs["key_filename"] = self.key_file
         elif self.password:
             connect_kwargs["password"] = self.password
@@ -47,6 +51,9 @@ class Nemo:
 
         # Init the connection
         self.connection = Connection(host=self.host, user=self.user, connect_kwargs=connect_kwargs)
+
+    def _parse_private_key(self, key_string: str) -> paramiko.PKey:
+        return paramiko.RSAKey.from_private_key(io.StringIO(key_string))
 
     def disconnect(self):
         """

@@ -143,7 +143,7 @@ class TestStorageInterface:
     def test_storage_mock_write_file_nemo(self, MockConnection):
         storage_interface = StorageInterface(InterfaceType.NEMO, host="login.nemo.thecrick.org", user="user", password="password")
         storage_interface.write_file("/some/path/to/file.txt", "file content")
-        MockConnection().run.assert_called_once_with('echo "file content" > /some/path/to/file.txt', hide=True)
+        MockConnection().run.assert_called_once_with("cat <<'EOF' > /some/path/to/file.txt\nfile content\nEOF", hide=True)
 
     @patch("asf_tools.ssh.nemo.Connection")
     def test_storage_mock_read_file_nemo(self, MockConnection):
