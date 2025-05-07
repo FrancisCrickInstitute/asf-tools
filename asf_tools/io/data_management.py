@@ -19,7 +19,11 @@ log = logging.getLogger()
 
 
 class DataTypeMode(Enum):
-    """Enum with mode options for clean_pipeline_output"""
+    """
+    - GENERAL: General mode, applicable for all sequencing types.
+    - ONT: Oxford Nanopore Technology (ONT) sequencing data.
+    - ILLUMINA: Illumina sequencing data.
+    """
 
     GENERAL = "general"
     ONT = "ont"
@@ -30,6 +34,8 @@ class DataManagement:
     """
     Helper functions for data management
     """
+    def __init__(self, storage_interface):
+        self.storage_interface = storage_interface
 
     def check_pipeline_run_complete(self, run_dir: str):
         """
@@ -42,7 +48,7 @@ class DataManagement:
         - bool: True if the run directory is complete, False otherwise.
         """
         completed_file = os.path.join(run_dir, "results", "pipeline_info", "workflow_complete.txt")
-        return os.path.exists(completed_file)
+        return self.storage_interface.exists(completed_file)
 
     def check_ont_sequencing_run_complete(self, run_dir: str):
         """
@@ -52,13 +58,11 @@ class DataManagement:
         Args:
         - run_dir (str): Path to the run directory.
         """
+        return self.storage_interface.exists_with_pattern(run_dir, "sequencing_summary*")
+
         # check for pod5 count file
         # if not check_file_exist(run_dir, "pod5_count.txt"):
         #     return False
-
-        # check for sequencing summary file
-        if not check_file_exist(run_dir, "sequencing_summary*"):
-            return False
 
         # # read single integer from pod5_count.txt
         # pod5_expected_max = -1
@@ -80,11 +84,12 @@ class DataManagement:
         # log.debug(f"{run_dir} - pod5_max: {pod5_expected_max}")
 
         # return pod5_max == pod5_expected_max
-        return True
+        # return True
 
     def check_illumina_sequencing_run_complete(self, run_dir: str):
         """
-        Check if an Illumina run has completed data transfer by checking for the presence of the `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
+        Check if an Illumina run has completed data transfer by checking for the presence of the 
+        `RTAcomplete`, `RunCompletionStatus` and `CopyComplete` files.
 
         Args:
         - run_dir (str): Path to the run directory.
@@ -93,7 +98,8 @@ class DataManagement:
         - bool: True if the run directory is complete, False otherwise.
         """
         completed_files = ["RTAComplete.txt", "RunCompletionStatus.xml", "CopyComplete.txt"]
-        file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+        # file_exists = all(check_file_exist(run_dir, file) for file in completed_files)
+        file_exists = all(self.storage_interface.exists(os.path.join(run_dir, file)) for file in completed_files)
 
         if file_exists:
             completed_file = os.path.join(run_dir, "RunCompletionStatus.xml")
