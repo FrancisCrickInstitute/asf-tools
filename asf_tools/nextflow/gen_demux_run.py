@@ -9,11 +9,12 @@ import os
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
 from asf_tools.illumina.illumina_utils import extract_illumina_runid_frompath
 from asf_tools.io.data_management import DataManagement, DataTypeMode
-from asf_tools.io.storage_interface import StorageInterface, InterfaceType
+from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 from asf_tools.nextflow.utils import create_sbatch_header
 
 
 log = logging.getLogger(__name__)
+
 
 class GenDemuxRun:
     """
@@ -55,7 +56,6 @@ class GenDemuxRun:
 
         self.storage_interface = StorageInterface(self.file_system)
         self.data_mgr = DataManagement(self.storage_interface)
-
 
     def run(self):
         """
@@ -109,7 +109,7 @@ class GenDemuxRun:
 
         return dir_diff
 
-    def check_runs_no_cli(self, max_date = None):
+    def check_runs_no_cli(self, max_date=None):
         log.info("Scanning run folder for new sequencing runs")
 
         # Pull list of directory names

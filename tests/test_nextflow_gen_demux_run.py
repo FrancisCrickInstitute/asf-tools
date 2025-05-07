@@ -409,8 +409,7 @@ class TestGenDemuxRun:
         # Test
         result = test.check_runs_no_cli()
 
-
-        # Assert
+        # Assert
         assert_that(result).is_equal_to(["run01", "run02", "run04", "run05"])
 
     # def test_ont_gen_demux_run_extract_pipeline_params_missing_projectid(self, tmp_path, caplog):

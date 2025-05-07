@@ -19,7 +19,7 @@ from rich.text import Text
 
 import asf_tools
 from asf_tools.io.data_management import DataTypeMode
-from asf_tools.io.storage_interface import StorageInterface, InterfaceType
+from asf_tools.io.storage_interface import InterfaceType, StorageInterface
 
 
 # Set up logging as the root logger
