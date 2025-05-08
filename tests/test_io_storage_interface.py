@@ -200,7 +200,6 @@ class TestStorageInterface:
         # Test and assert
         assert_that(storage_interface.list_directory(".")).contains("working")
 
-
     @pytest.mark.only_run_with_direct_target
     def test_storage_integration_walk_remote(self):
         # Init
@@ -209,7 +208,9 @@ class TestStorageInterface:
             key_data = key_file.read()
         storage_interface = StorageInterface(InterfaceType.NEMO, host="login007.nemo.thecrick.org", user="svc-asf-seq", key_string=key_data)
 
-        for root, dirs, files in storage_interface.walk("/camp/home/svc-asf-seq/instruments/ONT/ONT_run/20241210_1742_2H_PBA41341_980ccace/results/grouped"):
+        for root, dirs, files in storage_interface.walk(
+            "/camp/home/svc-asf-seq/instruments/ONT/ONT_run/20241210_1742_2H_PBA41341_980ccace/results/grouped"
+        ):
             print(f"Root: {root}")
             print(f"Directories: {dirs}")
             print(f"Files: {files}")
