@@ -136,11 +136,10 @@ class DataManagement:
         # Check if it's a single or multiple target paths
         if isinstance(symlink_data_path, str):
             # Check if target path exists
-            if not os.path.exists(symlink_data_path):
+            if not self.storage_interface.exists(symlink_data_path):
                 raise FileNotFoundError(f"{symlink_data_path} does not exist.")
 
-            cmd = f"ln -sfn {data_path} {symlink_data_path}"
-            subprocess.run(cmd, shell=True, check=True)
+            self.storage_interface.symlink(data_path, symlink_data_path)
 
         elif isinstance(symlink_data_path, list):
             for item in symlink_data_path:
@@ -148,8 +147,7 @@ class DataManagement:
                 if not os.path.exists(item):
                     raise FileNotFoundError(f"{item} does not exist.")
 
-                cmd = f"ln -sfn {data_path} {item}"
-                subprocess.run(cmd, shell=True, check=True)
+                self.storage_interface.symlink(data_path, item)
         else:
             raise ValueError("symlink_data_path must be either a string or a list of strings")
 
@@ -169,12 +167,12 @@ class DataManagement:
         FileNotFoundError: If `data_path` or any required target directories do not exist.
         """
         # check if data_path exists
-        if not os.path.exists(data_path):
+        if not self.storage_interface.exists(data_path):
             raise FileNotFoundError(f"{data_path} does not exist.")
 
         # collect all sub dirs
         source_paths_list = []
-        for root, dirs, files in os.walk(data_path):  # pylint: disable=unused-variable
+        for root, dirs, files in self.storage_interface.walk(data_path):  # pylint: disable=unused-variable
             if not dirs:
                 source_paths_list.append(root)
 
@@ -194,17 +192,17 @@ class DataManagement:
 
                 # create project folders in target path
                 permissions_path = os.path.join(symlink_data_basepath, info_dict["group"])
-                if os.path.exists(permissions_path):
+                if self.storage_interface.exists(permissions_path):
                     found_core_name = None
                     for core_dir in core_name_options:
                         project_path = os.path.join(permissions_path, info_dict["user"], core_dir, info_dict["project_id"])
-                        if os.path.exists(project_path):
+                        if self.storage_interface.exists(project_path):
                             found_core_name = core_dir
                             break
                     if found_core_name is None:
                         found_core_name = "genomics-stp"
                         project_path = os.path.join(permissions_path, info_dict["user"], found_core_name, info_dict["project_id"])
-                        os.makedirs(project_path, exist_ok=True)
+                        self.storage_interface.make_dirs(project_path)
 
                     # Override symlink path if host provided to deal with symlink paths in containers
                     if symlink_host_base_path is not None:

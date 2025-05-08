@@ -9,7 +9,7 @@ import paramiko
 from fabric import Connection
 from invoke.exceptions import UnexpectedExit
 
-from asf_tools.ssh.file_object import FileObject
+from asf_tools.ssh.file_object import FileObject, FileType
 
 
 log = logging.getLogger(__name__)
@@ -228,3 +228,46 @@ class Nemo:
                     return "QUEUED"
 
         return None
+
+    def walk(self, top: str):
+        """
+        Generate the file names in a directory tree by walking the tree over SSH.
+
+        :param top: The root directory to start walking from.
+        :yield: A 3-tuple (dirpath, dirnames, filenames)
+        """
+        stack = [top]
+
+        while stack:
+            current_dir = stack.pop()
+            dirnames = []
+            filenames = []
+
+            try:
+                entries = self.list_directory_objects(current_dir)
+            except UnexpectedExit:
+                continue  # Skip directories that can't be listed
+
+            for entry in entries:
+                if entry.name in (".", ".."):
+                    continue
+
+                full_path = f"{current_dir.rstrip('/')}/{entry.name}"
+                if entry.type == FileType.FOLDER:
+                    dirnames.append(entry.name)
+                    stack.append(full_path)
+                elif entry.type == FileType.FILE:
+                    filenames.append(entry.name)
+                elif entry.type == FileType.LINK:
+                    filenames.append(entry.name)
+
+            yield current_dir, dirnames, filenames
+
+    def symlink(self, target: str, link_name: str):
+        """
+        Create a symbolic link.
+
+        :param target: The target file or directory.
+        :param link_name: The name of the symbolic link to create.
+        """
+        self.connection.run(f"ln -sfn {target} {link_name}", hide=True)
