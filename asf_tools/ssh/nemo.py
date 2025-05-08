@@ -262,3 +262,12 @@ class Nemo:
                     filenames.append(entry.name)
 
             yield current_dir, dirnames, filenames
+
+    def symlink(self, target: str, link_name: str):
+        """
+        Create a symbolic link.
+
+        :param target: The target file or directory.
+        :param link_name: The name of the symbolic link to create.
+        """
+        self.connection.run(f"ln -sfn {target} {link_name}", hide=True)
