@@ -148,16 +148,16 @@ class TestNemoConnection:
         nemo.chmod("/some/path/to/file.txt", "755")
         MockConnection().run.assert_called_once_with("chmod 755 /some/path/to/file.txt", hide=True)
 
-    def test_nemo_check_slurm_job_status(self):
-        # Load key from file into memory
-        with open("/Users/cheshic/.ssh/svc_asf", "r") as key_file:
-            key_data = key_file.read()
+    # def test_nemo_check_slurm_job_status(self):
+    #     # Load key from file into memory
+    #     with open("/Users/cheshic/.ssh/svc_asf", "r") as key_file:
+    #         key_data = key_file.read()
 
-        nemo = Nemo(host="login007.nemo.thecrick.org", user="svc-asf-seq", key_string=key_data)
-        result = nemo.check_slurm_job_status("nf-bcl2fastq_default_(ReformattedSampleSheet.csv)", "svc-asf-seq")
-        print(result)
+    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="svc-asf-seq", key_string=key_data)
+    #     result = nemo.check_slurm_job_status("nf-bcl2fastq_default_(ReformattedSampleSheet.csv)", "svc-asf-seq")
+    #     print(result)
 
-        raise NotImplementedError("Test not implemented")
+    #     raise NotImplementedError("Test not implemented")
 
     # def test_nemo_memory_key(self):
     #     # Load key from file into memory
@@ -170,10 +170,15 @@ class TestNemoConnection:
 
     #     raise NotImplementedError("Test not implemented")
 
-    # def test_nemo_dev(self):
-    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="cheshic", key_file="/Users/cheshic/.ssh/nemo_rsa")
-    #     test = nemo.exists_with_pattern(".", ".v*")
+    # def test_nemo_walk(self):
+    #     # Load key from file into memory
+    #     with open("/Users/cheshic/.ssh/svc_asf", "r") as key_file:
+    #         key_data = key_file.read()
 
-    #     print(test)
+    #     nemo = Nemo(host="login007.nemo.thecrick.org", user="svc-asf-seq", key_string=key_data)
+    #     for root, dirs, files in nemo.walk("/camp/home/svc-asf-seq/instruments/ONT/ONT_run/20241210_1742_2H_PBA41341_980ccace/results/grouped"):
+    #         print(f"Root: {root}")
+    #         print(f"Dirs: {dirs}")
+    #         print(f"Files: {files}")
 
     #     raise NotImplementedError("Test not implemented")

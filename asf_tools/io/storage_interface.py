@@ -212,3 +212,14 @@ class StorageInterface:
         elif self.interface_type == InterfaceType.NEMO:
             _, num_perm = self.parse_permission_string(permission_string)
             self.interface.chmod(path, num_perm)
+
+    def walk(self, path):
+        """
+        Walk through a directory and yield all files.
+        """
+        if self.interface_type == InterfaceType.LOCAL:
+            for root, folders, files in os.walk(path):
+                yield root, folders, files
+        elif self.interface_type == InterfaceType.NEMO:
+            for root, folders, files in self.interface.walk(path):
+                yield root, folders, files
