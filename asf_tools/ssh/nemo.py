@@ -200,3 +200,31 @@ class Nemo:
         :param permissions: The permissions to set.
         """
         self.connection.run(f"chmod {permissions} {path}", hide=True)
+
+    def check_slurm_job_status(self, job_name: str, user_name: str = None) -> str:
+        """
+        Check the status of a SLURM job.
+        :param job_name: The name of the job to check.
+        :param user_name: The username of the user who submitted the job.
+
+        :return: The status of the job, which can be 'running' if the job is currently running,
+                 'queued' if the job is pending in the queue, or `None` if the job is not found.
+        """
+
+        # Run the squeue command and capture the output
+        command = f'squeue -u {user_name} --format="%.8i %.7P %.80j %.8u %.2t %.10M %.6D %R"'
+        result = self.connection.run(f"source /etc/profile && {command}", hide=True).stdout.strip()
+        lines = result.split("\n")
+
+        # Iterate through lines to find the job
+        for line in lines:
+            parts = line.split()
+
+            job_nm, job_status = parts[2], parts[4]
+            if job_nm == job_name:
+                if job_status in ["R", "CG"]:  # Running or Completing
+                    return "RUNNING"
+                elif job_status in ["PD"]:  # Pending (queued)
+                    return "QUEUED"
+
+        return None
