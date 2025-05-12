@@ -873,3 +873,9 @@ class TestClarityHelperLims:
 
         # Assert
         assert_that(caplog.text).contains("WARNING")
+
+    def test_collect_ont_samplesheet_info_barcodes(self):
+        data = self.api.collect_samplesheet_info("20250508_1430_1A_PBC74641_61491c62", True)
+
+        for sample in data.values():
+            assert_that(sample["barcode"]).contains("NB")
