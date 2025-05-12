@@ -175,7 +175,7 @@ class GenDemuxRun:
             # Detect muliplexed samples
             bc_parse_pos = -1
             if sample_count > 1:
-                bc_parse_pos = 2
+                bc_parse_pos = 9
 
             # Extract pipeline parameters
             pipeline_params = None
@@ -198,7 +198,7 @@ class GenDemuxRun:
 
         # Check mode and set the appropriate check function
         if mode == DataTypeMode.ONT:
-            sample_dict = api.collect_samplesheet_info(run_name)
+            sample_dict = api.collect_samplesheet_info(run_name, True)
         elif mode == DataTypeMode.ILLUMINA:
             # extract illumina RunId/flowcell name, then run check function
             run_dir = os.path.join(self.source_dir, run_name)
