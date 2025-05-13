@@ -219,6 +219,7 @@ class DataManagement:
                         )
 
                     # symlink data to target path
+                    log.info(f"Symlinking {source_path_to_runid} to {project_path}")
                     self.symlink_to_target(source_path_to_runid, project_path)
                 else:
                     user_path_not_exist.append(permissions_path)
