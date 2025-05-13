@@ -176,6 +176,9 @@ class DataManagement:
             if not dirs:
                 source_paths_list.append(root)
 
+        # remove duplicates
+        source_paths_list = list(set(source_paths_list))
+
         user_path_not_exist = []
         for path in source_paths_list:
             # split paths
@@ -187,7 +190,7 @@ class DataManagement:
                 info_dict = {"group": group, "user": user, "project_id": project_id, "run_id": run_id}
                 # create source path up to the final run_id dir
                 source_path_to_runid = os.path.join(
-                    data_path, info_dict["group"], info_dict["user"], "asf", info_dict["project_id"], info_dict["run_id"]
+                    data_path, info_dict["group"], info_dict["user"], "genomics-stp", info_dict["project_id"], info_dict["run_id"]
                 )
 
                 # create project folders in target path
