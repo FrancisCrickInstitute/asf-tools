@@ -11,9 +11,9 @@ import pytest
 from assertpy import assert_that
 
 from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims
-from asf_tools.io.data_management import DataTypeMode
+from asf_tools.io.data_management import DataManagement, DataTypeMode
 from asf_tools.io.storage_interface import InterfaceType, StorageInterface
-from asf_tools.nextflow.gen_demux_run import GenDemuxRun
+from asf_tools.nextflow.gen_demux_run import check_runs_no_cli, create_ont_sbatch_text, extract_pipeline_params, run_cli
 from asf_tools.nextflow.utils import create_sbatch_header
 from tests.mocks.clarity_helper_lims_mock import ClarityHelperLimsMock
 
@@ -38,25 +38,27 @@ def mock_clarity_api(request):
 class TestGenDemuxRun:
     def test_ont_gen_demux_run_folder_creation_isvalid(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "sing",
-            "work",
-            "runs",
-            False,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -71,25 +73,27 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_folder_creation_with_contains(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "sing",
-            "work",
-            "runs",
-            False,
-            self.api,
-            "run02",
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains="run02",
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         run_dir_1 = os.path.join(tmp_path, "run01")
@@ -100,25 +104,27 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_norm(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "work",
-            "sing",
-            "runs",
-            False,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -135,25 +141,27 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_samplesheet_file_noapi(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "sing",
-            "work",
-            "runs",
-            False,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -166,25 +174,27 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_file_permissions(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "sing",
-            "work",
-            "runs",
-            False,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         run_file = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -196,25 +206,27 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_sbatch_file_nonfhome(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            "",
-            "work",
-            "sing",
-            "runs",
-            False,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        test.run()
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=False,
+            nextflow_version="20.10.0",
+            nextflow_cache="",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
 
         # Assert
         sbatch_path_01 = os.path.join(tmp_path, "run01", "run_script.sh")
@@ -227,34 +239,37 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_samplesheet_only(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            ".nextflow",
-            "sing",
-            "work",
-            "runs",
-            False,
-            self.api,
-            None,
-            True,
-            None,
-            InterfaceType.LOCAL,
-        )
-
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
         os.makedirs(os.path.join(tmp_path, "run01"))
 
         # Test
-        test.run()
-
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=True,
+            use_api=False,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
+        )
         # Assert
         samplesheet_path_01 = os.path.join(tmp_path, "run01", "samplesheet.csv")
         assert_that(os.path.exists(samplesheet_path_01)).is_true()
 
     def test_ont_gen_demux_run_samplesheet_single_sample(self, tmp_path, monkeypatch):
         # Setup
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
+
         samplesheet_info_return = {
             "sample_01": {
                 "sample_name": "sample_01",
@@ -271,23 +286,23 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            "",
-            "work",
-            "sing",
-            "runs",
-            True,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=True,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
         )
-        test.run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -304,6 +319,9 @@ class TestGenDemuxRun:
 
     def test_ont_gen_demux_run_samplesheet_multi_sample(self, tmp_path, monkeypatch):
         # Setup
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
+
         samplesheet_info_return = {
             "sample_01": {
                 "sample_name": "sample_01",
@@ -331,23 +349,23 @@ class TestGenDemuxRun:
         monkeypatch.setattr(ClarityHelperLims, "collect_samplesheet_info", lambda uri, *args, **kwargs: samplesheet_info_return)
 
         # Test
-        test = GenDemuxRun(
-            TEST_ONT_RUN_SOURCE_PATH,
-            tmp_path,
-            DataTypeMode.ONT,
-            TEST_ONT_PIPELINE_PATH,
-            "",
-            "work",
-            "sing",
-            "runs",
-            True,
-            self.api,
-            None,
-            False,
-            None,
-            InterfaceType.LOCAL,
+        run_cli(
+            api=self.api,
+            storage_interface=storage_interface,
+            data_manager=data_manager,
+            data_type=DataTypeMode.ONT,
+            source_dir=TEST_ONT_RUN_SOURCE_PATH,
+            target_dir=tmp_path,
+            run_name_contains=None,
+            samplesheet_only=False,
+            use_api=True,
+            nextflow_version=None,
+            nextflow_cache=".nextflow",
+            nextflow_work="work",
+            container_cache="sing",
+            pipeline_dir=TEST_ONT_PIPELINE_PATH,
+            runs_dir="runs",
         )
-        test.run()
 
         # Setup Assertion
         samplesheet_path = os.path.join(tmp_path, "run01", "samplesheet.csv")
@@ -381,8 +399,8 @@ class TestGenDemuxRun:
 
         # Test
         storage_interface = StorageInterface(InterfaceType.LOCAL)
-        results = GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path)
-        results_2 = GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path_2)
+        results = extract_pipeline_params(self.api, storage_interface, samplesheet_path)
+        results_2 = extract_pipeline_params(self.api, storage_interface, samplesheet_path_2)
 
         # Assert
         assert_that(results).is_equal_to(expected_dict)
@@ -398,29 +416,17 @@ class TestGenDemuxRun:
 
         # Test and Assert
         storage_interface = StorageInterface(InterfaceType.LOCAL)
-        assert_that(GenDemuxRun.extract_pipeline_params(self, self.api, storage_interface, samplesheet_path)).is_equal_to({})
+        assert_that(extract_pipeline_params(self.api, storage_interface, samplesheet_path)).is_equal_to({})
 
     def test_ont_gen_demux_check_runs_no_cli(self, tmp_path):
         # Setup
-        test = GenDemuxRun(
-            source_dir=TEST_ONT_RUN_SOURCE_PATH,
-            target_dir=tmp_path,
-            mode=DataTypeMode.ONT,
-            pipeline_dir=None,
-            nextflow_cache=None,
-            nextflow_work=None,
-            container_cache=None,
-            runs_dir=None,
-            use_api=False,
-            api=None,
-            contains=None,
-            samplesheet_only=False,
-            nextflow_version=None,
-            file_system=InterfaceType.LOCAL,
-        )
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_manager = DataManagement(storage_interface)
 
         # Test
-        result = test.check_runs_no_cli()
+        result = check_runs_no_cli(
+            storage_interface=storage_interface, data_manager=data_manager, source_dir=TEST_ONT_RUN_SOURCE_PATH, target_dir=tmp_path, max_date=None
+        )
 
         # Assert
         assert_that(result).is_equal_to(["run01", "run02", "run04", "run05"])
@@ -438,24 +444,7 @@ class TestGenDemuxRun:
     #     assert_that(caplog.text).contains("WARNING")
 
     def test_ont_gen_demux_run_create_sbatch_with_pipelineparams(self):
-        # Create an instance of the class with required attributes
-        instance = GenDemuxRun(
-            source_dir="/path/to/source",
-            target_dir="/path/to/target",
-            mode="ONT",
-            pipeline_dir="/path/to/pipeline",
-            nextflow_cache="/path/to/cache",
-            nextflow_work="/path/to/work",
-            container_cache="/path/to/container_cache",
-            runs_dir="/path/to/runs",
-            use_api=False,
-            api=self.api,
-            contains=None,
-            samplesheet_only=False,
-            nextflow_version="20.10.0",
-            file_system=InterfaceType.LOCAL,
-        )
-
+        # Setup
         run_name = "test_run"
         pipeline_params_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
         parse_pos = -1  # No parse position
@@ -488,28 +477,21 @@ nextflow run /path/to/pipeline \\
   --output_raw True \\
   --output_bam True
 """
-        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
-        assert_that(result.strip()).is_equal_to(expected_output.strip())
-
-    def test_ont_gen_demux_run_create_sbatch_without_parse_pos(self):
-        # Create an instance of the class with required attributes
-        instance = GenDemuxRun(
-            source_dir="/path/to/source",
-            target_dir="/path/to/target",
-            mode="ONT",
-            pipeline_dir="/path/to/pipeline",
+        result = create_ont_sbatch_text(
+            run_name=run_name,
+            pipeline_params_dict=pipeline_params_dict,
+            nextflow_version="20.10.0",
             nextflow_cache="/path/to/cache",
             nextflow_work="/path/to/work",
             container_cache="/path/to/container_cache",
-            runs_dir="/path/to/runs",
-            use_api=False,
-            api=self.api,
-            contains=None,
-            samplesheet_only=False,
-            nextflow_version="20.10.0",
-            file_system=InterfaceType.LOCAL,
+            pipeline_dir="/path/to/pipeline",
+            run_file_runs_dir="/path/to/runs",
+            parse_pos=parse_pos,
         )
+        assert_that(result.strip()).is_equal_to(expected_output.strip())
 
+    def test_ont_gen_demux_run_create_sbatch_without_parse_pos(self):
+        # Setup
         run_name = "test_run"
         pipeline_params_dict = {}
         parse_pos = -1  # No parse position
@@ -540,27 +522,21 @@ nextflow run /path/to/pipeline \\
   --run_dir {os.path.join('/path/to/runs', run_name)} \\
   --dorado_model sup
 """
-        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
+        result = create_ont_sbatch_text(
+            run_name=run_name,
+            pipeline_params_dict=pipeline_params_dict,
+            nextflow_version="20.10.0",
+            nextflow_cache="/path/to/cache",
+            nextflow_work="/path/to/work",
+            container_cache="/path/to/container_cache",
+            pipeline_dir="/path/to/pipeline",
+            run_file_runs_dir="/path/to/runs",
+            parse_pos=parse_pos,
+        )
         assert_that(result.strip()).is_equal_to(expected_output.strip())
 
     def test_ont_gen_demux_run_create_sbatch_with_parse_pos(self):
         # Create an instance of the class with required attributes
-        instance = GenDemuxRun(
-            source_dir="/path/to/source",
-            target_dir="/path/to/target",
-            mode="ONT",
-            pipeline_dir="/path/to/pipeline",
-            nextflow_cache="/path/to/cache",
-            nextflow_work="/path/to/work",
-            container_cache="/path/to/container_cache",
-            runs_dir="/path/to/runs",
-            use_api=False,
-            api=self.api,
-            contains=None,
-            samplesheet_only=False,
-            nextflow_version="20.10.0",
-            file_system=InterfaceType.LOCAL,
-        )
         run_name = "test_run"
         pipeline_params_dict = {}
         parse_pos = 2
@@ -596,29 +572,21 @@ nextflow run /path/to/pipeline \\
   --dorado_bc_parse_pos 2
 
 """
-
-        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
-        assert_that(result.strip()).is_equal_to(expected_output.strip())
-
-    def test_create_sbatch_with_pipelineparams_with_parse_pos(self):
-        # Create an instance of the class with required attributes
-        instance = GenDemuxRun(
-            source_dir="/path/to/source",
-            target_dir="/path/to/target",
-            mode="ONT",
-            pipeline_dir="/path/to/pipeline",
+        result = create_ont_sbatch_text(
+            run_name=run_name,
+            pipeline_params_dict=pipeline_params_dict,
+            nextflow_version="20.10.0",
             nextflow_cache="/path/to/cache",
             nextflow_work="/path/to/work",
             container_cache="/path/to/container_cache",
-            runs_dir="/path/to/runs",
-            use_api=False,
-            api=self.api,
-            contains=None,
-            samplesheet_only=False,
-            nextflow_version="20.10.0",
-            file_system=InterfaceType.LOCAL,
+            pipeline_dir="/path/to/pipeline",
+            run_file_runs_dir="/path/to/runs",
+            parse_pos=parse_pos,
         )
+        assert_that(result.strip()).is_equal_to(expected_output.strip())
 
+    def test_create_sbatch_with_pipelineparams_with_parse_pos(self):
+        # Setup
         run_name = "test_run"
         pipeline_params_dict = {"Demux Pipeline Params": {"output_raw": "True", "output_bam": "True"}}
         parse_pos = 2  # No parse position
@@ -652,5 +620,15 @@ nextflow run /path/to/pipeline \\
   --output_bam True \\
   --dorado_bc_parse_pos 2
 """
-        result = instance.create_ont_sbatch_text(run_name, pipeline_params_dict, parse_pos)
+        result = create_ont_sbatch_text(
+            run_name=run_name,
+            pipeline_params_dict=pipeline_params_dict,
+            nextflow_version="20.10.0",
+            nextflow_cache="/path/to/cache",
+            nextflow_work="/path/to/work",
+            container_cache="/path/to/container_cache",
+            pipeline_dir="/path/to/pipeline",
+            run_file_runs_dir="/path/to/runs",
+            parse_pos=parse_pos,
+        )
         assert_that(result.strip()).is_equal_to(expected_output.strip())
