@@ -456,7 +456,7 @@ class TestGenDemuxRun:
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=168:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 #SBATCH --res=asf
@@ -503,7 +503,7 @@ nextflow run /path/to/pipeline \\
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=168:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 #SBATCH --res=asf
@@ -548,7 +548,7 @@ nextflow run /path/to/pipeline \\
 #SBATCH --job-name=asf_nanopore_demux_test_run
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=168:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 #SBATCH --res=asf
@@ -598,7 +598,7 @@ nextflow run /path/to/pipeline \\
 #SBATCH --job-name=asf_nanopore_demux_{run_name}
 #SBATCH --mem=4G
 #SBATCH -n 1
-#SBATCH --time=168:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=run.o
 #SBATCH --error=run.o
 #SBATCH --res=asf
