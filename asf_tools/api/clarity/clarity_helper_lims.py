@@ -416,7 +416,7 @@ class ClarityHelperLims(ClarityLims):
 
         return reagent_barcode_from_reagenttypes
 
-    def get_sample_barcode_from_runid(self, run_id: str) -> dict:
+    def get_sample_barcode_from_runid(self, run_id: str, get_bc_from_name: bool = False) -> dict:
         """
         Retrieve a mapping of sample barcodes for all samples associated with a given run ID.
 
@@ -515,8 +515,9 @@ class ClarityHelperLims(ClarityLims):
                         sample_info = self.expand_stub(sample_stub, expansion_type=Sample)
                         sample_name = sample_info.limsid
                         reagent_barcode = output_expanded.reagent_labels[0]
-                        reagent_barcode_from_reagenttypes = self.get_barcode_from_reagenttypes(reagent_barcode)
-                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode_from_reagenttypes}
+                        if get_bc_from_name is False:
+                            reagent_barcode = self.get_barcode_from_reagenttypes(reagent_barcode)
+                        sample_barcode_match[sample_name] = {"barcode": reagent_barcode}
 
         return sample_barcode_match
 
@@ -628,7 +629,7 @@ class ClarityHelperLims(ClarityLims):
 
         return extracted_info
 
-    def collect_samplesheet_info(self, run_id: str) -> dict:
+    def collect_samplesheet_info(self, run_id: str, get_bc_from_name: bool = False) -> dict:
         """
         Collect and merge detailed information for all samples associated with a given run ID for ONT samplesheet.
 
@@ -660,7 +661,7 @@ class ClarityHelperLims(ClarityLims):
         """
         # Collect sample info
         sample_metadata = self.collect_sample_info_from_runid(run_id)
-        barcode_info = self.get_sample_barcode_from_runid(run_id)
+        barcode_info = self.get_sample_barcode_from_runid(run_id, get_bc_from_name)
         lane_info = self.get_lane_from_runid(run_id)
         # Check if barcode_info is empty; if so, use get_sample_custom_barcode to fetch it
         if not barcode_info:

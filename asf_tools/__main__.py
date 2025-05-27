@@ -222,27 +222,31 @@ def gen_demux_run(ctx,  # pylint: disable=W0613 disable=too-many-positional-argu
     """
     # from nf_core.modules import ModuleInstall
     from asf_tools.api.clarity.clarity_helper_lims import ClarityHelperLims  # pylint: disable=C0415
-    from asf_tools.nextflow.gen_demux_run import GenDemuxRun  # pylint: disable=C0415
+    from asf_tools.io.data_management import DataManagement  # pylint: disable=C0415
+    from asf_tools.nextflow.gen_demux_run import run_cli  # pylint: disable=C0415
 
     try:
         api = ClarityHelperLims()
-        function = GenDemuxRun(
+        storage_interface = StorageInterface(InterfaceType.LOCAL)
+        data_management = DataManagement(storage_interface)
+        exit_status = run_cli(
+            api,
+            storage_interface,
+            data_management,
+            DataTypeMode(mode),
             source_dir,
             target_dir,
-            DataTypeMode(mode),
-            pipeline_dir,
+            contains,
+            samplesheet_only,
+            use_api,
+            nextflow_version,
             nextflow_cache,
             nextflow_work,
             container_cache,
+            pipeline_dir,
             runs_dir,
-            use_api,
-            api,
-            contains,
-            samplesheet_only,
-            nextflow_version,
-            InterfaceType.LOCAL,
         )
-        exit_status = function.run()
+
         if not exit_status:
             sys.exit(1)
     except (UserWarning, LookupError) as e:

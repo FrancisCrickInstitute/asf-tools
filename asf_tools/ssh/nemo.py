@@ -33,6 +33,7 @@ class Nemo:
         self.host = host
         self.user = user
         self.key_file = key_file
+        self.key_string = key_string
         self.password = password
         self.connection = None
 
@@ -40,14 +41,14 @@ class Nemo:
         connect_kwargs = {}
 
         # Check if key or password is provided
-        if key_string:
-            connect_kwargs["pkey"] = self._parse_private_key(key_string)
+        if self.key_string:
+            connect_kwargs["pkey"] = self._parse_private_key(self.key_string)
         elif self.key_file:
             connect_kwargs["key_filename"] = self.key_file
         elif self.password:
             connect_kwargs["password"] = self.password
         else:
-            raise ValueError("Either key_file or password must be provided for authentication.")
+            raise ValueError("Either key_file, key_string, or password must be provided for authentication.")
 
         # Init the connection
         self.connection = Connection(host=self.host, user=self.user, connect_kwargs=connect_kwargs)
