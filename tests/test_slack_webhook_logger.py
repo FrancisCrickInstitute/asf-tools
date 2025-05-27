@@ -7,57 +7,43 @@ Covers event logging, formatting, and delivery features.
 
 
 from assertpy import assert_that
-from asf_tools.slack.webhook_logger import WebhookLogger, WebhookEvent, WebhookBlock, EventCategory
+
+from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookEvent, WebhookLogger
+
 
 def test_slack_webhook_logger_header_block():
     block = WebhookBlock.header("Pipeline Complete")
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "header",
-        "text": {"type": "plain_text", "text": "Pipeline Complete"}
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "header", "text": {"type": "plain_text", "text": "Pipeline Complete"}})
+
 
 def test_slack_webhook_logger_divider_block():
     block = WebhookBlock.divider()
     assert_that(block.to_dict()).is_equal_to({"type": "divider"})
 
+
 def test_slack_webhook_logger_section_block_with_text():
     block = WebhookBlock.section(text="*Hello* _World_ :rocket:")
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "*Hello* _World_ :rocket:"}
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "section", "text": {"type": "mrkdwn", "text": "*Hello* _World_ :rocket:"}})
+
 
 def test_slack_webhook_logger_section_block_with_fields():
-    fields = [
-        "*Pipeline:*\n`daily-report`",
-        "*Status:*\n:white_check_mark: Success"
-    ]
+    fields = ["*Pipeline:*\n`daily-report`", "*Status:*\n:white_check_mark: Success"]
     block = WebhookBlock.section(fields=fields)
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "section",
-        "fields": [
-            {"type": "mrkdwn", "text": fields[0]},
-            {"type": "mrkdwn", "text": fields[1]}
-        ]
-    })
+    assert_that(block.to_dict()).is_equal_to(
+        {"type": "section", "fields": [{"type": "mrkdwn", "text": fields[0]}, {"type": "mrkdwn", "text": fields[1]}]}
+    )
+
 
 def test_slack_webhook_logger_context_block():
     elements = ["View the full report: <https://ci.example.com/report|CI Report>"]
     block = WebhookBlock.context(elements)
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "context",
-        "elements": [
-            {"type": "mrkdwn", "text": elements[0]}
-        ]
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "context", "elements": [{"type": "mrkdwn", "text": elements[0]}]})
+
 
 def test_slack_webhook_logger_image_block():
     block = WebhookBlock.image("https://img.png", "alt text")
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "image",
-        "image_url": "https://img.png",
-        "alt_text": "alt text"
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "image", "image_url": "https://img.png", "alt_text": "alt text"})
+
 
 def test_slack_webhook_logger_alert_text_icons():
     text = WebhookBlock.alert_text(EventCategory.SUCCESS, "All good!")
@@ -73,6 +59,7 @@ def test_slack_webhook_logger_alert_text_icons():
     text = WebhookBlock.alert_text(EventCategory.CRITICAL, "Critical!")
     assert_that(text).contains("🚨").contains("*CRITICAL*:")
 
+
 def test_slack_webhook_logger_webhook_event_to_payload():
     blocks = [
         WebhookBlock.header("Test Header"),
@@ -87,20 +74,25 @@ def test_slack_webhook_logger_webhook_event_to_payload():
     assert_that(payload["blocks"][1]["type"]).is_equal_to("section")
     assert_that(payload["blocks"][2]["type"]).is_equal_to("divider")
 
+
 def test_slack_webhook_logger_webhook_logger_posts_payload(monkeypatch):
     logger = WebhookLogger(webhook_urls={"default": "https://example.com/webhook"})
-    blocks = [WebhookBlock.header("Test")] 
+    blocks = [WebhookBlock.header("Test")]
     event = WebhookEvent(blocks=blocks)
     payload = event.to_payload()
     called = {}
+
     def fake_post(url, headers, data, timeout):
         called["url"] = url
         called["headers"] = headers
         called["data"] = data
         called["timeout"] = timeout
+
         class Resp:
             pass
+
         return Resp()
+
     monkeypatch.setattr("requests.post", fake_post)
     logger.log_event(payload)
     assert_that(called["url"]).is_equal_to("https://example.com/webhook")
@@ -108,28 +100,23 @@ def test_slack_webhook_logger_webhook_logger_posts_payload(monkeypatch):
     assert_that(called["timeout"]).is_equal_to(10)
     assert_that(called["data"]).contains("Test")
 
+
 def test_slack_webhook_logger_code_block_with_text():
     code = "print('hello world')\nprint('goodbye')"
     block = WebhookBlock.code_block(code)
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "```print('hello world')\nprint('goodbye')```"}
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "section", "text": {"type": "mrkdwn", "text": "```print('hello world')\nprint('goodbye')```"}})
+
 
 def test_slack_webhook_logger_code_block_with_empty_text():
     block = WebhookBlock.code_block("")
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "`<no output>`"}
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "section", "text": {"type": "mrkdwn", "text": "`<no output>`"}})
+
 
 def test_slack_webhook_logger_code_block_with_whitespace():
     code = "  line1\n  line2  \n"
     block = WebhookBlock.code_block(code)
-    assert_that(block.to_dict()).is_equal_to({
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "```  line1\n  line2  \n```"}
-    })
+    assert_that(block.to_dict()).is_equal_to({"type": "section", "text": {"type": "mrkdwn", "text": "```  line1\n  line2  \n```"}})
+
 
 def test_slack_webhook_logger_code_block_truncation():
     code = "A" * 3000

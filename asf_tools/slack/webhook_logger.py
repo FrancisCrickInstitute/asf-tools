@@ -1,10 +1,13 @@
 """
 WebhookLogger: A helper library for logging events to webhooks with rich formatting and configurable features.
 """
-import requests
-from enum import Enum, auto
-from typing import Dict, Optional, List
+
 import json
+from enum import Enum, auto
+from typing import Dict, List, Optional
+
+import requests
+
 
 class EventCategory(Enum):
     SUCCESS = auto()
@@ -14,6 +17,7 @@ class EventCategory(Enum):
     ERROR = auto()
     CRITICAL = auto()
 
+
 class BlockType(Enum):
     HEADER = "header"
     DIVIDER = "divider"
@@ -22,6 +26,7 @@ class BlockType(Enum):
     IMAGE = "image"
     ACTIONS = "actions"
     # Add more Slack block types as needed
+
 
 class WebhookBlock:
     def __init__(self, block_type: BlockType, **kwargs):
@@ -120,14 +125,15 @@ class WebhookBlock:
         if not text:
             code = "`<no output>`"
         else:
-            prefix = '... (truncated)\n'
+            prefix = "... (truncated)\n"
             if len(text) > max_chars:
                 # Only take the last (max_chars - len(prefix)) chars, then prepend prefix
-                truncated = text[-(max_chars - len(prefix)):] if max_chars > len(prefix) else ''
-                code = f'```{prefix}{truncated}```'
+                truncated = text[-(max_chars - len(prefix)) :] if max_chars > len(prefix) else ""
+                code = f"```{prefix}{truncated}```"
             else:
-                code = f'```{text}```'
+                code = f"```{text}```"
         return WebhookBlock.section(text=code)
+
 
 class WebhookEvent:
     def __init__(
@@ -138,6 +144,7 @@ class WebhookEvent:
 
     def to_payload(self) -> dict:
         return {"blocks": [block.to_dict() for block in self.blocks]}
+
 
 class WebhookLogger:
     def __init__(
