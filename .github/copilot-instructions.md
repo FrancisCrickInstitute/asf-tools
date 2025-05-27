@@ -4,6 +4,14 @@
 - Use python 3.11
 - Install the dev environment with `pip install -e ".[dev,tests]"`
 
+## Agent Instructions
+- Always discuss the task with the user before starting to write code.
+- start with high-level design and architecture, then move to implementation details.
+- Ask for clarification if the task is not clear.
+- If the task is too complex, break it down into smaller tasks and implement them one by one.
+- Never start writing code without a green light from the user.
+- Once green lit, automatically run `pytest` after each code change to ensure tests pass.
+
 ## General Principles
 - Follow **Test-Driven Development (TDD)**: write tests before writing implementation code.
 - Use `pytest` as the test framework.
@@ -27,12 +35,18 @@
 - Use type hints in all function signatures.
 - Use f-strings for string interpolation.
 - Prefer list comprehensions and generator expressions where appropriate.
+- Put new lines at the end of files.
+- Use spaces around operators and after commas.
+- Use 4 spaces for indentation.
+- Avoid using tabs for indentation.
+- Use double quotes for strings, except for docstrings which should use triple double quotes.
+- Put new lines between code above and comments below.
 
 ## Testing Guidelines
 - All new code must be accompanied by tests.
 - Structure tests in the `tests/` directory, with the file name starting with `test_`. The test directory is flat, the file names should be a mirror of the source code structure. For example `my_project/core.py` should have tests in `tests/test_core.py`.
+- Put tests in a class and use `pytest` fixtures for setup and teardown.
 - Write clear, descriptive test names that indicate what the test is verifying.
 - Use the assert_that library for assertions to improve readability.
 - Use `pytest.mark.parametrize` to test multiple scenarios in a single test function.
-- Use fixtures for setup and teardown of test environments.
 - Tests should be clear, concise, and isolated (no I/O or network unless mocked).
