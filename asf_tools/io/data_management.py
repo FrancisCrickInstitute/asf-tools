@@ -4,7 +4,6 @@ Helper functions for data management
 
 import logging
 import os
-
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 
