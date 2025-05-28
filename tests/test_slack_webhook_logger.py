@@ -8,7 +8,7 @@ Covers event logging, formatting, and delivery features.
 
 from assertpy import assert_that
 
-from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookEvent, WebhookLogger
+from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookLogger, SlackUserResolver
 
 
 def test_slack_webhook_logger_header_block():
@@ -66,8 +66,7 @@ def test_slack_webhook_logger_webhook_event_to_payload():
         WebhookBlock.section(text=WebhookBlock.alert_text(EventCategory.INFO, "Test message")),
         WebhookBlock.divider(),
     ]
-    event = WebhookEvent(blocks=blocks)
-    payload = event.to_payload()
+    payload = {"blocks": [block.to_dict() for block in blocks]}
     assert_that(payload).contains_key("blocks")
     assert_that(payload["blocks"]).is_length(3)
     assert_that(payload["blocks"][0]["type"]).is_equal_to("header")
@@ -78,8 +77,7 @@ def test_slack_webhook_logger_webhook_event_to_payload():
 def test_slack_webhook_logger_webhook_logger_posts_payload(monkeypatch):
     logger = WebhookLogger(webhook_urls={"default": "https://example.com/webhook"})
     blocks = [WebhookBlock.header("Test")]
-    event = WebhookEvent(blocks=blocks)
-    payload = event.to_payload()
+    payload = {"blocks": [block.to_dict() for block in blocks]}
     called = {}
 
     def fake_post(url, headers, data, timeout):
@@ -125,3 +123,52 @@ def test_slack_webhook_logger_code_block_truncation():
     assert out.startswith("```... (truncated)\n")
     assert out.endswith("```")
     assert len(out) <= 2515  # 2500 chars + prefix + triple backticks
+
+
+def test_slack_webhook_logger_section_block_with_mentions():
+    block = WebhookBlock.section(text="Pipeline complete", mentions=["U12345", "U67890"])
+    expected = {
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "<@U12345> <@U67890> Pipeline complete"
+        }
+    }
+    assert_that(block.to_dict()).is_equal_to(expected)
+
+
+def test_slack_webhook_logger_context_block_with_mentions():
+    block = WebhookBlock.context(["See details below"], mentions=["U12345"])
+    expected = {
+        "type": "context",
+        "elements": [
+            {"type": "mrkdwn", "text": "<@U12345> See details below"}
+        ]
+    }
+    assert_that(block.to_dict()).is_equal_to(expected)
+
+
+def test_slack_webhook_logger_section_block_with_username():
+    class DummyResolver:
+        def resolve(self, username):
+            return {"alice": "U111", "bob": "U222"}.get(username)
+    block = WebhookBlock.section(text="Pipeline complete", mentions=["alice", "U12345"], resolver=DummyResolver())
+    expected = {
+        "type": "section",
+        "text": {"type": "mrkdwn", "text": "<@U111> <@U12345> Pipeline complete"}
+    }
+    assert_that(block.to_dict()).is_equal_to(expected)
+
+
+def test_slack_webhook_logger_context_block_with_username():
+    class DummyResolver:
+        def resolve(self, username):
+            return {"alice": "U111"}.get(username)
+    block = WebhookBlock.context(["See details below"], mentions=["alice"], resolver=DummyResolver())
+    expected = {
+        "type": "context",
+        "elements": [
+            {"type": "mrkdwn", "text": "<@U111> See details below"}
+        ]
+    }
+    assert_that(block.to_dict()).is_equal_to(expected)

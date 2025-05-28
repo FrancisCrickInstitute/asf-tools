@@ -61,28 +61,71 @@ class WebhookBlock:
         return WebhookBlock(BlockType.DIVIDER)
 
     @staticmethod
-    def section(text: str = None, fields: Optional[List[str]] = None) -> "WebhookBlock":
+    def section(
+        text: str = None,
+        fields: Optional[List[str]] = None,
+        mentions: Optional[List[str]] = None,
+        resolver: "SlackUserResolver" = None,
+    ) -> "WebhookBlock":
         """
         Create a section block. If fields are provided, they are formatted as mrkdwn fields.
+        Optionally prepend Slack user mentions to the text. Usernames are resolved if a resolver is provided.
         :param text: The section text (mrkdwn)
         :param fields: List of field strings (mrkdwn)
+        :param mentions: List of Slack user IDs or usernames to mention
+        :param resolver: Optional SlackUserResolver for username resolution
         :return: WebhookBlock
         """
         block_kwargs = {}
+        mention_str = ""
+        if mentions:
+            mention_ids = []
+            for m in mentions:
+                if m.startswith("U"):
+                    mention_ids.append(m)
+                elif resolver:
+                    uid = resolver.resolve(m)
+                    if uid:
+                        mention_ids.append(uid)
+                # else: skip if no resolver
+            if mention_ids:
+                mention_str = " ".join(f"<@{uid}>" for uid in mention_ids) + " "
         if text:
-            block_kwargs["text"] = {"type": "mrkdwn", "text": text}
+            block_kwargs["text"] = {"type": "mrkdwn", "text": f"{mention_str}{text}"}
         if fields:
             block_kwargs["fields"] = [{"type": "mrkdwn", "text": f} for f in fields]
         return WebhookBlock(BlockType.SECTION, **block_kwargs)
 
     @staticmethod
-    def context(elements: List[str]) -> "WebhookBlock":
+    def context(
+        elements: List[str],
+        mentions: Optional[List[str]] = None,
+        resolver: "SlackUserResolver" = None,
+    ) -> "WebhookBlock":
         """
-        Create a context block with mrkdwn elements.
+        Create a context block with mrkdwn elements. Optionally prepend Slack user mentions to each element.
+        Usernames are resolved if a resolver is provided.
         :param elements: List of context strings (mrkdwn)
+        :param mentions: List of Slack user IDs or usernames to mention
+        :param resolver: Optional SlackUserResolver for username resolution
         :return: WebhookBlock
         """
-        return WebhookBlock(BlockType.CONTEXT, elements=[{"type": "mrkdwn", "text": e} for e in elements])
+        mention_str = ""
+        if mentions:
+            mention_ids = []
+            for m in mentions:
+                if m.startswith("U"):
+                    mention_ids.append(m)
+                elif resolver:
+                    uid = resolver.resolve(m)
+                    if uid:
+                        mention_ids.append(uid)
+            if mention_ids:
+                mention_str = " ".join(f"<@{uid}>" for uid in mention_ids) + " "
+        return WebhookBlock(
+            BlockType.CONTEXT,
+            elements=[{"type": "mrkdwn", "text": f"{mention_str}{e}"} for e in elements],
+        )
 
     @staticmethod
     def image(image_url: str, alt_text: str) -> "WebhookBlock":
@@ -135,15 +178,36 @@ class WebhookBlock:
         return WebhookBlock.section(text=code)
 
 
-class WebhookEvent:
-    def __init__(
-        self,
-        blocks: Optional[List[WebhookBlock]] = None,
-    ):
-        self.blocks = blocks or []
+class SlackUserResolver:
+    """
+    Resolves Slack usernames to user IDs using the Slack Web API.
+    No caching is performed; each lookup makes an API call.
+    """
 
-    def to_payload(self) -> dict:
-        return {"blocks": [block.to_dict() for block in self.blocks]}
+    def __init__(self, token: str):
+        self.token = token
+
+    def resolve(self, username: str) -> Optional[str]:
+        """
+        Resolve a Slack username (without @) to a user ID using the Slack API.
+        Returns None if not found or on error.
+        """
+        url = "https://slack.com/api/users.list"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        try:
+            resp = requests.get(url, headers=headers, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+            print(data)
+            if not data.get("ok"):
+                return None
+            for member in data.get("members", []):
+                if member.get("name") == username or member.get("real_name") == username:
+                    return member.get("id")
+        except (requests.RequestException, ValueError, KeyError):
+            print("ERROR")
+            return None
+        return None
 
 
 class WebhookLogger:
