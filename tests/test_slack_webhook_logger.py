@@ -8,7 +8,7 @@ Covers event logging, formatting, and delivery features.
 
 from assertpy import assert_that
 
-from asf_tools.slack.webhook_logger import EventCategory, SlackUserResolver, WebhookBlock, WebhookLogger
+from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookLogger
 
 
 def test_slack_webhook_logger_header_block():
