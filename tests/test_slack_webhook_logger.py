@@ -8,7 +8,7 @@ Covers event logging, formatting, and delivery features.
 
 from assertpy import assert_that
 
-from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookLogger, SlackUserResolver
+from asf_tools.slack.webhook_logger import EventCategory, SlackUserResolver, WebhookBlock, WebhookLogger
 
 
 def test_slack_webhook_logger_header_block():
@@ -127,24 +127,13 @@ def test_slack_webhook_logger_code_block_truncation():
 
 def test_slack_webhook_logger_section_block_with_mentions():
     block = WebhookBlock.section(text="Pipeline complete", mentions=["U12345", "U67890"])
-    expected = {
-        "type": "section",
-        "text": {
-            "type": "mrkdwn",
-            "text": "<@U12345> <@U67890> Pipeline complete"
-        }
-    }
+    expected = {"type": "section", "text": {"type": "mrkdwn", "text": "<@U12345> <@U67890> Pipeline complete"}}
     assert_that(block.to_dict()).is_equal_to(expected)
 
 
 def test_slack_webhook_logger_context_block_with_mentions():
     block = WebhookBlock.context(["See details below"], mentions=["U12345"])
-    expected = {
-        "type": "context",
-        "elements": [
-            {"type": "mrkdwn", "text": "<@U12345> See details below"}
-        ]
-    }
+    expected = {"type": "context", "elements": [{"type": "mrkdwn", "text": "<@U12345> See details below"}]}
     assert_that(block.to_dict()).is_equal_to(expected)
 
 
@@ -152,11 +141,9 @@ def test_slack_webhook_logger_section_block_with_username():
     class DummyResolver:
         def resolve(self, username):
             return {"alice": "U111", "bob": "U222"}.get(username)
+
     block = WebhookBlock.section(text="Pipeline complete", mentions=["alice", "U12345"], resolver=DummyResolver())
-    expected = {
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "<@U111> <@U12345> Pipeline complete"}
-    }
+    expected = {"type": "section", "text": {"type": "mrkdwn", "text": "<@U111> <@U12345> Pipeline complete"}}
     assert_that(block.to_dict()).is_equal_to(expected)
 
 
@@ -164,11 +151,7 @@ def test_slack_webhook_logger_context_block_with_username():
     class DummyResolver:
         def resolve(self, username):
             return {"alice": "U111"}.get(username)
+
     block = WebhookBlock.context(["See details below"], mentions=["alice"], resolver=DummyResolver())
-    expected = {
-        "type": "context",
-        "elements": [
-            {"type": "mrkdwn", "text": "<@U111> See details below"}
-        ]
-    }
+    expected = {"type": "context", "elements": [{"type": "mrkdwn", "text": "<@U111> See details below"}]}
     assert_that(block.to_dict()).is_equal_to(expected)
