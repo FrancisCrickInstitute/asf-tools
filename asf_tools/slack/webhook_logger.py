@@ -81,13 +81,14 @@ class WebhookBlock:
         if mentions:
             mention_ids = []
             for m in mentions:
-                if m.startswith("U"):
-                    mention_ids.append(m)
-                elif resolver:
+                if resolver:
                     uid = resolver.resolve(m)
                     if uid:
                         mention_ids.append(uid)
-                # else: skip if no resolver
+                    else:
+                        mention_ids.append(m)
+                else:
+                    mention_ids.append(m)
             if mention_ids:
                 mention_str = " ".join(f"<@{uid}>" for uid in mention_ids) + " "
         if text:
@@ -114,12 +115,14 @@ class WebhookBlock:
         if mentions:
             mention_ids = []
             for m in mentions:
-                if m.startswith("U"):
-                    mention_ids.append(m)
-                elif resolver:
+                if resolver:
                     uid = resolver.resolve(m)
                     if uid:
                         mention_ids.append(uid)
+                    else:
+                        mention_ids.append(m)
+                else:
+                    mention_ids.append(m)
             if mention_ids:
                 mention_str = " ".join(f"<@{uid}>" for uid in mention_ids) + " "
         return WebhookBlock(
@@ -177,6 +180,15 @@ class WebhookBlock:
                 code = f"```{text}```"
         return WebhookBlock.section(text=code)
 
+    @staticmethod
+    def build_payload(blocks: list["WebhookBlock"]) -> dict:
+        """
+        Helper to build a Slack payload from a list of WebhookBlock objects.
+        :param blocks: List of WebhookBlock instances
+        :return: Dict payload suitable for Slack webhook
+        """
+        return {"blocks": [block.to_dict() for block in blocks]}
+
 
 class SlackUserResolver:
     """
@@ -193,19 +205,23 @@ class SlackUserResolver:
         Returns None if not found or on error.
         """
         url = "https://slack.com/api/users.list"
-        headers = {"Authorization": f"Bearer {self.token}"}
+        headers = {"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"}
         try:
             resp = requests.get(url, headers=headers, timeout=10)
             resp.raise_for_status()
             data = resp.json()
-            print(data)
             if not data.get("ok"):
                 return None
             for member in data.get("members", []):
-                if member.get("name") == username or member.get("real_name") == username:
+                # Clean and normalize the name
+                name = member.get("profile").get("display_name_normalized").lower()
+                if name is None or name == "":
+                    name = member.get("profile").get("real_name_normalized").lower().replace(" ", ".")
+
+                # Match the name
+                if name == username.lower():
                     return member.get("id")
         except (requests.RequestException, ValueError, KeyError):
-            print("ERROR")
             return None
         return None
 
