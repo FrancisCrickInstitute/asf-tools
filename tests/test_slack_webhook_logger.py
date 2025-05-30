@@ -8,7 +8,7 @@ Covers event logging, formatting, and delivery features.
 
 from assertpy import assert_that
 
-from asf_tools.slack.webhook_logger import EventCategory, WebhookBlock, WebhookLogger
+from asf_tools.slack.webhook_logger import EventCategory, SlackUserResolver, WebhookBlock, WebhookLogger
 
 
 def test_slack_webhook_logger_header_block():
@@ -66,7 +66,7 @@ def test_slack_webhook_logger_webhook_event_to_payload():
         WebhookBlock.section(text=WebhookBlock.alert_text(EventCategory.INFO, "Test message")),
         WebhookBlock.divider(),
     ]
-    payload = {"blocks": [block.to_dict() for block in blocks]}
+    payload = WebhookBlock.build_payload(blocks)
     assert_that(payload).contains_key("blocks")
     assert_that(payload["blocks"]).is_length(3)
     assert_that(payload["blocks"][0]["type"]).is_equal_to("header")
@@ -77,7 +77,7 @@ def test_slack_webhook_logger_webhook_event_to_payload():
 def test_slack_webhook_logger_webhook_logger_posts_payload(monkeypatch):
     logger = WebhookLogger(webhook_urls={"default": "https://example.com/webhook"})
     blocks = [WebhookBlock.header("Test")]
-    payload = {"blocks": [block.to_dict() for block in blocks]}
+    payload = WebhookBlock.build_payload(blocks)
     called = {}
 
     def fake_post(url, headers, data, timeout):
@@ -155,3 +155,59 @@ def test_slack_webhook_logger_context_block_with_username():
     block = WebhookBlock.context(["See details below"], mentions=["alice"], resolver=DummyResolver())
     expected = {"type": "context", "elements": [{"type": "mrkdwn", "text": "<@U111> See details below"}]}
     assert_that(block.to_dict()).is_equal_to(expected)
+
+
+def test_slack_user_resolver_display_name(monkeypatch):
+    # Simulate Slack API response with display_name_normalized and real_name_normalized
+    class DummyResp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "ok": True,
+                "members": [
+                    {"id": "U123", "profile": {"display_name_normalized": "jdoe", "real_name_normalized": "John Doe"}},
+                    {"id": "U456", "profile": {"display_name_normalized": "", "real_name_normalized": "Jane Smith"}},
+                ],
+            }
+
+    monkeypatch.setattr("requests.get", lambda *_, **__: DummyResp())
+    resolver = SlackUserResolver(token="dummy")
+    # Should match display_name_normalized
+    assert resolver.resolve("jdoe") == "U123"
+    # Should NOT match real_name_normalized if display_name_normalized is present
+    assert resolver.resolve("john.doe") is None
+    # Should match real_name_normalized (converted to jane.smith) for second user
+    assert resolver.resolve("jane.smith") == "U456"
+    # Should return None for unknown
+    assert resolver.resolve("unknown") is None
+
+
+def test_slack_user_resolver_display_name_and_real_name(monkeypatch):
+    # Simulate Slack API response with both display_name_normalized and real_name_normalized
+    class DummyResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "ok": True,
+                "members": [
+                    {"id": "U123", "profile": {"display_name_normalized": "johnny", "real_name_normalized": "John Doe"}},
+                    {"id": "U456", "profile": {"display_name_normalized": "jane.smith", "real_name_normalized": "Jane Smith"}},
+                ],
+            }
+
+    monkeypatch.setattr("requests.get", lambda *_, **__: DummyResponse())
+    resolver = SlackUserResolver(token="dummy-token")
+    # Should match display_name_normalized
+    assert resolver.resolve("johnny") == "U123"
+    # Should NOT match real_name_normalized if display_name_normalized is present
+    assert resolver.resolve("john.doe") is None
+    # Should match display_name_normalized for second user
+    assert resolver.resolve("jane.smith") == "U456"
+    # Should NOT match real_name_normalized for second user if display_name_normalized is present
+    assert resolver.resolve("jane.smith") == "U456"
+    # Should return None for unknown
+    assert resolver.resolve("unknown") is None
