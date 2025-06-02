@@ -1,4 +1,3 @@
-
 # General parameters/values
 ## Modes
 - __DataTypeMode__ is in `io/data_management.py`. Useful when selecting between GENERAL, ONT or ILLUMINA mode.
@@ -11,7 +10,7 @@
 
 ## Broad functionalities
 - __check_file_exist__ is in `io/utils.py`. Can be used to check for the presence of a file matching a specific pattern in its file name.
-
+- __get_pipeline_params__ is in `api/clarity/clarity_helper_lims.py`. It enables the extraction of information from specific or custom fields, with each parameter being split by a `;` character. It splits the parameter name from the parameter value using a custom sep value. This function is also used in in `nextflow/gen_demux_run.py` within the `extract_pipeline_params` function, where it is called with the separator hardcoded as `=`. For the input to be processed correctly, the field value should look like this: *parameter_1 = value1; parameter_2 = 2*.
 
 # API notes
 - __clarity_lims.py__ <br>
@@ -59,4 +58,5 @@ __BCL Convert__ related functionalities
     5) - any mode: deletes the work folder and all its contents
         - ONT -> **not** demultiplexed (ie. only 1 sample) -> deletes all the contents inside the _results/dorado/_ folder (not the folder itself) + deletes work folder
     - `scan_run_state` merges the functionalities mentioned above in point 1,2 and 3
+
 
