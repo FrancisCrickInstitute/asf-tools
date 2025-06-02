@@ -121,7 +121,6 @@ class DataManagement:
 
         Raises:
         - ValueError: If symlink_data_path is neither a string nor a list.
-        - subprocess.CalledProcessError: If the subprocess command fails.
 
         Example usage:
         symlink_to_target('/path/to/source', '/path/to/destination')
